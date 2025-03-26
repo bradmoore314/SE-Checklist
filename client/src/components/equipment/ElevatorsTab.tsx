@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddElevatorModal from "../modals/AddElevatorModal";
+import EditElevatorModal from "../modals/EditElevatorModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface ElevatorsTabProps {
@@ -14,6 +15,8 @@ interface ElevatorsTabProps {
 export default function ElevatorsTab({ project }: ElevatorsTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedElevator, setSelectedElevator] = useState<Elevator | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
@@ -63,7 +66,7 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
     }
   };
 
-  // Handle save from modal
+  // Handle save from add modal
   const handleSave = () => {
     // Close modal
     setShowAddModal(false);
@@ -76,6 +79,23 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
     toast({
       title: "Elevator Added",
       description: "The elevator has been added successfully.",
+    });
+  };
+  
+  // Handle save from edit modal
+  const handleEditSave = () => {
+    // Close modal
+    setShowEditModal(false);
+    setSelectedElevator(null);
+    
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ 
+      queryKey: [`/api/projects/${project.id}/elevators`]
+    });
+    
+    toast({
+      title: "Elevator Updated",
+      description: "The elevator has been updated successfully.",
     });
   };
 
@@ -141,11 +161,8 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
                     <button 
                       className="text-primary hover:text-primary-dark focus:outline-none mr-2"
                       onClick={() => {
-                        // Edit functionality would go here
-                        toast({ 
-                          title: "Edit Feature",
-                          description: "Edit functionality will be implemented in a future update." 
-                        });
+                        setSelectedElevator(elevator);
+                        setShowEditModal(true);
                       }}
                     >
                       <span className="material-icons text-sm">edit</span>
@@ -220,6 +237,19 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
           projectId={project.id} 
           onSave={handleSave} 
           onClose={() => setShowAddModal(false)} 
+        />
+      )}
+      
+      {/* Edit Elevator Modal */}
+      {showEditModal && selectedElevator && (
+        <EditElevatorModal 
+          isOpen={showEditModal} 
+          elevator={selectedElevator} 
+          onSave={handleEditSave} 
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedElevator(null);
+          }} 
         />
       )}
     </div>

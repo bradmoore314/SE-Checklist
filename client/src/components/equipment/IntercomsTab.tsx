@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddIntercomModal from "../modals/AddIntercomModal";
+import EditIntercomModal from "../modals/EditIntercomModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface IntercomsTabProps {
@@ -15,6 +16,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingIntercom, setEditingIntercom] = useState<Intercom | null>(null);
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -63,7 +65,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
     }
   };
 
-  // Handle save from modal
+  // Handle save from add modal
   const handleSave = () => {
     // Close modal
     setShowAddModal(false);
@@ -76,6 +78,27 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
     toast({
       title: "Intercom Added",
       description: "The intercom has been added successfully.",
+    });
+  };
+  
+  // Handle click on edit button
+  const handleEditClick = (intercom: Intercom) => {
+    setEditingIntercom(intercom);
+  };
+  
+  // Handle save from edit modal
+  const handleEditSave = () => {
+    // Close modal
+    setEditingIntercom(null);
+    
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ 
+      queryKey: [`/api/projects/${project.id}/intercoms`]
+    });
+    
+    toast({
+      title: "Intercom Updated",
+      description: "The intercom has been updated successfully.",
     });
   };
 
@@ -138,13 +161,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button 
                       className="text-primary hover:text-primary-dark focus:outline-none mr-2"
-                      onClick={() => {
-                        // Edit functionality would go here
-                        toast({ 
-                          title: "Edit Feature",
-                          description: "Edit functionality will be implemented in a future update." 
-                        });
-                      }}
+                      onClick={() => handleEditClick(intercom)}
                     >
                       <span className="material-icons text-sm">edit</span>
                     </button>
@@ -218,6 +235,16 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
           projectId={project.id} 
           onSave={handleSave} 
           onClose={() => setShowAddModal(false)} 
+        />
+      )}
+      
+      {/* Edit Intercom Modal */}
+      {editingIntercom && (
+        <EditIntercomModal
+          isOpen={!!editingIntercom}
+          intercom={editingIntercom}
+          onSave={handleEditSave}
+          onClose={() => setEditingIntercom(null)}
         />
       )}
     </div>

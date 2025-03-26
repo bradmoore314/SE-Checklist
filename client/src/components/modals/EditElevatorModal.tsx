@@ -52,8 +52,8 @@ export default function EditElevatorModal({
     defaultValues: {
       location: elevator.location,
       elevator_type: elevator.elevator_type,
-      floor_count: elevator.floor_count?.toString() || "",
-      notes: elevator.notes,
+      floor_count: elevator.floor_count || null,
+      notes: elevator.notes || null,
     },
   });
 
@@ -142,6 +142,10 @@ export default function EditElevatorModal({
                       placeholder="Enter floor count" 
                       {...field} 
                       value={field.value || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value ? parseInt(value, 10) : null);
+                      }}
                     />
                   </FormControl>
                 </FormItem>
