@@ -154,6 +154,32 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                       <span className="material-icons text-sm">edit</span>
                     </button>
                     <button 
+                      className="text-blue-500 hover:text-blue-700 focus:outline-none mr-2"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/cameras/${camera.id}/duplicate`);
+                          
+                          // Invalidate and refetch
+                          queryClient.invalidateQueries({ 
+                            queryKey: [`/api/projects/${project.id}/cameras`]
+                          });
+                          
+                          toast({
+                            title: "Camera Duplicated",
+                            description: "The camera has been duplicated successfully.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Duplication Failed",
+                            description: (error as Error).message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <span className="material-icons text-sm">content_copy</span>
+                    </button>
+                    <button 
                       className="text-red-500 hover:text-red-700 focus:outline-none"
                       onClick={() => handleDelete(camera.id)}
                     >

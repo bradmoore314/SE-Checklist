@@ -7,7 +7,11 @@ import {
   insertAccessPointSchema,
   insertCameraSchema,
   insertElevatorSchema,
-  insertIntercomSchema
+  insertIntercomSchema,
+  InsertAccessPoint,
+  InsertCamera,
+  InsertElevator,
+  InsertIntercom
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -155,6 +159,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  app.post("/api/access-points/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const accessPointId = parseInt(req.params.id);
+      if (isNaN(accessPointId)) {
+        return res.status(400).json({ message: "Invalid access point ID" });
+      }
+      
+      // Get the existing access point
+      const existingAccessPoint = await storage.getAccessPoint(accessPointId);
+      if (!existingAccessPoint) {
+        return res.status(404).json({ message: "Access point not found" });
+      }
+      
+      // Create a copy with a modified location name
+      const duplicateData: InsertAccessPoint = {
+        project_id: existingAccessPoint.project_id,
+        location: `${existingAccessPoint.location} (Copy)`,
+        door_type: existingAccessPoint.door_type,
+        reader_type: existingAccessPoint.reader_type,
+        lock_type: existingAccessPoint.lock_type,
+        security_level: existingAccessPoint.security_level,
+        ppi: existingAccessPoint.ppi,
+        notes: existingAccessPoint.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedAccessPoint = await storage.createAccessPoint(duplicateData);
+      
+      res.status(201).json(duplicatedAccessPoint);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to duplicate access point",
+        error: (error as Error).message
+      });
+    }
+  });
 
   app.put("/api/access-points/:id", async (req: Request, res: Response) => {
     const accessPointId = parseInt(req.params.id);
@@ -250,6 +291,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ 
         message: "Failed to create camera",
+        error: (error as Error).message
+      });
+    }
+  });
+  
+  app.post("/api/cameras/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const cameraId = parseInt(req.params.id);
+      if (isNaN(cameraId)) {
+        return res.status(400).json({ message: "Invalid camera ID" });
+      }
+      
+      // Get the existing camera
+      const existingCamera = await storage.getCamera(cameraId);
+      if (!existingCamera) {
+        return res.status(404).json({ message: "Camera not found" });
+      }
+      
+      // Create a copy with a modified location name
+      const duplicateData: InsertCamera = {
+        project_id: existingCamera.project_id,
+        location: `${existingCamera.location} (Copy)`,
+        camera_type: existingCamera.camera_type,
+        mounting_type: existingCamera.mounting_type,
+        resolution: existingCamera.resolution,
+        field_of_view: existingCamera.field_of_view,
+        notes: existingCamera.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedCamera = await storage.createCamera(duplicateData);
+      
+      res.status(201).json(duplicatedCamera);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to duplicate camera",
         error: (error as Error).message
       });
     }
@@ -353,6 +430,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  app.post("/api/elevators/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const elevatorId = parseInt(req.params.id);
+      if (isNaN(elevatorId)) {
+        return res.status(400).json({ message: "Invalid elevator ID" });
+      }
+      
+      // Get the existing elevator
+      const existingElevator = await storage.getElevator(elevatorId);
+      if (!existingElevator) {
+        return res.status(404).json({ message: "Elevator not found" });
+      }
+      
+      // Create a copy with a modified location name
+      const duplicateData: InsertElevator = {
+        project_id: existingElevator.project_id,
+        location: `${existingElevator.location} (Copy)`,
+        elevator_type: existingElevator.elevator_type,
+        floor_count: existingElevator.floor_count,
+        notes: existingElevator.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedElevator = await storage.createElevator(duplicateData);
+      
+      res.status(201).json(duplicatedElevator);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to duplicate elevator",
+        error: (error as Error).message
+      });
+    }
+  });
 
   app.put("/api/elevators/:id", async (req: Request, res: Response) => {
     const elevatorId = parseInt(req.params.id);
@@ -448,6 +559,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ 
         message: "Failed to create intercom",
+        error: (error as Error).message
+      });
+    }
+  });
+  
+  app.post("/api/intercoms/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const intercomId = parseInt(req.params.id);
+      if (isNaN(intercomId)) {
+        return res.status(400).json({ message: "Invalid intercom ID" });
+      }
+      
+      // Get the existing intercom
+      const existingIntercom = await storage.getIntercom(intercomId);
+      if (!existingIntercom) {
+        return res.status(404).json({ message: "Intercom not found" });
+      }
+      
+      // Create a copy with a modified location name
+      const duplicateData: InsertIntercom = {
+        project_id: existingIntercom.project_id,
+        location: `${existingIntercom.location} (Copy)`,
+        intercom_type: existingIntercom.intercom_type,
+        notes: existingIntercom.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedIntercom = await storage.createIntercom(duplicateData);
+      
+      res.status(201).json(duplicatedIntercom);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to duplicate intercom",
         error: (error as Error).message
       });
     }

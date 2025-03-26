@@ -154,6 +154,32 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       <span className="material-icons text-sm">edit</span>
                     </button>
                     <button 
+                      className="text-blue-500 hover:text-blue-700 focus:outline-none mr-2"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/access-points/${ap.id}/duplicate`);
+                          
+                          // Invalidate and refetch
+                          queryClient.invalidateQueries({ 
+                            queryKey: [`/api/projects/${project.id}/access-points`]
+                          });
+                          
+                          toast({
+                            title: "Access Point Duplicated",
+                            description: "The access point has been duplicated successfully.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Duplication Failed",
+                            description: (error as Error).message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <span className="material-icons text-sm">content_copy</span>
+                    </button>
+                    <button 
                       className="text-red-500 hover:text-red-700 focus:outline-none"
                       onClick={() => handleDelete(ap.id)}
                     >
