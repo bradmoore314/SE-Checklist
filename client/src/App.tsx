@@ -9,6 +9,7 @@ import DoorSchedules from "@/pages/door-schedules";
 import CameraSchedules from "@/pages/camera-schedules";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
+import { ProjectProvider } from "@/context/ProjectContext";
 
 function Router() {
   return (
@@ -25,11 +26,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteWalkProvider>
-        <MainLayout>
-          <Router />
-        </MainLayout>
-      </SiteWalkProvider>
+      <ProjectProvider>
+        <SiteWalkProvider>
+          <MainLayout>
+            <Router />
+          </MainLayout>
+        </SiteWalkProvider>
+      </ProjectProvider>
       <Toaster />
     </QueryClientProvider>
   );

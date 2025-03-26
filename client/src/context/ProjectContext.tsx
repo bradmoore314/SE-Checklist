@@ -1,27 +1,27 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Project } from "@shared/schema";
 
-interface SiteWalkContextType {
-  currentSiteWalk: Project | null;
-  setCurrentSiteWalk: (siteWalk: Project | null) => void;
+interface ProjectContextType {
+  currentProject: Project | null;
+  setCurrentProject: (project: Project | null) => void;
 }
 
-const SiteWalkContext = createContext<SiteWalkContextType | undefined>(undefined);
+const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-export function SiteWalkProvider({ children }: { children: ReactNode }) {
-  const [currentSiteWalk, setCurrentSiteWalk] = useState<Project | null>(null);
+export function ProjectProvider({ children }: { children: ReactNode }) {
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
 
   return (
-    <SiteWalkContext.Provider value={{ currentSiteWalk, setCurrentSiteWalk }}>
+    <ProjectContext.Provider value={{ currentProject, setCurrentProject }}>
       {children}
-    </SiteWalkContext.Provider>
+    </ProjectContext.Provider>
   );
 }
 
-export function useSiteWalk() {
-  const context = useContext(SiteWalkContext);
+export function useProject() {
+  const context = useContext(ProjectContext);
   if (context === undefined) {
-    throw new Error("useSiteWalk must be used within a SiteWalkProvider");
+    throw new Error("useProject must be used within a ProjectProvider");
   }
   return context;
 }
