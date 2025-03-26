@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
+import EditAccessPointModal from "../modals/EditAccessPointModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface CardAccessTabProps {
@@ -14,6 +15,8 @@ interface CardAccessTabProps {
 export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedAccessPoint, setSelectedAccessPoint] = useState<AccessPoint | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
@@ -64,8 +67,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     }
   };
 
-  // Handle save from modal
-  const handleSave = () => {
+  // Handle save from Add modal
+  const handleAddSave = () => {
     // Close modal
     setShowAddModal(false);
     
@@ -77,6 +80,23 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     toast({
       title: "Access Point Added",
       description: "The access point has been added successfully.",
+    });
+  };
+  
+  // Handle save from Edit modal
+  const handleEditSave = () => {
+    // Close modal
+    setShowEditModal(false);
+    setSelectedAccessPoint(null);
+    
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ 
+      queryKey: [`/api/projects/${project.id}/access-points`]
+    });
+    
+    toast({
+      title: "Access Point Updated",
+      description: "The access point has been updated successfully.",
     });
   };
 
@@ -144,11 +164,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                     <button 
                       className="text-primary hover:text-primary-dark focus:outline-none mr-2"
                       onClick={() => {
-                        // Edit functionality would go here
-                        toast({ 
-                          title: "Edit Feature",
-                          description: "Edit functionality will be implemented in a future update." 
-                        });
+                        setSelectedAccessPoint(ap);
+                        setShowEditModal(true);
                       }}
                     >
                       <span className="material-icons text-sm">edit</span>
@@ -247,8 +264,21 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
         <AddAccessPointModal 
           isOpen={showAddModal} 
           projectId={project.id} 
-          onSave={handleSave} 
+          onSave={handleAddSave} 
           onClose={() => setShowAddModal(false)} 
+        />
+      )}
+      
+      {/* Edit Access Point Modal */}
+      {showEditModal && selectedAccessPoint && (
+        <EditAccessPointModal 
+          isOpen={showEditModal} 
+          accessPoint={selectedAccessPoint} 
+          onSave={handleEditSave} 
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedAccessPoint(null);
+          }} 
         />
       )}
     </div>
