@@ -3,6 +3,8 @@ import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
 import { useProject } from "@/context/ProjectContext";
 import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,6 +14,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { currentProject, setCurrentProject } = useProject();
   const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
+  const { user, isLoading } = useAuth();
+  const [location] = useLocation();
 
   // Keep the two contexts in sync during transition
   useEffect(() => {
@@ -27,7 +31,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Use currentSiteWalk instead of currentProject
+  // For auth page, we don't show navigation and sidebar
+  if (location === "/auth") {
+    return <>{children}</>;
+  }
+
+  // For non-auth pages, show the full layout with navigation
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar collapsed={sidebarCollapsed} />
@@ -35,6 +44,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <TopNav 
           project={currentSiteWalk} 
           onToggleSidebar={toggleSidebar} 
+          user={user}
         />
         <main className="flex-1 overflow-y-auto p-6 bg-neutral-100">
           {children}

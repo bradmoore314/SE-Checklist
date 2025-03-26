@@ -6,8 +6,13 @@ import {
   Elevator, InsertElevator,
   Intercom, InsertIntercom
 } from "@shared/schema";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
+  sessionStore: session.Store;
   // Users
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -50,6 +55,7 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  public sessionStore: session.Store;
   private users: Map<number, User>;
   private projects: Map<number, Project>;
   private accessPoints: Map<number, AccessPoint>;
@@ -65,6 +71,11 @@ export class MemStorage implements IStorage {
   private currentIntercomId: number;
 
   constructor() {
+    // Initialize session store
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
+    
     this.users = new Map();
     this.projects = new Map();
     this.accessPoints = new Map();
@@ -84,13 +95,18 @@ export class MemStorage implements IStorage {
   }
 
   private initSampleData() {
-    // Create a sample user
-    this.createUser({
+    // Create a sample admin user with hashed password (hashed version of "admin123")
+    this.users.set(1, {
+      id: 1,
       username: "admin",
-      password: "password",
-      name: "John Doe",
-      role: "Project Manager"
+      password: "41a9bfbb8ee9e9de8ab716c49f3f4c220d48b38fe4ba0d1a67274178ea4b7cdf999b3a6e751c6977e5d2e1aa4fe802f138eb981dd93ccf3b656f758e47f511e2.b51e0f7781d7c763",
+      email: "admin@example.com",
+      fullName: "Admin User",
+      role: "admin",
+      created_at: new Date(),
+      updated_at: new Date()
     });
+    this.currentUserId = 2;
     
     // Create a sample project
     this.createProject({
@@ -125,8 +141,11 @@ export class MemStorage implements IStorage {
       id,
       username: insertUser.username,
       password: insertUser.password,
-      name: insertUser.name ?? null,
-      role: insertUser.role ?? null
+      email: insertUser.email,
+      fullName: insertUser.fullName ?? null,
+      role: insertUser.role ?? "user",
+      created_at: now,
+      updated_at: now
     };
     
     this.users.set(id, user);

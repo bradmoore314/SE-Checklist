@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
@@ -16,22 +16,33 @@ import {
 import { z } from "zod";
 import { setupAuth } from "./auth";
 
+// Authentication middleware
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ 
+    success: false,
+    message: "Authentication required" 
+  });
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication with Passport
   setupAuth(app);
 
   // Lookup data endpoints
-  app.get("/api/lookup", (req: Request, res: Response) => {
+  app.get("/api/lookup", isAuthenticated, (req: Request, res: Response) => {
     res.json(lookupData);
   });
 
   // Project endpoints
-  app.get("/api/projects", async (req: Request, res: Response) => {
+  app.get("/api/projects", isAuthenticated, async (req: Request, res: Response) => {
     const projects = await storage.getProjects();
     res.json(projects);
   });
 
-  app.get("/api/projects/:id", async (req: Request, res: Response) => {
+  app.get("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -45,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(project);
   });
 
-  app.post("/api/projects", async (req: Request, res: Response) => {
+  app.post("/api/projects", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertProjectSchema.safeParse(req.body);
       if (!result.success) {
@@ -65,7 +76,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/projects/:id", async (req: Request, res: Response) => {
+  app.put("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -94,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/projects/:id", async (req: Request, res: Response) => {
+  app.delete("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -109,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Access Point endpoints
-  app.get("/api/projects/:projectId/access-points", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/access-points", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -124,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(accessPoints);
   });
 
-  app.get("/api/access-points/:id", async (req: Request, res: Response) => {
+  app.get("/api/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
     const accessPointId = parseInt(req.params.id);
     if (isNaN(accessPointId)) {
       return res.status(400).json({ message: "Invalid access point ID" });
@@ -138,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(accessPoint);
   });
 
-  app.post("/api/access-points", async (req: Request, res: Response) => {
+  app.post("/api/access-points", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertAccessPointSchema.safeParse(req.body);
       if (!result.success) {
@@ -164,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/access-points/:id/duplicate", async (req: Request, res: Response) => {
+  app.post("/api/access-points/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const accessPointId = parseInt(req.params.id);
       if (isNaN(accessPointId)) {
@@ -201,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/access-points/:id", async (req: Request, res: Response) => {
+  app.put("/api/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
     const accessPointId = parseInt(req.params.id);
     if (isNaN(accessPointId)) {
       return res.status(400).json({ message: "Invalid access point ID" });
@@ -230,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/access-points/:id", async (req: Request, res: Response) => {
+  app.delete("/api/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
     const accessPointId = parseInt(req.params.id);
     if (isNaN(accessPointId)) {
       return res.status(400).json({ message: "Invalid access point ID" });
@@ -245,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Camera endpoints
-  app.get("/api/projects/:projectId/cameras", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/cameras", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -260,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(cameras);
   });
 
-  app.get("/api/cameras/:id", async (req: Request, res: Response) => {
+  app.get("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
@@ -274,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(camera);
   });
 
-  app.post("/api/cameras", async (req: Request, res: Response) => {
+  app.post("/api/cameras", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertCameraSchema.safeParse(req.body);
       if (!result.success) {
@@ -300,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/cameras/:id/duplicate", async (req: Request, res: Response) => {
+  app.post("/api/cameras/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const cameraId = parseInt(req.params.id);
       if (isNaN(cameraId)) {
@@ -336,7 +347,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/cameras/:id", async (req: Request, res: Response) => {
+  app.put("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
@@ -365,7 +376,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/cameras/:id", async (req: Request, res: Response) => {
+  app.delete("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
@@ -380,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Elevator endpoints
-  app.get("/api/projects/:projectId/elevators", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/elevators", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -395,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(elevators);
   });
 
-  app.get("/api/elevators/:id", async (req: Request, res: Response) => {
+  app.get("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
@@ -409,7 +420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(elevator);
   });
 
-  app.post("/api/elevators", async (req: Request, res: Response) => {
+  app.post("/api/elevators", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertElevatorSchema.safeParse(req.body);
       if (!result.success) {
@@ -435,7 +446,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/elevators/:id/duplicate", async (req: Request, res: Response) => {
+  app.post("/api/elevators/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const elevatorId = parseInt(req.params.id);
       if (isNaN(elevatorId)) {
@@ -469,7 +480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/elevators/:id", async (req: Request, res: Response) => {
+  app.put("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
@@ -498,7 +509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/elevators/:id", async (req: Request, res: Response) => {
+  app.delete("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
@@ -513,7 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Intercom endpoints
-  app.get("/api/projects/:projectId/intercoms", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/intercoms", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -528,7 +539,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(intercoms);
   });
 
-  app.get("/api/intercoms/:id", async (req: Request, res: Response) => {
+  app.get("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
@@ -542,7 +553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(intercom);
   });
 
-  app.post("/api/intercoms", async (req: Request, res: Response) => {
+  app.post("/api/intercoms", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertIntercomSchema.safeParse(req.body);
       if (!result.success) {
@@ -568,7 +579,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/intercoms/:id/duplicate", async (req: Request, res: Response) => {
+  app.post("/api/intercoms/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const intercomId = parseInt(req.params.id);
       if (isNaN(intercomId)) {
@@ -601,7 +612,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/intercoms/:id", async (req: Request, res: Response) => {
+  app.put("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
@@ -630,7 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/intercoms/:id", async (req: Request, res: Response) => {
+  app.delete("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
@@ -645,7 +656,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reports
-  app.get("/api/projects/:projectId/reports/door-schedule", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/reports/door-schedule", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -676,7 +687,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/projects/:projectId/reports/camera-schedule", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/reports/camera-schedule", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
@@ -706,7 +717,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/projects/:projectId/reports/project-summary", async (req: Request, res: Response) => {
+  app.get("/api/projects/:projectId/reports/project-summary", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });

@@ -1,18 +1,24 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { User } from "@shared/schema";
+import { User, InsertUser } from "@shared/schema";
 import { storage } from "./storage";
-import createMemoryStore from "memorystore";
-
-const MemoryStore = createMemoryStore(session);
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Define the User interface for passport
+    interface User {
+      id: number;
+      username: string;
+      email: string;
+      fullName: string | null;
+      role: string | null;
+      created_at: Date | null;
+      updated_at: Date | null;
+    }
   }
 }
 
@@ -32,15 +38,11 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
-  const sessionStore = new MemoryStore({
-    checkPeriod: 86400000, // prune expired entries every 24h
-  });
-
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "security-equipment-checklist-secret",
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
+    store: storage.sessionStore,
     cookie: {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
@@ -72,16 +74,26 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  passport.serializeUser((user, done) => {
+  passport.serializeUser((user: Express.User & { id: number }, done) => {
     done(null, user.id);
   });
 
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await storage.getUser(id);
+      const dbUser = await storage.getUser(id);
+      if (!dbUser) {
+        return done(new Error('User not found'), null);
+      }
+      
+      // Remove password from the user object for security
+      const { password, ...userWithoutPassword } = dbUser;
+      
+      // Cast to Express.User
+      const user = userWithoutPassword as Express.User;
+      
       done(null, user);
     } catch (error) {
-      done(error);
+      done(error, null);
     }
   });
 
@@ -133,7 +145,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/auth/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: Error | null, user: Express.User | false, info: { message: string } | undefined) => {
       if (err) {
         return next(err);
       }
@@ -149,12 +161,10 @@ export function setupAuth(app: Express) {
           return next(err);
         }
         
-        // Remove password from response
-        const { password, ...userWithoutPassword } = user;
-        
+        // User is already typed without password through Express.User interface
         return res.json({ 
           success: true, 
-          user: userWithoutPassword 
+          user: user 
         });
       });
     })(req, res, next);
@@ -180,9 +190,7 @@ export function setupAuth(app: Express) {
       });
     }
     
-    // Remove password from response
-    const { password, ...userWithoutPassword } = req.user;
-    
-    res.json(userWithoutPassword);
+    // User object is already without password thanks to deserializeUser
+    res.json(req.user);
   });
 }
