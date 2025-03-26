@@ -14,8 +14,12 @@ import {
   InsertIntercom
 } from "@shared/schema";
 import { z } from "zod";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication with Passport
+  setupAuth(app);
+
   // Lookup data endpoints
   app.get("/api/lookup", (req: Request, res: Response) => {
     res.json(lookupData);

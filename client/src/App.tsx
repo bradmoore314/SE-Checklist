@@ -13,29 +13,36 @@ import Elevators from "@/pages/elevators";
 import Intercoms from "@/pages/intercoms";
 import ProjectSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
+import AuthPage from "@/pages/auth-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/projects" component={Projects} />
+      {/* Public routes */}
+      <Route path="/auth" component={AuthPage} />
+      
+      {/* Protected routes */}
+      <ProtectedRoute path="/" component={Dashboard} />
+      <ProtectedRoute path="/projects" component={Projects} />
       
       {/* Equipment routes */}
-      <Route path="/card-access" component={CardAccess} />
-      <Route path="/cameras" component={Cameras} />
-      <Route path="/elevators" component={Elevators} />
-      <Route path="/intercoms" component={Intercoms} />
+      <ProtectedRoute path="/card-access" component={CardAccess} />
+      <ProtectedRoute path="/cameras" component={Cameras} />
+      <ProtectedRoute path="/elevators" component={Elevators} />
+      <ProtectedRoute path="/intercoms" component={Intercoms} />
       
       {/* Report routes */}
-      <Route path="/door-schedules" component={DoorSchedules} />
-      <Route path="/camera-schedules" component={CameraSchedules} />
-      <Route path="/project-summary" component={ProjectSummary} />
+      <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
+      <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
+      <ProtectedRoute path="/project-summary" component={ProjectSummary} />
       
       {/* Settings */}
-      <Route path="/settings" component={Settings} />
+      <ProtectedRoute path="/settings" component={Settings} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
@@ -46,14 +53,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ProjectProvider>
-        <SiteWalkProvider>
-          <MainLayout>
-            <Router />
-          </MainLayout>
-        </SiteWalkProvider>
-      </ProjectProvider>
-      <Toaster />
+      <AuthProvider>
+        <ProjectProvider>
+          <SiteWalkProvider>
+            <MainLayout>
+              <Router />
+            </MainLayout>
+          </SiteWalkProvider>
+        </ProjectProvider>
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

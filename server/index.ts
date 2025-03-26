@@ -1,10 +1,51 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Session setup
+const SessionStore = MemoryStore(session);
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'securityequipmentchecklist',
+  resave: false,
+  saveUninitialized: false,
+  store: new SessionStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax"
+  }
+}));
+
+// Authentication middleware
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  // Skip auth for login and some public endpoints
+  if (req.path === '/api/auth/login' || 
+      req.path === '/api/lookup' ||
+      req.path.startsWith('/assets/')) {
+    return next();
+  }
+  
+  if (req.session.userId) {
+    return next();
+  }
+  
+  return res.status(401).json({ 
+    success: false, 
+    message: 'Authentication required' 
+  });
+};
+
+// Apply authentication middleware to protect API routes
+app.use(isAuthenticated);
 
 app.use((req, res, next) => {
   const start = Date.now();

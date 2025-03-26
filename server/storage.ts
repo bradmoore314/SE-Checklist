@@ -119,7 +119,16 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const now = new Date();
-    const user: User = { ...insertUser, id };
+    
+    // Ensure we have consistent null values for optional fields
+    const user: User = { 
+      id,
+      username: insertUser.username,
+      password: insertUser.password,
+      name: insertUser.name ?? null,
+      role: insertUser.role ?? null
+    };
+    
     this.users.set(id, user);
     return user;
   }
@@ -136,12 +145,38 @@ export class MemStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.currentProjectId++;
     const now = new Date();
-    const project: Project = { 
-      ...insertProject, 
-      id, 
-      created_at: now, 
-      updated_at: now 
+    
+    // Ensure we have consistent null values for optional fields
+    const project: Project = {
+      id,
+      name: insertProject.name,
+      client: insertProject.client ?? null,
+      site_address: insertProject.site_address ?? null,
+      se_name: insertProject.se_name ?? null,
+      bdm_name: insertProject.bdm_name ?? null,
+      created_at: now,
+      updated_at: now,
+      replace_readers: insertProject.replace_readers ?? false,
+      need_credentials: insertProject.need_credentials ?? false,
+      takeover: insertProject.takeover ?? false,
+      pull_wire: insertProject.pull_wire ?? false,
+      visitor: insertProject.visitor ?? false,
+      install_locks: insertProject.install_locks ?? false,
+      ble: insertProject.ble ?? false,
+      ppi_quote_needed: insertProject.ppi_quote_needed ?? false,
+      guard_controls: insertProject.guard_controls ?? false,
+      floorplan: insertProject.floorplan ?? false,
+      test_card: insertProject.test_card ?? false,
+      conduit_drawings: insertProject.conduit_drawings ?? false,
+      reports_available: insertProject.reports_available ?? false,
+      photo_id: insertProject.photo_id ?? false,
+      on_site_security: insertProject.on_site_security ?? false,
+      photo_badging: insertProject.photo_badging ?? false,
+      kastle_connect: insertProject.kastle_connect ?? false,
+      wireless_locks: insertProject.wireless_locks ?? false,
+      rush: insertProject.rush ?? false,
     };
+    
     this.projects.set(id, project);
     return project;
   }
@@ -180,12 +215,22 @@ export class MemStorage implements IStorage {
   async createAccessPoint(insertAccessPoint: InsertAccessPoint): Promise<AccessPoint> {
     const id = this.currentAccessPointId++;
     const now = new Date();
-    const accessPoint: AccessPoint = { 
-      ...insertAccessPoint, 
-      id, 
-      created_at: now, 
-      updated_at: now 
+    
+    // Ensure we have consistent null values for optional fields
+    const accessPoint: AccessPoint = {
+      id,
+      project_id: insertAccessPoint.project_id,
+      location: insertAccessPoint.location,
+      door_type: insertAccessPoint.door_type,
+      reader_type: insertAccessPoint.reader_type,
+      lock_type: insertAccessPoint.lock_type,
+      security_level: insertAccessPoint.security_level,
+      ppi: insertAccessPoint.ppi ?? null,
+      notes: insertAccessPoint.notes ?? null,
+      created_at: now,
+      updated_at: now
     };
+    
     this.accessPoints.set(id, accessPoint);
     return accessPoint;
   }
@@ -224,12 +269,21 @@ export class MemStorage implements IStorage {
   async createCamera(insertCamera: InsertCamera): Promise<Camera> {
     const id = this.currentCameraId++;
     const now = new Date();
-    const camera: Camera = { 
-      ...insertCamera, 
-      id, 
-      created_at: now, 
-      updated_at: now 
+    
+    // Ensure we have consistent null values for optional fields
+    const camera: Camera = {
+      id,
+      project_id: insertCamera.project_id,
+      location: insertCamera.location,
+      camera_type: insertCamera.camera_type,
+      mounting_type: insertCamera.mounting_type ?? null,
+      resolution: insertCamera.resolution ?? null,
+      field_of_view: insertCamera.field_of_view ?? null,
+      notes: insertCamera.notes ?? null,
+      created_at: now,
+      updated_at: now
     };
+    
     this.cameras.set(id, camera);
     return camera;
   }
@@ -268,12 +322,19 @@ export class MemStorage implements IStorage {
   async createElevator(insertElevator: InsertElevator): Promise<Elevator> {
     const id = this.currentElevatorId++;
     const now = new Date();
-    const elevator: Elevator = { 
-      ...insertElevator, 
-      id, 
-      created_at: now, 
-      updated_at: now 
+    
+    // Ensure we have consistent null values for optional fields
+    const elevator: Elevator = {
+      id,
+      project_id: insertElevator.project_id,
+      location: insertElevator.location,
+      elevator_type: insertElevator.elevator_type,
+      floor_count: insertElevator.floor_count ?? null,
+      notes: insertElevator.notes ?? null,
+      created_at: now,
+      updated_at: now
     };
+    
     this.elevators.set(id, elevator);
     return elevator;
   }
@@ -312,12 +373,18 @@ export class MemStorage implements IStorage {
   async createIntercom(insertIntercom: InsertIntercom): Promise<Intercom> {
     const id = this.currentIntercomId++;
     const now = new Date();
-    const intercom: Intercom = { 
-      ...insertIntercom, 
-      id, 
-      created_at: now, 
-      updated_at: now 
+    
+    // Ensure we have consistent null values for optional fields
+    const intercom: Intercom = {
+      id,
+      project_id: insertIntercom.project_id,
+      location: insertIntercom.location,
+      intercom_type: insertIntercom.intercom_type,
+      notes: insertIntercom.notes ?? null,
+      created_at: now,
+      updated_at: now
     };
+    
     this.intercoms.set(id, intercom);
     return intercom;
   }
