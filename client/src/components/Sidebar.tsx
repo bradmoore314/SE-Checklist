@@ -26,7 +26,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-white font-medium">JD</div>
           <div className="ml-3">
             <div className="font-medium">John Doe</div>
-            <div className="text-sm text-neutral-500">Project Manager</div>
+            <div className="text-sm text-neutral-500">Security Engineer</div>
           </div>
         </div>
       )}
@@ -34,7 +34,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
       {/* Navigation Links */}
       <nav className="flex-1 overflow-y-auto py-2">
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 text-xs uppercase text-neutral-500 font-semibold ${collapsed ? "text-center" : ""}`}>
-          {collapsed ? "" : "Projects"}
+          {collapsed ? "" : "Site Walks"}
         </div>
         
         <Link href="/">
@@ -47,7 +47,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <Link href="/projects">
           <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/projects") ? "text-primary-dark bg-blue-50 border-r-4 border-primary" : "text-neutral-700 hover:bg-neutral-50"}`}>
             <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/projects") ? "text-primary" : "text-neutral-500"}`}>folder</span>
-            {!collapsed && "My Projects"}
+            {!collapsed && "My Site Walks"}
           </a>
         </Link>
         
@@ -104,7 +104,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <Link href="/project-summary">
           <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/project-summary") ? "text-primary-dark bg-blue-50 border-r-4 border-primary" : "text-neutral-700 hover:bg-neutral-50"}`}>
             <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-primary" : "text-neutral-500"}`}>summarize</span>
-            {!collapsed && "Project Summary"}
+            {!collapsed && "Site Walk Summary"}
           </a>
         </Link>
       </nav>

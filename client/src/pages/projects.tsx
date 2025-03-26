@@ -28,9 +28,9 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Create schema for new project form
+// Create schema for new site walk form
 const projectSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, "Site walk name is required"),
   client: z.string().optional(),
   site_address: z.string().optional(),
   se_name: z.string().optional(),
@@ -65,7 +65,7 @@ export default function Projects() {
     },
   });
 
-  // Handle creating a new project
+  // Handle creating a new site walk
   const onSubmit = async (values: ProjectFormValues) => {
     try {
       const response = await apiRequest("POST", "/api/projects", values);
@@ -82,8 +82,8 @@ export default function Projects() {
       
       // Show success toast
       toast({
-        title: "Project Created",
-        description: `Project "${newProject.name}" has been created successfully.`,
+        title: "Site Walk Created",
+        description: `Site Walk "${newProject.name}" has been created successfully.`,
       });
       
       // Set as current project and navigate to dashboard
@@ -91,7 +91,7 @@ export default function Projects() {
       setLocation("/");
     } catch (error) {
       toast({
-        title: "Project Creation Failed",
+        title: "Site Walk Creation Failed",
         description: (error as Error).message,
         variant: "destructive",
       });
@@ -104,7 +104,7 @@ export default function Projects() {
     setLocation("/");
   };
 
-  // Handle deleting a project
+  // Handle deleting a site walk
   const deleteProject = async (project: Project) => {
     if (window.confirm(`Are you sure you want to delete "${project.name}"?`)) {
       try {
@@ -115,8 +115,8 @@ export default function Projects() {
         
         // Show success toast
         toast({
-          title: "Project Deleted",
-          description: `Project "${project.name}" has been deleted.`,
+          title: "Site Walk Deleted",
+          description: `Site Walk "${project.name}" has been deleted.`,
         });
       } catch (error) {
         toast({
@@ -157,13 +157,13 @@ export default function Projects() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">My Projects</h2>
+        <h2 className="text-2xl font-bold">My Site Walks</h2>
         <Button
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
           onClick={() => setShowNewProjectModal(true)}
         >
           <span className="material-icons mr-1">add</span>
-          New Project
+          New Site Walk
         </Button>
       </div>
 
@@ -183,7 +183,7 @@ export default function Projects() {
         <div className="relative w-full sm:w-64">
           <Input
             type="text"
-            placeholder="Search projects"
+            placeholder="Search site walks"
             className="pl-10 pr-4 py-2"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -198,7 +198,7 @@ export default function Projects() {
             <div className="material-icons text-4xl animate-spin text-primary mb-4">
               sync
             </div>
-            <p className="text-neutral-600">Loading projects...</p>
+            <p className="text-neutral-600">Loading site walks...</p>
           </div>
         </div>
       ) : filteredProjects.length === 0 ? (
