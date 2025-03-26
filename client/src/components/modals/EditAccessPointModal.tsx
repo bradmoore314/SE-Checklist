@@ -219,7 +219,7 @@ export default function EditAccessPointModal({
                   <FormLabel>PPI</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
+                    defaultValue={field.value || "none"}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -227,7 +227,7 @@ export default function EditAccessPointModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {lookupData?.ppiOptions?.map((option: string) => (
                         <SelectItem key={option} value={option}>
                           {option}

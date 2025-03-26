@@ -133,7 +133,7 @@ export default function EditCameraModal({
                   <FormLabel>Mounting Type</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
+                    defaultValue={field.value || "none"}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -141,7 +141,7 @@ export default function EditCameraModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {lookupData?.mountingTypes?.map((type: string) => (
                         <SelectItem key={type} value={type}>
                           {type}
@@ -162,7 +162,7 @@ export default function EditCameraModal({
                   <FormLabel>Resolution</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
+                    defaultValue={field.value || "none"}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -170,7 +170,7 @@ export default function EditCameraModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {lookupData?.resolutions?.map((resolution: string) => (
                         <SelectItem key={resolution} value={resolution}>
                           {resolution}
