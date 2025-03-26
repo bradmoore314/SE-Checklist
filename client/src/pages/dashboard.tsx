@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useProject } from "@/context/ProjectContext";
+import { useSiteWalk } from "@/context/SiteWalkContext";
 import { Project } from "@shared/schema";
 import ProjectDashboard from "@/components/project/ProjectDashboard";
 import ProjectConfiguration from "@/components/project/ProjectConfiguration";
@@ -11,19 +11,19 @@ import { Link } from "wouter";
 import { AlertTriangle } from "lucide-react";
 
 export default function Dashboard() {
-  const { currentProject, setCurrentProject } = useProject();
+  const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
   
-  // Fetch projects
-  const { data: projects, isLoading } = useQuery<Project[]>({
+  // Fetch site walks
+  const { data: siteWalks, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"]
   });
 
-  // If current project is not set, use the first one from the list
+  // If current site walk is not set, use the first one from the list
   useEffect(() => {
-    if (!currentProject && projects && projects.length > 0) {
-      setCurrentProject(projects[0]);
+    if (!currentSiteWalk && siteWalks && siteWalks.length > 0) {
+      setCurrentSiteWalk(siteWalks[0]);
     }
-  }, [currentProject, projects, setCurrentProject]);
+  }, [currentSiteWalk, siteWalks, setCurrentSiteWalk]);
 
   // Loading state
   if (isLoading) {
@@ -33,14 +33,14 @@ export default function Dashboard() {
           <div className="material-icons text-4xl animate-spin text-primary mb-4">
             sync
           </div>
-          <p className="text-neutral-600">Loading projects...</p>
+          <p className="text-neutral-600">Loading site walks...</p>
         </div>
       </div>
     );
   }
 
-  // No projects state
-  if (!projects || projects.length === 0) {
+  // No site walks state
+  if (!siteWalks || siteWalks.length === 0) {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="max-w-md w-full">
@@ -49,14 +49,14 @@ export default function Dashboard() {
               <div className="flex justify-center mb-4">
                 <AlertTriangle className="h-12 w-12 text-amber-500" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">No Projects Found</h2>
+              <h2 className="text-2xl font-bold mb-2">No Site Walks Found</h2>
               <p className="text-neutral-600 mb-4">
-                You don't have any security projects yet. Create your first project to get started.
+                You don't have any security site walks yet. Create your first site walk to get started.
               </p>
-              <Link href="/projects/new">
+              <Link href="/projects">
                 <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center mx-auto">
                   <span className="material-icons mr-1">add</span>
-                  Create New Project
+                  Create New Site Walk
                 </Button>
               </Link>
             </div>
@@ -66,9 +66,9 @@ export default function Dashboard() {
     );
   }
 
-  // If currentProject is not set but we have projects, this should not happen
+  // If currentSiteWalk is not set but we have site walks, this should not happen
   // due to the useEffect, but let's handle it anyway
-  if (!currentProject) {
+  if (!currentSiteWalk) {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="max-w-md w-full">
@@ -77,13 +77,13 @@ export default function Dashboard() {
               <div className="flex justify-center mb-4">
                 <AlertTriangle className="h-12 w-12 text-amber-500" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Select a Project</h2>
+              <h2 className="text-2xl font-bold mb-2">Select a Site Walk</h2>
               <p className="text-neutral-600 mb-4">
-                Please select a project to continue.
+                Please select a site walk to continue.
               </p>
               <Link href="/projects">
                 <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md mx-auto">
-                  View Projects
+                  View Site Walks
                 </Button>
               </Link>
             </div>
@@ -93,15 +93,15 @@ export default function Dashboard() {
     );
   }
 
-  // Project dashboard with configuration and equipment tabs
+  // Site walk dashboard with configuration and equipment tabs
   return (
     <>
-      <ProjectDashboard project={currentProject} />
+      <ProjectDashboard project={currentSiteWalk} />
       <ProjectConfiguration 
-        project={currentProject}
-        onProjectUpdate={setCurrentProject}
+        project={currentSiteWalk}
+        onProjectUpdate={setCurrentSiteWalk}
       />
-      <EquipmentTabs project={currentProject} />
+      <EquipmentTabs project={currentSiteWalk} />
     </>
   );
 }

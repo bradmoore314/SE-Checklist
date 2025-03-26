@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useProject } from "@/context/ProjectContext";
+import { useSiteWalk } from "@/context/SiteWalkContext";
 import { Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function Projects() {
   const [, setLocation] = useLocation();
-  const { setCurrentProject } = useProject();
+  const { setCurrentSiteWalk } = useSiteWalk();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,8 +86,8 @@ export default function Projects() {
         description: `Site Walk "${newProject.name}" has been created successfully.`,
       });
       
-      // Set as current project and navigate to dashboard
-      setCurrentProject(newProject);
+      // Set as current site walk and navigate to dashboard
+      setCurrentSiteWalk(newProject);
       setLocation("/");
     } catch (error) {
       toast({
@@ -98,9 +98,9 @@ export default function Projects() {
     }
   };
 
-  // Handle selecting a project
+  // Handle selecting a site walk
   const selectProject = (project: Project) => {
-    setCurrentProject(project);
+    setCurrentSiteWalk(project);
     setLocation("/");
   };
 
@@ -207,11 +207,11 @@ export default function Projects() {
             <div className="material-icons text-6xl text-neutral-300 mb-4">
               folder_open
             </div>
-            <h3 className="text-lg font-medium mb-2">No Projects Found</h3>
+            <h3 className="text-lg font-medium mb-2">No Site Walks Found</h3>
             <p className="text-neutral-500 mb-4">
               {searchTerm
-                ? "No projects match your search criteria."
-                : "You haven't created any projects yet."}
+                ? "No site walks match your search criteria."
+                : "You haven't created any site walks yet."}
             </p>
             {searchTerm && (
               <Button
@@ -287,12 +287,12 @@ export default function Projects() {
         </div>
       )}
 
-      {/* New Project Modal */}
+      {/* New Site Walk Modal */}
       <Dialog open={showNewProjectModal} onOpenChange={setShowNewProjectModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-medium">
-              Create New Project
+              Create New Site Walk
             </DialogTitle>
           </DialogHeader>
 
@@ -304,10 +304,10 @@ export default function Projects() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      Project Name *
+                      Site Walk Name *
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter project name" {...field} />
+                      <Input placeholder="Enter site walk name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -393,7 +393,7 @@ export default function Projects() {
                   type="submit"
                   className="bg-primary hover:bg-primary-dark text-white"
                 >
-                  Create Project
+                  Create Site Walk
                 </Button>
               </DialogFooter>
             </form>
