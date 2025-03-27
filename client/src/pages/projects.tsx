@@ -37,7 +37,7 @@ const projectSchema = z.object({
   bdm_name: z.string().optional(),
 });
 
-type ProjectFormValues = z.infer<typeof projectSchema>;
+type SiteWalkFormValues = z.infer<typeof projectSchema>;
 
 export default function Projects() {
   const [, setLocation] = useLocation();
@@ -45,7 +45,7 @@ export default function Projects() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [showNewSiteWalkModal, setShowNewSiteWalkModal] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
 
   // Fetch projects
@@ -54,7 +54,7 @@ export default function Projects() {
   });
 
   // Initialize form with default values
-  const form = useForm<ProjectFormValues>({
+  const form = useForm<SiteWalkFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       name: "",
@@ -66,13 +66,13 @@ export default function Projects() {
   });
 
   // Handle creating a new site walk
-  const onSubmit = async (values: ProjectFormValues) => {
+  const onSubmit = async (values: SiteWalkFormValues) => {
     try {
       const response = await apiRequest("POST", "/api/projects", values);
-      const newProject = await response.json();
+      const newSiteWalk = await response.json();
       
       // Close modal
-      setShowNewProjectModal(false);
+      setShowNewSiteWalkModal(false);
       
       // Reset form
       form.reset();
@@ -83,11 +83,11 @@ export default function Projects() {
       // Show success toast
       toast({
         title: "Site Walk Created",
-        description: `Site Walk "${newProject.name}" has been created successfully.`,
+        description: `Site Walk "${newSiteWalk.name}" has been created successfully.`,
       });
       
       // Set as current site walk and navigate to dashboard
-      setCurrentSiteWalk(newProject);
+      setCurrentSiteWalk(newSiteWalk);
       setLocation("/");
     } catch (error) {
       toast({
@@ -99,16 +99,16 @@ export default function Projects() {
   };
 
   // Handle selecting a site walk
-  const selectProject = (project: Project) => {
-    setCurrentSiteWalk(project);
+  const selectSiteWalk = (siteWalk: Project) => {
+    setCurrentSiteWalk(siteWalk);
     setLocation("/");
   };
 
   // Handle deleting a site walk
-  const deleteProject = async (project: Project) => {
-    if (window.confirm(`Are you sure you want to delete "${project.name}"?`)) {
+  const deleteSiteWalk = async (siteWalk: Project) => {
+    if (window.confirm(`Are you sure you want to delete "${siteWalk.name}"?`)) {
       try {
-        await apiRequest("DELETE", `/api/projects/${project.id}`);
+        await apiRequest("DELETE", `/api/projects/${siteWalk.id}`);
         
         // Invalidate and refetch
         queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -116,7 +116,7 @@ export default function Projects() {
         // Show success toast
         toast({
           title: "Site Walk Deleted",
-          description: `Site Walk "${project.name}" has been deleted.`,
+          description: `Site Walk "${siteWalk.name}" has been deleted.`,
         });
       } catch (error) {
         toast({
@@ -160,7 +160,7 @@ export default function Projects() {
         <h2 className="text-2xl font-bold">My Site Walks</h2>
         <Button
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
-          onClick={() => setShowNewProjectModal(true)}
+          onClick={() => setShowNewSiteWalkModal(true)}
         >
           <span className="material-icons mr-1">add</span>
           New Site Walk
@@ -230,7 +230,7 @@ export default function Projects() {
             <Card
               key={project.id}
               className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => selectProject(project)}
+              onClick={() => selectSiteWalk(project)}
             >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-3">
@@ -241,7 +241,7 @@ export default function Projects() {
                     className="text-neutral-400 hover:text-red-500"
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteProject(project);
+                      deleteSiteWalk(project);
                     }}
                   >
                     <span className="material-icons">delete</span>
@@ -288,7 +288,7 @@ export default function Projects() {
       )}
 
       {/* New Site Walk Modal */}
-      <Dialog open={showNewProjectModal} onOpenChange={setShowNewProjectModal}>
+      <Dialog open={showNewSiteWalkModal} onOpenChange={setShowNewSiteWalkModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-medium">
@@ -384,7 +384,7 @@ export default function Projects() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setShowNewProjectModal(false)}
+                  onClick={() => setShowNewSiteWalkModal(false)}
                   className="mr-2"
                 >
                   Cancel
