@@ -88,33 +88,33 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <Link href="/door-schedules">
-          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/door-schedules") ? "text-primary-dark bg-blue-50 border-r-4 border-primary" : "text-neutral-700 hover:bg-neutral-50"}`}>
-            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/door-schedules") ? "text-primary" : "text-neutral-500"}`}>assessment</span>
-            {!collapsed && "Door Schedules"}
+          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/door-schedules") ? "bg-gray-800 border-r-4 border-primary" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}>
+            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/door-schedules") ? "text-primary" : "text-gray-400"}`}>assessment</span>
+            {!collapsed && <span className="text-gray-300">Door Schedules</span>}
           </a>
         </Link>
         
         <Link href="/camera-schedules">
-          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/camera-schedules") ? "text-primary-dark bg-blue-50 border-r-4 border-primary" : "text-neutral-700 hover:bg-neutral-50"}`}>
-            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/camera-schedules") ? "text-primary" : "text-neutral-500"}`}>bar_chart</span>
-            {!collapsed && "Camera Schedules"}
+          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/camera-schedules") ? "bg-gray-800 border-r-4 border-primary" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}>
+            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/camera-schedules") ? "text-primary" : "text-gray-400"}`}>bar_chart</span>
+            {!collapsed && <span className="text-gray-300">Camera Schedules</span>}
           </a>
         </Link>
         
         <Link href="/project-summary">
-          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/project-summary") ? "text-primary-dark bg-blue-50 border-r-4 border-primary" : "text-neutral-700 hover:bg-neutral-50"}`}>
-            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-primary" : "text-neutral-500"}`}>summarize</span>
-            {!collapsed && "Site Walk Summary"}
+          <a className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${isActive("/project-summary") ? "bg-gray-800 border-r-4 border-primary" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}>
+            <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-primary" : "text-gray-400"}`}>summarize</span>
+            {!collapsed && <span className="text-gray-300">Site Walk Summary</span>}
           </a>
         </Link>
       </nav>
       
       {/* Settings Link */}
-      <div className="border-t border-neutral-200 p-4">
+      <div className="border-t border-gray-800 p-4">
         <Link href="/settings">
-          <a className={`flex items-center ${collapsed ? "justify-center" : ""} text-neutral-700 hover:text-primary`}>
-            <span className={`material-icons ${collapsed ? "" : "mr-3"}`}>settings</span>
-            {!collapsed && "Settings"}
+          <a className={`flex items-center ${collapsed ? "justify-center" : ""} text-gray-300 hover:text-primary`}>
+            <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-400`}>settings</span>
+            {!collapsed && <span className="text-gray-300">Settings</span>}
           </a>
         </Link>
       </div>

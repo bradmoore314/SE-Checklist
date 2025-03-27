@@ -8,6 +8,34 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-gray-900 text-gray-300;
+  }
+  
+  /* Card styling */
+  .card {
+    @apply bg-gray-800 border-gray-700 rounded-lg shadow-sm;
+  }
+  
+  /* Form elements */
+  input, select, textarea {
+    @apply bg-gray-800 border-gray-700 text-gray-300;
+  }
+  
+  /* Table styling */
+  table {
+    @apply border-gray-700;
+  }
+  
+  th {
+    @apply bg-gray-800 text-gray-400 font-medium;
+  }
+  
+  td {
+    @apply border-gray-700;
+  }
+  
+  /* Button styling for consistency */
+  .btn-primary {
+    @apply bg-red-600 hover:bg-red-700 text-white;
   }
 }
