@@ -262,10 +262,10 @@ export default function AuthPage() {
         <div className="max-w-md text-center">
           <ShieldCheck className="h-20 w-20 mx-auto mb-6 text-primary" />
           <h1 className="text-4xl font-bold mb-4">
-            Security Equipment Checklist
+            Site Walk Checklist
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Streamline your security equipment project management with our comprehensive checklist tool. Track cameras, card access, elevators, and intercoms in one place.
+            Streamline your security site walk process with our comprehensive checklist tool. Track cameras, card access, elevators, and intercoms in one place.
           </p>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
@@ -276,8 +276,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Comprehensive Equipment Tracking</h3>
-                <p className="text-sm text-muted-foreground">Track all your security equipment in one place</p>
+                <h3 className="font-medium">Complete Site Walk Documentation</h3>
+                <p className="text-sm text-muted-foreground">Track all security equipment for your site walks</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -288,8 +288,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Duplicate Equipment Easily</h3>
-                <p className="text-sm text-muted-foreground">Clone equipment with one click to save time</p>
+                <h3 className="font-medium">Efficient Site Walk Management</h3>
+                <p className="text-sm text-muted-foreground">Clone equipment with one click to speed up site walks</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -300,8 +300,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Generate Reports</h3>
-                <p className="text-sm text-muted-foreground">Create door and camera schedules with ease</p>
+                <h3 className="font-medium">Site Walk Documentation</h3>
+                <p className="text-sm text-muted-foreground">Generate detailed site walk reports and schedules</p>
               </div>
             </div>
           </div>
