@@ -2,40 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --darkest-grey: #1c1c1c;
+  --darker-grey: #242424;
+  --dark-grey: #2a2a2a;
+  --medium-grey: #333333;
+  --light-grey: #4a4a4a;
+  --lighter-grey: #6a6a6a;
+  --red-accent: #e11d48;
+  --red-accent-hover: #be123c;
+}
+
 @layer base {
   * {
-    @apply border-border;
+    @apply border-zinc-700;
   }
 
   body {
-    @apply font-sans antialiased bg-gray-900 text-gray-300;
+    @apply font-sans antialiased text-white;
+    background-color: var(--darkest-grey);
+    color: white;
+  }
+  
+  /* Main container styles */
+  .app-container {
+    background-color: var(--darkest-grey);
   }
   
   /* Card styling */
   .card {
-    @apply bg-gray-800 border-gray-700 rounded-lg shadow-sm;
+    background-color: var(--dark-grey);
+    border-color: var(--medium-grey);
+    @apply rounded-lg shadow-sm;
   }
   
   /* Form elements */
   input, select, textarea {
-    @apply bg-gray-800 border-gray-700 text-gray-300;
+    background-color: var(--dark-grey);
+    border-color: var(--medium-grey);
+    @apply text-white;
   }
   
   /* Table styling */
   table {
-    @apply border-gray-700;
+    border-color: var(--medium-grey);
   }
   
   th {
-    @apply bg-gray-800 text-gray-400 font-medium;
+    background-color: var(--darker-grey);
+    @apply text-gray-300 font-medium;
   }
   
   td {
-    @apply border-gray-700;
+    border-color: var(--medium-grey);
+  }
+  
+  tr {
+    background-color: var(--dark-grey);
+  }
+  
+  tr:hover {
+    background-color: var(--medium-grey);
   }
   
   /* Button styling for consistency */
   .btn-primary {
-    @apply bg-red-600 hover:bg-red-700 text-white;
+    background-color: var(--red-accent);
+    @apply text-white;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--red-accent-hover);
+  }
+  
+  /* Text colors */
+  .text-primary {
+    color: var(--red-accent);
+  }
+  
+  /* Sidebar and navigation */
+  .sidebar {
+    background-color: var(--darker-grey);
+    border-color: var(--medium-grey);
+  }
+  
+  .nav-item {
+    @apply text-gray-300;
+  }
+  
+  .nav-item:hover, .nav-item.active {
+    @apply text-white;
+  }
+  
+  .nav-item.active {
+    background-color: var(--red-accent);
+  }
+  
+  /* Dialog/Modal styling */
+  .dialog {
+    background-color: var(--dark-grey);
+    border-color: var(--medium-grey);
+  }
+  
+  /* Switch toggle */
+  .switch-active {
+    background-color: var(--red-accent);
   }
 }

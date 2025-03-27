@@ -28,13 +28,16 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-white">Site Walk Dashboard</h2>
         <div className="flex">
-          <button className="text-gray-300 hover:text-white focus:outline-none mr-2 bg-zinc-800 p-2 rounded-md border border-zinc-700">
+          <button className="text-white hover:text-white focus:outline-none mr-2 p-2 rounded-md border" 
+                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">edit</span>
           </button>
-          <button className="text-gray-300 hover:text-white focus:outline-none mr-2 bg-zinc-800 p-2 rounded-md border border-zinc-700">
+          <button className="text-white hover:text-white focus:outline-none mr-2 p-2 rounded-md border" 
+                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">share</span>
           </button>
-          <button className="text-gray-300 hover:text-white focus:outline-none bg-zinc-800 p-2 rounded-md border border-zinc-700">
+          <button className="text-white hover:text-white focus:outline-none p-2 rounded-md border" 
+                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">more_vert</span>
           </button>
         </div>
@@ -42,21 +45,24 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
       
       {/* Site Walk Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-zinc-800 border-zinc-700">
+        <Card className="border rounded-lg shadow-sm" 
+              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
           <CardContent className="p-6">
             <div className="text-white mb-1">Site Walk Status</div>
             <div className="flex items-end justify-between">
-              <div className="text-3xl font-bold text-red-500">In Progress</div>
+              <div className="text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>In Progress</div>
               <div className="text-sm text-gray-400">Updated {formatDate(project.updated_at)}</div>
             </div>
             <div className="mt-4">
-              <Progress value={progressValue} className="h-2.5 bg-zinc-700" />
+              <Progress value={progressValue} className="h-2.5" 
+                        style={{ backgroundColor: 'var(--medium-grey)' }} />
               <div className="text-sm text-gray-400 mt-1">{progressValue}% Complete</div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-zinc-800 border-zinc-700">
+        <Card className="border rounded-lg shadow-sm" 
+              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
           <CardContent className="p-6">
             <div className="text-white mb-1">Equipment Summary</div>
             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -88,7 +94,8 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
           </CardContent>
         </Card>
         
-        <Card className="bg-zinc-800 border-zinc-700">
+        <Card className="border rounded-lg shadow-sm" 
+              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
           <CardContent className="p-6">
             <div className="text-white mb-1">Site Walk Details</div>
             <div className="mt-3 space-y-3">

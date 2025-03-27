@@ -111,7 +111,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               <Input
                 type="text"
                 placeholder="Search access points"
-                className="pl-10 pr-4 py-2 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500"
+                className="pl-10 pr-4 py-2"
+                style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -121,7 +122,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             </div>
           </div>
           <Button 
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center"
+            className="btn-primary px-4 py-2 rounded-md flex items-center"
+            style={{ backgroundColor: 'var(--red-accent)', color: 'white' }}
             onClick={() => setShowAddModal(true)}
           >
             <span className="material-icons mr-1">add</span>
@@ -133,30 +135,32 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       {/* Access Points Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs uppercase bg-zinc-800 text-gray-300">
-            <tr>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">LOCATION</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">DOOR TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">READER TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">LOCK TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">SECURITY LEVEL</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">ACTIONS</th>
+          <thead>
+            <tr style={{ backgroundColor: 'var(--darker-grey)' }}>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCATION</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">DOOR TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">READER TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCK TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">SECURITY LEVEL</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">ACTIONS</th>
             </tr>
           </thead>
-          <tbody className="bg-zinc-700 divide-y divide-zinc-800">
+          <tbody>
             {isLoading ? (
-              <tr>
+              <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
                 <td colSpan={6} className="px-4 py-8 text-center text-white">Loading access points...</td>
               </tr>
             ) : paginatedAccessPoints.length === 0 ? (
-              <tr>
+              <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
                 <td colSpan={6} className="px-4 py-8 text-center text-white">
                   {searchTerm ? "No access points match your search." : "No access points have been added yet."}
                 </td>
               </tr>
             ) : (
               paginatedAccessPoints.map((ap: AccessPoint) => (
-                <tr key={ap.id} className="border-b border-zinc-800 hover:bg-zinc-600 text-white">
+                <tr key={ap.id} className="text-white border-b" 
+                    style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}
+                >
                   <td className="px-4 py-3 whitespace-nowrap font-medium text-white">{ap.location}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.door_type}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.reader_type}</td>
@@ -199,7 +203,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       <span className="material-icons text-sm">content_copy</span>
                     </button>
                     <button 
-                      className="text-red-400 hover:text-red-300 focus:outline-none"
+                      className="focus:outline-none"
+                      style={{ color: 'var(--red-accent)' }}
                       onClick={() => handleDelete(ap.id)}
                     >
                       <span className="material-icons text-sm">delete</span>

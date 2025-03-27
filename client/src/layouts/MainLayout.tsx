@@ -38,7 +38,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   // For non-auth pages, show the full layout with navigation
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden app-container">
       <Sidebar collapsed={sidebarCollapsed} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNav 
@@ -46,7 +46,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           onToggleSidebar={toggleSidebar} 
           user={user}
         />
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-900">
+        <main className="flex-1 overflow-y-auto p-6" style={{ backgroundColor: 'var(--darkest-grey)' }}>
           {children}
         </main>
       </div>
