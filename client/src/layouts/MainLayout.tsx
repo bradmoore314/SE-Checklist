@@ -46,7 +46,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           onToggleSidebar={toggleSidebar} 
           user={user}
         />
-        <main className="flex-1 overflow-y-auto p-6 bg-neutral-100">
+        <main className="flex-1 overflow-y-auto p-6 bg-background">
           {children}
         </main>
       </div>

@@ -38,21 +38,21 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
   };
 
   return (
-    <header className="bg-white border-b border-neutral-200 flex items-center justify-between px-6 py-3">
+    <header className="bg-card border-b border-border flex items-center justify-between px-6 py-3">
       <div className="flex items-center">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={onToggleSidebar} 
-          className="mr-4 text-neutral-500 hover:text-primary"
+          className="mr-4 hover:text-primary"
         >
           <span className="material-icons">menu</span>
         </Button>
         <div>
           <h1 className="text-xl font-medium">
-            {project ? project.name : "Welcome to SE Checklist"}
+            {project ? project.name : "Welcome to Site Walk Checklist"}
           </h1>
-          <div className="text-sm text-neutral-500">
+          <div className="text-sm text-muted-foreground">
             {project ? project.client : "Select or create a site walk to get started"}
           </div>
         </div>
@@ -62,20 +62,20 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-neutral-500 hover:text-primary mr-4"
+          className="hover:text-primary mr-4"
         >
           <span className="material-icons">notifications</span>
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-neutral-500 hover:text-primary mr-4"
+          className="hover:text-primary mr-4"
         >
           <span className="material-icons">help_outline</span>
         </Button>
         <Link href="/projects/new">
           <Button 
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center mr-4"
+            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white px-4 py-2 rounded-md flex items-center mr-4"
           >
             <span className="material-icons mr-1">add</span>
             New Site Walk
