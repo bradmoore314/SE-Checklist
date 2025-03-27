@@ -17,8 +17,8 @@ import AuthPage from "@/pages/auth-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
-import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
+import { AuthProvider } from "./hooks/use-auth";
+import { ProtectedRoute } from "./lib/protected-route";
 
 function Router() {
   return (

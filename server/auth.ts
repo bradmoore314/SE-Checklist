@@ -97,7 +97,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/auth/register", async (req, res) => {
+  app.post("/api/register", async (req, res) => {
     try {
       const { username, password, email, fullName } = req.body;
       
@@ -130,10 +130,7 @@ export function setupAuth(app: Express) {
             message: "Error during login after registration" 
           });
         }
-        return res.status(201).json({ 
-          success: true, 
-          user: userWithoutPassword 
-        });
+        return res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -144,7 +141,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/auth/login", (req, res, next) => {
+  app.post("/api/login", (req, res, next) => {
     passport.authenticate("local", (err: Error | null, user: Express.User | false, info: { message: string } | undefined) => {
       if (err) {
         return next(err);
@@ -162,15 +159,12 @@ export function setupAuth(app: Express) {
         }
         
         // User is already typed without password through Express.User interface
-        return res.json({ 
-          success: true, 
-          user: user 
-        });
+        return res.json(user);
       });
     })(req, res, next);
   });
 
-  app.post("/api/auth/logout", (req, res) => {
+  app.post("/api/logout", (req, res) => {
     req.logout((err) => {
       if (err) {
         return res.status(500).json({ 
@@ -182,7 +176,7 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
+  app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ 
         success: false, 
