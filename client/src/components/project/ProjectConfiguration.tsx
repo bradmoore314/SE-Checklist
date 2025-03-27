@@ -117,9 +117,9 @@ export default function ProjectConfiguration({
   };
 
   return (
-    <Card className="mb-6">
-      <CardHeader className="px-6 py-4 border-b border-neutral-200">
-        <h3 className="text-lg font-medium">Site Walk Configuration</h3>
+    <Card className="mb-6 bg-zinc-800 border-zinc-700">
+      <CardHeader className="px-6 py-4 border-b border-zinc-700">
+        <h3 className="text-lg font-medium text-white">Site Walk Configuration</h3>
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -131,8 +131,9 @@ export default function ProjectConfiguration({
                 onCheckedChange={(checked) => 
                   handleConfigChange(option as keyof typeof configOptions, checked)
                 }
+                className={value ? "bg-red-600" : ""}
               />
-              <Label htmlFor={option} className="ml-2 text-sm text-neutral-700">
+              <Label htmlFor={option} className="ml-2 text-sm text-white">
                 {formatOptionName(option)}?
               </Label>
             </div>

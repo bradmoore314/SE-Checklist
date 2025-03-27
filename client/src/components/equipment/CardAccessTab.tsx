@@ -111,7 +111,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               <Input
                 type="text"
                 placeholder="Search access points"
-                className="pl-10 pr-4 py-2 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500"
+                className="pl-10 pr-4 py-2 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -133,7 +133,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       {/* Access Points Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs uppercase bg-gray-800 text-gray-400">
+          <thead className="text-xs uppercase bg-zinc-800 text-gray-300">
             <tr>
               <th scope="col" className="px-4 py-3 whitespace-nowrap">LOCATION</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap">DOOR TYPE</th>
@@ -143,20 +143,20 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               <th scope="col" className="px-4 py-3 whitespace-nowrap">ACTIONS</th>
             </tr>
           </thead>
-          <tbody className="bg-gray-700 divide-y divide-gray-800">
+          <tbody className="bg-zinc-700 divide-y divide-zinc-800">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-300">Loading access points...</td>
+                <td colSpan={6} className="px-4 py-8 text-center text-white">Loading access points...</td>
               </tr>
             ) : paginatedAccessPoints.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-300">
+                <td colSpan={6} className="px-4 py-8 text-center text-white">
                   {searchTerm ? "No access points match your search." : "No access points have been added yet."}
                 </td>
               </tr>
             ) : (
               paginatedAccessPoints.map((ap: AccessPoint) => (
-                <tr key={ap.id} className="border-b border-gray-800 hover:bg-gray-600 text-gray-300">
+                <tr key={ap.id} className="border-b border-zinc-800 hover:bg-zinc-600 text-white">
                   <td className="px-4 py-3 whitespace-nowrap font-medium text-white">{ap.location}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.door_type}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.reader_type}</td>
@@ -215,12 +215,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       {/* Pagination */}
       {filteredAccessPoints.length > 0 && (
         <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-gray-400">
-            Showing <span className="font-medium text-gray-300">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredAccessPoints.length)}</span> to <span className="font-medium text-gray-300">{Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)}</span> of <span className="font-medium text-gray-300">{filteredAccessPoints.length}</span> access points
+          <div className="text-sm text-zinc-400">
+            Showing <span className="font-medium text-white">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredAccessPoints.length)}</span> to <span className="font-medium text-white">{Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)}</span> of <span className="font-medium text-white">{filteredAccessPoints.length}</span> access points
           </div>
           <div className="flex items-center space-x-2">
             <Button 
-              className="border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
+              className="border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"
               variant="outline" 
               size="sm"
               disabled={currentPage === 1}
@@ -243,7 +243,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                     size="sm"
                     className={currentPage === pageNum 
                       ? "bg-red-600 hover:bg-red-700 text-white border-red-600" 
-                      : "border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"}
+                      : "border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"}
                     onClick={() => setCurrentPage(pageNum)}
                   >
                     {pageNum}
@@ -254,7 +254,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             })}
             
             <Button 
-              className="border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
+              className="border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"
               variant="outline" 
               size="sm"
               disabled={currentPage === totalPages || totalPages === 0}

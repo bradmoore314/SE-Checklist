@@ -26,15 +26,15 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Site Walk Dashboard</h2>
+        <h2 className="text-2xl font-bold text-white">Site Walk Dashboard</h2>
         <div className="flex">
-          <button className="text-neutral-500 hover:text-primary focus:outline-none mr-2 bg-white p-2 rounded-md border border-neutral-200">
+          <button className="text-gray-300 hover:text-white focus:outline-none mr-2 bg-zinc-800 p-2 rounded-md border border-zinc-700">
             <span className="material-icons">edit</span>
           </button>
-          <button className="text-neutral-500 hover:text-primary focus:outline-none mr-2 bg-white p-2 rounded-md border border-neutral-200">
+          <button className="text-gray-300 hover:text-white focus:outline-none mr-2 bg-zinc-800 p-2 rounded-md border border-zinc-700">
             <span className="material-icons">share</span>
           </button>
-          <button className="text-neutral-500 hover:text-primary focus:outline-none bg-white p-2 rounded-md border border-neutral-200">
+          <button className="text-gray-300 hover:text-white focus:outline-none bg-zinc-800 p-2 rounded-md border border-zinc-700">
             <span className="material-icons">more_vert</span>
           </button>
         </div>
@@ -42,71 +42,71 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
       
       {/* Site Walk Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card>
+        <Card className="bg-zinc-800 border-zinc-700">
           <CardContent className="p-6">
-            <div className="text-neutral-600 mb-1">Site Walk Status</div>
+            <div className="text-white mb-1">Site Walk Status</div>
             <div className="flex items-end justify-between">
-              <div className="text-3xl font-bold text-primary">In Progress</div>
-              <div className="text-sm text-neutral-500">Updated {formatDate(project.updated_at)}</div>
+              <div className="text-3xl font-bold text-red-500">In Progress</div>
+              <div className="text-sm text-gray-400">Updated {formatDate(project.updated_at)}</div>
             </div>
             <div className="mt-4">
-              <Progress value={progressValue} className="h-2.5" />
-              <div className="text-sm text-neutral-500 mt-1">{progressValue}% Complete</div>
+              <Progress value={progressValue} className="h-2.5 bg-zinc-700" />
+              <div className="text-sm text-gray-400 mt-1">{progressValue}% Complete</div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-zinc-800 border-zinc-700">
           <CardContent className="p-6">
-            <div className="text-neutral-600 mb-1">Equipment Summary</div>
+            <div className="text-white mb-1">Equipment Summary</div>
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
-                <div className="text-4xl font-bold text-primary-dark">
+                <div className="text-4xl font-bold text-white">
                   {isLoading ? "..." : summary?.summary.accessPointCount || 0}
                 </div>
-                <div className="text-sm text-neutral-500">Access Points</div>
+                <div className="text-sm text-gray-400">Access Points</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-primary-light">
+                <div className="text-4xl font-bold text-white">
                   {isLoading ? "..." : summary?.summary.cameraCount || 0}
                 </div>
-                <div className="text-sm text-neutral-500">Cameras</div>
+                <div className="text-sm text-gray-400">Cameras</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-secondary">
+                <div className="text-4xl font-bold text-white">
                   {isLoading ? "..." : summary?.summary.elevatorCount || 0}
                 </div>
-                <div className="text-sm text-neutral-500">Elevators</div>
+                <div className="text-sm text-gray-400">Elevators</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-secondary-light">
+                <div className="text-4xl font-bold text-white">
                   {isLoading ? "..." : summary?.summary.intercomCount || 0}
                 </div>
-                <div className="text-sm text-neutral-500">Intercoms</div>
+                <div className="text-sm text-gray-400">Intercoms</div>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-zinc-800 border-zinc-700">
           <CardContent className="p-6">
-            <div className="text-neutral-600 mb-1">Site Walk Details</div>
+            <div className="text-white mb-1">Site Walk Details</div>
             <div className="mt-3 space-y-3">
               <div className="flex justify-between">
-                <div className="text-sm text-neutral-500">SE Name:</div>
-                <div className="text-sm font-medium">{project.se_name || "Not specified"}</div>
+                <div className="text-sm text-gray-400">SE Name:</div>
+                <div className="text-sm font-medium text-white">{project.se_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-neutral-500">BDM Name:</div>
-                <div className="text-sm font-medium">{project.bdm_name || "Not specified"}</div>
+                <div className="text-sm text-gray-400">BDM Name:</div>
+                <div className="text-sm font-medium text-white">{project.bdm_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-neutral-500">Site Address:</div>
-                <div className="text-sm font-medium">{project.site_address || "Not specified"}</div>
+                <div className="text-sm text-gray-400">Site Address:</div>
+                <div className="text-sm font-medium text-white">{project.site_address || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-neutral-500">Created Date:</div>
-                <div className="text-sm font-medium">{formatDate(project.created_at)}</div>
+                <div className="text-sm text-gray-400">Created Date:</div>
+                <div className="text-sm font-medium text-white">{formatDate(project.created_at)}</div>
               </div>
             </div>
           </CardContent>
