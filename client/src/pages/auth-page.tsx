@@ -83,15 +83,15 @@ export default function AuthPage() {
             onValueChange={setActiveTab} 
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6 border-b border-primary/20">
+              <TabsTrigger value="login" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">Login</TabsTrigger>
+              <TabsTrigger value="register" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">Register</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
-              <Card>
+              <Card className="border border-primary/20">
                 <CardHeader>
-                  <CardTitle>Login</CardTitle>
+                  <CardTitle className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Login</CardTitle>
                   <CardDescription>Enter your credentials to access your account</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -127,7 +127,7 @@ export default function AuthPage() {
                       
                       <Button 
                         type="submit" 
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? (
@@ -158,9 +158,9 @@ export default function AuthPage() {
             </TabsContent>
             
             <TabsContent value="register">
-              <Card>
+              <Card className="border border-primary/20">
                 <CardHeader>
-                  <CardTitle>Create an Account</CardTitle>
+                  <CardTitle className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Create an Account</CardTitle>
                   <CardDescription>Enter your details to create a new account</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -224,7 +224,7 @@ export default function AuthPage() {
                       
                       <Button 
                         type="submit" 
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending ? (
@@ -258,10 +258,10 @@ export default function AuthPage() {
       </div>
       
       {/* Hero Column */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary/5 flex-col items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-black via-gray-900 to-gray-950 border-l border-primary/20 flex-col items-center justify-center p-12">
         <div className="max-w-md text-center">
           <ShieldCheck className="h-20 w-20 mx-auto mb-6 text-primary" />
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             Site Walk Checklist
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
