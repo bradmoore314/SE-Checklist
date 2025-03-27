@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
 
-interface ProjectDashboardProps {
+interface SiteWalkDashboardProps {
   project: Project;
 }
 
-export default function ProjectDashboard({ project }: ProjectDashboardProps) {
+export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
   const [progressValue, setProgressValue] = useState(0);
   
   // Simulate progress loading animation
@@ -17,7 +17,7 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch project summary from API
+  // Fetch site walk summary from API
   const { data: summary, isLoading } = useQuery({
     queryKey: [`/api/projects/${project.id}/reports/project-summary`],
     enabled: !!project.id,
@@ -26,7 +26,7 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Project Dashboard</h2>
+        <h2 className="text-2xl font-bold">Site Walk Dashboard</h2>
         <div className="flex">
           <button className="text-neutral-500 hover:text-primary focus:outline-none mr-2 bg-white p-2 rounded-md border border-neutral-200">
             <span className="material-icons">edit</span>
@@ -40,11 +40,11 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
         </div>
       </div>
       
-      {/* Project Info Cards */}
+      {/* Site Walk Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="p-6">
-            <div className="text-neutral-600 mb-1">Project Status</div>
+            <div className="text-neutral-600 mb-1">Site Walk Status</div>
             <div className="flex items-end justify-between">
               <div className="text-3xl font-bold text-primary">In Progress</div>
               <div className="text-sm text-neutral-500">Updated {formatDate(project.updated_at)}</div>
@@ -90,7 +90,7 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
         
         <Card>
           <CardContent className="p-6">
-            <div className="text-neutral-600 mb-1">Project Details</div>
+            <div className="text-neutral-600 mb-1">Site Walk Details</div>
             <div className="mt-3 space-y-3">
               <div className="flex justify-between">
                 <div className="text-sm text-neutral-500">SE Name:</div>

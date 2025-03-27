@@ -19,7 +19,7 @@ interface SiteSummary {
   }
 }
 
-export default function ProjectSummary() {
+export default function SiteWalkSummary() {
   const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
   const [, setLocation] = useLocation();
   

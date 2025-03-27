@@ -53,7 +53,7 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
             {project ? project.name : "Welcome to SE Checklist"}
           </h1>
           <div className="text-sm text-neutral-500">
-            {project ? project.client : "Select or create a project to get started"}
+            {project ? project.client : "Select or create a site walk to get started"}
           </div>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
             className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center mr-4"
           >
             <span className="material-icons mr-1">add</span>
-            New
+            New Site Walk
           </Button>
         </Link>
         

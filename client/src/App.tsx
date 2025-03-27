@@ -11,7 +11,7 @@ import CardAccess from "@/pages/card-access";
 import Cameras from "@/pages/cameras";
 import Elevators from "@/pages/elevators";
 import Intercoms from "@/pages/intercoms";
-import ProjectSummary from "@/pages/project-summary";
+import SiteWalkSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import MainLayout from "@/layouts/MainLayout";
@@ -39,7 +39,7 @@ function Router() {
       {/* Report routes */}
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
       <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
-      <ProtectedRoute path="/project-summary" component={ProjectSummary} />
+      <ProtectedRoute path="/site-walk-summary" component={SiteWalkSummary} />
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />

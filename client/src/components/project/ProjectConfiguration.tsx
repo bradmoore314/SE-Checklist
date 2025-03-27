@@ -6,7 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
-interface ProjectConfigurationProps {
+interface SiteWalkConfigurationProps {
   project: Project;
   onProjectUpdate?: (updatedProject: Project) => void;
 }
@@ -14,7 +14,7 @@ interface ProjectConfigurationProps {
 export default function ProjectConfiguration({ 
   project, 
   onProjectUpdate 
-}: ProjectConfigurationProps) {
+}: SiteWalkConfigurationProps) {
   const { toast } = useToast();
   
   // Config options from project
@@ -79,7 +79,7 @@ export default function ProjectConfiguration({
       );
       
       if (!response.ok) {
-        throw new Error("Failed to update project configuration");
+        throw new Error("Failed to update site walk configuration");
       }
       
       const updatedProject = await response.json();
@@ -119,7 +119,7 @@ export default function ProjectConfiguration({
   return (
     <Card className="mb-6">
       <CardHeader className="px-6 py-4 border-b border-neutral-200">
-        <h3 className="text-lg font-medium">Project Configuration</h3>
+        <h3 className="text-lg font-medium">Site Walk Configuration</h3>
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
