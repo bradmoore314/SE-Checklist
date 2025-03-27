@@ -28,8 +28,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication with Passport
-  setupAuth(app);
+  // Authentication is already set up in index.ts
 
   // Lookup data endpoints
   app.get("/api/lookup", isAuthenticated, (req: Request, res: Response) => {

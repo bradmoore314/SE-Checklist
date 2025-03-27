@@ -4,6 +4,7 @@ import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
+import { setupAuth } from "./auth";
 
 const app = express();
 app.use(express.json());
@@ -25,27 +26,32 @@ app.use(session({
   }
 }));
 
-// Authentication middleware
-const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  // Skip auth for login and some public endpoints
-  if (req.path === '/api/auth/login' || 
+// Initialize Passport.js
+setupAuth(app);
+
+// Authentication skip middleware for public paths
+const skipForPublicPaths = (req: Request, res: Response, next: NextFunction) => {
+  // Skip auth for login, register, and some public endpoints
+  if (req.path === '/api/login' || 
+      req.path === '/api/register' ||
       req.path === '/api/lookup' ||
       req.path.startsWith('/assets/')) {
     return next();
   }
   
-  if (req.session.userId) {
-    return next();
+  // For protected routes, check if authenticated with passport
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authentication required' 
+    });
   }
   
-  return res.status(401).json({ 
-    success: false, 
-    message: 'Authentication required' 
-  });
+  return next();
 };
 
 // Apply authentication middleware to protect API routes
-app.use(isAuthenticated);
+app.use('/api', skipForPublicPaths);
 
 app.use((req, res, next) => {
   const start = Date.now();
