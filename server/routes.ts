@@ -682,11 +682,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const doorSchedule = accessPoints.map(ap => ({
       id: ap.id,
       location: ap.location,
-      door_type: ap.door_type,
+      door_type: ap.quick_config,
       reader_type: ap.reader_type,
       lock_type: ap.lock_type,
-      security_level: ap.security_level,
-      ppi: ap.ppi || "None",
+      security_level: ap.monitoring_type,
+      ppi: ap.lock_provider || "None",
       notes: ap.notes || ""
     }));
 

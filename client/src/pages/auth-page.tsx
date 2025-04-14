@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { Loader2, ShieldCheck } from "lucide-react";
+import siteWalkLogo from "@/assets/site-walk-checklist-logo.png";
 
 // Login form schema
 const loginSchema = z.object({
@@ -151,11 +152,11 @@ export default function AuthPage() {
                   >
                     Development: Skip Login
                   </Button>
-                  <p className="text-sm text-muted-foreground text-center">
+                  <p className="text-sm text-white text-center">
                     Don't have an account?{" "}
                     <Button 
                       variant="link" 
-                      className="p-0" 
+                      className="p-0 text-white" 
                       onClick={() => setActiveTab("register")}
                     >
                       Register
@@ -248,11 +249,11 @@ export default function AuthPage() {
                   </Form>
                 </CardContent>
                 <CardFooter className="flex justify-center">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white">
                     Already have an account?{" "}
                     <Button 
                       variant="link" 
-                      className="p-0" 
+                      className="p-0 text-white" 
                       onClick={() => setActiveTab("login")}
                     >
                       Login
