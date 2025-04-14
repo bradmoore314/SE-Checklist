@@ -96,7 +96,10 @@ export default function Dashboard() {
   // Site walk dashboard with configuration and equipment tabs
   return (
     <>
-      <ProjectDashboard project={currentSiteWalk} />
+      <ProjectDashboard 
+        project={currentSiteWalk} 
+        onProjectUpdate={setCurrentSiteWalk} 
+      />
       <ProjectConfiguration 
         project={currentSiteWalk}
         onProjectUpdate={setCurrentSiteWalk}

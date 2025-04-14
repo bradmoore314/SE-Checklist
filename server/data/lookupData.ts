@@ -50,7 +50,6 @@ export const quickConfigOptions = [
 ];
 
 export const readerTypes = [
-  "KR-52",
   "KR-100",
   "AIO",
   "AIO Mullion",
