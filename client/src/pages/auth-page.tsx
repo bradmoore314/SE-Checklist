@@ -79,6 +79,9 @@ export default function AuthPage() {
       {/* Form Column */}
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full max-w-md">
+          <div className="flex flex-col items-center mb-6">
+            <img src={siteWalkLogo} alt="Site Walk Checklist" className="w-full max-w-xs" />
+          </div>
           <Tabs 
             value={activeTab} 
             onValueChange={setActiveTab} 
@@ -273,7 +276,7 @@ export default function AuthPage() {
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             Site Walk Checklist
           </h1>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-white mb-8">
             Streamline your security site walk process with our comprehensive checklist tool. Track cameras, card access, elevators, and intercoms in one place.
           </p>
           <div className="space-y-4">
@@ -286,7 +289,7 @@ export default function AuthPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium">Complete Site Walk Documentation</h3>
-                <p className="text-sm text-muted-foreground">Track all security equipment for your site walks</p>
+                <p className="text-sm text-white">Track all security equipment for your site walks</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -298,7 +301,7 @@ export default function AuthPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium">Efficient Site Walk Management</h3>
-                <p className="text-sm text-muted-foreground">Clone equipment with one click to speed up site walks</p>
+                <p className="text-sm text-white">Clone equipment with one click to speed up site walks</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -310,7 +313,7 @@ export default function AuthPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium">Site Walk Documentation</h3>
-                <p className="text-sm text-muted-foreground">Generate detailed site walk reports and schedules</p>
+                <p className="text-sm text-white">Generate detailed site walk reports and schedules</p>
               </div>
             </div>
           </div>
