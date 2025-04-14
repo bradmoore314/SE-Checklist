@@ -114,6 +114,8 @@ export default function AddAccessPointModal({
       new_panel_type: "",
       new_reader_type: "",
       noisy_prop: "No",
+      crashbars: "No",
+      real_lock_type: "Mortise",
       notes: "",
     },
   });
