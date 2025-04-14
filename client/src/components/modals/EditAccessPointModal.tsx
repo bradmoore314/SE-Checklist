@@ -91,6 +91,7 @@ export default function EditAccessPointModal({
       new_panel_location: accessPoint.new_panel_location || "",
       new_panel_type: accessPoint.new_panel_type || "",
       new_reader_type: accessPoint.new_reader_type || "",
+      noisy_prop: accessPoint.noisy_prop || "No",
       notes: accessPoint.notes,
     },
   });
@@ -465,6 +466,34 @@ export default function EditAccessPointModal({
                           disabled={quickConfigEnabled}
                         />
                       </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="noisy_prop"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>Noisy Prop</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || "No"}
+                        disabled={quickConfigEnabled}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Yes/No" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {lookupData?.noisyPropOptions?.map((option: string) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormItem>
                   )}
                 />
