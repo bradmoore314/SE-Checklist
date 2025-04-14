@@ -38,18 +38,18 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-white">Site Walk Dashboard</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Site Walk Dashboard</h2>
         <div className="flex">
-          <button className="text-white hover:text-white focus:outline-none mr-2 p-2 rounded-md border" 
-                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+          <button className="text-gray-600 hover:bg-gray-100 focus:outline-none mr-2 p-2 rounded-md border" 
+                  style={{ borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">edit</span>
           </button>
-          <button className="text-white hover:text-white focus:outline-none mr-2 p-2 rounded-md border" 
-                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+          <button className="text-gray-600 hover:bg-gray-100 focus:outline-none mr-2 p-2 rounded-md border" 
+                  style={{ borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">share</span>
           </button>
-          <button className="text-white hover:text-white focus:outline-none p-2 rounded-md border" 
-                  style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+          <button className="text-gray-600 hover:bg-gray-100 focus:outline-none p-2 rounded-md border" 
+                  style={{ borderColor: 'var(--medium-grey)' }}>
             <span className="material-icons">more_vert</span>
           </button>
         </div>
@@ -57,75 +57,72 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
       
       {/* Site Walk Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="border rounded-lg shadow-sm" 
-              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+        <Card className="border rounded-lg shadow-sm">
           <CardContent className="p-6">
-            <div className="text-white mb-1">Site Walk Status</div>
+            <div className="text-gray-700 font-medium mb-1">Site Walk Status</div>
             <div className="flex items-end justify-between">
               <div className="text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>In Progress</div>
-              <div className="text-sm text-gray-400">Updated {formatDate(project.updated_at)}</div>
+              <div className="text-sm text-gray-500">Updated {formatDate(project.updated_at)}</div>
             </div>
             <div className="mt-4">
               <Progress value={progressValue} className="h-2.5" 
                         style={{ backgroundColor: 'var(--medium-grey)' }} />
-              <div className="text-sm text-gray-400 mt-1">{progressValue}% Complete</div>
+              <div className="text-sm text-gray-500 mt-1">{progressValue}% Complete</div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="border rounded-lg shadow-sm" 
-              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+        <Card className="border rounded-lg shadow-sm">
           <CardContent className="p-6">
-            <div className="text-white mb-1">Equipment Summary</div>
+            <div className="text-gray-700 font-medium mb-1">Equipment Summary</div>
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
-                <div className="text-4xl font-bold text-white">
+                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.accessPointCount || 0}
                 </div>
-                <div className="text-sm text-gray-400">Access Points</div>
+                <div className="text-sm text-gray-600">Access Points</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">
+                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.cameraCount || 0}
                 </div>
-                <div className="text-sm text-gray-400">Cameras</div>
+                <div className="text-sm text-gray-600">Cameras</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">
+                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.elevatorCount || 0}
                 </div>
-                <div className="text-sm text-gray-400">Elevators</div>
+                <div className="text-sm text-gray-600">Elevators</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">
+                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.intercomCount || 0}
                 </div>
-                <div className="text-sm text-gray-400">Intercoms</div>
+                <div className="text-sm text-gray-600">Intercoms</div>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="border rounded-lg shadow-sm" 
-              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}>
+        <Card className="border rounded-lg shadow-sm">
           <CardContent className="p-6">
-            <div className="text-white mb-1">Site Walk Details</div>
+            <div className="text-gray-700 font-medium mb-1">Site Walk Details</div>
             <div className="mt-3 space-y-3">
               <div className="flex justify-between">
-                <div className="text-sm text-gray-400">SE Name:</div>
-                <div className="text-sm font-medium text-white">{project.se_name || "Not specified"}</div>
+                <div className="text-sm text-gray-600">SE Name:</div>
+                <div className="text-sm font-medium text-gray-800">{project.se_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-400">BDM Name:</div>
-                <div className="text-sm font-medium text-white">{project.bdm_name || "Not specified"}</div>
+                <div className="text-sm text-gray-600">BDM Name:</div>
+                <div className="text-sm font-medium text-gray-800">{project.bdm_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-400">Site Address:</div>
-                <div className="text-sm font-medium text-white">{project.site_address || "Not specified"}</div>
+                <div className="text-sm text-gray-600">Site Address:</div>
+                <div className="text-sm font-medium text-gray-800">{project.site_address || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-400">Created Date:</div>
-                <div className="text-sm font-medium text-white">{formatDate(project.created_at)}</div>
+                <div className="text-sm text-gray-600">Created Date:</div>
+                <div className="text-sm font-medium text-gray-800">{formatDate(project.created_at)}</div>
               </div>
             </div>
           </CardContent>
