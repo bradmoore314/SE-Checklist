@@ -38,22 +38,22 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 border-b" 
-            style={{ backgroundColor: 'var(--darker-grey)', borderColor: 'var(--medium-grey)' }}>
+    <header className="flex items-center justify-between px-6 py-3 border-b bg-white shadow-sm"
+            style={{ borderColor: 'var(--medium-grey)' }}>
       <div className="flex items-center">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={onToggleSidebar} 
-          className="mr-4 text-gray-300 hover:text-white"
+          className="mr-4 text-gray-600 hover:text-gray-900"
         >
           <span className="material-icons">menu</span>
         </Button>
         <div>
-          <h1 className="text-xl font-medium text-white">
+          <h1 className="text-xl font-medium text-gray-900">
             {project ? project.name : "Welcome to Site Walk Checklist"}
           </h1>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-600">
             {project ? project.client : "Select or create a site walk to get started"}
           </div>
         </div>
@@ -63,14 +63,14 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-gray-300 hover:text-white mr-4"
+          className="text-gray-600 hover:text-gray-900 mr-4"
         >
           <span className="material-icons">notifications</span>
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-gray-300 hover:text-white mr-4"
+          className="text-gray-600 hover:text-gray-900 mr-4"
         >
           <span className="material-icons">help_outline</span>
         </Button>
@@ -95,16 +95,16 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 border rounded-lg shadow-sm" 
-                                 style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }} 
+            <DropdownMenuContent className="w-56 border rounded-lg shadow-sm bg-white" 
+                                 style={{ borderColor: 'var(--medium-grey)' }} 
                                  align="end">
               <div className="p-2">
-                <p className="font-medium text-white">{user.fullName || user.username}</p>
-                <p className="text-sm text-gray-400">{user.email}</p>
+                <p className="font-medium text-gray-900">{user.fullName || user.username}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
               </div>
               <DropdownMenuSeparator style={{ backgroundColor: 'var(--medium-grey)' }} />
-              <DropdownMenuItem asChild className="focus:bg-zinc-700">
-                <Link href="/settings" className="flex w-full cursor-pointer text-white">
+              <DropdownMenuItem asChild className="focus:bg-gray-100">
+                <Link href="/settings" className="flex w-full cursor-pointer text-gray-800">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
@@ -114,7 +114,7 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
                 onClick={handleLogout}
                 disabled={logoutMutation.isPending}
                 style={{ color: 'var(--red-accent)' }}
-                className="cursor-pointer focus:bg-zinc-700"
+                className="cursor-pointer focus:bg-gray-100"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>{logoutMutation.isPending ? "Logging out..." : "Log out"}</span>
