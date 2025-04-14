@@ -43,9 +43,9 @@ const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
   quick_config: z.string().optional(), // Optional now
-  reader_type: z.string().min(1, "Reader type is required"),
-  lock_type: z.string().min(1, "Lock type is required"),
-  monitoring_type: z.string().min(1, "Monitoring type is required"), // Changed from security_level
+  reader_type: z.string().optional(), // Made optional for Quick Config
+  lock_type: z.string().optional(), // Made optional for Quick Config
+  monitoring_type: z.string().optional(), // Made optional for Quick Config
   lock_provider: z.string().optional(), // Changed from ppi
   takeover: z.string().optional(),
   interior_perimeter: z.string().optional(),
@@ -57,6 +57,17 @@ const accessPointSchema = z.object({
   new_panel_type: z.string().optional(),
   new_reader_type: z.string().optional(),
   notes: z.string().optional(),
+}).refine((data) => {
+  // If quick_config is selected, we don't need to check other fields
+  if (data.quick_config) {
+    return true;
+  }
+  
+  // Otherwise, these fields are required
+  return !!data.reader_type && !!data.lock_type && !!data.monitoring_type;
+}, {
+  message: "Reader type, Lock type, and Monitoring type are required unless Quick Config is selected",
+  path: ["reader_type"] // Show error on the first field
 });
 
 type AccessPointFormValues = z.infer<typeof accessPointSchema>;
