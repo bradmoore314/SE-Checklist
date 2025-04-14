@@ -183,6 +183,7 @@ export class MemStorage implements IStorage {
       site_address: insertProject.site_address ?? null,
       se_name: insertProject.se_name ?? null,
       bdm_name: insertProject.bdm_name ?? null,
+      building_count: insertProject.building_count ?? null,
       created_at: now,
       updated_at: now,
       replace_readers: insertProject.replace_readers ?? false,

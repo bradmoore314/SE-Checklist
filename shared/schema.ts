@@ -28,6 +28,7 @@ export const projects = pgTable("projects", {
   site_address: text("site_address"),
   se_name: text("se_name"),
   bdm_name: text("bdm_name"),
+  building_count: integer("building_count"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
   // Configuration options
