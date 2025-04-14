@@ -811,6 +811,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
+  // AI Analysis endpoint
+  app.post("/api/projects/:projectId/ai-analysis", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Get all equipment for this project
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+      
+      // Calculate additional counts
+      const interiorAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Interior').length;
+      const perimeterAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Perimeter').length;
+      
+      const indoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Indoor')).length;
+      const outdoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Outdoor')).length;
+      
+      // For elevators, count groups by location prefix (a bank is typically named like "Elevator Bank A")
+      const elevatorLocations = new Set();
+      elevators.forEach(elev => {
+        // Extract the first word of location which typically identifies the bank
+        const bankIdentifier = elev.location.split(' ')[0];
+        elevatorLocations.add(bankIdentifier);
+      });
+      const elevatorBanks = elevatorLocations.size;
+      
+      // Get tooltips to include in the prompt
+      const tooltips = {
+        replace_readers: "Installation/Hardware Scope: Existing readers are being swapped out. Consider compatibility with existing wiring and backboxes.",
+        install_locks: "Installation/Hardware Scope: New locks are being installed as part of the project.",
+        pull_wire: "Installation/Hardware Scope: New wiring is required for some or all devices.",
+        wireless_locks: "Installation/Hardware Scope: Project includes wireless locks that communicate via gateway.",
+        conduit_drawings: "Installation/Hardware Scope: Project requires identification of conduit pathways.",
+        need_credentials: "Access Control/Identity Management: Requires supplying access credentials for users.",
+        photo_id: "Access Control/Identity Management: Credentials will include photo identification.",
+        photo_badging: "Access Control/Identity Management: On-site photo badging setup needed.",
+        ble: "Access Control/Identity Management: Mobile credentials will be used for access.",
+        test_card: "Access Control/Identity Management: Test cards needed for system verification.",
+        visitor: "Access Control/Identity Management: Visitor management features are included.",
+        guard_controls: "Access Control/Identity Management: Security guard station(s) with equipment for door release.",
+        floorplan: "Site Conditions/Project Planning: Electronic floorplans are available for the site.",
+        reports_available: "Site Conditions/Project Planning: Previous reports or system documentation is available.",
+        kastle_connect: "Site Conditions/Project Planning: Integration with Kastle services over internet connection.",
+        on_site_security: "Site Conditions/Project Planning: Property has security personnel on site.",
+        takeover: "Site Conditions/Project Planning: Project involves taking over an existing system.",
+        rush: "Site Conditions/Project Planning: Project is on an expedited timeline.",
+        ppi_quote_needed: "Site Conditions/Project Planning: Professional proposal/installation quote needed."
+      };
+      
+      // Prepare the data for the AI analysis
+      const analysisData = {
+        project: project,
+        summary: {
+          accessPointCount: accessPoints.length,
+          interiorAccessPointCount: interiorAccessPoints,
+          perimeterAccessPointCount: perimeterAccessPoints,
+          cameraCount: cameras.length,
+          indoorCameraCount: indoorCameras,
+          outdoorCameraCount: outdoorCameras,
+          elevatorCount: elevators.length,
+          elevatorBankCount: elevatorBanks,
+          intercomCount: intercoms.length,
+          totalEquipmentCount: accessPoints.length + cameras.length + elevators.length + intercoms.length
+        },
+        equipment: {
+          accessPoints: accessPoints,
+          cameras: cameras,
+          elevators: elevators,
+          intercoms: intercoms
+        },
+        tooltips: tooltips
+      };
+      
+      // Generate AI analysis using Gemini
+      const analysis = await generateSiteWalkAnalysis(analysisData);
+      
+      res.json({
+        success: true,
+        analysis: analysis
+      });
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate AI analysis",
+        error: (error as Error).message
+      });
+    }
+  });
+  
   // Image endpoints
   app.get("/api/images/:equipmentType/:equipmentId", isAuthenticated, async (req: Request, res: Response) => {
     const equipmentType = req.params.equipmentType;
