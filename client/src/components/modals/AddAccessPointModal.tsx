@@ -56,6 +56,7 @@ const accessPointSchema = z.object({
   new_panel_location: z.string().optional(),
   new_panel_type: z.string().optional(),
   new_reader_type: z.string().optional(),
+  noisy_prop: z.string().optional(),
   notes: z.string().optional(),
 }).refine((data) => {
   // If quick_config is selected, we don't need to check other fields
@@ -110,6 +111,7 @@ export default function AddAccessPointModal({
       new_panel_location: "",
       new_panel_type: "",
       new_reader_type: "",
+      noisy_prop: "No",
       notes: "",
     },
   });
@@ -540,6 +542,41 @@ export default function AddAccessPointModal({
                           disabled={quickConfigEnabled}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="noisy_prop"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Noisy Prop
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={quickConfigEnabled}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Yes/No" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            lookupData?.noisyPropOptions.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
