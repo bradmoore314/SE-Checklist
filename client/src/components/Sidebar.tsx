@@ -12,13 +12,13 @@ export default function Sidebar({ collapsed }: SidebarProps) {
 
   return (
     <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar`}
-         style={{ backgroundColor: 'var(--darker-grey)' }}>
+         style={{ backgroundColor: 'var(--lighter-grey)' }}>
       {/* App Logo */}
       <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
         <svg className="w-8 h-8" style={{ color: 'var(--red-accent)' }} fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L14 11.586V6z" clipRule="evenodd"></path>
         </svg>
-        {!collapsed && <span className="ml-2 text-xl font-semibold text-white">SE Checklist</span>}
+        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">SE Checklist</span>}
       </div>
       
       {/* User Info */}
@@ -27,8 +27,8 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
                style={{ backgroundColor: 'var(--red-accent)' }}>SE</div>
           <div className="ml-3">
-            <div className="font-medium text-white">Security Engineer</div>
-            <div className="text-sm text-gray-400">Site Walk App</div>
+            <div className="font-medium text-gray-900">Security Engineer</div>
+            <div className="text-sm text-gray-600">Site Walk App</div>
           </div>
         </div>
       )}

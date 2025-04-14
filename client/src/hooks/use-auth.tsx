@@ -15,6 +15,7 @@ type AuthContextType = {
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, InsertUser>;
+  bypassAuth: () => User; // Added for development bypass
 };
 
 type LoginData = {
@@ -26,6 +27,31 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+
+  // Add a function to bypass authentication for development purposes
+  const bypassAuth = () => {
+    // Create a mock user object with admin privileges
+    const mockUser: User = {
+      id: 1,
+      username: "admin",
+      password: "hashed_password_not_needed_for_client", // This is not used in the client
+      email: "admin@example.com",
+      fullName: "Administrator",
+      role: "admin",
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+    
+    // Set the mock user in the query cache
+    queryClient.setQueryData(["/api/user"], mockUser);
+    
+    toast({
+      title: "Development Mode",
+      description: "Bypassed authentication for development purposes.",
+    });
+    
+    return mockUser;
+  };
 
   const {
     data: user,
