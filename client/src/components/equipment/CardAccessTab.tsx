@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
+import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings } from "lucide-react";
+import { Settings, Camera } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface CardAccessTabProps {
   project: Project;
@@ -20,6 +22,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [selectedAccessPoint, setSelectedAccessPoint] = useState<AccessPoint | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -405,6 +408,15 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       }}
                     >
                       <span className="material-icons text-sm">content_copy</span>
+                    </button>
+                    <button 
+                      className="text-gray-700 hover:text-gray-900 focus:outline-none mr-2"
+                      onClick={() => {
+                        setSelectedAccessPoint(ap);
+                        setShowImageModal(true);
+                      }}
+                    >
+                      <Camera className="h-4 w-4" />
                     </button>
                     <button 
                       className="focus:outline-none"
