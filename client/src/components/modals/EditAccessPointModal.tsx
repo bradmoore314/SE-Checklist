@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +51,11 @@ export default function EditAccessPointModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   
+  // Toggle the visibility of advanced fields
+  const toggleAdvancedFields = () => {
+    setShowAdvancedFields(!showAdvancedFields);
+  };
+  
   // Fetch lookup data
   const { data: lookupData } = useQuery({
     queryKey: ["/api/lookup"],
@@ -76,6 +82,10 @@ export default function EditAccessPointModal({
       notes: accessPoint.notes,
     },
   });
+  
+  // Watch for quick_config changes to enable/disable other fields
+  const watchQuickConfig = form.watch("quick_config");
+  const quickConfigEnabled = !!watchQuickConfig;
 
   const onSubmit = async (values: AccessPointFormValues) => {
     setIsSubmitting(true);
@@ -125,7 +135,7 @@ export default function EditAccessPointModal({
                   <FormLabel>Quick Config</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || ""}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -140,6 +150,11 @@ export default function EditAccessPointModal({
                       ))}
                     </SelectContent>
                   </Select>
+                  {quickConfigEnabled && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Quick Configuration Enabled
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
@@ -149,11 +164,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="reader_type"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Reader Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || ""}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -177,11 +193,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="lock_type"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Lock Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || ""}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -205,11 +222,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="monitoring_type"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Monitoring Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || ""}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -233,11 +251,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="lock_provider"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Lock Provider</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || ""}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -261,11 +280,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="takeover"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Takeover?</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || "No"}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -289,11 +309,12 @@ export default function EditAccessPointModal({
               control={form.control}
               name="interior_perimeter"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Interior/Perimeter</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || "Interior"}
+                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -312,12 +333,138 @@ export default function EditAccessPointModal({
               )}
             />
             
+            {/* Button to toggle advanced fields */}
+            <div className="flex justify-end">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={toggleAdvancedFields}
+                size="sm"
+                className="mb-2"
+              >
+                {showAdvancedFields ? "Hide Advanced Fields" : "Show Advanced Fields"}
+              </Button>
+            </div>
+
+            {/* Advanced fields section - hidden by default */}
+            {showAdvancedFields && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-neutral-200 rounded-md mb-4">
+                <FormField
+                  control={form.control}
+                  name="exst_panel_location"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>Exst. Panel Location</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing panel location" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="exst_panel_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>Exst. Panel Type</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing panel type" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="exst_reader_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>Exst. Reader Type</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing reader type" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_panel_location"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>New Panel Location</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new panel location" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_panel_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>New Panel Type</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new panel type" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_reader_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel>New Reader Type</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new reader type" 
+                          {...field} 
+                          value={field.value || ""}
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+            
             {/* Notes */}
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea 
@@ -325,6 +472,7 @@ export default function EditAccessPointModal({
                       className="resize-none" 
                       {...field} 
                       value={field.value || ""}
+                      disabled={quickConfigEnabled}
                     />
                   </FormControl>
                 </FormItem>

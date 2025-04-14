@@ -69,12 +69,16 @@ export default function AddAccessPointModal({
 }: AddAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
-  const [quickConfigSelected, setQuickConfigSelected] = useState(false);
 
   // Fetch lookup data for dropdowns
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
     queryKey: ["/api/lookup"],
   });
+  
+  // Toggle the visibility of advanced fields
+  const toggleAdvancedFields = () => {
+    setShowAdvancedFields(!showAdvancedFields);
+  };
 
   // Initialize form with default values
   const form = useForm<AccessPointFormValues>({
@@ -101,11 +105,7 @@ export default function AddAccessPointModal({
   
   // Watch for quick_config changes to enable/disable other fields
   const watchQuickConfig = form.watch("quick_config");
-  
-  // Update quickConfigSelected state when quick_config value changes
-  useEffect(() => {
-    setQuickConfigSelected(!!watchQuickConfig);
-  }, [watchQuickConfig]);
+  const quickConfigEnabled = !!watchQuickConfig;
 
   // Handle form submission
   const onSubmit = async (values: AccessPointFormValues) => {
@@ -178,6 +178,11 @@ export default function AddAccessPointModal({
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                    {quickConfigEnabled && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Quick Configuration Enabled
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
@@ -186,13 +191,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="reader_type"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Reader Type *
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -220,13 +226,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="lock_type"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Lock Type *
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -254,13 +261,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="monitoring_type"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Monitoring Type *
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -288,13 +296,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="lock_provider"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Lock Provider
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -322,13 +331,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="takeover"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Takeover?
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -356,13 +366,14 @@ export default function AddAccessPointModal({
                 control={form.control}
                 name="interior_perimeter"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       Interior/Perimeter
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={quickConfigEnabled}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -387,11 +398,149 @@ export default function AddAccessPointModal({
               />
             </div>
 
+            {/* Button to toggle advanced fields */}
+            <div className="flex justify-end">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={toggleAdvancedFields}
+                size="sm"
+                className="mb-2"
+              >
+                {showAdvancedFields ? "Hide Advanced Fields" : "Show Advanced Fields"}
+              </Button>
+            </div>
+
+            {/* Advanced fields section - hidden by default */}
+            {showAdvancedFields && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-neutral-200 rounded-md mb-4">
+                <FormField
+                  control={form.control}
+                  name="exst_panel_location"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Exst. Panel Location
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing panel location" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="exst_panel_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Exst. Panel Type
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing panel type" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="exst_reader_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Exst. Reader Type
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter existing reader type" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_panel_location"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        New Panel Location
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new panel location" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_panel_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        New Panel Type
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new panel type" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_reader_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        New Reader Type
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter new reader type" 
+                          {...field} 
+                          disabled={quickConfigEnabled}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
                   <FormLabel className="text-sm font-medium text-neutral-700">
                     Notes
                   </FormLabel>
@@ -400,6 +549,7 @@ export default function AddAccessPointModal({
                       placeholder="Enter additional notes"
                       rows={3}
                       {...field}
+                      disabled={quickConfigEnabled}
                     />
                   </FormControl>
                   <FormMessage />
