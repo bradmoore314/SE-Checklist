@@ -30,6 +30,7 @@ const accessPointSchema = z.object({
   new_panel_location: z.string().optional().nullable(),
   new_panel_type: z.string().optional().nullable(),
   new_reader_type: z.string().optional().nullable(),
+  noisy_prop: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 }).refine((data) => {
   // If quick_config is selected, we don't need to check other fields

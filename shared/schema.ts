@@ -77,6 +77,7 @@ export const accessPoints = pgTable("access_points", {
   new_panel_location: text("new_panel_location"),
   new_panel_type: text("new_panel_type"),
   new_reader_type: text("new_reader_type"),
+  noisy_prop: text("noisy_prop"), // New hidden field for Noisy Prop (yes/no)
   notes: text("notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),

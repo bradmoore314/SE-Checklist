@@ -152,6 +152,12 @@ export const intercomTypes = [
   "Analog Audio"
 ];
 
+// Define options for the Noisy Prop field
+export const noisyPropOptions = [
+  "Yes",
+  "No"
+];
+
 // Export all lookup data as a single object
 export const lookupData = {
   // Include both new names and backward compatible names
@@ -166,6 +172,7 @@ export const lookupData = {
   takeoverOptions,
   interiorPerimeterOptions,
   yesNoOptions,
+  noisyPropOptions,
   cameraTypes,
   mountingTypes,
   resolutions,
