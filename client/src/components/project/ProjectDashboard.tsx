@@ -54,8 +54,13 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
     project: Project;
     summary: {
       accessPointCount: number;
+      interiorAccessPointCount: number;
+      perimeterAccessPointCount: number;
       cameraCount: number;
+      indoorCameraCount: number;
+      outdoorCameraCount: number;
       elevatorCount: number;
+      elevatorBankCount: number;
       intercomCount: number;
       totalEquipmentCount: number;
     }
@@ -290,18 +295,29 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
                   {isLoading ? "..." : summaryData?.summary?.accessPointCount || 0}
                 </div>
                 <div className="text-sm text-gray-600">Access Points</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Interior: {isLoading ? "..." : summaryData?.summary?.interiorAccessPointCount || 0} | 
+                  Perimeter: {isLoading ? "..." : summaryData?.summary?.perimeterAccessPointCount || 0}
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.cameraCount || 0}
                 </div>
                 <div className="text-sm text-gray-600">Cameras</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Indoor: {isLoading ? "..." : summaryData?.summary?.indoorCameraCount || 0} | 
+                  Outdoor: {isLoading ? "..." : summaryData?.summary?.outdoorCameraCount || 0}
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.elevatorCount || 0}
                 </div>
                 <div className="text-sm text-gray-600">Elevators</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Total Banks: {isLoading ? "..." : summaryData?.summary?.elevatorBankCount || 0}
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>

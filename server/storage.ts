@@ -374,6 +374,7 @@ export class MemStorage implements IStorage {
       location: insertElevator.location,
       elevator_type: insertElevator.elevator_type,
       floor_count: insertElevator.floor_count ?? null,
+      bank_name: insertElevator.bank_name ?? null,
       notes: insertElevator.notes ?? null,
       created_at: now,
       updated_at: now

@@ -121,6 +121,7 @@ export const elevators = pgTable("elevators", {
   location: text("location").notNull(),
   elevator_type: text("elevator_type").notNull(),
   floor_count: integer("floor_count"),
+  bank_name: text("bank_name"),
   notes: text("notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),

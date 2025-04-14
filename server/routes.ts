@@ -778,8 +778,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const indoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Indoor')).length;
     const outdoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Outdoor')).length;
     
-    // For elevators, count unique banks
-    const elevatorBanks = new Set(elevators.map(elev => elev.bank_name)).size;
+    // For elevators, count groups by location prefix (a bank is typically named like "Elevator Bank A")
+    const elevatorLocations = new Set();
+    elevators.forEach(elev => {
+      // Extract the first word of location which typically identifies the bank
+      const bankIdentifier = elev.location.split(' ')[0];
+      elevatorLocations.add(bankIdentifier);
+    });
+    const elevatorBanks = elevatorLocations.size;
 
     res.json({
       project: project,
