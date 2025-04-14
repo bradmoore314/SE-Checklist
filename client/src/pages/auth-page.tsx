@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { Loader2, ShieldCheck } from "lucide-react";
-import siteWalkLogo from "@/assets/site-walk-checklist-logo.png";
+import kastleLogo from "@/assets/kastle-logo.png";
 
 // Login form schema
 const loginSchema = z.object({
@@ -80,7 +80,7 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="flex flex-col items-center mb-6">
-            <img src={siteWalkLogo} alt="Site Walk Checklist" className="w-full max-w-xs" />
+            <img src={kastleLogo} alt="Kastle Logo" className="w-full max-w-xs" />
           </div>
           <Tabs 
             value={activeTab} 
