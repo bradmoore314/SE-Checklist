@@ -38,7 +38,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
-  const { user, isLoading, loginMutation, registerMutation } = useAuth();
+  const { user, isLoading, loginMutation, registerMutation, bypassAuth } = useAuth();
   
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -142,8 +142,16 @@ export default function AuthPage() {
                     </form>
                   </Form>
                 </CardContent>
-                <CardFooter className="flex justify-center">
-                  <p className="text-sm text-muted-foreground">
+                <CardFooter className="flex flex-col space-y-4">
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-gray-300"
+                    onClick={() => bypassAuth()}
+                  >
+                    Development: Skip Login
+                  </Button>
+                  <p className="text-sm text-muted-foreground text-center">
                     Don't have an account?{" "}
                     <Button 
                       variant="link" 

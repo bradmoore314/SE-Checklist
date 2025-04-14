@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: "admin",
       created_at: new Date(),
       updated_at: new Date()
-    };
+    } as User; // Use type assertion since we're creating a mock
     
     // Set the mock user in the query cache
     queryClient.setQueryData(["/api/user"], mockUser);
@@ -143,6 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
+        bypassAuth, // Add the bypass method
       }}
     >
       {children}
