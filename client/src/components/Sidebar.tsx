@@ -205,9 +205,9 @@ export default function Sidebar({ collapsed }: SidebarProps) {
       <div className="border-t p-4" style={{ borderColor: 'var(--medium-grey)' }}>
         <div>
           <Link href="/settings">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} text-white hover:text-white cursor-pointer`}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-400`}>settings</span>
-              {!collapsed && <span className="text-white">Settings</span>}
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>settings</span>
+              {!collapsed && <span className="text-gray-800 font-medium">Settings</span>}
             </div>
           </Link>
         </div>
