@@ -44,14 +44,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/") ? "text-white" : "text-gray-400"}`}>dashboard</span>
-              {!collapsed && <span className="text-white">Dashboard</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/") ? "text-white" : "text-gray-600"}`}>dashboard</span>
+              {!collapsed && <span className={isActive("/") ? "text-white" : "text-gray-800 font-medium"}>Dashboard</span>}
             </div>
           </Link>
         </div>
@@ -61,14 +61,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/projects") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/projects") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/projects") ? "text-white" : "text-gray-400"}`}>folder</span>
-              {!collapsed && <span className="text-white">My Site Walks</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/projects") ? "text-white" : "text-gray-600"}`}>folder</span>
+              {!collapsed && <span className={isActive("/projects") ? "text-white" : "text-gray-800 font-medium"}>My Site Walks</span>}
             </div>
           </Link>
         </div>
@@ -88,8 +88,8 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/card-access") ? "text-white" : "text-gray-400"}`}>meeting_room</span>
-              {!collapsed && <span className="text-white">Card Access</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/card-access") ? "text-white" : "text-gray-600"}`}>meeting_room</span>
+              {!collapsed && <span className={isActive("/card-access") ? "text-white" : "text-gray-800 font-medium"}>Card Access</span>}
             </div>
           </Link>
         </div>
@@ -105,8 +105,8 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/cameras") ? "text-white" : "text-gray-400"}`}>videocam</span>
-              {!collapsed && <span className="text-white">Cameras</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/cameras") ? "text-white" : "text-gray-600"}`}>videocam</span>
+              {!collapsed && <span className={isActive("/cameras") ? "text-white" : "text-gray-800 font-medium"}>Cameras</span>}
             </div>
           </Link>
         </div>
@@ -116,14 +116,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/elevators") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/elevators") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/elevators") ? "text-white" : "text-gray-400"}`}>elevator</span>
-              {!collapsed && <span className="text-white">Elevators & Turnstiles</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/elevators") ? "text-white" : "text-gray-600"}`}>elevator</span>
+              {!collapsed && <span className={isActive("/elevators") ? "text-white" : "text-gray-800 font-medium"}>Elevators & Turnstiles</span>}
             </div>
           </Link>
         </div>
