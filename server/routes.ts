@@ -8,10 +8,12 @@ import {
   insertCameraSchema,
   insertElevatorSchema,
   insertIntercomSchema,
+  insertImageSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
-  InsertIntercom
+  InsertIntercom,
+  InsertImage
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
@@ -191,11 +193,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const duplicateData: InsertAccessPoint = {
         project_id: existingAccessPoint.project_id,
         location: `${existingAccessPoint.location} (Copy)`,
-        door_type: existingAccessPoint.door_type,
+        quick_config: existingAccessPoint.quick_config,
         reader_type: existingAccessPoint.reader_type,
         lock_type: existingAccessPoint.lock_type,
-        security_level: existingAccessPoint.security_level,
-        ppi: existingAccessPoint.ppi,
+        monitoring_type: existingAccessPoint.monitoring_type,
+        lock_provider: existingAccessPoint.lock_provider,
+        takeover: existingAccessPoint.takeover,
+        interior_perimeter: existingAccessPoint.interior_perimeter,
+        exst_panel_location: existingAccessPoint.exst_panel_location,
+        exst_panel_type: existingAccessPoint.exst_panel_type,
+        exst_reader_type: existingAccessPoint.exst_reader_type,
+        new_panel_location: existingAccessPoint.new_panel_location,
+        new_panel_type: existingAccessPoint.new_panel_type,
+        new_reader_type: existingAccessPoint.new_reader_type,
         notes: existingAccessPoint.notes
       };
       
@@ -742,6 +752,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalEquipmentCount: accessPoints.length + cameras.length + elevators.length + intercoms.length
       }
     });
+  });
+  
+  // Image endpoints
+  app.get("/api/images/:equipmentType/:equipmentId", isAuthenticated, async (req: Request, res: Response) => {
+    const equipmentType = req.params.equipmentType;
+    const equipmentId = parseInt(req.params.equipmentId);
+    
+    if (isNaN(equipmentId)) {
+      return res.status(400).json({ message: "Invalid equipment ID" });
+    }
+    
+    // Validate equipment type
+    if (!['access_point', 'camera', 'elevator', 'intercom'].includes(equipmentType)) {
+      return res.status(400).json({ message: "Invalid equipment type" });
+    }
+    
+    // Get all images for this equipment
+    const images = await storage.getImages(equipmentType, equipmentId);
+    res.json(images);
+  });
+  
+  app.post("/api/images", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const result = insertImageSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid image data", 
+          errors: result.error.errors 
+        });
+      }
+      
+      // Verify project exists
+      const project = await storage.getProject(result.data.project_id);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Save the image
+      const image = await storage.saveImage(result.data);
+      res.status(201).json(image);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to save image",
+        error: (error as Error).message
+      });
+    }
+  });
+  
+  app.delete("/api/images/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const imageId = parseInt(req.params.id);
+    if (isNaN(imageId)) {
+      return res.status(400).json({ message: "Invalid image ID" });
+    }
+    
+    const success = await storage.deleteImage(imageId);
+    if (!success) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+    
+    res.status(204).end();
   });
 
   const httpServer = createServer(app);
