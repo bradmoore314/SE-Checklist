@@ -80,7 +80,7 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="flex flex-col items-center mb-6">
-            <img src={kastleLogo} alt="Kastle Logo" className="w-full max-w-xs" />
+            <img src={kastleLogo} alt="Kastle Logo" className="w-48" />
           </div>
           <Tabs 
             value={activeTab} 
@@ -288,7 +288,7 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Complete Site Walk Documentation</h3>
+                <h3 className="font-medium text-primary">Complete Site Walk Documentation</h3>
                 <p className="text-sm text-white">Track all security equipment for your site walks</p>
               </div>
             </div>
@@ -300,7 +300,7 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Efficient Site Walk Management</h3>
+                <h3 className="font-medium text-primary">Efficient Site Walk Management</h3>
                 <p className="text-sm text-white">Clone equipment with one click to speed up site walks</p>
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium">Site Walk Documentation</h3>
+                <h3 className="font-medium text-primary">Site Walk Documentation</h3>
                 <p className="text-sm text-white">Generate detailed site walk reports and schedules</p>
               </div>
             </div>
