@@ -18,7 +18,7 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
   }, []);
 
   // Fetch site walk summary from API
-  const { data: summary, isLoading } = useQuery({
+  const { data: summaryData, isLoading } = useQuery({
     queryKey: [`/api/projects/${project.id}/reports/project-summary`],
     enabled: !!project.id,
   });
@@ -68,25 +68,25 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {isLoading ? "..." : summary?.summary.accessPointCount || 0}
+                  {isLoading ? "..." : summaryData?.summary?.accessPointCount || 0}
                 </div>
                 <div className="text-sm text-gray-400">Access Points</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {isLoading ? "..." : summary?.summary.cameraCount || 0}
+                  {isLoading ? "..." : summaryData?.summary?.cameraCount || 0}
                 </div>
                 <div className="text-sm text-gray-400">Cameras</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {isLoading ? "..." : summary?.summary.elevatorCount || 0}
+                  {isLoading ? "..." : summaryData?.summary?.elevatorCount || 0}
                 </div>
                 <div className="text-sm text-gray-400">Elevators</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {isLoading ? "..." : summary?.summary.intercomCount || 0}
+                  {isLoading ? "..." : summaryData?.summary?.intercomCount || 0}
                 </div>
                 <div className="text-sm text-gray-400">Intercoms</div>
               </div>
