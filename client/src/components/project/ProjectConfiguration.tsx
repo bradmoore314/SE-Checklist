@@ -6,6 +6,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 
 interface SiteWalkConfigurationProps {
   project: Project;
@@ -160,6 +162,34 @@ export default function ProjectConfiguration({
       .replace("Ble", "BLE")
       .replace("Ppi", "PPI");
   };
+  
+  // Tooltip descriptions for each config option
+  const tooltips: Record<string, string> = {
+    // Installation/Hardware Scope
+    replace_readers: "Indicates existing readers are being swapped out. Costs depend on compatibility with existing infrastructure (e.g., backbox size, wiring) and may require trim plates or rework if the form factor differs.",
+    install_locks: "Adds labor and material costs for electric locks (e.g., strikes, maglocks). Also increases scope due to the need for door prep, power supplies, and potential coordination with locksmiths or GCs.",
+    pull_wire: "Signals that we're responsible for running cable — adds significant labor, materials, and possibly lift equipment. Impacts timeline, especially in finished spaces or plenum ceilings.",
+    wireless_locks: "Suggests a different install approach — fewer wires but higher hardware cost. May require additional gateways and power considerations. Can simplify install but complicate system design.",
+    conduit_drawings: "Required when electrical trades or permitting demand documentation of raceways. Adds engineering or design time, typically involves CAD work, and may require coordination with electrical subcontractors.",
+    
+    // Access Control/Identity Management
+    need_credentials: "Triggers the need to quote cards/fobs/mobile credentials. Impacts both hardware costs and ongoing credential management requirements.",
+    photo_id: "Suggests integration with photo capture or badge printing systems. Adds hardware (camera, badge printer) and software licensing costs, plus labor to configure.",
+    photo_badging: "Indicates that the system will need to produce printed credentials. Adds complexity to the quote with badge printers, consumables, and potential software requirements.",
+    ble: "Mobile credentialing support impacts hardware (readers must support BLE), licensing, and ongoing app fees. Also may require customer training or setup.",
+    test_card: "Required for reader alignment or troubleshooting. May indicate that a validation step is needed post-installation, which could mean a return trip or additional onsite time.",
+    visitor: "If visitor management is required, it may trigger additional hardware (e.g., visitor kiosks, printers), software modules, or integrations.",
+    guard_controls: "May involve panic buttons, override switches, or custom interfaces for security personnel. Increases design and wiring complexity, and may require consultation with on-site staff.",
+    
+    // Site Conditions / Project Planning
+    floorplan: "Absence of a floorplan complicates scoping — SEs may need to create one, or risk underquoting due to unknowns. Presence of a plan helps with accuracy and efficiency.",
+    reports_available: "If system reports are available (from an existing access control system), we can use them to validate quantities and locations, improving quoting accuracy and reducing surprises.",
+    kastle_connect: "Refers to our managed connectivity solution. Impacts pricing model, removes dependency on client internet, and adds recurring and equipment costs.",
+    on_site_security: "If a guard is present during install, this may affect access to spaces or allow for faster coordination. Alternatively, if required, it may add cost or scheduling restrictions.",
+    takeover: "Indicates we're inheriting existing hardware. This increases uncertainty and can lead to rework or incompatibility issues, so a contingency buffer or detailed assessment is often needed.",
+    rush: "Affects labor pricing and scheduling. May trigger overtime rates, prioritization fees, or require pulling resources from other jobs.",
+    ppi_quote_needed: "Means we need to get pricing from a third party (usually a certified installer or product partner). Adds time to the quoting process and may introduce variables we can't fully control."
+  };
 
   // Define categories for configuration options
   const categories = {
@@ -232,9 +262,23 @@ export default function ProjectConfiguration({
                   }
                   style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
                 />
-                <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                  {formatOptionName(option)}?
-                </Label>
+                <div className="flex items-center">
+                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
+                    {formatOptionName(option)}?
+                  </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="ml-1 cursor-help">
+                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs p-3 text-sm">
+                        {tooltips[option]}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             ))}
           </div>
@@ -257,9 +301,23 @@ export default function ProjectConfiguration({
                   }
                   style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
                 />
-                <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                  {formatOptionName(option)}?
-                </Label>
+                <div className="flex items-center">
+                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
+                    {formatOptionName(option)}?
+                  </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="ml-1 cursor-help">
+                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs p-3 text-sm">
+                        {tooltips[option]}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             ))}
           </div>
@@ -282,9 +340,23 @@ export default function ProjectConfiguration({
                   }
                   style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
                 />
-                <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                  {formatOptionName(option)}?
-                </Label>
+                <div className="flex items-center">
+                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
+                    {formatOptionName(option)}?
+                  </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="ml-1 cursor-help">
+                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs p-3 text-sm">
+                        {tooltips[option]}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             ))}
           </div>

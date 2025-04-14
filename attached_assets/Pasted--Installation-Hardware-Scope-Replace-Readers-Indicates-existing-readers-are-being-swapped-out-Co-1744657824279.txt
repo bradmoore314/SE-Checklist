@@ -1,0 +1,59 @@
+🔧 Installation/Hardware Scope
+Replace Readers?
+Indicates existing readers are being swapped out. Costs depend on compatibility with existing infrastructure (e.g., backbox size, wiring) and may require trim plates or rework if the form factor differs.
+
+Install Locks?
+Adds labor and material costs for electric locks (e.g., strikes, maglocks). Also increases scope due to the need for door prep, power supplies, and potential coordination with locksmiths or GCs.
+
+Pull Wire?
+Signals that we’re responsible for running cable — adds significant labor, materials, and possibly lift equipment. Impacts timeline, especially in finished spaces or plenum ceilings.
+
+Wireless Locks?
+Suggests a different install approach — fewer wires but higher hardware cost. May require additional gateways and power considerations. Can simplify install but complicate system design.
+
+Conduit Drawings?
+Required when electrical trades or permitting demand documentation of raceways. Adds engineering or design time, typically involves CAD work, and may require coordination with electrical subcontractors.
+
+🔐 Access Control / Identity Management
+Need Credentials?
+Triggers the need to quote cards/fobs/mobile credentials. Impacts both hardware costs and ongoing credential management requirements.
+
+Photo Id?
+Suggests integration with photo capture or badge printing systems. Adds hardware (camera, badge printer) and software licensing costs, plus labor to configure.
+
+Photo Badging?
+Indicates that the system will need to produce printed credentials. Adds complexity to the quote with badge printers, consumables, and potential software requirements.
+
+BLE?
+Mobile credentialing support impacts hardware (readers must support BLE), licensing, and ongoing app fees. Also may require customer training or setup.
+
+Test Card?
+Required for reader alignment or troubleshooting. May indicate that a validation step is needed post-installation, which could mean a return trip or additional onsite time.
+
+Visitor?
+If visitor management is required, it may trigger additional hardware (e.g., visitor kiosks, printers), software modules, or integrations.
+
+Guard Controls?
+May involve panic buttons, override switches, or custom interfaces for security personnel. Increases design and wiring complexity, and may require consultation with on-site staff.
+
+🏗️ Site Conditions / Project Planning
+Floorplan?
+Absence of a floorplan complicates scoping — SEs may need to create one, or risk underquoting due to unknowns. Presence of a plan helps with accuracy and efficiency.
+
+Reports Available?
+If system reports are available (from an existing access control system), we can use them to validate quantities and locations, improving quoting accuracy and reducing surprises.
+
+Kastle Connect?
+Refers to our managed connectivity solution. Impacts pricing model, removes dependency on client internet, and adds recurring and equipment costs.
+
+On Site Security?
+If a guard is present during install, this may affect access to spaces or allow for faster coordination. Alternatively, if required, it may add cost or scheduling restrictions.
+
+Takeover?
+Indicates we’re inheriting existing hardware. This increases uncertainty and can lead to rework or incompatibility issues, so a contingency buffer or detailed assessment is often needed.
+
+Rush?
+Affects labor pricing and scheduling. May trigger overtime rates, prioritization fees, or require pulling resources from other jobs.
+
+PPI Quote Needed?
+Means we need to get pricing from a third party (usually a certified installer or product partner). Adds time to the quoting process and may introduce variables we can’t fully control.
