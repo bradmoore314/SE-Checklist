@@ -4,7 +4,8 @@ import {
   AccessPoint, InsertAccessPoint,
   Camera, InsertCamera,
   Elevator, InsertElevator,
-  Intercom, InsertIntercom
+  Intercom, InsertIntercom,
+  Image, InsertImage
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -52,6 +53,11 @@ export interface IStorage {
   createIntercom(intercom: InsertIntercom): Promise<Intercom>;
   updateIntercom(id: number, intercom: Partial<InsertIntercom>): Promise<Intercom | undefined>;
   deleteIntercom(id: number): Promise<boolean>;
+  
+  // Images for Equipment
+  saveImage(image: InsertImage): Promise<Image>;
+  getImages(equipmentType: string, equipmentId: number): Promise<Image[]>;
+  deleteImage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -62,6 +68,7 @@ export class MemStorage implements IStorage {
   private cameras: Map<number, Camera>;
   private elevators: Map<number, Elevator>;
   private intercoms: Map<number, Intercom>;
+  private images: Map<number, Image>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -69,6 +76,7 @@ export class MemStorage implements IStorage {
   private currentCameraId: number;
   private currentElevatorId: number;
   private currentIntercomId: number;
+  private currentImageId: number;
 
   constructor() {
     // Initialize session store
@@ -82,6 +90,7 @@ export class MemStorage implements IStorage {
     this.cameras = new Map();
     this.elevators = new Map();
     this.intercoms = new Map();
+    this.images = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -89,6 +98,7 @@ export class MemStorage implements IStorage {
     this.currentCameraId = 1;
     this.currentElevatorId = 1;
     this.currentIntercomId = 1;
+    this.currentImageId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -435,6 +445,37 @@ export class MemStorage implements IStorage {
 
   async deleteIntercom(id: number): Promise<boolean> {
     return this.intercoms.delete(id);
+  }
+  
+  // Image management
+  async saveImage(insertImage: InsertImage): Promise<Image> {
+    const id = this.currentImageId++;
+    const now = new Date();
+    
+    const image: Image = {
+      id,
+      equipment_type: insertImage.equipment_type,
+      equipment_id: insertImage.equipment_id,
+      project_id: insertImage.project_id,
+      image_data: insertImage.image_data,
+      filename: insertImage.filename ?? null,
+      created_at: now
+    };
+    
+    this.images.set(id, image);
+    return image;
+  }
+  
+  async getImages(equipmentType: string, equipmentId: number): Promise<Image[]> {
+    return Array.from(this.images.values()).filter(
+      (image) => 
+        image.equipment_type === equipmentType && 
+        image.equipment_id === equipmentId
+    );
+  }
+  
+  async deleteImage(id: number): Promise<boolean> {
+    return this.images.delete(id);
   }
 }
 

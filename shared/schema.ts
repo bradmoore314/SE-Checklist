@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -143,6 +143,58 @@ export const insertIntercomSchema = createInsertSchema(intercoms).omit({
   updated_at: true,
 });
 
+// Equipment Types for Images
+export const equipmentTypeEnum = pgEnum('equipment_type', [
+  'access_point',
+  'camera',
+  'elevator',
+  'intercom'
+]);
+
+// Images table for all equipment types
+export const images = pgTable("images", {
+  id: serial("id").primaryKey(),
+  equipment_type: equipmentTypeEnum("equipment_type").notNull(),
+  equipment_id: integer("equipment_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  image_data: text("image_data").notNull(), // base64 encoded image data
+  filename: text("filename"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertImageSchema = createInsertSchema(images).omit({
+  id: true,
+  created_at: true,
+});
+
+// Add image field to access points
+export const accessPointImages = pgTable("access_point_images", {
+  id: serial("id").primaryKey(),
+  access_point_id: integer("access_point_id").notNull(),
+  image_id: integer("image_id").notNull(),
+});
+
+// Add image field to cameras
+export const cameraImages = pgTable("camera_images", {
+  id: serial("id").primaryKey(),
+  camera_id: integer("camera_id").notNull(),
+  image_id: integer("image_id").notNull(),
+});
+
+// Add image field to elevators
+export const elevatorImages = pgTable("elevator_images", {
+  id: serial("id").primaryKey(),
+  elevator_id: integer("elevator_id").notNull(),
+  image_id: integer("image_id").notNull(),
+});
+
+// Add image field to intercoms
+export const intercomImages = pgTable("intercom_images", {
+  id: serial("id").primaryKey(),
+  intercom_id: integer("intercom_id").notNull(),
+  image_id: integer("image_id").notNull(),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -161,3 +213,6 @@ export type InsertElevator = z.infer<typeof insertElevatorSchema>;
 
 export type Intercom = typeof intercoms.$inferSelect;
 export type InsertIntercom = z.infer<typeof insertIntercomSchema>;
+
+export type Image = typeof images.$inferSelect;
+export type InsertImage = z.infer<typeof insertImageSchema>;
