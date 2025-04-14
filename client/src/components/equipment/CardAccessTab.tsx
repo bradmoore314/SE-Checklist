@@ -147,21 +147,22 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           <thead>
             <tr style={{ backgroundColor: 'var(--darker-grey)' }}>
               <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCATION</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">DOOR TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">QUICK CONFIG</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">READER TYPE</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCK TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">SECURITY LEVEL</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">MONITORING</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">TAKEOVER</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
-                <td colSpan={6} className="px-4 py-8 text-center text-white">Loading access points...</td>
+                <td colSpan={7} className="px-4 py-8 text-center text-white">Loading access points...</td>
               </tr>
             ) : paginatedAccessPoints.length === 0 ? (
               <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
-                <td colSpan={6} className="px-4 py-8 text-center text-white">
+                <td colSpan={7} className="px-4 py-8 text-center text-white">
                   {searchTerm ? "No access points match your search." : "No access points have been added yet."}
                 </td>
               </tr>
@@ -171,10 +172,11 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                     style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}
                 >
                   <td className="px-4 py-3 whitespace-nowrap font-medium text-white">{ap.location}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.door_type}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{ap.quick_config}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.reader_type}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{ap.lock_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.security_level}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{ap.monitoring_type}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{ap.takeover || 'No'}</td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button 
                       className="text-gray-300 hover:text-white focus:outline-none mr-2"
