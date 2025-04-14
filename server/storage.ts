@@ -105,11 +105,11 @@ export class MemStorage implements IStorage {
   }
 
   private initSampleData() {
-    // Create a sample admin user with hashed password (hashed version of "admin123")
+    // Create a sample admin user with hashed password (hashed version of "password")
     this.users.set(1, {
       id: 1,
       username: "admin",
-      password: "41a9bfbb8ee9e9de8ab716c49f3f4c220d48b38fe4ba0d1a67274178ea4b7cdf999b3a6e751c6977e5d2e1aa4fe802f138eb981dd93ccf3b656f758e47f511e2.b51e0f7781d7c763",
+      password: "1c1c737e65afa38ef7bd9c90832e657eb53442a11e68fd7e621a75fd7648045e8fb84b887c511873879d26fd952270b2b186cfc1efacf36e0cf2d78a342fd307.37a5435ee0a77fd9",
       email: "admin@example.com",
       fullName: "Admin User",
       role: "admin",
