@@ -82,7 +82,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/card-access") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/card-access") ? { 
                  backgroundColor: 'var(--red-accent)', 
@@ -99,7 +99,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/cameras") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/cameras") ? { 
                  backgroundColor: 'var(--red-accent)', 
@@ -133,14 +133,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/intercoms") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/intercoms") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/intercoms") ? "text-white" : "text-gray-400"}`}>call</span>
-              {!collapsed && <span className="text-white">Intercoms</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/intercoms") ? "text-white" : "text-gray-600"}`}>call</span>
+              {!collapsed && <span className={isActive("/intercoms") ? "text-white" : "text-gray-800 font-medium"}>Intercoms</span>}
             </div>
           </Link>
         </div>
@@ -154,14 +154,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/door-schedules") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/door-schedules") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/door-schedules") ? "text-white" : "text-gray-400"}`}>assessment</span>
-              {!collapsed && <span className="text-white">Door Schedules</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/door-schedules") ? "text-white" : "text-gray-600"}`}>assessment</span>
+              {!collapsed && <span className={isActive("/door-schedules") ? "text-white" : "text-gray-800 font-medium"}>Door Schedules</span>}
             </div>
           </Link>
         </div>
@@ -171,14 +171,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/camera-schedules") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/camera-schedules") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/camera-schedules") ? "text-white" : "text-gray-400"}`}>bar_chart</span>
-              {!collapsed && <span className="text-white">Camera Schedules</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/camera-schedules") ? "text-white" : "text-gray-600"}`}>bar_chart</span>
+              {!collapsed && <span className={isActive("/camera-schedules") ? "text-white" : "text-gray-800 font-medium"}>Camera Schedules</span>}
             </div>
           </Link>
         </div>
@@ -188,14 +188,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/project-summary") 
                 ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-zinc-700"
+                : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
                style={isActive("/project-summary") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-white" : "text-gray-400"}`}>summarize</span>
-              {!collapsed && <span className="text-white">Site Walk Summary</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-white" : "text-gray-600"}`}>summarize</span>
+              {!collapsed && <span className={isActive("/project-summary") ? "text-white" : "text-gray-800 font-medium"}>Site Walk Summary</span>}
             </div>
           </Link>
         </div>
