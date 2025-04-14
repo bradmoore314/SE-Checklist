@@ -29,6 +29,8 @@ export const projects = pgTable("projects", {
   se_name: text("se_name"),
   bdm_name: text("bdm_name"),
   building_count: integer("building_count"),
+  progress_percentage: integer("progress_percentage").default(0),
+  progress_notes: text("progress_notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
   // Configuration options

@@ -22,7 +22,8 @@ interface SiteWalkDashboardProps {
 }
 
 export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkDashboardProps) {
-  const [progressValue, setProgressValue] = useState(0);
+  const [progressValue, setProgressValue] = useState(project.progress_percentage || 0);
+  const [progressNotes, setProgressNotes] = useState(project.progress_notes || "");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({
     name: project.name,
@@ -32,11 +33,11 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
   });
   const { toast } = useToast();
   
-  // Simulate progress loading animation
+  // Update progress value when project changes
   useEffect(() => {
-    const timer = setTimeout(() => setProgressValue(65), 300);
-    return () => clearTimeout(timer);
-  }, []);
+    setProgressValue(project.progress_percentage || 0);
+    setProgressNotes(project.progress_notes || "");
+  }, [project]);
 
   // Update the edit form when the project changes
   useEffect(() => {
@@ -224,15 +225,58 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border rounded-lg shadow-sm">
           <CardContent className="p-6">
-            <div className="text-gray-700 font-medium mb-1">Site Walk Status</div>
+            <div className="text-gray-700 font-medium mb-1">Activity Status</div>
             <div className="flex items-end justify-between">
-              <div className="text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>In Progress</div>
+              <div className="text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>
+                {progressValue < 25 ? "Just Started" : 
+                 progressValue < 50 ? "In Progress" : 
+                 progressValue < 75 ? "Almost Done" : 
+                 progressValue < 100 ? "Final Review" : "Complete"}
+              </div>
               <div className="text-sm text-gray-500">Updated {formatDate(project.updated_at)}</div>
             </div>
             <div className="mt-4">
-              <Progress value={progressValue} className="h-2.5" 
-                        style={{ backgroundColor: 'var(--medium-grey)' }} />
-              <div className="text-sm text-gray-500 mt-1">{progressValue}% Complete</div>
+              <label htmlFor="progress-slider" className="text-sm font-medium text-gray-700 mb-2 block">
+                Progress: {progressValue}%
+              </label>
+              <input 
+                id="progress-slider"
+                type="range" 
+                min="0" 
+                max="100" 
+                step="5"
+                value={progressValue} 
+                onChange={(e) => {
+                  const newValue = parseInt(e.target.value);
+                  setProgressValue(newValue);
+                  // Update the project with the new progress value
+                  updateSiteWalkMutation.mutate({ progress_percentage: newValue });
+                }}
+                className="w-full h-2.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                style={{ 
+                  accentColor: 'var(--red-accent)',
+                }}
+              />
+            </div>
+            <div className="mt-4">
+              <label htmlFor="progress-notes" className="text-sm font-medium text-gray-700 mb-2 block">
+                Progress Notes
+              </label>
+              <textarea
+                id="progress-notes"
+                value={progressNotes}
+                onChange={(e) => {
+                  setProgressNotes(e.target.value);
+                }}
+                onBlur={() => {
+                  // Only update when user finishes editing
+                  if (progressNotes !== project.progress_notes) {
+                    updateSiteWalkMutation.mutate({ progress_notes: progressNotes });
+                  }
+                }}
+                placeholder="Add notes about the current status..."
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+              />
             </div>
           </CardContent>
         </Card>
@@ -271,7 +315,7 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         
         <Card className="border rounded-lg shadow-sm">
           <CardContent className="p-6">
-            <div className="text-gray-700 font-medium mb-1">Site Walk Details</div>
+            <div className="text-gray-700 font-medium mb-1">Scope Info</div>
             <div className="mt-3 space-y-3">
               <div className="flex justify-between">
                 <div className="text-sm text-gray-600">SE Name:</div>
@@ -284,6 +328,10 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
               <div className="flex justify-between">
                 <div className="text-sm text-gray-600">Site Address:</div>
                 <div className="text-sm font-medium text-gray-800">{project.site_address || "Not specified"}</div>
+              </div>
+              <div className="flex justify-between">
+                <div className="text-sm text-gray-600">Building Count:</div>
+                <div className="text-sm font-medium text-gray-800">{project.building_count || 1}</div>
               </div>
               <div className="flex justify-between">
                 <div className="text-sm text-gray-600">Created Date:</div>
