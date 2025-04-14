@@ -742,6 +742,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const elevators = await storage.getElevators(projectId);
     const intercoms = await storage.getIntercoms(projectId);
 
+    // Fetch images for all equipment items
+    const accessPointsWithImages = await Promise.all(
+      accessPoints.map(async (ap) => {
+        const images = await storage.getImages('access_point', ap.id);
+        return { ...ap, images };
+      })
+    );
+
+    const camerasWithImages = await Promise.all(
+      cameras.map(async (cam) => {
+        const images = await storage.getImages('camera', cam.id);
+        return { ...cam, images };
+      })
+    );
+
+    const elevatorsWithImages = await Promise.all(
+      elevators.map(async (elev) => {
+        const images = await storage.getImages('elevator', elev.id);
+        return { ...elev, images };
+      })
+    );
+
+    const intercomsWithImages = await Promise.all(
+      intercoms.map(async (intercom) => {
+        const images = await storage.getImages('intercom', intercom.id);
+        return { ...intercom, images };
+      })
+    );
+
     res.json({
       project: project,
       summary: {
@@ -750,6 +779,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         elevatorCount: elevators.length,
         intercomCount: intercoms.length,
         totalEquipmentCount: accessPoints.length + cameras.length + elevators.length + intercoms.length
+      },
+      equipment: {
+        accessPoints: accessPointsWithImages,
+        cameras: camerasWithImages,
+        elevators: elevatorsWithImages,
+        intercoms: intercomsWithImages
       }
     });
   });

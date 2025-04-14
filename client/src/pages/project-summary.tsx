@@ -1,12 +1,35 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSiteWalk } from "@/context/SiteWalkContext";
-import { Project } from "@shared/schema";
+import { 
+  Project, 
+  AccessPoint, 
+  Camera, 
+  Elevator, 
+  Intercom,
+  Image as EquipmentImage 
+} from "@shared/schema";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, FileDown, Printer } from "lucide-react";
+
+interface EquipmentWithImages extends AccessPoint {
+  images: EquipmentImage[];
+}
+
+interface CameraWithImages extends Camera {
+  images: EquipmentImage[];
+}
+
+interface ElevatorWithImages extends Elevator {
+  images: EquipmentImage[];
+}
+
+interface IntercomWithImages extends Intercom {
+  images: EquipmentImage[];
+}
 
 interface SiteSummary {
   project: Project;
@@ -16,7 +39,13 @@ interface SiteSummary {
     elevatorCount: number;
     intercomCount: number;
     totalEquipmentCount: number;
-  }
+  };
+  equipment: {
+    accessPoints: EquipmentWithImages[];
+    cameras: CameraWithImages[];
+    elevators: ElevatorWithImages[];
+    intercoms: IntercomWithImages[];
+  };
 }
 
 export default function SiteWalkSummary() {
@@ -221,20 +250,305 @@ export default function SiteWalkSummary() {
         </CardContent>
       </Card>
 
+      {/* Access Points Summary */}
+      {summary.equipment.accessPoints.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Card Access Points</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center">
+                <Printer className="h-4 w-4 mr-1" />
+                Print
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center">
+                <FileDown className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {summary.equipment.accessPoints.map((ap) => (
+                <div key={ap.id} className="border rounded-md p-4">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 space-y-2">
+                      <h4 className="font-semibold text-lg">{ap.location}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Reader Type</p>
+                          <p>{ap.reader_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Lock Type</p>
+                          <p>{ap.lock_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Monitoring Type</p>
+                          <p>{ap.monitoring_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Quick Config</p>
+                          <p>{ap.quick_config || "N/A"}</p>
+                        </div>
+                        {ap.notes && (
+                          <div className="col-span-2">
+                            <p className="text-neutral-600 text-sm mb-1">Notes</p>
+                            <p className="whitespace-pre-wrap">{ap.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {ap.images && ap.images.length > 0 && (
+                      <div className="flex-shrink-0">
+                        <p className="text-neutral-600 text-sm mb-2">Images ({ap.images.length})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {ap.images.map((img) => (
+                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                              <img 
+                                src={img.url} 
+                                alt={`Image for ${ap.location}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Cameras Summary */}
+      {summary.equipment.cameras.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Cameras</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center">
+                <Printer className="h-4 w-4 mr-1" />
+                Print
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center">
+                <FileDown className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {summary.equipment.cameras.map((camera) => (
+                <div key={camera.id} className="border rounded-md p-4">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 space-y-2">
+                      <h4 className="font-semibold text-lg">{camera.location}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Camera Type</p>
+                          <p>{camera.camera_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Mounting Type</p>
+                          <p>{camera.mounting_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Resolution</p>
+                          <p>{camera.resolution || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Field of View</p>
+                          <p>{camera.field_of_view || "N/A"}</p>
+                        </div>
+                        {camera.notes && (
+                          <div className="col-span-2">
+                            <p className="text-neutral-600 text-sm mb-1">Notes</p>
+                            <p className="whitespace-pre-wrap">{camera.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {camera.images && camera.images.length > 0 && (
+                      <div className="flex-shrink-0">
+                        <p className="text-neutral-600 text-sm mb-2">Images ({camera.images.length})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {camera.images.map((img) => (
+                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                              <img 
+                                src={img.url} 
+                                alt={`Image for ${camera.location}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Elevators Summary */}
+      {summary.equipment.elevators.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Elevators & Turnstiles</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center">
+                <Printer className="h-4 w-4 mr-1" />
+                Print
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center">
+                <FileDown className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {summary.equipment.elevators.map((elevator) => (
+                <div key={elevator.id} className="border rounded-md p-4">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 space-y-2">
+                      <h4 className="font-semibold text-lg">{elevator.location}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Elevator Type</p>
+                          <p>{elevator.elevator_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Floor Count</p>
+                          <p>{elevator.floor_count || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Cab Count</p>
+                          <p>{elevator.cab_count || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Access Method</p>
+                          <p>{elevator.access_method || "N/A"}</p>
+                        </div>
+                        {elevator.notes && (
+                          <div className="col-span-2">
+                            <p className="text-neutral-600 text-sm mb-1">Notes</p>
+                            <p className="whitespace-pre-wrap">{elevator.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {elevator.images && elevator.images.length > 0 && (
+                      <div className="flex-shrink-0">
+                        <p className="text-neutral-600 text-sm mb-2">Images ({elevator.images.length})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {elevator.images.map((img) => (
+                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                              <img 
+                                src={img.url} 
+                                alt={`Image for ${elevator.location}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Intercoms Summary */}
+      {summary.equipment.intercoms.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Intercoms</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center">
+                <Printer className="h-4 w-4 mr-1" />
+                Print
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center">
+                <FileDown className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {summary.equipment.intercoms.map((intercom) => (
+                <div key={intercom.id} className="border rounded-md p-4">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 space-y-2">
+                      <h4 className="font-semibold text-lg">{intercom.location}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Intercom Type</p>
+                          <p>{intercom.intercom_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Connection Type</p>
+                          <p>{intercom.connection_type || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Mounting Location</p>
+                          <p>{intercom.mounting_location || "N/A"}</p>
+                        </div>
+                        <div>
+                          <p className="text-neutral-600 text-sm mb-1">Integration</p>
+                          <p>{intercom.integration || "N/A"}</p>
+                        </div>
+                        {intercom.notes && (
+                          <div className="col-span-2">
+                            <p className="text-neutral-600 text-sm mb-1">Notes</p>
+                            <p className="whitespace-pre-wrap">{intercom.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {intercom.images && intercom.images.length > 0 && (
+                      <div className="flex-shrink-0">
+                        <p className="text-neutral-600 text-sm mb-2">Images ({intercom.images.length})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {intercom.images.map((img) => (
+                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                              <img 
+                                src={img.url} 
+                                alt={`Image for ${intercom.location}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Export Options */}
       <div className="flex gap-2">
-        <Link href="/door-schedules">
-          <Button className="flex items-center">
-            <span className="material-icons mr-1">assessment</span>
-            Door Schedule
-          </Button>
-        </Link>
+        <Button className="flex items-center">
+          <FileDown className="h-4 w-4 mr-1" />
+          Export Complete Report
+        </Button>
         
-        <Link href="/camera-schedules">
-          <Button className="flex items-center">
-            <span className="material-icons mr-1">bar_chart</span>
-            Camera Schedule
-          </Button>
-        </Link>
+        <Button variant="outline" className="flex items-center">
+          <Printer className="h-4 w-4 mr-1" />
+          Print Report
+        </Button>
       </div>
     </div>
   );
