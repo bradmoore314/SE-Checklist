@@ -771,12 +771,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       })
     );
 
+    // Calculate additional counts
+    const interiorAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Interior').length;
+    const perimeterAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Perimeter').length;
+    
+    const indoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Indoor')).length;
+    const outdoorCameras = cameras.filter(cam => cam.mounting_type?.includes('Outdoor')).length;
+    
+    // For elevators, count unique banks
+    const elevatorBanks = new Set(elevators.map(elev => elev.bank_name)).size;
+
     res.json({
       project: project,
       summary: {
         accessPointCount: accessPoints.length,
+        interiorAccessPointCount: interiorAccessPoints,
+        perimeterAccessPointCount: perimeterAccessPoints,
         cameraCount: cameras.length,
+        indoorCameraCount: indoorCameras,
+        outdoorCameraCount: outdoorCameras,
         elevatorCount: elevators.length,
+        elevatorBankCount: elevatorBanks,
         intercomCount: intercoms.length,
         totalEquipmentCount: accessPoints.length + cameras.length + elevators.length + intercoms.length
       },
