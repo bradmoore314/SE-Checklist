@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import { useToast } from "@/hooks/use-toast";
+import { Settings } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface CardAccessTabProps {
   project: Project;
@@ -21,6 +25,19 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  
+  // Column visibility state
+  const [visibleColumns, setVisibleColumns] = useState({
+    lockProvider: false,
+    interiorPerimeter: false,
+    exstPanelLocation: false,
+    exstPanelType: false,
+    exstReaderType: false,
+    newPanelLocation: false,
+    newPanelType: false,
+    newReaderType: false,
+    notes: false
+  });
 
   // Fetch access points
   const { data: accessPoints = [], isLoading } = useQuery<AccessPoint[]>({
@@ -114,6 +131,125 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium text-white">Card Access Points</h3>
         <div className="flex items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="mr-2 border-zinc-700 text-white hover:bg-zinc-700"
+                size="sm"
+              >
+                <Settings className="h-4 w-4 mr-1" />
+                Column Settings
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent 
+              className="w-72 p-4" 
+              style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}
+            >
+              <h4 className="text-sm font-semibold mb-3 text-white">Show/Hide Columns</h4>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="lock-provider"
+                    checked={visibleColumns.lockProvider}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, lockProvider: !!checked})
+                    }
+                  />
+                  <Label htmlFor="lock-provider" className="text-sm text-gray-300">Lock Provider</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="interior-perimeter"
+                    checked={visibleColumns.interiorPerimeter}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, interiorPerimeter: !!checked})
+                    }
+                  />
+                  <Label htmlFor="interior-perimeter" className="text-sm text-gray-300">Interior/Perimeter</Label>
+                </div>
+                
+                <div className="pt-2 border-t border-zinc-700">
+                  <h5 className="text-xs font-medium mb-2 text-white">Panel Information</h5>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="exst-panel-location"
+                    checked={visibleColumns.exstPanelLocation}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, exstPanelLocation: !!checked})
+                    }
+                  />
+                  <Label htmlFor="exst-panel-location" className="text-sm text-gray-300">Existing Panel Location</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="exst-panel-type"
+                    checked={visibleColumns.exstPanelType}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, exstPanelType: !!checked})
+                    }
+                  />
+                  <Label htmlFor="exst-panel-type" className="text-sm text-gray-300">Existing Panel Type</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="exst-reader-type"
+                    checked={visibleColumns.exstReaderType}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, exstReaderType: !!checked})
+                    }
+                  />
+                  <Label htmlFor="exst-reader-type" className="text-sm text-gray-300">Existing Reader Type</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="new-panel-location"
+                    checked={visibleColumns.newPanelLocation}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, newPanelLocation: !!checked})
+                    }
+                  />
+                  <Label htmlFor="new-panel-location" className="text-sm text-gray-300">New Panel Location</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="new-panel-type"
+                    checked={visibleColumns.newPanelType}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, newPanelType: !!checked})
+                    }
+                  />
+                  <Label htmlFor="new-panel-type" className="text-sm text-gray-300">New Panel Type</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="new-reader-type"
+                    checked={visibleColumns.newReaderType}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, newReaderType: !!checked})
+                    }
+                  />
+                  <Label htmlFor="new-reader-type" className="text-sm text-gray-300">New Reader Type</Label>
+                </div>
+                
+                <div className="pt-2 border-t border-zinc-700">
+                  <h5 className="text-xs font-medium mb-2 text-white">Other</h5>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="notes"
+                    checked={visibleColumns.notes}
+                    onCheckedChange={(checked) => 
+                      setVisibleColumns({...visibleColumns, notes: !!checked})
+                    }
+                  />
+                  <Label htmlFor="notes" className="text-sm text-gray-300">Notes</Label>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          
           <div className="relative mr-2">
             <div className="relative">
               <span className="material-icons absolute left-3 top-2 text-gray-400">search</span>

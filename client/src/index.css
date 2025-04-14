@@ -3,14 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --darkest-grey: #1c1c1c;
-  --darker-grey: #242424;
-  --dark-grey: #2a2a2a;
-  --medium-grey: #333333;
-  --light-grey: #4a4a4a;
-  --lighter-grey: #6a6a6a;
-  --red-accent: #e11d48;
-  --red-accent-hover: #be123c;
+  --lightest-grey: #ffffff;
+  --lighter-grey: #f5f5f5;
+  --light-grey: #eeeeee;
+  --medium-grey: #dddddd;
+  --dark-grey: #aaaaaa;
+  --darker-grey: #777777;
+  --darkest-grey: #333333;
+  --red-accent: #e41e31;
+  --red-accent-hover: #c21a2c;
 }
 
 @layer base {
@@ -19,14 +20,14 @@
   }
 
   body {
-    @apply font-sans antialiased text-white;
-    background-color: var(--darkest-grey);
-    color: white;
+    @apply font-sans antialiased;
+    background-color: var(--lightest-grey);
+    color: var(--darkest-grey);
   }
   
   /* Main container styles */
   .app-container {
-    background-color: var(--darkest-grey);
+    background-color: var(--lightest-grey);
   }
   
   /* Card styling */
