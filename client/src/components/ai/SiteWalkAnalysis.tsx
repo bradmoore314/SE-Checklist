@@ -85,7 +85,7 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
         {!analysis ? (
           <>
             {showNoDataWarning() && (
-              <Alert className="mb-4" variant="warning">
+              <Alert className="mb-4">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Limited Data Available</AlertTitle>
                 <AlertDescription>

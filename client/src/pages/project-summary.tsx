@@ -13,7 +13,8 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { AlertTriangle, FileDown, Printer } from "lucide-react";
+import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
+import { SiteWalkAnalysis } from "@/components/ai/SiteWalkAnalysis";
 
 interface EquipmentWithImages extends AccessPoint {
   images: EquipmentImage[];
@@ -35,8 +36,13 @@ interface SiteSummary {
   project: Project;
   summary: {
     accessPointCount: number;
+    interiorAccessPointCount: number;
+    perimeterAccessPointCount: number;
     cameraCount: number;
+    indoorCameraCount: number;
+    outdoorCameraCount: number;
     elevatorCount: number;
+    elevatorBankCount: number;
     intercomCount: number;
     totalEquipmentCount: number;
   };
@@ -179,6 +185,9 @@ export default function SiteWalkSummary() {
                   {summary.summary.accessPointCount}
                 </div>
                 <div className="text-neutral-600">Card Access Points</div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Interior: {summary.summary.interiorAccessPointCount} | Perimeter: {summary.summary.perimeterAccessPointCount}
+                </div>
               </CardContent>
             </Card>
             
@@ -188,6 +197,9 @@ export default function SiteWalkSummary() {
                   {summary.summary.cameraCount}
                 </div>
                 <div className="text-neutral-600">Cameras</div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Indoor: {summary.summary.indoorCameraCount} | Outdoor: {summary.summary.outdoorCameraCount}
+                </div>
               </CardContent>
             </Card>
             
@@ -197,6 +209,9 @@ export default function SiteWalkSummary() {
                   {summary.summary.elevatorCount}
                 </div>
                 <div className="text-neutral-600">Elevators & Turnstiles</div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Banks: {summary.summary.elevatorBankCount}
+                </div>
               </CardContent>
             </Card>
             
@@ -529,6 +544,9 @@ export default function SiteWalkSummary() {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Analysis */}
+      <SiteWalkAnalysis projectId={currentSiteWalk.id} />
 
       {/* Export Options */}
       <div className="flex gap-2">
