@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Dialog,
@@ -68,6 +69,7 @@ export default function AddAccessPointModal({
 }: AddAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const [quickConfigSelected, setQuickConfigSelected] = useState(false);
 
   // Fetch lookup data for dropdowns
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
@@ -96,6 +98,14 @@ export default function AddAccessPointModal({
       notes: "",
     },
   });
+  
+  // Watch for quick_config changes to enable/disable other fields
+  const watchQuickConfig = form.watch("quick_config");
+  
+  // Update quickConfigSelected state when quick_config value changes
+  useEffect(() => {
+    setQuickConfigSelected(!!watchQuickConfig);
+  }, [watchQuickConfig]);
 
   // Handle form submission
   const onSubmit = async (values: AccessPointFormValues) => {
