@@ -39,7 +39,7 @@ function Router() {
       {/* Report routes */}
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
       <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
-      <ProtectedRoute path="/site-walk-summary" component={SiteWalkSummary} />
+      <ProtectedRoute path="/project-summary" component={SiteWalkSummary} />
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />
