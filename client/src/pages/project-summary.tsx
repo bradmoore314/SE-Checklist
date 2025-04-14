@@ -146,7 +146,7 @@ export default function SiteWalkSummary() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <Card>
               <CardContent className="p-6">
-                <div className="text-5xl font-bold text-primary mb-2">
+                <div className="text-5xl font-bold mb-2" style={{ color: 'var(--red-accent)' }}>
                   {summary.summary.accessPointCount}
                 </div>
                 <div className="text-neutral-600">Card Access Points</div>
@@ -155,7 +155,7 @@ export default function SiteWalkSummary() {
             
             <Card>
               <CardContent className="p-6">
-                <div className="text-5xl font-bold text-primary mb-2">
+                <div className="text-5xl font-bold mb-2" style={{ color: 'var(--red-accent)' }}>
                   {summary.summary.cameraCount}
                 </div>
                 <div className="text-neutral-600">Cameras</div>
@@ -164,7 +164,7 @@ export default function SiteWalkSummary() {
             
             <Card>
               <CardContent className="p-6">
-                <div className="text-5xl font-bold text-primary mb-2">
+                <div className="text-5xl font-bold mb-2" style={{ color: 'var(--red-accent)' }}>
                   {summary.summary.elevatorCount}
                 </div>
                 <div className="text-neutral-600">Elevators & Turnstiles</div>
@@ -173,7 +173,7 @@ export default function SiteWalkSummary() {
             
             <Card>
               <CardContent className="p-6">
-                <div className="text-5xl font-bold text-primary mb-2">
+                <div className="text-5xl font-bold mb-2" style={{ color: 'var(--red-accent)' }}>
                   {summary.summary.intercomCount}
                 </div>
                 <div className="text-neutral-600">Intercoms</div>
@@ -182,7 +182,7 @@ export default function SiteWalkSummary() {
             
             <Card>
               <CardContent className="p-6">
-                <div className="text-5xl font-bold text-blue-600 mb-2">
+                <div className="text-5xl font-bold mb-2" style={{ color: 'var(--red-accent)' }}>
                   {summary.summary.totalEquipmentCount}
                 </div>
                 <div className="text-neutral-600">Total Equipment</div>

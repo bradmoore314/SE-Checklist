@@ -23,13 +23,13 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const { toast } = useToast();
 
   // Fetch access points
-  const { data: accessPoints = [], isLoading } = useQuery({
+  const { data: accessPoints = [], isLoading } = useQuery<AccessPoint[]>({
     queryKey: [`/api/projects/${project.id}/access-points`],
     enabled: !!project.id,
   });
 
   // Filter access points based on search term
-  const filteredAccessPoints = accessPoints.filter((ap: AccessPoint) => 
+  const filteredAccessPoints = accessPoints.filter((ap) => 
     ap.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ap.door_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ap.reader_type.toLowerCase().includes(searchTerm.toLowerCase())
@@ -48,9 +48,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       try {
         await apiRequest("DELETE", `/api/access-points/${id}`);
         
-        // Invalidate and refetch
+        // Invalidate and refetch access points and project summary
         queryClient.invalidateQueries({ 
           queryKey: [`/api/projects/${project.id}/access-points`]
+        });
+        queryClient.invalidateQueries({
+          queryKey: [`/api/projects/${project.id}/reports/project-summary`]
         });
         
         toast({
@@ -72,9 +75,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     // Close modal
     setShowAddModal(false);
     
-    // Invalidate and refetch
+    // Invalidate and refetch access points and project summary
     queryClient.invalidateQueries({ 
       queryKey: [`/api/projects/${project.id}/access-points`]
+    });
+    queryClient.invalidateQueries({
+      queryKey: [`/api/projects/${project.id}/reports/project-summary`]
     });
     
     toast({
@@ -89,9 +95,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     setShowEditModal(false);
     setSelectedAccessPoint(null);
     
-    // Invalidate and refetch
+    // Invalidate and refetch access points and project summary
     queryClient.invalidateQueries({ 
       queryKey: [`/api/projects/${project.id}/access-points`]
+    });
+    queryClient.invalidateQueries({
+      queryKey: [`/api/projects/${project.id}/reports/project-summary`]
     });
     
     toast({
@@ -182,9 +191,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                         try {
                           await apiRequest("POST", `/api/access-points/${ap.id}/duplicate`);
                           
-                          // Invalidate and refetch
+                          // Invalidate and refetch access points and project summary
                           queryClient.invalidateQueries({ 
                             queryKey: [`/api/projects/${project.id}/access-points`]
+                          });
+                          queryClient.invalidateQueries({
+                            queryKey: [`/api/projects/${project.id}/reports/project-summary`]
                           });
                           
                           toast({

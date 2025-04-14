@@ -17,8 +17,20 @@ export default function ProjectDashboard({ project }: SiteWalkDashboardProps) {
     return () => clearTimeout(timer);
   }, []);
 
+  // Define an interface for the summary data
+  interface SiteSummary {
+    project: Project;
+    summary: {
+      accessPointCount: number;
+      cameraCount: number;
+      elevatorCount: number;
+      intercomCount: number;
+      totalEquipmentCount: number;
+    }
+  }
+
   // Fetch site walk summary from API
-  const { data: summaryData, isLoading } = useQuery({
+  const { data: summaryData, isLoading } = useQuery<SiteSummary>({
     queryKey: [`/api/projects/${project.id}/reports/project-summary`],
     enabled: !!project.id,
   });
