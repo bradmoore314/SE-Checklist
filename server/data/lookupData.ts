@@ -1,7 +1,8 @@
 // This file contains the standardized option lists for dropdown menus
 // These are based on the "Drop Down List" sheet from the original spreadsheet
 
-export const doorTypes = [
+// Changed from doorTypes to quickConfigOptions
+export const quickConfigOptions = [
   "Single Standard Door Exit Only Interior",
   "Single Mag Exit Only Perimeter",
   "Double Door Standard Exit Only Interior",
@@ -28,23 +29,39 @@ export const readerTypes = [
   "KP-12"
 ];
 
+// Updated lock types as requested
 export const lockTypes = [
-  "Magnetic",
-  "Electric Strike",
-  "Electric Bolt",
-  "None"
+  "Standard",
+  "Single Mag",
+  "Double Mag",
+  "Single Delayed Egress",
+  "Double Delayed Egress",
+  "No Lock"
 ];
 
-export const securityLevels = [
-  "24 Hours",
-  "Day Only",
-  "Other"
+// Changed from securityLevels to monitoringTypes
+export const monitoringTypes = [
+  "Prop",
+  "Alarmed",
+  "Card Read Only"
 ];
 
-export const ppiOptions = [
-  "Electrician",
-  "Locksmith",
-  "None"
+// Changed from ppiOptions to lockProviderOptions
+export const lockProviderOptions = [
+  "Kastle",
+  "Existing"
+];
+
+// New options for takeover
+export const takeoverOptions = [
+  "Yes",
+  "No"
+];
+
+// New options for interior/perimeter
+export const interiorPerimeterOptions = [
+  "Interior",
+  "Perimeter"
 ];
 
 export const yesNoOptions = [
@@ -105,11 +122,17 @@ export const intercomTypes = [
 
 // Export all lookup data as a single object
 export const lookupData = {
-  doorTypes,
+  // Include both new names and backward compatible names
+  quickConfigOptions,
+  doorTypes: quickConfigOptions, // For backward compatibility
   readerTypes,
   lockTypes,
-  securityLevels,
-  ppiOptions,
+  monitoringTypes,
+  securityLevels: monitoringTypes, // For backward compatibility
+  lockProviderOptions,
+  ppiOptions: lockProviderOptions, // For backward compatibility
+  takeoverOptions,
+  interiorPerimeterOptions,
   yesNoOptions,
   cameraTypes,
   mountingTypes,

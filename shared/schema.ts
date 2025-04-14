@@ -63,11 +63,20 @@ export const accessPoints = pgTable("access_points", {
   id: serial("id").primaryKey(),
   project_id: integer("project_id").notNull(),
   location: text("location").notNull(),
-  door_type: text("door_type").notNull(),
+  quick_config: text("quick_config").notNull(), // Changed from door_type
   reader_type: text("reader_type").notNull(),
   lock_type: text("lock_type").notNull(),
-  security_level: text("security_level").notNull(),
-  ppi: text("ppi"),
+  monitoring_type: text("monitoring_type").notNull(), // Changed from security_level
+  lock_provider: text("lock_provider"), // Changed from ppi
+  takeover: text("takeover"), // New field for takeover (yes/no)
+  interior_perimeter: text("interior_perimeter"), // New field for Interior/Perimeter
+  // Hidden fields
+  exst_panel_location: text("exst_panel_location"),
+  exst_panel_type: text("exst_panel_type"),
+  exst_reader_type: text("exst_reader_type"),
+  new_panel_location: text("new_panel_location"),
+  new_panel_type: text("new_panel_type"),
+  new_reader_type: text("new_reader_type"),
   notes: text("notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
