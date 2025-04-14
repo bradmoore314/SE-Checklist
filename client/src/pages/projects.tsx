@@ -35,6 +35,7 @@ const projectSchema = z.object({
   site_address: z.string().optional(),
   se_name: z.string().optional(),
   bdm_name: z.string().optional(),
+  building_count: z.number().optional(),
 });
 
 type SiteWalkFormValues = z.infer<typeof projectSchema>;
@@ -62,6 +63,7 @@ export default function Projects() {
       site_address: "",
       se_name: "",
       bdm_name: "",
+      building_count: 1,
     },
   });
 
@@ -379,6 +381,33 @@ export default function Projects() {
                   )}
                 />
               </div>
+              
+              <FormField
+                control={form.control}
+                name="building_count"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Building Count
+                    </FormLabel>
+                    <FormControl>
+                      <select
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        value={field.value}
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                          <option key={num} value={num}>
+                            {num}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <DialogFooter className="pt-4">
                 <Button
