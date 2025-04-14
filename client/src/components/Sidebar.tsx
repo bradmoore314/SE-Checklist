@@ -11,8 +11,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
   const isActive = (path: string) => location === path;
 
   return (
-    <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar`}
-         style={{ backgroundColor: 'var(--lighter-grey)' }}>
+    <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar bg-white border-r`}>
       {/* App Logo */}
       <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
         <svg className="w-8 h-8" style={{ color: 'var(--red-accent)' }} fill="currentColor" viewBox="0 0 20 20">
