@@ -15,11 +15,20 @@ import { AccessPoint } from "@shared/schema";
 // Define the access point form schema
 const accessPointSchema = z.object({
   location: z.string().min(1, "Location is required"),
-  door_type: z.string().min(1, "Door type is required"),
+  quick_config: z.string().min(1, "Quick config is required"), // Changed from door_type
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
-  security_level: z.string().min(1, "Security level is required"),
-  ppi: z.string().optional().nullable(),
+  monitoring_type: z.string().min(1, "Monitoring type is required"), // Changed from security_level
+  lock_provider: z.string().optional().nullable(), // Changed from ppi
+  takeover: z.string().optional().nullable(),
+  interior_perimeter: z.string().optional().nullable(),
+  // Hidden fields
+  exst_panel_location: z.string().optional().nullable(),
+  exst_panel_type: z.string().optional().nullable(),
+  exst_reader_type: z.string().optional().nullable(),
+  new_panel_location: z.string().optional().nullable(),
+  new_panel_type: z.string().optional().nullable(),
+  new_reader_type: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 
@@ -39,6 +48,7 @@ export default function EditAccessPointModal({
   onClose
 }: EditAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   
   // Fetch lookup data
   const { data: lookupData } = useQuery({
@@ -50,11 +60,19 @@ export default function EditAccessPointModal({
     resolver: zodResolver(accessPointSchema),
     defaultValues: {
       location: accessPoint.location,
-      door_type: accessPoint.door_type,
+      quick_config: accessPoint.quick_config, // Changed from door_type
       reader_type: accessPoint.reader_type,
       lock_type: accessPoint.lock_type,
-      security_level: accessPoint.security_level,
-      ppi: accessPoint.ppi,
+      monitoring_type: accessPoint.monitoring_type, // Changed from security_level
+      lock_provider: accessPoint.lock_provider, // Changed from ppi
+      takeover: accessPoint.takeover || "No",
+      interior_perimeter: accessPoint.interior_perimeter || "Interior",
+      exst_panel_location: accessPoint.exst_panel_location || "",
+      exst_panel_type: accessPoint.exst_panel_type || "",
+      exst_reader_type: accessPoint.exst_reader_type || "",
+      new_panel_location: accessPoint.new_panel_location || "",
+      new_panel_type: accessPoint.new_panel_type || "",
+      new_reader_type: accessPoint.new_reader_type || "",
       notes: accessPoint.notes,
     },
   });
@@ -98,24 +116,24 @@ export default function EditAccessPointModal({
               )}
             />
             
-            {/* Door Type */}
+            {/* Quick Config */}
             <FormField
               control={form.control}
-              name="door_type"
+              name="quick_config"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Door Type *</FormLabel>
+                  <FormLabel>Quick Config *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select door type" />
+                        <SelectValue placeholder="Select quick config" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {lookupData?.doorTypes?.map((type: string) => (
+                      {lookupData?.quickConfigOptions?.map((type: string) => (
                         <SelectItem key={type} value={type}>
                           {type}
                         </SelectItem>
@@ -182,26 +200,26 @@ export default function EditAccessPointModal({
               )}
             />
             
-            {/* Security Level */}
+            {/* Monitoring Type */}
             <FormField
               control={form.control}
-              name="security_level"
+              name="monitoring_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Security Level *</FormLabel>
+                  <FormLabel>Monitoring Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select security level" />
+                        <SelectValue placeholder="Select monitoring type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {lookupData?.securityLevels?.map((level: string) => (
-                        <SelectItem key={level} value={level}>
-                          {level}
+                      {lookupData?.monitoringTypes?.map((type: string) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -210,25 +228,80 @@ export default function EditAccessPointModal({
               )}
             />
             
-            {/* PPI */}
+            {/* Lock Provider */}
             <FormField
               control={form.control}
-              name="ppi"
+              name="lock_provider"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>PPI</FormLabel>
+                  <FormLabel>Lock Provider</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value || "none"}
+                    defaultValue={field.value || ""}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select PPI option" />
+                        <SelectValue placeholder="Select lock provider" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {lookupData?.ppiOptions?.map((option: string) => (
+                      {lookupData?.lockProviderOptions?.map((option: string) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            
+            {/* Takeover */}
+            <FormField
+              control={form.control}
+              name="takeover"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Takeover?</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value || "No"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select takeover option" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {lookupData?.takeoverOptions?.map((option: string) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            
+            {/* Interior/Perimeter */}
+            <FormField
+              control={form.control}
+              name="interior_perimeter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Interior/Perimeter</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value || "Interior"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select interior/perimeter" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {lookupData?.interiorPerimeterOptions?.map((option: string) => (
                         <SelectItem key={option} value={option}>
                           {option}
                         </SelectItem>

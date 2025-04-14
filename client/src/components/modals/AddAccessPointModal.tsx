@@ -41,11 +41,20 @@ interface AddAccessPointModalProps {
 const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
-  door_type: z.string().min(1, "Door type is required"),
+  quick_config: z.string().min(1, "Quick config is required"), // Changed from door_type
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
-  security_level: z.string().min(1, "Security level is required"),
-  ppi: z.string().optional(),
+  monitoring_type: z.string().min(1, "Monitoring type is required"), // Changed from security_level
+  lock_provider: z.string().optional(), // Changed from ppi
+  takeover: z.string().optional(),
+  interior_perimeter: z.string().optional(),
+  // Hidden fields
+  exst_panel_location: z.string().optional(),
+  exst_panel_type: z.string().optional(),
+  exst_reader_type: z.string().optional(),
+  new_panel_location: z.string().optional(),
+  new_panel_type: z.string().optional(),
+  new_reader_type: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -58,6 +67,7 @@ export default function AddAccessPointModal({
   onClose,
 }: AddAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
 
   // Fetch lookup data for dropdowns
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
@@ -70,11 +80,19 @@ export default function AddAccessPointModal({
     defaultValues: {
       project_id: projectId,
       location: "",
-      door_type: "",
+      quick_config: "",
       reader_type: "",
       lock_type: "",
-      security_level: "",
-      ppi: "",
+      monitoring_type: "",
+      lock_provider: "",
+      takeover: "No",
+      interior_perimeter: "Interior",
+      exst_panel_location: "",
+      exst_panel_type: "",
+      exst_reader_type: "",
+      new_panel_location: "",
+      new_panel_type: "",
+      new_reader_type: "",
       notes: "",
     },
   });
@@ -122,11 +140,11 @@ export default function AddAccessPointModal({
 
               <FormField
                 control={form.control}
-                name="door_type"
+                name="quick_config"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      Door Type *
+                      Quick Config *
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -134,14 +152,14 @@ export default function AddAccessPointModal({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Door Type" />
+                          <SelectValue placeholder="Select Quick Config" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.doorTypes.map((type: string) => (
+                          lookupData?.quickConfigOptions.map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -224,11 +242,11 @@ export default function AddAccessPointModal({
 
               <FormField
                 control={form.control}
-                name="security_level"
+                name="monitoring_type"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      Security Level *
+                      Monitoring Type *
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -236,16 +254,16 @@ export default function AddAccessPointModal({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Security Level" />
+                          <SelectValue placeholder="Select Monitoring Type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.securityLevels.map((level: string) => (
-                            <SelectItem key={level} value={level}>
-                              {level}
+                          lookupData?.monitoringTypes.map((type: string) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
                             </SelectItem>
                           ))
                         )}
@@ -258,11 +276,11 @@ export default function AddAccessPointModal({
 
               <FormField
                 control={form.control}
-                name="ppi"
+                name="lock_provider"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      PPI
+                      Lock Provider
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -270,14 +288,82 @@ export default function AddAccessPointModal({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select PPI" />
+                          <SelectValue placeholder="Select Lock Provider" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.ppiOptions.map((option: string) => (
+                          lookupData?.lockProviderOptions.map((option: string) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="takeover"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Takeover?
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Takeover Option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingLookups ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          lookupData?.takeoverOptions.map((option: string) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="interior_perimeter"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Interior/Perimeter
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Interior/Perimeter" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingLookups ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          lookupData?.interiorPerimeterOptions.map((option: string) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>

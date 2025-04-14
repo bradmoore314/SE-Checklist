@@ -31,7 +31,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   // Filter access points based on search term
   const filteredAccessPoints = accessPoints.filter((ap) => 
     ap.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ap.door_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ap.quick_config.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ap.reader_type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
