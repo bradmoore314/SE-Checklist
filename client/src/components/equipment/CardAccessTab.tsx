@@ -281,41 +281,95 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead>
-            <tr style={{ backgroundColor: 'var(--darker-grey)' }}>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCATION</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">QUICK CONFIG</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">READER TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">LOCK TYPE</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">MONITORING</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">TAKEOVER</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-300">ACTIONS</th>
+            <tr style={{ backgroundColor: 'var(--red-accent)' }}>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCATION</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">QUICK CONFIG</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">READER TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK TYPE</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">MONITORING</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">TAKEOVER</th>
+              {visibleColumns.lockProvider && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK PROVIDER</th>
+              )}
+              {visibleColumns.interiorPerimeter && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">INTERIOR/PERIMETER</th>
+              )}
+              {visibleColumns.exstPanelLocation && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING PANEL LOCATION</th>
+              )}
+              {visibleColumns.exstPanelType && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING PANEL TYPE</th>
+              )}
+              {visibleColumns.exstReaderType && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING READER TYPE</th>
+              )}
+              {visibleColumns.newPanelLocation && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW PANEL LOCATION</th>
+              )}
+              {visibleColumns.newPanelType && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW PANEL TYPE</th>
+              )}
+              {visibleColumns.newReaderType && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW READER TYPE</th>
+              )}
+              {visibleColumns.notes && (
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NOTES</th>
+              )}
+              <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
-                <td colSpan={7} className="px-4 py-8 text-center text-white">Loading access points...</td>
+              <tr style={{ backgroundColor: 'var(--lightest-grey)' }}>
+                <td colSpan={Object.values(visibleColumns).filter(Boolean).length + 7} className="px-4 py-8 text-center text-gray-800">Loading access points...</td>
               </tr>
             ) : paginatedAccessPoints.length === 0 ? (
-              <tr style={{ backgroundColor: 'var(--dark-grey)' }}>
-                <td colSpan={7} className="px-4 py-8 text-center text-white">
+              <tr style={{ backgroundColor: 'var(--lightest-grey)' }}>
+                <td colSpan={Object.values(visibleColumns).filter(Boolean).length + 7} className="px-4 py-8 text-center text-gray-800">
                   {searchTerm ? "No access points match your search." : "No access points have been added yet."}
                 </td>
               </tr>
             ) : (
               paginatedAccessPoints.map((ap: AccessPoint) => (
-                <tr key={ap.id} className="text-white border-b" 
-                    style={{ backgroundColor: 'var(--dark-grey)', borderColor: 'var(--medium-grey)' }}
+                <tr key={ap.id} className="border-b" 
+                    style={{ backgroundColor: 'var(--lightest-grey)', borderColor: 'var(--medium-grey)' }}
                 >
-                  <td className="px-4 py-3 whitespace-nowrap font-medium text-white">{ap.location}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.quick_config}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.reader_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.lock_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.monitoring_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{ap.takeover || 'No'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-800">{ap.location}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.quick_config}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.reader_type}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.lock_type}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.monitoring_type}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.takeover || 'No'}</td>
+                  {visibleColumns.lockProvider && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.lock_provider || 'N/A'}</td>
+                  )}
+                  {visibleColumns.interiorPerimeter && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.interior_perimeter || 'N/A'}</td>
+                  )}
+                  {visibleColumns.exstPanelLocation && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_panel_location || 'N/A'}</td>
+                  )}
+                  {visibleColumns.exstPanelType && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_panel_type || 'N/A'}</td>
+                  )}
+                  {visibleColumns.exstReaderType && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_reader_type || 'N/A'}</td>
+                  )}
+                  {visibleColumns.newPanelLocation && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_panel_location || 'N/A'}</td>
+                  )}
+                  {visibleColumns.newPanelType && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_panel_type || 'N/A'}</td>
+                  )}
+                  {visibleColumns.newReaderType && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_reader_type || 'N/A'}</td>
+                  )}
+                  {visibleColumns.notes && (
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.notes || 'N/A'}</td>
+                  )}
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button 
-                      className="text-gray-300 hover:text-white focus:outline-none mr-2"
+                      className="text-gray-700 hover:text-gray-900 focus:outline-none mr-2"
                       onClick={() => {
                         setSelectedAccessPoint(ap);
                         setShowEditModal(true);
@@ -324,7 +378,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       <span className="material-icons text-sm">edit</span>
                     </button>
                     <button 
-                      className="text-gray-300 hover:text-white focus:outline-none mr-2"
+                      className="text-gray-700 hover:text-gray-900 focus:outline-none mr-2"
                       onClick={async () => {
                         try {
                           await apiRequest("POST", `/api/access-points/${ap.id}/duplicate`);
@@ -370,12 +424,12 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       {/* Pagination */}
       {filteredAccessPoints.length > 0 && (
         <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-zinc-400">
-            Showing <span className="font-medium text-white">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredAccessPoints.length)}</span> to <span className="font-medium text-white">{Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)}</span> of <span className="font-medium text-white">{filteredAccessPoints.length}</span> access points
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium text-gray-800">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredAccessPoints.length)}</span> to <span className="font-medium text-gray-800">{Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)}</span> of <span className="font-medium text-gray-800">{filteredAccessPoints.length}</span> access points
           </div>
           <div className="flex items-center space-x-2">
             <Button 
-              className="border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"
+              className="border-gray-300 text-gray-700 hover:bg-gray-100"
               variant="outline" 
               size="sm"
               disabled={currentPage === 1}
@@ -398,7 +452,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                     size="sm"
                     className={currentPage === pageNum 
                       ? "bg-red-600 hover:bg-red-700 text-white border-red-600" 
-                      : "border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"}
+                      : "border-gray-300 text-gray-700 hover:bg-gray-100"}
                     onClick={() => setCurrentPage(pageNum)}
                   >
                     {pageNum}
@@ -409,7 +463,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             })}
             
             <Button 
-              className="border-zinc-700 text-white hover:bg-zinc-700 hover:text-white"
+              className="border-gray-300 text-gray-700 hover:bg-gray-100"
               variant="outline" 
               size="sm"
               disabled={currentPage === totalPages || totalPages === 0}

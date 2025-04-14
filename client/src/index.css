@@ -16,7 +16,7 @@
 
 @layer base {
   * {
-    @apply border-zinc-700;
+    @apply border-gray-200;
   }
 
   body {
@@ -32,16 +32,16 @@
   
   /* Card styling */
   .card {
-    background-color: var(--dark-grey);
+    background-color: var(--lightest-grey);
     border-color: var(--medium-grey);
     @apply rounded-lg shadow-sm;
   }
   
   /* Form elements */
   input, select, textarea {
-    background-color: var(--dark-grey);
+    background-color: var(--lightest-grey);
     border-color: var(--medium-grey);
-    @apply text-white;
+    @apply text-gray-800;
   }
   
   /* Table styling */
@@ -50,20 +50,21 @@
   }
   
   th {
-    background-color: var(--darker-grey);
-    @apply text-gray-300 font-medium;
+    background-color: var(--red-accent);
+    @apply text-white font-medium;
   }
   
   td {
     border-color: var(--medium-grey);
+    @apply text-gray-800;
   }
   
   tr {
-    background-color: var(--dark-grey);
+    background-color: var(--lightest-grey);
   }
   
   tr:hover {
-    background-color: var(--medium-grey);
+    background-color: var(--lighter-grey);
   }
   
   /* Button styling for consistency */
@@ -83,12 +84,12 @@
   
   /* Sidebar and navigation */
   .sidebar {
-    background-color: var(--darker-grey);
+    background-color: var(--lighter-grey);
     border-color: var(--medium-grey);
   }
   
   .nav-item {
-    @apply text-gray-300;
+    @apply text-gray-800;
   }
   
   .nav-item:hover, .nav-item.active {
@@ -101,8 +102,9 @@
   
   /* Dialog/Modal styling */
   .dialog {
-    background-color: var(--dark-grey);
+    background-color: var(--lightest-grey);
     border-color: var(--medium-grey);
+    @apply text-gray-800;
   }
   
   /* Switch toggle */
