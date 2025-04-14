@@ -15,7 +15,7 @@ import { AccessPoint } from "@shared/schema";
 // Define the access point form schema
 const accessPointSchema = z.object({
   location: z.string().min(1, "Location is required"),
-  quick_config: z.string().min(1, "Quick config is required"), // Changed from door_type
+  quick_config: z.string().optional().nullable(), // Optional now
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
   monitoring_type: z.string().min(1, "Monitoring type is required"), // Changed from security_level
@@ -122,7 +122,7 @@ export default function EditAccessPointModal({
               name="quick_config"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quick Config *</FormLabel>
+                  <FormLabel>Quick Config</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}

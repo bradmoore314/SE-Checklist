@@ -41,7 +41,7 @@ interface AddAccessPointModalProps {
 const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
-  quick_config: z.string().min(1, "Quick config is required"), // Changed from door_type
+  quick_config: z.string().optional(), // Optional now
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
   monitoring_type: z.string().min(1, "Monitoring type is required"), // Changed from security_level
@@ -144,7 +144,7 @@ export default function AddAccessPointModal({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      Quick Config *
+                      Quick Config
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
