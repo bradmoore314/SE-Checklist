@@ -12,7 +12,7 @@ import { Settings, Camera } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface CardAccessTabProps {
   project: Project;
@@ -509,6 +509,23 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           }} 
         />
       )}
+
+      {/* Image Gallery Modal */}
+      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Images for {selectedAccessPoint?.location || 'Access Point'}</DialogTitle>
+            <DialogDescription>Upload and manage images for this access point.</DialogDescription>
+          </DialogHeader>
+          {selectedAccessPoint && showImageModal && (
+            <ImageGallery 
+              equipmentType="access_point" 
+              equipmentId={selectedAccessPoint.id} 
+              projectId={project.id} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
