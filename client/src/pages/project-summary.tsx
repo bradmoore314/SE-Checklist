@@ -301,10 +301,12 @@ export default function SiteWalkSummary() {
                           <p className="text-neutral-600 text-sm mb-1">Monitoring Type</p>
                           <p>{ap.monitoring_type || "N/A"}</p>
                         </div>
-                        <div>
-                          <p className="text-neutral-600 text-sm mb-1">Quick Config</p>
-                          <p>{ap.quick_config || "N/A"}</p>
-                        </div>
+                        {ap.quick_config && ap.quick_config !== "N/A" && (
+                          <div>
+                            <p className="text-neutral-600 text-sm mb-1">Quick Config</p>
+                            <p>{ap.quick_config}</p>
+                          </div>
+                        )}
                         {ap.notes && (
                           <div className="col-span-2">
                             <p className="text-neutral-600 text-sm mb-1">Notes</p>

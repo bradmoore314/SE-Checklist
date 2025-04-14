@@ -134,19 +134,57 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
             </TabsList>
             
             <TabsContent value="summary" className="mt-4">
-              <div className="rounded-md border p-4">
-                <h3 className="text-lg font-semibold mb-2">Executive Summary</h3>
-                <div className="whitespace-pre-line text-sm">
-                  {analysis.summary}
+              <div className="rounded-md border p-4 bg-gradient-to-r from-white to-gray-50">
+                <h3 className="text-lg font-semibold mb-4 text-primary">Executive Summary</h3>
+                <div className="prose prose-sm max-w-none">
+                  {analysis.summary.split('\n\n').map((paragraph, idx) => (
+                    <div key={idx} className="mb-4">
+                      {paragraph.startsWith('- ') ? (
+                        <ul className="list-disc pl-5 space-y-1">
+                          {paragraph.split('\n').map((item, i) => (
+                            <li key={i} className="mb-1">{item.replace('- ', '')}</li>
+                          ))}
+                        </ul>
+                      ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
+                        <div>
+                          <h4 className="font-medium text-base mb-1">{paragraph.split(':')[0]}:</h4>
+                          <p>{paragraph.split(':').slice(1).join(':').trim()}</p>
+                        </div>
+                      ) : (
+                        <p>{paragraph}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </TabsContent>
             
             <TabsContent value="technical" className="mt-4">
-              <div className="rounded-md border p-4">
-                <h3 className="text-lg font-semibold mb-2">Technical Analysis</h3>
-                <div className="whitespace-pre-line text-sm">
-                  {analysis.detailedAnalysis}
+              <div className="rounded-md border p-4 bg-gradient-to-r from-white to-gray-50">
+                <h3 className="text-lg font-semibold mb-4 text-primary">Technical Analysis</h3>
+                <div className="prose prose-sm max-w-none">
+                  {analysis.detailedAnalysis.split('\n\n').map((paragraph, idx) => (
+                    <div key={idx} className="mb-4">
+                      {paragraph.startsWith('# ') ? (
+                        <h3 className="text-base font-semibold mt-4 mb-2">{paragraph.replace('# ', '')}</h3>
+                      ) : paragraph.startsWith('## ') ? (
+                        <h4 className="text-sm font-medium mt-3 mb-2">{paragraph.replace('## ', '')}</h4>
+                      ) : paragraph.startsWith('- ') ? (
+                        <ul className="list-disc pl-5 space-y-1">
+                          {paragraph.split('\n').map((item, i) => (
+                            <li key={i} className="mb-1">{item.replace('- ', '')}</li>
+                          ))}
+                        </ul>
+                      ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
+                        <div>
+                          <span className="font-medium">{paragraph.split(':')[0]}:</span>
+                          {paragraph.split(':').slice(1).join(':').trim()}
+                        </div>
+                      ) : (
+                        <p>{paragraph}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </TabsContent>
