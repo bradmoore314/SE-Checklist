@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import kastleLogo from "@/assets/kastle-logo.png";
 
 interface TopNavProps {
   project: Project | null;
@@ -49,6 +50,14 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
         >
           <span className="material-icons">menu</span>
         </Button>
+        
+        {/* Kastle Logo */}
+        <img 
+          src={kastleLogo} 
+          alt="Kastle Logo" 
+          className="h-10 mr-4" 
+        />
+        
         <div>
           <h1 className="text-xl font-medium text-gray-900">
             {project ? project.name : "Welcome to Site Walk Checklist"}
