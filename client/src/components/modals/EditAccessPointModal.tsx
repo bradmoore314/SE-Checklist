@@ -31,6 +31,8 @@ const accessPointSchema = z.object({
   new_panel_type: z.string().optional().nullable(),
   new_reader_type: z.string().optional().nullable(),
   noisy_prop: z.string().optional().nullable(),
+  crashbars: z.string().optional().nullable(),
+  real_lock_type: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 }).refine((data) => {
   // If quick_config is selected, we don't need to check other fields
@@ -92,6 +94,8 @@ export default function EditAccessPointModal({
       new_panel_type: accessPoint.new_panel_type || "",
       new_reader_type: accessPoint.new_reader_type || "",
       noisy_prop: accessPoint.noisy_prop || "No",
+      crashbars: accessPoint.crashbars || "No",
+      real_lock_type: accessPoint.real_lock_type || "Mortise",
       notes: accessPoint.notes,
     },
   });

@@ -265,6 +265,8 @@ export class MemStorage implements IStorage {
       new_panel_type: insertAccessPoint.new_panel_type ?? null,
       new_reader_type: insertAccessPoint.new_reader_type ?? null,
       noisy_prop: insertAccessPoint.noisy_prop ?? null,
+      crashbars: insertAccessPoint.crashbars ?? null,
+      real_lock_type: insertAccessPoint.real_lock_type ?? null,
       notes: insertAccessPoint.notes ?? null,
       created_at: now,
       updated_at: now

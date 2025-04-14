@@ -158,6 +158,18 @@ export const noisyPropOptions = [
   "No"
 ];
 
+// Define options for the Crashbars field
+export const crashbarsOptions = [
+  "Yes",
+  "No"
+];
+
+// Define options for the Real Lock Type field
+export const realLockTypeOptions = [
+  "Mortise",
+  "Single Strike"
+];
+
 // Export all lookup data as a single object
 export const lookupData = {
   // Include both new names and backward compatible names
@@ -173,6 +185,8 @@ export const lookupData = {
   interiorPerimeterOptions,
   yesNoOptions,
   noisyPropOptions,
+  crashbarsOptions,
+  realLockTypeOptions,
   cameraTypes,
   mountingTypes,
   resolutions,

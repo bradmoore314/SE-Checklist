@@ -78,6 +78,8 @@ export const accessPoints = pgTable("access_points", {
   new_panel_type: text("new_panel_type"),
   new_reader_type: text("new_reader_type"),
   noisy_prop: text("noisy_prop"), // New hidden field for Noisy Prop (yes/no)
+  crashbars: text("crashbars"), // New hidden field for Crashbars (yes/no)
+  real_lock_type: text("real_lock_type"), // New hidden field for Real Lock Type (mortise/single strike)
   notes: text("notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
