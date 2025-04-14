@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Project } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CardAccessTab from "./CardAccessTab";
+import CardAccessTab from "./NewCardAccessTab";
 import CamerasTab from "./CamerasTab";
 import ElevatorsTab from "./ElevatorsTab";
 import IntercomsTab from "./IntercomsTab";
