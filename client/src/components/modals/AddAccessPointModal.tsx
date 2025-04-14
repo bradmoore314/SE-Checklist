@@ -57,6 +57,8 @@ const accessPointSchema = z.object({
   new_panel_type: z.string().optional(),
   new_reader_type: z.string().optional(),
   noisy_prop: z.string().optional(),
+  crashbars: z.string().optional(),
+  real_lock_type: z.string().optional(),
   notes: z.string().optional(),
 }).refine((data) => {
   // If quick_config is selected, we don't need to check other fields
@@ -570,6 +572,76 @@ export default function AddAccessPointModal({
                             <SelectItem value="loading">Loading...</SelectItem>
                           ) : (
                             lookupData?.noisyPropOptions.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="crashbars"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Crashbars?
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={quickConfigEnabled}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Yes/No" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            lookupData?.crashbarsOptions.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="real_lock_type"
+                  render={({ field }) => (
+                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Real Lock Type
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={quickConfigEnabled}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select lock type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            lookupData?.realLockTypeOptions.map((option: string) => (
                               <SelectItem key={option} value={option}>
                                 {option}
                               </SelectItem>
