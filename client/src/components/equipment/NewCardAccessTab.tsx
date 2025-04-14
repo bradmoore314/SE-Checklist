@@ -3,10 +3,10 @@ import { AccessPoint, Project } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
-import ImageGallery from "./ImageGallery";
+import { ImageGallery } from "../ImageGallery";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import CardAccessTable from "./CardAccessTable";
+import SimpleCardAccessTable from "./SimpleCardAccessTable";
 
 interface CardAccessTabProps {
   project: Project;
@@ -72,7 +72,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   return (
     <div className="p-4">
       {/* New Data Table with Sorting, Filtering, and Editable Cells */}
-      <CardAccessTable 
+      <SimpleCardAccessTable 
         project={project}
         onEdit={handleShowEditModal}
         onAdd={() => setShowAddModal(true)}
@@ -110,9 +110,10 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           </DialogHeader>
           {selectedAccessPoint && showImageModal && (
             <ImageGallery 
-              equipmentType="access_point" 
+              equipmentType="access-points" 
               equipmentId={selectedAccessPoint.id} 
-              projectId={project.id} 
+              equipmentName={selectedAccessPoint.location}
+              onClose={() => setShowImageModal(false)}
             />
           )}
         </DialogContent>
