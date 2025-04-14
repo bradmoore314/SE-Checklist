@@ -305,7 +305,7 @@ export default function SiteWalkSummary() {
                           {ap.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.url} 
+                                src={img.image_data} 
                                 alt={`Image for ${ap.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -377,7 +377,7 @@ export default function SiteWalkSummary() {
                           {camera.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.url} 
+                                src={img.image_data} 
                                 alt={`Image for ${camera.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -427,12 +427,12 @@ export default function SiteWalkSummary() {
                           <p>{elevator.floor_count || "N/A"}</p>
                         </div>
                         <div>
-                          <p className="text-neutral-600 text-sm mb-1">Cab Count</p>
-                          <p>{elevator.cab_count || "N/A"}</p>
+                          <p className="text-neutral-600 text-sm mb-1">Location</p>
+                          <p>{elevator.location || "N/A"}</p>
                         </div>
                         <div>
-                          <p className="text-neutral-600 text-sm mb-1">Access Method</p>
-                          <p>{elevator.access_method || "N/A"}</p>
+                          <p className="text-neutral-600 text-sm mb-1">Type</p>
+                          <p>{elevator.elevator_type || "N/A"}</p>
                         </div>
                         {elevator.notes && (
                           <div className="col-span-2">
@@ -449,7 +449,7 @@ export default function SiteWalkSummary() {
                           {elevator.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.url} 
+                                src={img.image_data} 
                                 alt={`Image for ${elevator.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -495,16 +495,8 @@ export default function SiteWalkSummary() {
                           <p>{intercom.intercom_type || "N/A"}</p>
                         </div>
                         <div>
-                          <p className="text-neutral-600 text-sm mb-1">Connection Type</p>
-                          <p>{intercom.connection_type || "N/A"}</p>
-                        </div>
-                        <div>
-                          <p className="text-neutral-600 text-sm mb-1">Mounting Location</p>
-                          <p>{intercom.mounting_location || "N/A"}</p>
-                        </div>
-                        <div>
-                          <p className="text-neutral-600 text-sm mb-1">Integration</p>
-                          <p>{intercom.integration || "N/A"}</p>
+                          <p className="text-neutral-600 text-sm mb-1">Location</p>
+                          <p>{intercom.location || "N/A"}</p>
                         </div>
                         {intercom.notes && (
                           <div className="col-span-2">
@@ -521,7 +513,7 @@ export default function SiteWalkSummary() {
                           {intercom.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.url} 
+                                src={img.image_data} 
                                 alt={`Image for ${intercom.location}`} 
                                 className="w-full h-full object-cover"
                               />
