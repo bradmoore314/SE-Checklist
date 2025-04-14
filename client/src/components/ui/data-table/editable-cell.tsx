@@ -1,22 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import { Row, Column, Table } from "@tanstack/react-table";
+import { useState, useRef, useEffect } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Edit } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Check, Edit, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface EditableCellProps<TData, TValue> {
-  value: string | number | boolean | null;
-  row: Row<TData>;
-  column: Column<TData, TValue>;
+  value: string | null;
+  row: any;
+  column: any;
   onUpdate?: (rowIndex: number, columnId: string, value: any) => void;
 }
 
@@ -26,142 +18,137 @@ export function EditableCell<TData, TValue>({
   column,
   onUpdate,
 }: EditableCellProps<TData, TValue>) {
-  const [value, setValue] = useState(initialValue);
   const [isEditing, setIsEditing] = useState(false);
-  const [originalValue, setOriginalValue] = useState(initialValue);
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  const [value, setValue] = useState<string | null>(initialValue);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  
+  // When the initial value changes (like after an update), update the internal state
   useEffect(() => {
     setValue(initialValue);
-    setOriginalValue(initialValue);
   }, [initialValue]);
-
-  // Get enum options if they exist
-  const options = column.columnDef.meta?.options as { value: string, label: string }[] | undefined;
   
-  // Get custom formatter if it exists
-  const formatter = column.columnDef.meta?.formatter as ((value: any) => string) | undefined;
-  
-  // Get custom input type if it exists (default: text)
-  const inputType = column.columnDef.meta?.inputType as string | undefined || "text";
-
-  const startEdit = () => {
-    // Don't allow editing if the cell is marked as readonly
-    if (column.columnDef.meta?.readOnly) {
-      return;
+  // Focus the input when editing starts
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
     }
-    
+  }, [isEditing]);
+  
+  // Get the column meta for special rendering options
+  const columnMeta = column.columnDef.meta || {};
+  
+  // Check if we have options for a select
+  const selectOptions = columnMeta.options || [];
+  
+  // Check if we have a formatter for display
+  const formatter = columnMeta.formatter;
+  
+  // Get the input type from meta (default to text)
+  const inputType = columnMeta.inputType || 'text';
+  
+  // Check if the cell is read-only
+  const isReadOnly = columnMeta.readOnly === true;
+  
+  // Format the display value if a formatter is provided
+  const displayValue = formatter ? formatter(value) : value;
+  
+  // Toggle edit mode
+  const enableEdit = () => {
+    if (isReadOnly) return;
     setIsEditing(true);
-    // Focus the input after it renders
-    setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }, 10);
   };
-
-  const onBlur = () => {
-    submit();
-  };
-
-  const submit = () => {
+  
+  // Handle saving changes
+  const saveChanges = () => {
     setIsEditing(false);
-    if (value !== originalValue) {
-      if (onUpdate) {
-        onUpdate(row.index, column.id, value);
-      }
-      setOriginalValue(value);
+    
+    // Only update if the value actually changed
+    if (value !== initialValue && onUpdate) {
+      onUpdate(row.index, column.id, value);
     }
   };
-
-  const cancel = () => {
-    setIsEditing(false);
-    setValue(originalValue);
+  
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
   };
-
+  
+  // Handle select changes
+  const handleSelectChange = (newValue: string) => {
+    setValue(newValue);
+  };
+  
+  // Handle keyboard events (Enter to save, Escape to cancel)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (e.key === "Enter") {
-      submit();
+      saveChanges();
     } else if (e.key === "Escape") {
-      cancel();
+      setIsEditing(false);
+      setValue(initialValue); // Reset to initial value
     }
   };
-
-  // Render a select dropdown for enum values
-  if (options && isEditing) {
-    return (
-      <div className="relative">
+  
+  // Handle blur event (save on blur)
+  const handleBlur = () => {
+    saveChanges();
+  };
+  
+  // If we're editing, render the input or select
+  if (isEditing) {
+    if (selectOptions.length > 0) {
+      return (
         <Select 
-          value={value as string}
-          onValueChange={(newValue) => setValue(newValue)}
+          value={value || ""}
+          onValueChange={handleSelectChange}
           onOpenChange={(open) => {
-            if (!open) submit();
+            if (!open) saveChanges();
           }}
         >
-          <SelectTrigger className="h-9 w-full" onKeyDown={handleKeyDown}>
-            <SelectValue placeholder="Select value" />
+          <SelectTrigger className="h-8 w-full">
+            <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
+            {selectOptions.map((option: any) => (
+              <SelectItem 
+                key={option.value || option} 
+                value={option.value || option}
+              >
+                {option.label || option}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-        <div className="absolute right-0 top-0 flex h-9">
-          <Button variant="ghost" size="icon" onClick={cancel} className="h-9 w-9">
-            <X className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={submit} className="h-9 w-9">
-            <Check className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (isEditing) {
-    return (
-      <div className="relative">
+      );
+    } else {
+      return (
         <Input
           ref={inputRef}
-          type={inputType}
-          value={value as string}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={onBlur}
+          className="h-8 w-full p-1"
+          value={value || ""}
+          onChange={handleChange}
+          onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="h-9 w-full pr-20"
+          type={inputType}
           autoComplete="off"
         />
-        <div className="absolute right-0 top-0 flex h-9">
-          <Button variant="ghost" size="icon" onClick={cancel} className="h-9 w-9">
-            <X className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={submit} className="h-9 w-9">
-            <Check className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
+      );
+    }
   }
-
+  
+  // If we're not editing, render the display value with an edit button
   return (
-    <div className="flex items-center gap-2">
-      <div
-        className={cn(
-          "truncate px-2 py-1 rounded-md w-full transition-colors cursor-pointer hover:bg-accent hover:text-accent-foreground",
-          {
-            "opacity-50 italic": value === null || value === "",
-          }
-        )}
-        onClick={startEdit}
-      >
-        {formatter ? formatter(value) : value === null || value === "" ? "—" : String(value)}
+    <div className="flex items-center space-x-2 relative group">
+      <div className="flex-1 truncate">
+        {displayValue !== null && displayValue !== undefined
+          ? displayValue
+          : ""}
       </div>
-      {!column.columnDef.meta?.hideEditIcon && (
-        <Button variant="ghost" size="icon" onClick={startEdit} className="h-7 w-7 opacity-0 group-hover:opacity-100">
+      {!isReadOnly && !columnMeta.hideEditIcon && (
+        <Button
+          variant="ghost"
+          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+          onClick={enableEdit}
+        >
           <Edit className="h-3 w-3" />
         </Button>
       )}

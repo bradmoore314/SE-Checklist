@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import * as React from "react";
 import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-  VisibilityState,
+  useReactTable,
 } from "@tanstack/react-table";
+
 import {
   Table,
   TableBody,
@@ -21,27 +21,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableViewOptions } from "./data-table-view-options";
-import { cn } from "@/lib/utils";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
-  Search,
-  XCircle,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { EditableCell } from "./editable-cell";
+import { ChevronDown, Search, XCircle } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -58,98 +38,76 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Search...",
   onUpdate,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [searchValue, setSearchValue] = React.useState<string>("");
 
-  // Create enhanced columns with editable cell capability
-  const enhancedColumns = columns.map((column) => {
-    // Skip if the column already has a cell defined
-    if (column.cell) return column;
-    
-    // Add editable cell component
-    return {
-      ...column,
-      cell: ({ row, column, getValue }) => (
-        <EditableCell
-          value={getValue() as string}
-          row={row}
-          column={column}
-          onUpdate={onUpdate}
-        />
-      ),
-    };
-  });
+  // Apply search filter when searchColumn is provided
+  React.useEffect(() => {
+    if (searchColumn && searchValue) {
+      setColumnFilters([
+        {
+          id: searchColumn,
+          value: searchValue,
+        },
+      ]);
+    } else {
+      setColumnFilters([]);
+    }
+  }, [searchValue, searchColumn]);
 
   const table = useReactTable({
     data,
-    columns: enhancedColumns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
-      rowSelection,
-      globalFilter,
     },
   });
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="h-9 w-[250px] pl-8"
-            />
-            {globalFilter && (
-              <button
-                onClick={() => setGlobalFilter("")}
-                className="absolute right-2 top-2.5"
-              >
-                <XCircle className="h-4 w-4 text-muted-foreground" />
-              </button>
-            )}
-          </div>
-          {table.getFilteredSelectedRowModel().rows.length > 0 && (
-            <Badge variant="secondary" className="rounded-sm px-1 font-normal">
-              {table.getFilteredSelectedRowModel().rows.length} selected
-            </Badge>
+      <div className="flex items-center">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="pl-8 h-9"
+          />
+          {searchValue && (
+            <button
+              type="button"
+              onClick={() => setSearchValue("")}
+              className="absolute right-2 top-2.5"
+            >
+              <XCircle className="h-4 w-4 text-muted-foreground" />
+            </button>
           )}
         </div>
-        <DataTableViewOptions table={table} />
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -183,23 +141,29 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          Showing {table.getFilteredRowModel().rows.length} of {data.length} items
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
-}
-
-// Helper function to create a sortable header
-export function createSortableHeader(label: string) {
-  return ({ column }: { column: any }) => {
-    return (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="-ml-4 h-8"
-      >
-        {label}
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    );
-  };
 }
