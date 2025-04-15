@@ -104,6 +104,9 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
   const { data: summaryData, isLoading } = useQuery<SiteSummary>({
     queryKey: [`/api/projects/${project.id}/reports/project-summary`],
     enabled: !!project.id,
+    // Refetch on window focus and every 2 seconds to ensure up-to-date data
+    refetchOnWindowFocus: true,
+    refetchInterval: 2000,
   });
 
   // Handle form input changes

@@ -74,6 +74,9 @@ export default function SiteWalkSummary() {
   const { data: summary, isLoading: loadingSummary } = useQuery<SiteSummary>({
     queryKey: [`/api/projects/${currentSiteWalk?.id}/reports/project-summary`],
     enabled: !!currentSiteWalk?.id,
+    // Refetch on window focus and every 2 seconds to ensure up-to-date data
+    refetchOnWindowFocus: true,
+    refetchInterval: 2000,
   });
 
   const isLoading = loadingSiteWalks || loadingSummary;
