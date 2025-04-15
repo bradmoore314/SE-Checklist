@@ -69,6 +69,75 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
     return false;
   };
 
+  // Function to render the summary content
+  const renderSummary = () => {
+    if (!analysis || typeof analysis.summary !== 'string') {
+      return <p className="text-gray-600">No summary available yet</p>;
+    }
+    
+    return analysis.summary.split('\n\n').map((paragraph, idx) => (
+      <div key={idx} className="mb-4">
+        {paragraph.startsWith('- ') ? (
+          <ul className="list-disc pl-5 space-y-1">
+            {paragraph.split('\n').map((item, i) => (
+              <li key={i} className="mb-1">
+                {formatBoldText(item.replace('- ', ''))}
+              </li>
+            ))}
+          </ul>
+        ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
+          <div>
+            <h4 className="font-medium text-base mb-1">{paragraph.split(':')[0]}:</h4>
+            <p>{paragraph.split(':').slice(1).join(':').trim()}</p>
+          </div>
+        ) : (
+          <p>{formatBoldText(paragraph)}</p>
+        )}
+      </div>
+    ));
+  };
+  
+  // Function to render the technical analysis content
+  const renderTechnicalAnalysis = () => {
+    if (!analysis || typeof analysis.detailedAnalysis !== 'string') {
+      return <p className="text-gray-600">No technical details available yet</p>;
+    }
+    
+    return analysis.detailedAnalysis.split('\n\n').map((paragraph, idx) => (
+      <div key={idx} className="mb-4">
+        {paragraph.startsWith('# ') ? (
+          <h3 className="text-base font-semibold mt-4 mb-2">
+            {formatBoldText(paragraph.replace('# ', ''))}
+          </h3>
+        ) : paragraph.startsWith('## ') ? (
+          <h4 className="text-sm font-medium mt-3 mb-2">{paragraph.replace('## ', '')}</h4>
+        ) : paragraph.startsWith('- ') ? (
+          <ul className="list-disc pl-5 space-y-1">
+            {paragraph.split('\n').map((item, i) => (
+              <li key={i} className="mb-1">
+                {formatBoldText(item.replace('- ', ''))}
+              </li>
+            ))}
+          </ul>
+        ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
+          <div>
+            <span className="font-medium">{paragraph.split(':')[0]}:</span>
+            {paragraph.split(':').slice(1).join(':').trim()}
+          </div>
+        ) : (
+          <p>{formatBoldText(paragraph)}</p>
+        )}
+      </div>
+    ));
+  };
+  
+  // Helper function to format bold text (text between ** markers)
+  const formatBoldText = (text: string) => {
+    return text.split('**').map((part, i) => 
+      i % 2 === 0 ? part : <strong key={i}>{part}</strong>
+    );
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -137,30 +206,7 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
               <div className="rounded-md border p-4 bg-gradient-to-r from-white to-gray-50">
                 <h3 className="text-lg font-semibold mb-4 text-primary">Executive Summary</h3>
                 <div className="prose prose-sm max-w-none">
-                  {analysis.summary.split('\n\n').map((paragraph, idx) => (
-                    <div key={idx} className="mb-4">
-                      {paragraph.startsWith('- ') ? (
-                        <ul className="list-disc pl-5 space-y-1">
-                          {paragraph.split('\n').map((item, i) => (
-                            <li key={i} className="mb-1">
-                              {item.replace('- ', '').split('**').map((part, j) => 
-                                j % 2 === 0 ? part : <strong key={j}>{part}</strong>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
-                        <div>
-                          <h4 className="font-medium text-base mb-1">{paragraph.split(':')[0]}:</h4>
-                          <p>{paragraph.split(':').slice(1).join(':').trim()}</p>
-                        </div>
-                      ) : (
-                        <p>{paragraph.split('**').map((part, i) => 
-                          i % 2 === 0 ? part : <strong key={i}>{part}</strong>
-                        )}</p>
-                      )}
-                    </div>
-                  ))}
+                  {renderSummary()}
                 </div>
               </div>
             </TabsContent>
@@ -169,38 +215,7 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
               <div className="rounded-md border p-4 bg-gradient-to-r from-white to-gray-50">
                 <h3 className="text-lg font-semibold mb-4 text-primary">Technical Analysis</h3>
                 <div className="prose prose-sm max-w-none">
-                  {analysis.detailedAnalysis.split('\n\n').map((paragraph, idx) => (
-                    <div key={idx} className="mb-4">
-                      {paragraph.startsWith('# ') ? (
-                        <h3 className="text-base font-semibold mt-4 mb-2">
-                          {paragraph.replace('# ', '').split('**').map((part, j) => 
-                            j % 2 === 0 ? part : <strong key={j}>{part}</strong>
-                          )}
-                        </h3>
-                      ) : paragraph.startsWith('## ') ? (
-                        <h4 className="text-sm font-medium mt-3 mb-2">{paragraph.replace('## ', '')}</h4>
-                      ) : paragraph.startsWith('- ') ? (
-                        <ul className="list-disc pl-5 space-y-1">
-                          {paragraph.split('\n').map((item, i) => (
-                            <li key={i} className="mb-1">
-                              {item.replace('- ', '').split('**').map((part, j) => 
-                                j % 2 === 0 ? part : <strong key={j}>{part}</strong>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
-                        <div>
-                          <span className="font-medium">{paragraph.split(':')[0]}:</span>
-                          {paragraph.split(':').slice(1).join(':').trim()}
-                        </div>
-                      ) : (
-                        <p>{paragraph.split('**').map((part, i) => 
-                          i % 2 === 0 ? part : <strong key={i}>{part}</strong>
-                        )}</p>
-                      )}
-                    </div>
-                  ))}
+                  {renderTechnicalAnalysis()}
                 </div>
               </div>
             </TabsContent>
