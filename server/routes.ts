@@ -742,6 +742,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const cameras = await storage.getCameras(projectId);
     const elevators = await storage.getElevators(projectId);
     const intercoms = await storage.getIntercoms(projectId);
+    
+    console.log(`Project ${projectId} summary - Access Points: ${accessPoints.length}, Cameras: ${cameras.length}, Elevators: ${elevators.length}, Intercoms: ${intercoms.length}`);
 
     // Fetch images for all equipment items
     const accessPointsWithImages = await Promise.all(
