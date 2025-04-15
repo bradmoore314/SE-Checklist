@@ -142,7 +142,11 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
                       {paragraph.startsWith('- ') ? (
                         <ul className="list-disc pl-5 space-y-1">
                           {paragraph.split('\n').map((item, i) => (
-                            <li key={i} className="mb-1">{item.replace('- ', '')}</li>
+                            <li key={i} className="mb-1">
+                              {item.replace('- ', '').split('**').map((part, j) => 
+                                j % 2 === 0 ? part : <strong key={j}>{part}</strong>
+                              )}
+                            </li>
                           ))}
                         </ul>
                       ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
@@ -151,7 +155,9 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
                           <p>{paragraph.split(':').slice(1).join(':').trim()}</p>
                         </div>
                       ) : (
-                        <p>{paragraph}</p>
+                        <p>{paragraph.split('**').map((part, i) => 
+                          i % 2 === 0 ? part : <strong key={i}>{part}</strong>
+                        )}</p>
                       )}
                     </div>
                   ))}
@@ -166,13 +172,21 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
                   {analysis.detailedAnalysis.split('\n\n').map((paragraph, idx) => (
                     <div key={idx} className="mb-4">
                       {paragraph.startsWith('# ') ? (
-                        <h3 className="text-base font-semibold mt-4 mb-2">{paragraph.replace('# ', '')}</h3>
+                        <h3 className="text-base font-semibold mt-4 mb-2">
+                          {paragraph.replace('# ', '').split('**').map((part, j) => 
+                            j % 2 === 0 ? part : <strong key={j}>{part}</strong>
+                          )}
+                        </h3>
                       ) : paragraph.startsWith('## ') ? (
                         <h4 className="text-sm font-medium mt-3 mb-2">{paragraph.replace('## ', '')}</h4>
                       ) : paragraph.startsWith('- ') ? (
                         <ul className="list-disc pl-5 space-y-1">
                           {paragraph.split('\n').map((item, i) => (
-                            <li key={i} className="mb-1">{item.replace('- ', '')}</li>
+                            <li key={i} className="mb-1">
+                              {item.replace('- ', '').split('**').map((part, j) => 
+                                j % 2 === 0 ? part : <strong key={j}>{part}</strong>
+                              )}
+                            </li>
                           ))}
                         </ul>
                       ) : paragraph.includes(':') && !paragraph.includes('\n') ? (
@@ -181,7 +195,9 @@ export function SiteWalkAnalysis({ projectId }: SiteWalkAnalysisProps) {
                           {paragraph.split(':').slice(1).join(':').trim()}
                         </div>
                       ) : (
-                        <p>{paragraph}</p>
+                        <p>{paragraph.split('**').map((part, i) => 
+                          i % 2 === 0 ? part : <strong key={i}>{part}</strong>
+                        )}</p>
                       )}
                     </div>
                   ))}
