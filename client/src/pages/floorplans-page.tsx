@@ -3,7 +3,7 @@ import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2 } from 'lucide-react';
-import SimpleFloorplanViewer from '@/components/floorplans/SimpleFloorplanViewer';
+import BasicFloorplanViewer from '@/components/floorplans/BasicFloorplanViewer';
 
 const FloorplansPage = () => {
   const [, params] = useRoute('/projects/:projectId/floorplans');
@@ -54,7 +54,7 @@ const FloorplansPage = () => {
           Click on the floorplan to place markers. Red markers represent access points, blue markers represent cameras.
         </p>
         
-        <SimpleFloorplanViewer 
+        <BasicFloorplanViewer 
           projectId={projectId as number} 
           onMarkersUpdated={refreshAccessPointsAndCameras}
         />
