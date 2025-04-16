@@ -5,7 +5,9 @@ import {
   Camera, InsertCamera,
   Elevator, InsertElevator,
   Intercom, InsertIntercom,
-  Image, InsertImage
+  Image, InsertImage,
+  Floorplan, InsertFloorplan,
+  FloorplanMarker, InsertFloorplanMarker
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -58,6 +60,20 @@ export interface IStorage {
   saveImage(image: InsertImage): Promise<Image>;
   getImages(equipmentType: string, equipmentId: number): Promise<Image[]>;
   deleteImage(id: number): Promise<boolean>;
+  
+  // Floorplans
+  getFloorplans(projectId: number): Promise<Floorplan[]>;
+  getFloorplan(id: number): Promise<Floorplan | undefined>;
+  createFloorplan(floorplan: InsertFloorplan): Promise<Floorplan>;
+  updateFloorplan(id: number, floorplan: Partial<InsertFloorplan>): Promise<Floorplan | undefined>;
+  deleteFloorplan(id: number): Promise<boolean>;
+  
+  // Floorplan Markers
+  getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]>;
+  getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined>;
+  createFloorplanMarker(marker: InsertFloorplanMarker): Promise<FloorplanMarker>;
+  updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
+  deleteFloorplanMarker(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -69,6 +85,8 @@ export class MemStorage implements IStorage {
   private elevators: Map<number, Elevator>;
   private intercoms: Map<number, Intercom>;
   private images: Map<number, Image>;
+  private floorplans: Map<number, Floorplan>;
+  private floorplanMarkers: Map<number, FloorplanMarker>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -77,6 +95,8 @@ export class MemStorage implements IStorage {
   private currentElevatorId: number;
   private currentIntercomId: number;
   private currentImageId: number;
+  private currentFloorplanId: number;
+  private currentFloorplanMarkerId: number;
 
   constructor() {
     // Initialize session store
@@ -91,6 +111,8 @@ export class MemStorage implements IStorage {
     this.elevators = new Map();
     this.intercoms = new Map();
     this.images = new Map();
+    this.floorplans = new Map();
+    this.floorplanMarkers = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -99,6 +121,8 @@ export class MemStorage implements IStorage {
     this.currentElevatorId = 1;
     this.currentIntercomId = 1;
     this.currentImageId = 1;
+    this.currentFloorplanId = 1;
+    this.currentFloorplanMarkerId = 1;
     
     // Initialize with sample data
     this.initSampleData();

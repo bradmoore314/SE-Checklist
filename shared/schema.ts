@@ -155,7 +155,8 @@ export const equipmentTypeEnum = pgEnum('equipment_type', [
   'access_point',
   'camera',
   'elevator',
-  'intercom'
+  'intercom',
+  'floorplan'
 ]);
 
 // Images table for all equipment types
@@ -221,5 +222,52 @@ export type InsertElevator = z.infer<typeof insertElevatorSchema>;
 export type Intercom = typeof intercoms.$inferSelect;
 export type InsertIntercom = z.infer<typeof insertIntercomSchema>;
 
+// Floorplans model
+export const floorplans = pgTable("floorplans", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull(),
+  name: text("name").notNull(),
+  pdf_data: text("pdf_data").notNull(), // base64 encoded PDF
+  page_count: integer("page_count").default(1),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFloorplanSchema = createInsertSchema(floorplans).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+// Marker types
+export const markerTypeEnum = pgEnum('marker_type', [
+  'access_point',
+  'camera'
+]);
+
+// Floorplan markers for mapping equipment to positions on the PDF
+export const floorplanMarkers = pgTable("floorplan_markers", {
+  id: serial("id").primaryKey(),
+  floorplan_id: integer("floorplan_id").notNull(),
+  page: integer("page").default(1),
+  marker_type: markerTypeEnum("marker_type").notNull(),
+  equipment_id: integer("equipment_id").notNull(),
+  position_x: integer("position_x").notNull(), // X position as percentage 
+  position_y: integer("position_y").notNull(), // Y position as percentage
+  label: text("label"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertFloorplanMarkerSchema = createInsertSchema(floorplanMarkers).omit({
+  id: true,
+  created_at: true,
+});
+
 export type Image = typeof images.$inferSelect;
 export type InsertImage = z.infer<typeof insertImageSchema>;
+
+export type Floorplan = typeof floorplans.$inferSelect;
+export type InsertFloorplan = z.infer<typeof insertFloorplanSchema>;
+
+export type FloorplanMarker = typeof floorplanMarkers.$inferSelect;
+export type InsertFloorplanMarker = z.infer<typeof insertFloorplanMarkerSchema>;
