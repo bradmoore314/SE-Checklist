@@ -6,8 +6,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,25 +54,29 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // State for marker interaction
+  const [markerDialogOpen, setMarkerDialogOpen] = useState(false);
+  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
+  const [markerType, setMarkerType] = useState<'access_point' | 'camera'>('access_point');
+  const [isAddingMarker, setIsAddingMarker] = useState(false);
+  
+  // State for dragging markers
+  const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
+  const [markerSize, setMarkerSize] = useState<{[key: number]: {width: number, height: number}}>({});
+  // Default mode for the viewer - 'select' allows manipulation, 'add_access_point'/'add_camera' for adding markers
+  const [viewerMode, setViewerMode] = useState<'select' | 'add_access_point' | 'add_camera'>('select');
+  
   // Fetch floorplans for this project
-  const { data: floorplans, isLoading: isLoadingFloorplans } = useQuery<Floorplan[]>({
+  const { data: floorplans = [], isLoading: isLoadingFloorplans } = useQuery<Floorplan[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
       return await res.json();
     },
-    onError: (error: Error) => {
-      console.error('Error fetching floorplans:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load floorplans",
-        variant: "destructive",
-      });
-    }
   });
   
   // Fetch markers for selected floorplan
-  const { data: floorplanMarkers, isLoading: isLoadingMarkers } = useQuery<Marker[]>({
+  const { data: floorplanMarkers = [], isLoading: isLoadingMarkers } = useQuery<Marker[]>({
     queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'],
     queryFn: async () => {
       if (!selectedFloorplan) return [];
@@ -82,14 +84,6 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       return await res.json();
     },
     enabled: !!selectedFloorplan,
-    onError: (error: Error) => {
-      console.error('Error fetching markers:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load floorplan markers",
-        variant: "destructive",
-      });
-    }
   });
   
   // Mutation for uploading floorplans
@@ -174,12 +168,6 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     },
   });
   
-  // State for marker interaction
-  const [markerDialogOpen, setMarkerDialogOpen] = useState(false);
-  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
-  const [markerType, setMarkerType] = useState<'access_point' | 'camera'>('access_point');
-  const [isAddingMarker, setIsAddingMarker] = useState(false);
-  
   // Set default floorplan if available
   useEffect(() => {
     if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
@@ -234,48 +222,6 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       }
     };
   }, [selectedFloorplan]);
-  
-  // CRITICAL FIX: Ensure markers stay fixed to PDF when scrolling/zooming
-  useEffect(() => {
-    if (!pdfBlobUrl) return;
-    
-    // Helper functions to sync PDF and markers container
-    const syncMarkersWithPdf = () => {
-      const markersContainer = document.getElementById('markers-container');
-      if (!markersContainer) return;
-
-      // When the PDF element is zoomed or scrolled, get its new dimensions and position
-      const pdfObj = document.querySelector('iframe') as HTMLIFrameElement;
-      if (!pdfObj) return;
-      
-      // Use MutationObserver to detect changes in PDF viewer
-      try {
-        const observer = new MutationObserver((mutations) => {
-          // Apply appropriate positioning based on PDF scaling and scrolling
-          // This helps markers stay fixed relative to PDF content
-          markersContainer.style.zIndex = '20';
-        });
-        
-        // Observe changes to the PDF iframe
-        observer.observe(pdfObj, { 
-          attributes: true,
-          childList: true,
-          subtree: true 
-        });
-        
-        return () => observer.disconnect();
-      } catch (err) {
-        console.error('Could not set up PDF sync, using percentage positioning', err);
-      }
-    };
-    
-    // Give PDF time to load before trying to sync
-    const syncTimer = setTimeout(syncMarkersWithPdf, 1000);
-    
-    return () => {
-      clearTimeout(syncTimer);
-    };
-  }, [pdfBlobUrl]);
 
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -331,7 +277,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
             
             await uploadFloorplanMutation.mutateAsync({
               name: newFloorplanName,
-              pdf_data: base64,
+              pdf_data: result,
               project_id: projectId
             });
           }
@@ -378,12 +324,6 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     setNewMarkerPosition({ x, y });
     setMarkerDialogOpen(true);
   };
-
-  // State for dragging markers
-  const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
-  const [markerSize, setMarkerSize] = useState<{[key: number]: {width: number, height: number}}>({});
-  // Default mode for the viewer - 'select' allows manipulation, 'add_access_point'/'add_camera' for adding markers
-  const [viewerMode, setViewerMode] = useState<'select' | 'add_access_point' | 'add_camera'>('select');
   
   // Handle marker drag start
   const handleDragStart = (e: React.MouseEvent, markerId: number) => {
@@ -411,15 +351,15 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     
     if (markerToUpdate) {
       // Update marker position directly
-      fetch(`/api/floorplan-markers/${draggedMarker}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          position_x: x,
-          position_y: y
-        })
+      apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, {
+        position_x: x,
+        position_y: y,
+        // Add these required fields
+        floorplan_id: markerToUpdate.floorplan_id,
+        page: markerToUpdate.page,
+        marker_type: markerToUpdate.marker_type,
+        equipment_id: markerToUpdate.equipment_id,
+        label: markerToUpdate.label
       })
       .then(response => {
         if (!response.ok) {
@@ -521,24 +461,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       label: marker.label
     };
     
-    apiRequest('POST', '/api/floorplan-markers', duplicateData)
-      .then(() => {
-        // Refresh markers
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-        if (onMarkersUpdated) onMarkersUpdated();
-        toast({
-          title: "Success",
-          description: `Duplicated ${marker.marker_type === 'access_point' ? 'access point' : 'camera'} marker`,
-        });
-      })
-      .catch(err => {
-        console.error('Error duplicating marker:', err);
-        toast({
-          title: "Error",
-          description: "Failed to duplicate marker",
-          variant: "destructive",
-        });
-      });
+    createMarkerMutation.mutate(duplicateData);
   };
   
   // Edit marker
@@ -589,6 +512,13 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       document.removeEventListener('click', hideContextMenu);
     };
   }, []);
+
+  // Toggle marker addition mode
+  const toggleMarkerMode = (mode: 'select' | 'add_access_point' | 'add_camera') => {
+    setViewerMode(mode);
+    setIsAddingMarker(mode !== 'select');
+    setMarkerType(mode === 'add_camera' ? 'camera' : 'access_point');
+  };
 
   // Render markers on the PDF
   const renderMarkers = () => {
@@ -691,13 +621,6 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     );
   };
 
-  // Toggle marker addition mode
-  const toggleMarkerMode = (mode: 'select' | 'add_access_point' | 'add_camera') => {
-    setViewerMode(mode);
-    setIsAddingMarker(mode !== 'select');
-    setMarkerType(mode === 'add_camera' ? 'camera' : 'access_point');
-  };
-
   return (
     <div className="mt-4">
       <div className="mb-6">
@@ -706,78 +629,29 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           Upload and manage floorplans for your site walk. Add markers for access points and cameras.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="col-span-2">
-            <div className="flex flex-wrap gap-2 mb-4">
-              {floorplans && floorplans.map((floorplan) => (
-                <Button
-                  key={floorplan.id}
-                  variant={selectedFloorplan?.id === floorplan.id ? "default" : "outline"}
-                  onClick={() => setSelectedFloorplan(floorplan)}
-                  className="text-sm"
-                >
-                  {floorplan.name}
-                </Button>
-              ))}
-              
-              {isLoadingFloorplans && (
-                <Button variant="outline" disabled className="text-sm">
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Loading...
-                </Button>
-              )}
-            </div>
-            
-            {/* Toolbar for marker controls */}
-            <div className="flex flex-wrap gap-2 mb-4 p-2 border rounded-md bg-muted/30">
-              <Button
-                size="sm"
-                variant={viewerMode === 'select' ? "default" : "outline"}
-                onClick={() => toggleMarkerMode('select')}
-                className="text-xs flex items-center gap-1"
-                title="Select and move markers"
-              >
-                <Hand className="h-3 w-3" />
-                Select
-              </Button>
-              
-              <Button
-                size="sm"
-                variant={viewerMode === 'add_access_point' ? "default" : "outline"}
-                onClick={() => toggleMarkerMode('add_access_point')}
-                className="text-xs flex items-center gap-1"
-                title="Add access point marker"
-              >
-                <MousePointer className="h-3 w-3" />
-                Add Access Point
-              </Button>
-              
-              <Button
-                size="sm"
-                variant={viewerMode === 'add_camera' ? "default" : "outline"}
-                onClick={() => toggleMarkerMode('add_camera')}
-                className="text-xs flex items-center gap-1"
-                title="Add camera marker"
-              >
-                <Camera className="h-3 w-3" />
-                Add Camera
-              </Button>
-              
-              <div className="ml-auto text-xs text-muted-foreground flex items-center">
-                {isAddingMarker ? (
-                  <span className="text-xs text-primary animate-pulse font-medium">
-                    Click on the floorplan to place a marker
-                  </span>
-                ) : (
-                  <span>
-                    Markers: {markers?.length || 0}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-wrap gap-4 mb-4">
+          {floorplans && floorplans.map((floorplan) => (
+            <Button
+              key={floorplan.id}
+              variant={selectedFloorplan?.id === floorplan.id ? "default" : "outline"}
+              onClick={() => setSelectedFloorplan(floorplan)}
+              className="text-sm"
+            >
+              {floorplan.name}
+            </Button>
+          ))}
           
-          <div className="p-4 border rounded-md bg-muted/10">
+          {isLoadingFloorplans && (
+            <Button variant="outline" disabled className="text-sm">
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Loading...
+            </Button>
+          )}
+        </div>
+        
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          {/* Upload form */}
+          <div className="p-4 border rounded-md bg-muted/10 flex-1">
             <h3 className="text-sm font-medium mb-2">Upload New Floorplan</h3>
             <div className="space-y-3">
               <div>
@@ -821,6 +695,63 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
               </Button>
             </div>
           </div>
+          
+          {/* Toolbar for marker controls - Moved up here per user request */}
+          <div className="p-4 border rounded-md bg-muted/10 flex-1">
+            <h3 className="text-sm font-medium mb-2">Add Items to Floorplan</h3>
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                Click a button below, then click on the floorplan to place the marker.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant={viewerMode === 'select' ? "default" : "outline"}
+                  onClick={() => toggleMarkerMode('select')}
+                  className="text-xs flex items-center gap-1"
+                  title="Select and move markers"
+                >
+                  <Hand className="h-3 w-3" />
+                  Select Tool
+                </Button>
+                
+                <Button
+                  size="sm"
+                  variant={viewerMode === 'add_access_point' ? "default" : "outline"}
+                  onClick={() => toggleMarkerMode('add_access_point')}
+                  className="text-xs flex items-center gap-1"
+                  title="Add access point marker"
+                >
+                  <MousePointer className="h-3 w-3" />
+                  Add Access Point
+                </Button>
+                
+                <Button
+                  size="sm"
+                  variant={viewerMode === 'add_camera' ? "default" : "outline"}
+                  onClick={() => toggleMarkerMode('add_camera')}
+                  className="text-xs flex items-center gap-1"
+                  title="Add camera marker"
+                >
+                  <Camera className="h-3 w-3" />
+                  Add Camera
+                </Button>
+                
+                <div className="text-xs text-muted-foreground flex items-center">
+                  {isAddingMarker ? (
+                    <span className="text-xs text-primary animate-pulse font-medium">
+                      Click on floorplan to place
+                    </span>
+                  ) : (
+                    <span>
+                      Markers: {markers?.length || 0}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -849,23 +780,8 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                     height="100%"
                     className="border-0 absolute inset-0"
                     style={{ zIndex: 10 }}
-                  >
-                  </iframe>
+                  />
                   
-                  {/* Fallback for browsers that can't display PDFs */}
-                  <noscript>
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <div className="text-red-500 mb-2">Your browser can't display PDF files directly</div>
-                      <a 
-                        href={pdfBlobUrl} 
-                        download={`${selectedFloorplan.name}.pdf`}
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                      >
-                        Download PDF
-                      </a>
-                    </div>
-                  </noscript>
-                
                   {/* Layer for markers that sits on top of the PDF */}
                   <div 
                     className="absolute top-0 left-0 pointer-events-none"
@@ -875,11 +791,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                       position: 'absolute',
                       overflow: 'hidden',
                       pointerEvents: 'none',
-                      zIndex: 20,
-                      // These properties ensure the markers layer scales exactly with the PDF
-                      transformOrigin: '0 0',
-                      transform: 'scale(1)', // Will be adjusted to match PDF's scale
-                      willChange: 'transform'
+                      zIndex: 20
                     }}
                     id="markers-container"
                   >
@@ -963,7 +875,16 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                         
                         // Also update the marker label if it changed
                         if (label) {
-                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, { label })
+                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, { 
+                            label,
+                            // Include these required fields
+                            floorplan_id: selectedFloorplan.id,
+                            page: 1,
+                            marker_type: 'access_point',
+                            equipment_id: equipmentId,
+                            position_x: newMarkerPosition.x,
+                            position_y: newMarkerPosition.y
+                          })
                             .then(() => {
                               queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
                             });
@@ -1090,7 +1011,16 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                         
                         // Also update the marker label if it changed
                         if (label) {
-                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, { label })
+                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
+                            label,
+                            // Include required fields
+                            floorplan_id: selectedFloorplan.id,
+                            page: 1,
+                            marker_type: 'camera',
+                            equipment_id: equipmentId,
+                            position_x: newMarkerPosition.x,
+                            position_y: newMarkerPosition.y
+                          })
                             .then(() => {
                               queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
                             });

@@ -1,0 +1,46 @@
+chunk-RPCDYKBN.js?v=f18a7e6b:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+/api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
+(anonymous) @ BasicFloorplanViewer.tsx:435Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
+(anonymous) @ BasicFloorplanViewer.tsx:435Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
+(anonymous) @ BasicFloorplanViewer.tsx:435Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
+(anonymous) @ BasicFloorplanViewer.tsx:435Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
+(anonymous) @ BasicFloorplanViewer.tsx:435Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:435 Error updating marker position: Error: Failed to update marker position
+    at BasicFloorplanViewer.tsx:426:17
