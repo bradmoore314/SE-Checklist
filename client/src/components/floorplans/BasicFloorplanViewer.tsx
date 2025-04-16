@@ -214,6 +214,62 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       }
     };
   }, [selectedFloorplan]);
+  
+  // CRITICAL FIX: Ensure markers stay fixed to PDF when scrolling/zooming
+  useEffect(() => {
+    if (!pdfBlobUrl) return;
+    
+    // Helper functions to sync PDF and markers container
+    const syncMarkersWithPdf = () => {
+      const markersContainer = document.getElementById('markers-container');
+      if (!markersContainer) return;
+
+      // When the PDF element is zoomed or scrolled, get its new dimensions and position
+      const pdfObj = document.querySelector('object[type="application/pdf"]') as HTMLObjectElement;
+      if (!pdfObj) return;
+      
+      // Use MutationObserver to detect changes in PDF viewer
+      try {
+        const observer = new MutationObserver((mutations) => {
+          // When PDF element changes, apply the same scale to markers
+          if (pdfObj.contentDocument) {
+            // For some browsers we can access the PDF document directly
+            const pdfDoc = pdfObj.contentDocument;
+            const pdfViewport = pdfDoc.querySelector('.pdfViewer');
+            
+            if (pdfViewport) {
+              // Get the transform and apply it to our markers
+              const transform = window.getComputedStyle(pdfViewport).transform;
+              if (transform && transform !== 'none') {
+                markersContainer.style.transform = transform;
+              }
+            }
+          } else {
+            // Otherwise, we stick with percentage positioning which should handle most cases
+            console.log('Using percentage positioning for markers');
+          }
+        });
+        
+        // Observe changes to the PDF object
+        observer.observe(pdfObj, { 
+          attributes: true,
+          childList: true,
+          subtree: true 
+        });
+        
+        return () => observer.disconnect();
+      } catch (err) {
+        console.error('Could not set up PDF sync, using percentage positioning', err);
+      }
+    };
+    
+    // Give PDF time to load before trying to sync
+    const syncTimer = setTimeout(syncMarkersWithPdf, 1000);
+    
+    return () => {
+      clearTimeout(syncTimer);
+    };
+  }, [pdfBlobUrl]);
 
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -816,7 +872,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   </div>
                 </object>
                 
-                {/* Layer for markers that sits on top of the PDF - fix position to main container */}
+                {/* Layer for markers that sits on top of the PDF */}
                 <div 
                   className="absolute top-0 left-0 pointer-events-none"
                   style={{ 
@@ -824,8 +880,13 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                     height: '800px', // Match the height of the PDF object
                     position: 'absolute',
                     overflow: 'hidden',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    // These properties ensure the markers layer scales exactly with the PDF
+                    transformOrigin: '0 0',
+                    transform: 'scale(1)', // Will be adjusted to match PDF's scale
+                    willChange: 'transform'
                   }}
+                  id="markers-container"
                 >
                   {renderMarkers()}
                 </div>
