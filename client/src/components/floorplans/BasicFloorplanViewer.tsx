@@ -320,6 +320,8 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   // State for dragging markers
   const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
   const [markerSize, setMarkerSize] = useState<{[key: number]: {width: number, height: number}}>({});
+  // Default mode for the viewer - 'select' allows manipulation, 'add_access_point'/'add_camera' for adding markers
+  const [viewerMode, setViewerMode] = useState<'select' | 'add_access_point' | 'add_camera'>('select');
   
   // Handle marker drag start
   const handleDragStart = (e: React.MouseEvent, markerId: number) => {
@@ -346,25 +348,35 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     const markerToUpdate = markers.find(m => m.id === draggedMarker);
     
     if (markerToUpdate) {
-      // Update marker position in database
-      const updateData = {
-        position_x: x,
-        position_y: y
-      };
-      
-      apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, updateData)
-        .then(() => {
-          // Refresh markers
-          queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      // Update marker position directly
+      fetch(`/api/floorplan-markers/${draggedMarker}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          position_x: x,
+          position_y: y
         })
-        .catch(err => {
-          console.error('Error updating marker position:', err);
-          toast({
-            title: "Error",
-            description: "Failed to update marker position",
-            variant: "destructive",
-          });
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to update marker position');
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Refresh markers
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      })
+      .catch(err => {
+        console.error('Error updating marker position:', err);
+        toast({
+          title: "Error",
+          description: "Failed to update marker position",
+          variant: "destructive",
         });
+      });
     }
     
     // Reset dragged marker
@@ -519,8 +531,8 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   // Render markers on the PDF
   const renderMarkers = () => {
     return markers.map((marker) => {
-      // Get marker size from state or use default
-      const size = markerSize[marker.id] || { width: 6, height: 6 };
+      // Get marker size from state or use default - smaller size by default (2.5rem)
+      const size = markerSize[marker.id] || { width: 2.5, height: 2.5 };
       
       return (
         <div
@@ -528,7 +540,8 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           key={marker.id}
           className={`absolute rounded-full flex items-center justify-center cursor-move z-50
                      ${marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500'}
-                     text-white font-bold text-xs select-none shadow-md hover:shadow-lg`}
+                     text-white font-bold text-xs select-none shadow-md hover:shadow-lg
+                     pointer-events-auto`} // Make sure the marker can receive mouse events
           style={{
             left: `${marker.position_x}%`,
             top: `${marker.position_y}%`,
@@ -699,55 +712,65 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           </Dialog>
           
           {selectedFloorplan && (
-            <>
+            <div className="border rounded-md p-1 flex gap-1 items-center bg-gray-50">
+              {/* BlueBeam-like tool buttons */}
               <Button
-                variant="outline"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setIsAddingMarker(false);
+                  toast({
+                    title: "Selection Tool Activated",
+                    description: "You can now select, move, edit and resize markers",
+                  });
+                }}
+                className={!isAddingMarker ? 'bg-gray-200' : ''}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4v7" />
+                  <path d="M4 11l9-9" />
+                  <path d="M15 8h5v5" />
+                  <path d="M20 13l-9 9" />
+                </svg>
+                <span className="ml-1">Select</span>
+              </Button>
+              
+              <div className="h-6 border-l mx-1"></div>
+              
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   setIsAddingMarker(true);
                   setMarkerType('access_point');
                   toast({
-                    title: "Access Point Marker Mode",
+                    title: "Access Point Stamp Tool",
                     description: "Click on the floorplan to place an access point marker",
                   });
                 }}
-                className={isAddingMarker && markerType === 'access_point' ? 'bg-red-100' : ''}
+                className={isAddingMarker && markerType === 'access_point' ? 'bg-gray-200' : ''}
               >
                 <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                Add Access Point
+                <span>Access Point</span>
               </Button>
+              
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   setIsAddingMarker(true);
                   setMarkerType('camera');
                   toast({
-                    title: "Camera Marker Mode",
+                    title: "Camera Stamp Tool",
                     description: "Click on the floorplan to place a camera marker",
                   });
                 }}
-                className={isAddingMarker && markerType === 'camera' ? 'bg-blue-100' : ''}
+                className={isAddingMarker && markerType === 'camera' ? 'bg-gray-200' : ''}
               >
                 <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-                Add Camera
+                <span>Camera</span>
               </Button>
-              {isAddingMarker && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setIsAddingMarker(false);
-                    toast({
-                      title: "Marker Mode Disabled",
-                      description: "You can now view and interact with the floorplan",
-                    });
-                  }}
-                >
-                  Cancel
-                </Button>
-              )}
-            </>
+            </div>
           )}
         </div>
       </div>
