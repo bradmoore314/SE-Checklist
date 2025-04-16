@@ -21,7 +21,8 @@ import AccessPointMarkerForm from './AccessPointMarkerForm';
 import CameraMarkerForm from './CameraMarkerForm';
 
 // Set up the PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// Use a more reliable approach - load it from CDN but with fallback
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 type FloorplanViewerProps = {
   projectId: number;
@@ -207,19 +208,73 @@ const FloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMarkersU
       return;
     }
 
-    // Convert PDF to base64
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      if (e.target && e.target.result) {
-        const base64 = e.target.result.toString().split(',')[1];
-        await uploadFloorplanMutation.mutateAsync({
-          name: newFloorplanName,
-          pdf_data: base64,
-          project_id: projectId
+    // Make sure we're uploading a PDF file
+    if (!pdfFile.type.includes('pdf')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select a PDF file (application/pdf)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Show that we're processing the file
+      toast({
+        title: "Processing",
+        description: `Converting ${pdfFile.name} (${Math.round(pdfFile.size / 1024)} KB)`,
+      });
+
+      // Convert PDF to base64
+      const reader = new FileReader();
+      
+      reader.onload = async (e) => {
+        try {
+          if (e.target && e.target.result) {
+            const result = e.target.result.toString();
+            // Make sure we have a data URL
+            if (!result.startsWith('data:')) {
+              throw new Error('Invalid file format');
+            }
+            
+            const base64 = result.split(',')[1];
+            if (!base64) {
+              throw new Error('Failed to extract base64 data');
+            }
+            
+            await uploadFloorplanMutation.mutateAsync({
+              name: newFloorplanName,
+              pdf_data: base64,
+              project_id: projectId
+            });
+          }
+        } catch (err) {
+          console.error('Error processing file:', err);
+          toast({
+            title: "Upload Error",
+            description: `Error processing the PDF: ${err instanceof Error ? err.message : 'Unknown error'}`,
+            variant: "destructive",
+          });
+        }
+      };
+      
+      reader.onerror = () => {
+        toast({
+          title: "File Read Error",
+          description: "Failed to read the PDF file",
+          variant: "destructive",
         });
-      }
-    };
-    reader.readAsDataURL(pdfFile);
+      };
+      
+      reader.readAsDataURL(pdfFile);
+    } catch (err) {
+      console.error('Upload preparation error:', err);
+      toast({
+        title: "Error",
+        description: `Failed to prepare the file for upload: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle PDF click for marker placement
@@ -438,12 +493,29 @@ const FloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMarkersU
               file={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`}
               onLoadSuccess={onDocumentLoadSuccess}
               loading={<div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+              error={
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="text-red-500 mb-2">Failed to load PDF file</div>
+                  <p className="text-sm text-muted-foreground max-w-sm text-center">
+                    There was an error loading the PDF. This might be due to an invalid PDF format or browser limitations.
+                    Try uploading a different PDF file.
+                  </p>
+                </div>
+              }
             >
               <Page
                 pageNumber={pageNumber}
                 scale={scale}
                 renderTextLayer={false}
                 renderAnnotationLayer={false}
+                error={
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="text-red-500 mb-2">Failed to render page {pageNumber}</div>
+                    <p className="text-sm text-muted-foreground max-w-sm text-center">
+                      Try a different page or different PDF file.
+                    </p>
+                  </div>
+                }
               />
             </Document>
             

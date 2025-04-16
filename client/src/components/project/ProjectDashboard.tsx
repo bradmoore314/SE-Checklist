@@ -336,6 +336,21 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
                 <div className="text-sm text-gray-600">Intercoms</div>
               </div>
             </div>
+            
+            <div className="mt-4 pt-4 border-t">
+              <label htmlFor="equipment-notes" className="text-sm font-medium text-gray-700 mb-2 block">
+                Equipment Notes
+              </label>
+              <textarea
+                id="equipment-notes"
+                value={project.equipment_notes || ""}
+                onChange={(e) => {
+                  updateSiteWalkMutation.mutate({ equipment_notes: e.target.value });
+                }}
+                placeholder="Add notes about equipment..."
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+              />
+            </div>
           </CardContent>
         </Card>
         
@@ -363,6 +378,21 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
                 <div className="text-sm text-gray-600">Created Date:</div>
                 <div className="text-sm font-medium text-gray-800">{formatDate(project.created_at)}</div>
               </div>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t">
+              <label htmlFor="scope-notes" className="text-sm font-medium text-gray-700 mb-2 block">
+                Scope Notes
+              </label>
+              <textarea
+                id="scope-notes"
+                value={project.scope_notes || ""}
+                onChange={(e) => {
+                  updateSiteWalkMutation.mutate({ scope_notes: e.target.value });
+                }}
+                placeholder="Add notes about the scope..."
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+              />
             </div>
           </CardContent>
         </Card>

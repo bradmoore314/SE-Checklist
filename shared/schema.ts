@@ -31,6 +31,8 @@ export const projects = pgTable("projects", {
   building_count: integer("building_count"),
   progress_percentage: integer("progress_percentage").default(0),
   progress_notes: text("progress_notes"),
+  equipment_notes: text("equipment_notes"), // New field for equipment notes
+  scope_notes: text("scope_notes"), // New field for scope notes
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
   // Configuration options
