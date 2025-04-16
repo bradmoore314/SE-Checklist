@@ -816,14 +816,15 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   </div>
                 </object>
                 
-                {/* Layer for markers that sits on top of the PDF - use position:absolute with matching dimensions */}
+                {/* Layer for markers that sits on top of the PDF - fix position to main container */}
                 <div 
                   className="absolute top-0 left-0 pointer-events-none"
                   style={{ 
                     width: '100%', 
                     height: '600px', // Match the height of the PDF object
                     position: 'absolute',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    pointerEvents: 'none'
                   }}
                 >
                   {renderMarkers()}

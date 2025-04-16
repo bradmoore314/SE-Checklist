@@ -185,11 +185,21 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                       <SelectValue placeholder="Select camera type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Fixed">Fixed</SelectItem>
-                      <SelectItem value="PTZ">PTZ</SelectItem>
-                      <SelectItem value="Fisheye">Fisheye</SelectItem>
-                      <SelectItem value="Multi-sensor">Multi-sensor</SelectItem>
-                      <SelectItem value="Thermal">Thermal</SelectItem>
+                      {isLoadingLookups ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : lookupData?.cameraTypes ? (
+                        lookupData.cameraTypes.map((type: string) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value="Fixed Indoor Dome">Fixed Indoor Dome</SelectItem>
+                          <SelectItem value="Fixed Outdoor Dome">Fixed Outdoor Dome</SelectItem>
+                          <SelectItem value="PTZ">PTZ</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -221,11 +231,21 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                     <SelectValue placeholder="Select mount type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Wall">Wall</SelectItem>
-                    <SelectItem value="Ceiling">Ceiling</SelectItem>
-                    <SelectItem value="Pole">Pole</SelectItem>
-                    <SelectItem value="Corner">Corner</SelectItem>
-                    <SelectItem value="Pendant">Pendant</SelectItem>
+                    {isLoadingLookups ? (
+                      <SelectItem value="loading">Loading...</SelectItem>
+                    ) : lookupData?.mountingTypes ? (
+                      lookupData.mountingTypes.map((type: string) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <>
+                        <SelectItem value="Wall">Wall</SelectItem>
+                        <SelectItem value="Ceiling">Ceiling</SelectItem>
+                        <SelectItem value="Pole">Pole</SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
