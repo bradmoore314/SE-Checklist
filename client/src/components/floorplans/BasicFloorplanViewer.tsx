@@ -324,6 +324,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     const rect = container.getBoundingClientRect();
     
     // Calculate position as percentage of container
+    // Round to integer as the server expects integer values
     const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
     const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
     
@@ -349,8 +350,9 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     const rect = container.getBoundingClientRect();
     
     // Calculate the new position as percentage
-    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    // Round to integer as the server expects integer values
+    const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+    const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
     
     // Find marker
     const markerToUpdate = markers.find(m => m.id === draggedMarker);
@@ -406,8 +408,9 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
         const rect = container.getBoundingClientRect();
         
         // Calculate the new position as percentage
-        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        // Round to integer as the server expects integer values
+        const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+        const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
         
         // Update marker position in UI immediately for smooth movement
         const markerElement = document.getElementById(`marker-${draggedMarker}`);
@@ -454,8 +457,9 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   // Duplicate marker
   const duplicateMarker = (marker: any) => {
     // Create new marker at a slightly offset position
-    const newX = Math.min(100, marker.position_x + 2);
-    const newY = Math.min(100, marker.position_y + 2);
+    // Round to integer as the server expects integer values
+    const newX = Math.round(Math.min(100, marker.position_x + 2));
+    const newY = Math.round(Math.min(100, marker.position_y + 2));
     
     const duplicateData = {
       floorplan_id: marker.floorplan_id,

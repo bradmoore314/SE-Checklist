@@ -1,0 +1,156 @@
+chunk-RPCDYKBN.js?v=f18a7e6b:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+/api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this errorAI
+298chunk-RPCDYKBN.js?v=f18a7e6b:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at BasicFloorplanViewer (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/components/floorplans/BasicFloorplanViewer.tsx:35:33)
+    at div
+    at div
+    at div
+    at FloorplansPage (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/floorplans-page.tsx:25:22)
+    at Route (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f18a7e6b:323:16)
+    at ProtectedRoute (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/lib/protected-route.tsx:21:34)
+    at Switch (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f18a7e6b:379:17)
+    at Router
+    at main
+    at div
+    at div
+    at MainLayout (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/layouts/MainLayout.tsx:25:38)
+    at SiteWalkProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/SiteWalkContext.tsx:20:36)
+    at ProjectProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/ProjectContext.tsx:20:35)
+    at AuthProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f18a7e6b:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=f18a7e6b:521Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/2:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/2:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/2:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+7@radix-ui_react-dialog.js?v=f18a7e6b:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=f18a7e6b:338Understand this warningAI
+/api/images/access_points/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+2@radix-ui_react-dialog.js?v=f18a7e6b:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=f18a7e6b:338Understand this warningAI
+2chunk-RPCDYKBN.js?v=f18a7e6b:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at BasicFloorplanViewer (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/components/floorplans/BasicFloorplanViewer.tsx:35:33)
+    at div
+    at div
+    at div
+    at FloorplansPage (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/floorplans-page.tsx:25:22)
+    at Route (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f18a7e6b:323:16)
+    at ProtectedRoute (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/lib/protected-route.tsx:21:34)
+    at Switch (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f18a7e6b:379:17)
+    at Router
+    at main
+    at div
+    at div
+    at MainLayout (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/layouts/MainLayout.tsx:25:38)
+    at SiteWalkProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/SiteWalkContext.tsx:20:36)
+    at ProjectProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/ProjectContext.tsx:20:35)
+    at AuthProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f18a7e6b:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=f18a7e6b:521Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/3:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+(anonymous) @ BasicFloorplanViewer.tsx:381Understand this errorAI
+/api/floorplan-markers/2:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+BasicFloorplanViewer.tsx:381 Error updating marker position: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
