@@ -40,6 +40,15 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
     enabled: !!projectId,
   });
   
+  // Fetch lookup data for proper options
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+    queryKey: ['/api/lookup'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', '/api/lookup');
+      return await res.json();
+    },
+  });
+  
   // Fetch specific camera if we're editing an existing marker
   const { data: existingCamera, isLoading: isLoadingExisting } = useQuery<Camera>({
     queryKey: ['/api/cameras', existingMarker?.equipment_id],

@@ -40,6 +40,15 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
     enabled: !!projectId,
   });
   
+  // Fetch lookup data for proper options
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+    queryKey: ['/api/lookup'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', '/api/lookup');
+      return await res.json();
+    },
+  });
+  
   // Fetch specific access point if we're editing an existing marker
   const { data: existingAccessPoint, isLoading: isLoadingExisting } = useQuery<AccessPoint>({
     queryKey: ['/api/access-points', existingMarker?.equipment_id],
@@ -179,13 +188,21 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                       <SelectValue placeholder="Select configuration" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Default Config">Default Config</SelectItem>
-                      <SelectItem value="In/Out Reader">In/Out Reader</SelectItem>
-                      <SelectItem value="Request to Exit">Request to Exit</SelectItem>
-                      <SelectItem value="Single Door Strike">Single Door Strike</SelectItem>
-                      <SelectItem value="Apartment Entrance">Apartment Entrance</SelectItem>
-                      <SelectItem value="Gate Control">Gate Control</SelectItem>
-                      <SelectItem value="N/A">N/A</SelectItem>
+                      {isLoadingLookups ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : lookupData?.quickConfigOptions ? (
+                        lookupData.quickConfigOptions.map((type: string) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value="Default Config">Default Config</SelectItem>
+                          <SelectItem value="In/Out Reader">In/Out Reader</SelectItem>
+                          <SelectItem value="N/A">N/A</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -218,12 +235,21 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                       <SelectValue placeholder="Select reader type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="KR-1">KR-1</SelectItem>
-                      <SelectItem value="KR-2">KR-2</SelectItem>
-                      <SelectItem value="KR-2M">KR-2M</SelectItem>
-                      <SelectItem value="KMS">KMS</SelectItem>
-                      <SelectItem value="MKR-51">MKR-51</SelectItem>
-                      <SelectItem value="Existing">Existing</SelectItem>
+                      {isLoadingLookups ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : lookupData?.readerTypes ? (
+                        lookupData.readerTypes.map((type: string) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value="KR-1">KR-1</SelectItem>
+                          <SelectItem value="KR-2">KR-2</SelectItem>
+                          <SelectItem value="KR-RP40">KR-RP40</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -238,11 +264,21 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                       <SelectValue placeholder="Select lock type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Strike">Strike</SelectItem>
-                      <SelectItem value="Mag">Mag</SelectItem>
-                      <SelectItem value="Panic Bar">Panic Bar</SelectItem>
-                      <SelectItem value="Electric Latch">Electric Latch</SelectItem>
-                      <SelectItem value="Provided by Others">Provided by Others</SelectItem>
+                      {isLoadingLookups ? (
+                        <SelectItem value="loading">Loading...</SelectItem>
+                      ) : lookupData?.lockTypes ? (
+                        lookupData.lockTypes.map((type: string) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value="Magnetic Lock">Magnetic Lock</SelectItem>
+                          <SelectItem value="Strike">Strike</SelectItem>
+                          <SelectItem value="Provided by Others">Provided by Others</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -258,10 +294,21 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                     <SelectValue placeholder="Select monitoring type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="None">None</SelectItem>
-                    <SelectItem value="DPS">DPS</SelectItem>
-                    <SelectItem value="REX">REX</SelectItem>
-                    <SelectItem value="DPS + REX">DPS + REX</SelectItem>
+                    {isLoadingLookups ? (
+                      <SelectItem value="loading">Loading...</SelectItem>
+                    ) : lookupData?.monitoringTypes ? (
+                      lookupData.monitoringTypes.map((type: string) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <>
+                        <SelectItem value="Standard">Standard</SelectItem>
+                        <SelectItem value="None">None</SelectItem>
+                        <SelectItem value="DPS Only">DPS Only</SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
