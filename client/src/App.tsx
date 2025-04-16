@@ -14,6 +14,7 @@ import Intercoms from "@/pages/intercoms";
 import SiteWalkSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
+import FloorplansPage from "@/pages/floorplans-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
@@ -40,6 +41,9 @@ function Router() {
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
       <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
       <ProtectedRoute path="/project-summary" component={SiteWalkSummary} />
+      
+      {/* Floorplans */}
+      <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />
