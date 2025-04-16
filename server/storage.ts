@@ -508,6 +508,110 @@ export class MemStorage implements IStorage {
   async deleteImage(id: number): Promise<boolean> {
     return this.images.delete(id);
   }
+  
+  // Floorplans
+  async getFloorplans(projectId: number): Promise<Floorplan[]> {
+    return Array.from(this.floorplans.values()).filter(
+      (floorplan) => floorplan.project_id === projectId
+    );
+  }
+
+  async getFloorplan(id: number): Promise<Floorplan | undefined> {
+    return this.floorplans.get(id);
+  }
+
+  async createFloorplan(insertFloorplan: InsertFloorplan): Promise<Floorplan> {
+    const id = this.currentFloorplanId++;
+    const now = new Date();
+    
+    const floorplan: Floorplan = {
+      id,
+      project_id: insertFloorplan.project_id,
+      name: insertFloorplan.name,
+      pdf_data: insertFloorplan.pdf_data,
+      page_count: insertFloorplan.page_count ?? 1,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.floorplans.set(id, floorplan);
+    return floorplan;
+  }
+
+  async updateFloorplan(id: number, updateFloorplan: Partial<InsertFloorplan>): Promise<Floorplan | undefined> {
+    const floorplan = this.floorplans.get(id);
+    if (!floorplan) {
+      return undefined;
+    }
+    
+    const updatedFloorplan: Floorplan = { 
+      ...floorplan, 
+      ...updateFloorplan, 
+      updated_at: new Date() 
+    };
+    
+    this.floorplans.set(id, updatedFloorplan);
+    return updatedFloorplan;
+  }
+
+  async deleteFloorplan(id: number): Promise<boolean> {
+    // Also delete all markers associated with this floorplan
+    Array.from(this.floorplanMarkers.entries())
+      .filter(([_, marker]) => marker.floorplan_id === id)
+      .forEach(([markerId, _]) => this.floorplanMarkers.delete(markerId));
+    
+    return this.floorplans.delete(id);
+  }
+  
+  // Floorplan Markers
+  async getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]> {
+    return Array.from(this.floorplanMarkers.values()).filter(
+      (marker) => marker.floorplan_id === floorplanId
+    );
+  }
+
+  async getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined> {
+    return this.floorplanMarkers.get(id);
+  }
+
+  async createFloorplanMarker(insertMarker: InsertFloorplanMarker): Promise<FloorplanMarker> {
+    const id = this.currentFloorplanMarkerId++;
+    const now = new Date();
+    
+    const marker: FloorplanMarker = {
+      id,
+      floorplan_id: insertMarker.floorplan_id,
+      page: insertMarker.page ?? 1,
+      marker_type: insertMarker.marker_type,
+      equipment_id: insertMarker.equipment_id,
+      position_x: insertMarker.position_x,
+      position_y: insertMarker.position_y,
+      label: insertMarker.label ?? null,
+      created_at: now
+    };
+    
+    this.floorplanMarkers.set(id, marker);
+    return marker;
+  }
+
+  async updateFloorplanMarker(id: number, updateMarker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined> {
+    const marker = this.floorplanMarkers.get(id);
+    if (!marker) {
+      return undefined;
+    }
+    
+    const updatedMarker: FloorplanMarker = { 
+      ...marker, 
+      ...updateMarker
+    };
+    
+    this.floorplanMarkers.set(id, updatedMarker);
+    return updatedMarker;
+  }
+
+  async deleteFloorplanMarker(id: number): Promise<boolean> {
+    return this.floorplanMarkers.delete(id);
+  }
 }
 
 export const storage = new MemStorage();

@@ -9,11 +9,15 @@ import {
   insertElevatorSchema,
   insertIntercomSchema,
   insertImageSchema,
+  insertFloorplanSchema,
+  insertFloorplanMarkerSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
-  InsertImage
+  InsertImage,
+  InsertFloorplan,
+  InsertFloorplanMarker
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
@@ -969,6 +973,220 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(404).json({ message: "Image not found" });
     }
     
+    res.status(204).end();
+  });
+
+  // Floorplan endpoints
+  app.get("/api/projects/:projectId/floorplans", isAuthenticated, async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    const project = await storage.getProject(projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const floorplans = await storage.getFloorplans(projectId);
+    res.json(floorplans);
+  });
+
+  app.get("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const floorplanId = parseInt(req.params.id);
+    if (isNaN(floorplanId)) {
+      return res.status(400).json({ message: "Invalid floorplan ID" });
+    }
+
+    const floorplan = await storage.getFloorplan(floorplanId);
+    if (!floorplan) {
+      return res.status(404).json({ message: "Floorplan not found" });
+    }
+
+    res.json(floorplan);
+  });
+
+  app.post("/api/floorplans", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const result = insertFloorplanSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid floorplan data", 
+          errors: result.error.errors 
+        });
+      }
+
+      // Verify project exists
+      const project = await storage.getProject(result.data.project_id);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      const floorplan = await storage.createFloorplan(result.data);
+      res.status(201).json(floorplan);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to create floorplan",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.put("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const floorplanId = parseInt(req.params.id);
+    if (isNaN(floorplanId)) {
+      return res.status(400).json({ message: "Invalid floorplan ID" });
+    }
+
+    try {
+      const result = insertFloorplanSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid floorplan data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const floorplan = await storage.updateFloorplan(floorplanId, result.data);
+      if (!floorplan) {
+        return res.status(404).json({ message: "Floorplan not found" });
+      }
+
+      res.json(floorplan);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to update floorplan",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.delete("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const floorplanId = parseInt(req.params.id);
+    if (isNaN(floorplanId)) {
+      return res.status(400).json({ message: "Invalid floorplan ID" });
+    }
+
+    const success = await storage.deleteFloorplan(floorplanId);
+    if (!success) {
+      return res.status(404).json({ message: "Floorplan not found" });
+    }
+
+    res.status(204).end();
+  });
+
+  // Floorplan Marker endpoints
+  app.get("/api/floorplans/:floorplanId/markers", isAuthenticated, async (req: Request, res: Response) => {
+    const floorplanId = parseInt(req.params.floorplanId);
+    if (isNaN(floorplanId)) {
+      return res.status(400).json({ message: "Invalid floorplan ID" });
+    }
+
+    const floorplan = await storage.getFloorplan(floorplanId);
+    if (!floorplan) {
+      return res.status(404).json({ message: "Floorplan not found" });
+    }
+
+    const markers = await storage.getFloorplanMarkers(floorplanId);
+    res.json(markers);
+  });
+
+  app.post("/api/floorplan-markers", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const result = insertFloorplanMarkerSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid marker data", 
+          errors: result.error.errors 
+        });
+      }
+
+      // Verify floorplan exists
+      const floorplan = await storage.getFloorplan(result.data.floorplan_id);
+      if (!floorplan) {
+        return res.status(404).json({ message: "Floorplan not found" });
+      }
+
+      // Create equipment if needed (access point or camera)
+      let equipmentId = result.data.equipment_id;
+      
+      // If equipment_id is 0, we need to create a new equipment item
+      if (equipmentId === 0) {
+        if (result.data.marker_type === 'access_point') {
+          const newAccessPoint = await storage.createAccessPoint({
+            project_id: floorplan.project_id,
+            location: result.data.label || 'New Access Point',
+            quick_config: 'N/A',
+            reader_type: 'KR-RP40',
+            lock_type: 'Magnetic Lock',
+            monitoring_type: 'Standard'
+          });
+          equipmentId = newAccessPoint.id;
+        } else if (result.data.marker_type === 'camera') {
+          const newCamera = await storage.createCamera({
+            project_id: floorplan.project_id,
+            location: result.data.label || 'New Camera',
+            camera_type: 'Fixed Indoor Dome'
+          });
+          equipmentId = newCamera.id;
+        }
+      }
+
+      // Create the marker with the equipment ID
+      const marker = await storage.createFloorplanMarker({
+        ...result.data,
+        equipment_id: equipmentId
+      });
+      
+      res.status(201).json(marker);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to create marker",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.put("/api/floorplan-markers/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const markerId = parseInt(req.params.id);
+    if (isNaN(markerId)) {
+      return res.status(400).json({ message: "Invalid marker ID" });
+    }
+
+    try {
+      const result = insertFloorplanMarkerSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid marker data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const marker = await storage.updateFloorplanMarker(markerId, result.data);
+      if (!marker) {
+        return res.status(404).json({ message: "Marker not found" });
+      }
+
+      res.json(marker);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to update marker",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.delete("/api/floorplan-markers/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const markerId = parseInt(req.params.id);
+    if (isNaN(markerId)) {
+      return res.status(400).json({ message: "Invalid marker ID" });
+    }
+
+    const success = await storage.deleteFloorplanMarker(markerId);
+    if (!success) {
+      return res.status(404).json({ message: "Marker not found" });
+    }
+
     res.status(204).end();
   });
 
