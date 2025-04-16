@@ -12,12 +12,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Plus, Download } from "lucide-react";
+import { Loader2, Plus, Download, Hand, MousePointer, Camera } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import AccessPointMarkerForm from './AccessPointMarkerForm';
 import CameraMarkerForm from './CameraMarkerForm';
 
+// Type definitions
 type FloorplanViewerProps = {
   projectId: number;
   onMarkersUpdated?: () => void;
@@ -46,15 +47,11 @@ type Floorplan = {
 };
 
 const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMarkersUpdated }) => {
+  // State variables for floorplans
   const [selectedFloorplan, setSelectedFloorplan] = useState<Floorplan | null>(null);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false);
-  const [newFloorplanName, setNewFloorplanName] = useState<string>("");
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [markers, setMarkers] = useState<Marker[]>([]);
-  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
-  const [markerType, setMarkerType] = useState<'access_point' | 'camera'>('access_point');
-  const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
-  const [markerDialogOpen, setMarkerDialogOpen] = useState<boolean>(false);
+  const [newFloorplanName, setNewFloorplanName] = useState('');
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,101 +63,124 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
       return await res.json();
     },
-    enabled: !!projectId,
+    onError: (error: Error) => {
+      console.error('Error fetching floorplans:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load floorplans",
+        variant: "destructive",
+      });
+    }
   });
-
+  
   // Fetch markers for selected floorplan
   const { data: floorplanMarkers, isLoading: isLoadingMarkers } = useQuery<Marker[]>({
     queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'],
     queryFn: async () => {
-      const res = await apiRequest('GET', `/api/floorplans/${selectedFloorplan?.id}/markers`);
+      if (!selectedFloorplan) return [];
+      const res = await apiRequest('GET', `/api/floorplans/${selectedFloorplan.id}/markers`);
       return await res.json();
     },
-    enabled: !!selectedFloorplan?.id,
+    enabled: !!selectedFloorplan,
+    onError: (error: Error) => {
+      console.error('Error fetching markers:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load floorplan markers",
+        variant: "destructive",
+      });
+    }
   });
-
-  // Upload a new floorplan
+  
+  // Mutation for uploading floorplans
   const uploadFloorplanMutation = useMutation({
-    mutationFn: async (data: { name: string, pdf_data: string, project_id: number }) => {
-      const res = await apiRequest('POST', '/api/floorplans', data);
+    mutationFn: async (floorplan: { name: string, pdf_data: string, project_id: number }) => {
+      const res = await apiRequest('POST', '/api/floorplans', floorplan);
       return await res.json();
     },
     onSuccess: () => {
+      // Refetch floorplans
       queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
-      setUploadDialogOpen(false);
+      
+      // Reset form
+      setNewFloorplanName('');
       setPdfFile(null);
-      setNewFloorplanName("");
+      
       toast({
         title: "Success",
         description: "Floorplan uploaded successfully",
       });
     },
     onError: (error: Error) => {
+      console.error('Error uploading floorplan:', error);
       toast({
         title: "Error",
-        description: `Failed to upload floorplan: ${error.message}`,
+        description: "Failed to upload floorplan",
         variant: "destructive",
       });
-    }
+    },
   });
-
-  // Create a new marker
+  
+  // Mutation for creating new markers
   const createMarkerMutation = useMutation({
-    mutationFn: async (data: {
-      floorplan_id: number;
-      page: number;
-      marker_type: 'access_point' | 'camera';
-      equipment_id: number;
-      position_x: number;
-      position_y: number;
-      label: string | null;
-    }) => {
-      const res = await apiRequest('POST', '/api/floorplan-markers', data);
+    mutationFn: async (marker: Omit<Marker, 'id' | 'created_at'>) => {
+      const res = await apiRequest('POST', '/api/floorplan-markers', marker);
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      if (onMarkersUpdated) onMarkersUpdated();
-      setMarkerDialogOpen(false);
-      setNewMarkerPosition(null);
+      // Refetch markers
+      if (selectedFloorplan) {
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
+      }
+      
       toast({
         title: "Success",
-        description: `${markerType === 'access_point' ? 'Access point' : 'Camera'} marker added successfully`,
+        description: "Marker added successfully",
       });
     },
     onError: (error: Error) => {
+      console.error('Error creating marker:', error);
       toast({
         title: "Error",
-        description: `Failed to add marker: ${error.message}`,
+        description: "Failed to create marker",
         variant: "destructive",
       });
-    }
+    },
   });
-
-  // Delete a marker
+  
+  // Mutation for deleting markers
   const deleteMarkerMutation = useMutation({
     mutationFn: async (markerId: number) => {
-      const res = await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
-      return res.ok;
+      await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      if (onMarkersUpdated) onMarkersUpdated();
+      // Refetch markers
+      if (selectedFloorplan) {
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
+      }
+      
       toast({
         title: "Success",
         description: "Marker deleted successfully",
       });
     },
     onError: (error: Error) => {
+      console.error('Error deleting marker:', error);
       toast({
         title: "Error",
-        description: `Failed to delete marker: ${error.message}`,
+        description: "Failed to delete marker",
         variant: "destructive",
       });
-    }
+    },
   });
-
-  // Select first floorplan if available and none selected
+  
+  // State for marker interaction
+  const [markerDialogOpen, setMarkerDialogOpen] = useState(false);
+  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
+  const [markerType, setMarkerType] = useState<'access_point' | 'camera'>('access_point');
+  const [isAddingMarker, setIsAddingMarker] = useState(false);
+  
+  // Set default floorplan if available
   useEffect(() => {
     if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
       setSelectedFloorplan(floorplans[0]);
@@ -225,32 +245,18 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       if (!markersContainer) return;
 
       // When the PDF element is zoomed or scrolled, get its new dimensions and position
-      const pdfObj = document.querySelector('object[type="application/pdf"]') as HTMLObjectElement;
+      const pdfObj = document.querySelector('iframe') as HTMLIFrameElement;
       if (!pdfObj) return;
       
       // Use MutationObserver to detect changes in PDF viewer
       try {
         const observer = new MutationObserver((mutations) => {
-          // When PDF element changes, apply the same scale to markers
-          if (pdfObj.contentDocument) {
-            // For some browsers we can access the PDF document directly
-            const pdfDoc = pdfObj.contentDocument;
-            const pdfViewport = pdfDoc.querySelector('.pdfViewer');
-            
-            if (pdfViewport) {
-              // Get the transform and apply it to our markers
-              const transform = window.getComputedStyle(pdfViewport).transform;
-              if (transform && transform !== 'none') {
-                markersContainer.style.transform = transform;
-              }
-            }
-          } else {
-            // Otherwise, we stick with percentage positioning which should handle most cases
-            console.log('Using percentage positioning for markers');
-          }
+          // Apply appropriate positioning based on PDF scaling and scrolling
+          // This helps markers stay fixed relative to PDF content
+          markersContainer.style.zIndex = '20';
         });
         
-        // Observe changes to the PDF object
+        // Observe changes to the PDF iframe
         observer.observe(pdfObj, { 
           attributes: true,
           childList: true,
@@ -673,7 +679,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           Duplicate
         </button>
         <button 
-          className="w-full text-left px-2 py-1 text-sm text-red-600 hover:bg-gray-100"
+          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-red-500"
           onClick={() => {
             deleteMarkerMutation.mutate(contextMenu.markerId);
             setContextMenu(null);
@@ -685,219 +691,209 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     );
   };
 
+  // Toggle marker addition mode
+  const toggleMarkerMode = (mode: 'select' | 'add_access_point' | 'add_camera') => {
+    setViewerMode(mode);
+    setIsAddingMarker(mode !== 'select');
+    setMarkerType(mode === 'add_camera' ? 'camera' : 'access_point');
+  };
+
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex flex-wrap justify-between items-center gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          {isLoadingFloorplans ? (
-            <Button disabled variant="outline">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading floorplans...
-            </Button>
-          ) : floorplans && floorplans.length > 0 ? (
-            floorplans.map((floorplan) => (
-              <Button
-                key={floorplan.id}
-                variant={selectedFloorplan?.id === floorplan.id ? "default" : "outline"}
-                onClick={() => setSelectedFloorplan(floorplan)}
-              >
-                {floorplan.name}
-              </Button>
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground">No floorplans available</p>
-          )}
-        </div>
+    <div className="mt-4">
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Floorplans</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Upload and manage floorplans for your site walk. Add markers for access points and cameras.
+        </p>
         
-        <div className="flex items-center gap-2">
-          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-1">
-                <Plus className="h-4 w-4" />
-                Upload Floorplan
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload Floorplan</DialogTitle>
-                <DialogDescription>
-                  Upload a PDF floorplan to mark access points and cameras.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={newFloorplanName}
-                    onChange={(e) => setNewFloorplanName(e.target.value)}
-                    className="col-span-3"
-                    placeholder="e.g., First Floor"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="pdf" className="text-right">
-                    PDF File
-                  </Label>
-                  <Input
-                    id="pdf"
-                    type="file"
-                    accept="application/pdf"
-                    onChange={handleFileChange}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button 
-                  type="submit" 
-                  onClick={handleUploadFloorplan}
-                  disabled={uploadFloorplanMutation.isPending}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="col-span-2">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {floorplans && floorplans.map((floorplan) => (
+                <Button
+                  key={floorplan.id}
+                  variant={selectedFloorplan?.id === floorplan.id ? "default" : "outline"}
+                  onClick={() => setSelectedFloorplan(floorplan)}
+                  className="text-sm"
                 >
-                  {uploadFloorplanMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : "Upload"}
+                  {floorplan.name}
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              ))}
+              
+              {isLoadingFloorplans && (
+                <Button variant="outline" disabled className="text-sm">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Loading...
+                </Button>
+              )}
+            </div>
+            
+            {/* Toolbar for marker controls */}
+            <div className="flex flex-wrap gap-2 mb-4 p-2 border rounded-md bg-muted/30">
+              <Button
+                size="sm"
+                variant={viewerMode === 'select' ? "default" : "outline"}
+                onClick={() => toggleMarkerMode('select')}
+                className="text-xs flex items-center gap-1"
+                title="Select and move markers"
+              >
+                <Hand className="h-3 w-3" />
+                Select
+              </Button>
+              
+              <Button
+                size="sm"
+                variant={viewerMode === 'add_access_point' ? "default" : "outline"}
+                onClick={() => toggleMarkerMode('add_access_point')}
+                className="text-xs flex items-center gap-1"
+                title="Add access point marker"
+              >
+                <MousePointer className="h-3 w-3" />
+                Add Access Point
+              </Button>
+              
+              <Button
+                size="sm"
+                variant={viewerMode === 'add_camera' ? "default" : "outline"}
+                onClick={() => toggleMarkerMode('add_camera')}
+                className="text-xs flex items-center gap-1"
+                title="Add camera marker"
+              >
+                <Camera className="h-3 w-3" />
+                Add Camera
+              </Button>
+              
+              <div className="ml-auto text-xs text-muted-foreground flex items-center">
+                {isAddingMarker ? (
+                  <span className="text-xs text-primary animate-pulse font-medium">
+                    Click on the floorplan to place a marker
+                  </span>
+                ) : (
+                  <span>
+                    Markers: {markers?.length || 0}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
           
-          {selectedFloorplan && (
-            <div className="border rounded-md p-1 flex gap-1 items-center bg-gray-50">
-              {/* BlueBeam-like tool buttons */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsAddingMarker(false);
-                  toast({
-                    title: "Selection Tool Activated",
-                    description: "You can now select, move, edit and resize markers",
-                  });
-                }}
-                className={!isAddingMarker ? 'bg-gray-200' : ''}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4v7" />
-                  <path d="M4 11l9-9" />
-                  <path d="M15 8h5v5" />
-                  <path d="M20 13l-9 9" />
-                </svg>
-                <span className="ml-1">Select</span>
-              </Button>
+          <div className="p-4 border rounded-md bg-muted/10">
+            <h3 className="text-sm font-medium mb-2">Upload New Floorplan</h3>
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="floorplan-name" className="text-xs">Name</Label>
+                <Input
+                  id="floorplan-name"
+                  value={newFloorplanName}
+                  onChange={(e) => setNewFloorplanName(e.target.value)}
+                  placeholder="First Floor"
+                  className="h-8 text-sm"
+                />
+              </div>
               
-              <div className="h-6 border-l mx-1"></div>
+              <div>
+                <Label htmlFor="floorplan-file" className="text-xs">PDF File</Label>
+                <Input
+                  id="floorplan-file"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="h-8 text-xs"
+                />
+              </div>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsAddingMarker(true);
-                  setMarkerType('access_point');
-                  toast({
-                    title: "Access Point Stamp Tool",
-                    description: "Click on the floorplan to place an access point marker",
-                  });
-                }}
-                className={isAddingMarker && markerType === 'access_point' ? 'bg-gray-200' : ''}
+              <Button 
+                onClick={handleUploadFloorplan} 
+                disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
+                className="w-full h-8 text-xs"
               >
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                <span>Access Point</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsAddingMarker(true);
-                  setMarkerType('camera');
-                  toast({
-                    title: "Camera Stamp Tool",
-                    description: "Click on the floorplan to place a camera marker",
-                  });
-                }}
-                className={isAddingMarker && markerType === 'camera' ? 'bg-gray-200' : ''}
-              >
-                <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-                <span>Camera</span>
+                {uploadFloorplanMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-3 w-3 mr-2" />
+                    Upload Floorplan
+                  </>
+                )}
               </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
       
+      {/* PDF Viewer Section */}
       {selectedFloorplan ? (
-        <div className="border rounded-md p-4 max-w-full overflow-auto relative">
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm">
-            <h3 className="font-semibold text-blue-800 mb-1">Working with Floorplan Markers:</h3>
-            <ul className="list-disc pl-5 space-y-1 text-blue-700">
-              <li><span className="font-semibold">Add Markers:</span> Use the "Add Access Point" or "Add Camera" buttons above, then click on the floorplan</li>
-              <li><span className="font-semibold">Move Markers:</span> Click and drag any marker to reposition it</li>
-              <li><span className="font-semibold">Resize Markers:</span> Right-click a marker and select "Increase Size" or "Decrease Size"</li>
-              <li><span className="font-semibold">Edit Properties:</span> Double-click a marker or right-click and select "Edit"</li>
-              <li><span className="font-semibold">Duplicate or Delete:</span> Right-click a marker for more options</li>
-            </ul>
+        <div className="border rounded-md p-4">
+          <div className="flex flex-col mb-4">
+            <h3 className="text-lg font-semibold">{selectedFloorplan.name}</h3>
+            <p className="text-sm text-muted-foreground">
+              Click on the floorplan to add markers for equipment.
+            </p>
           </div>
           
           <div 
             ref={containerRef}
-            className="relative overflow-auto max-h-screen"
             onClick={handlePdfContainerClick}
             style={{ minHeight: "500px" }}
           >
             {pdfBlobUrl ? (
               <div className="relative">
-                {/* Use the object tag for maximum browser compatibility */}
-                <object 
-                  data={pdfBlobUrl}
-                  type="application/pdf"
-                  width="100%"
-                  height="800"
-                  className="border-0"
-                >
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <div className="text-red-500 mb-2">Your browser can't display PDF files directly</div>
-                    <a 
-                      href={pdfBlobUrl} 
-                      download={`${selectedFloorplan.name}.pdf`}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    >
-                      Download PDF
-                    </a>
-                  </div>
-                </object>
+                {/* Use an iframe for PDF display */}
+                <div className="relative border rounded w-full" style={{ height: '800px' }}>
+                  <iframe 
+                    src={pdfBlobUrl}
+                    width="100%"
+                    height="100%"
+                    className="border-0 absolute inset-0"
+                    style={{ zIndex: 10 }}
+                  >
+                  </iframe>
+                  
+                  {/* Fallback for browsers that can't display PDFs */}
+                  <noscript>
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <div className="text-red-500 mb-2">Your browser can't display PDF files directly</div>
+                      <a 
+                        href={pdfBlobUrl} 
+                        download={`${selectedFloorplan.name}.pdf`}
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                      >
+                        Download PDF
+                      </a>
+                    </div>
+                  </noscript>
                 
-                {/* Layer for markers that sits on top of the PDF */}
-                <div 
-                  className="absolute top-0 left-0 pointer-events-none"
-                  style={{ 
-                    width: '100%', 
-                    height: '800px', // Match the height of the PDF object
-                    position: 'absolute',
-                    overflow: 'hidden',
-                    pointerEvents: 'none',
-                    // These properties ensure the markers layer scales exactly with the PDF
-                    transformOrigin: '0 0',
-                    transform: 'scale(1)', // Will be adjusted to match PDF's scale
-                    willChange: 'transform'
-                  }}
-                  id="markers-container"
-                >
-                  {renderMarkers()}
-                </div>
-                
-                {/* Transparent layer to catch clicks when in marker mode */}
-                {isAddingMarker && (
+                  {/* Layer for markers that sits on top of the PDF */}
                   <div 
-                    className="absolute top-0 left-0 w-full" 
-                    style={{ zIndex: 30, height: '800px' }}
-                  />
-                )}
+                    className="absolute top-0 left-0 pointer-events-none"
+                    style={{ 
+                      width: '100%', 
+                      height: '800px', // Match the height of the PDF object
+                      position: 'absolute',
+                      overflow: 'hidden',
+                      pointerEvents: 'none',
+                      zIndex: 20,
+                      // These properties ensure the markers layer scales exactly with the PDF
+                      transformOrigin: '0 0',
+                      transform: 'scale(1)', // Will be adjusted to match PDF's scale
+                      willChange: 'transform'
+                    }}
+                    id="markers-container"
+                  >
+                    {renderMarkers()}
+                  </div>
+                  
+                  {/* Transparent layer to catch clicks when in marker mode */}
+                  {isAddingMarker && (
+                    <div 
+                      className="absolute top-0 left-0 w-full" 
+                      style={{ zIndex: 30, height: '800px' }}
+                    />
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
