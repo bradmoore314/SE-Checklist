@@ -54,10 +54,12 @@ const FloorplansPage = () => {
           Click on the floorplan to place markers. Red markers represent access points, blue markers represent cameras.
         </p>
         
-        <BasicFloorplanViewer 
-          projectId={projectId as number} 
-          onMarkersUpdated={refreshAccessPointsAndCameras}
-        />
+        <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+          <BasicFloorplanViewer 
+            projectId={projectId as number} 
+            onMarkersUpdated={refreshAccessPointsAndCameras}
+          />
+        </div>
       </div>
     </div>
   );

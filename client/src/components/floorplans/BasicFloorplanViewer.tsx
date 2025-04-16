@@ -790,7 +790,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           
           <div 
             ref={containerRef}
-            className="relative" 
+            className="relative overflow-auto max-h-screen"
             onClick={handlePdfContainerClick}
             style={{ minHeight: "500px" }}
           >
@@ -801,7 +801,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   data={pdfBlobUrl}
                   type="application/pdf"
                   width="100%"
-                  height="600"
+                  height="800"
                   className="border-0"
                 >
                   <div className="flex flex-col items-center justify-center py-12">
@@ -821,7 +821,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   className="absolute top-0 left-0 pointer-events-none"
                   style={{ 
                     width: '100%', 
-                    height: '600px', // Match the height of the PDF object
+                    height: '800px', // Match the height of the PDF object
                     position: 'absolute',
                     overflow: 'hidden',
                     pointerEvents: 'none'
@@ -833,8 +833,8 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                 {/* Transparent layer to catch clicks when in marker mode */}
                 {isAddingMarker && (
                   <div 
-                    className="absolute top-0 left-0 w-full h-full" 
-                    style={{ zIndex: 30 }}
+                    className="absolute top-0 left-0 w-full" 
+                    style={{ zIndex: 30, height: '800px' }}
                   />
                 )}
               </div>
