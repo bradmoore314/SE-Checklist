@@ -191,19 +191,25 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           URL.revokeObjectURL(pdfBlobUrl);
         }
 
-        // Convert base64 to blob and create URL
-        const byteCharacters = atob(selectedFloorplan.pdf_data);
-        const byteNumbers = new Array(byteCharacters.length);
+        // Create data URL directly from the base64
+        const dataUrl = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
         
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        
-        setPdfBlobUrl(url);
+        // For better browser compatibility, we'll still create a blob
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            setPdfBlobUrl(url);
+          })
+          .catch(err => {
+            console.error('Error fetching PDF data:', err);
+            setPdfBlobUrl(null);
+            toast({
+              title: "Error",
+              description: "Failed to load PDF data",
+              variant: "destructive",
+            });
+          });
       } catch (err) {
         console.error('Error creating blob URL:', err);
         setPdfBlobUrl(null);
@@ -277,7 +283,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
             
             await uploadFloorplanMutation.mutateAsync({
               name: newFloorplanName,
-              pdf_data: result,
+              pdf_data: base64,
               project_id: projectId
             });
           }
