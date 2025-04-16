@@ -129,7 +129,13 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-800">Site Walk Dashboard</h2>
-        <div className="flex">
+        <div className="flex items-center">
+          <Link href={`/projects/${project.id}/floorplans`}>
+            <Button variant="outline" className="mr-3 flex items-center gap-1">
+              <span className="material-icons text-base">map</span>
+              <span>View Floorplans</span>
+            </Button>
+          </Link>
           <button className="text-gray-600 hover:bg-gray-100 focus:outline-none mr-2 p-2 rounded-md border" 
                   style={{ borderColor: 'var(--medium-grey)' }}
                   onClick={() => setShowEditModal(true)}>
