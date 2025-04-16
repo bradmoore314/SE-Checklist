@@ -17,6 +17,8 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, Plus, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import AccessPointMarkerForm from './AccessPointMarkerForm';
+import CameraMarkerForm from './CameraMarkerForm';
 
 // Set up the PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -486,52 +488,73 @@ const FloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMarkersU
         </div>
       )}
       
-      {/* Marker Creation Dialog */}
-      <Dialog open={markerDialogOpen} onOpenChange={setMarkerDialogOpen}>
+      {/* Access Point Marker Form Dialog */}
+      <Dialog open={markerDialogOpen && markerType === 'access_point'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add {markerType === 'access_point' ? 'Access Point' : 'Camera'}</DialogTitle>
+            <DialogTitle>Add Access Point</DialogTitle>
             <DialogDescription>
-              Provide a label for this {markerType === 'access_point' ? 'access point' : 'camera'} marker.
+              Configure the access point details for this marker.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="marker-label" className="text-right">
-                Label
-              </Label>
-              <Input
-                id="marker-label"
-                value={newMarkerLabel}
-                onChange={(e) => setNewMarkerLabel(e.target.value)}
-                className="col-span-3"
-                placeholder={markerType === 'access_point' ? 'e.g., Main Entrance' : 'e.g., Lobby Camera'}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
+          {newMarkerPosition && (
+            <AccessPointMarkerForm
+              projectId={projectId}
+              onSubmit={(equipmentId, label) => {
+                if (!selectedFloorplan || !newMarkerPosition) return;
+                
+                createMarkerMutation.mutateAsync({
+                  floorplan_id: selectedFloorplan.id,
+                  page: pageNumber,
+                  marker_type: 'access_point',
+                  equipment_id: equipmentId,
+                  position_x: newMarkerPosition.x,
+                  position_y: newMarkerPosition.y,
+                  label
+                });
+              }}
+              onCancel={() => {
                 setMarkerDialogOpen(false);
                 setNewMarkerPosition(null);
-                setNewMarkerLabel("");
               }}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateMarker}
-              disabled={createMarkerMutation.isPending}
-            >
-              {createMarkerMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : "Create"}
-            </Button>
-          </DialogFooter>
+              position={newMarkerPosition}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Camera Marker Form Dialog */}
+      <Dialog open={markerDialogOpen && markerType === 'camera'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Camera</DialogTitle>
+            <DialogDescription>
+              Configure the camera details for this marker.
+            </DialogDescription>
+          </DialogHeader>
+          {newMarkerPosition && (
+            <CameraMarkerForm
+              projectId={projectId}
+              onSubmit={(equipmentId, label) => {
+                if (!selectedFloorplan || !newMarkerPosition) return;
+                
+                createMarkerMutation.mutateAsync({
+                  floorplan_id: selectedFloorplan.id,
+                  page: pageNumber,
+                  marker_type: 'camera',
+                  equipment_id: equipmentId,
+                  position_x: newMarkerPosition.x,
+                  position_y: newMarkerPosition.y,
+                  label
+                });
+              }}
+              onCancel={() => {
+                setMarkerDialogOpen(false);
+                setNewMarkerPosition(null);
+              }}
+              position={newMarkerPosition}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
