@@ -317,29 +317,303 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     setMarkerDialogOpen(true);
   };
 
+  // State for dragging markers
+  const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
+  const [markerSize, setMarkerSize] = useState<{[key: number]: {width: number, height: number}}>({});
+  
+  // Handle marker drag start
+  const handleDragStart = (e: React.MouseEvent, markerId: number) => {
+    if (isAddingMarker) return; // Don't allow dragging when in adding mode
+    setDraggedMarker(markerId);
+    e.stopPropagation();
+  };
+  
+  // Handle marker drag
+  const handleDrag = (e: React.MouseEvent) => {
+    if (!draggedMarker || !containerRef.current) return;
+    
+    // Prevent default browser behavior
+    e.preventDefault();
+    
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Calculate the new position as percentage
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    
+    // Find marker
+    const markerToUpdate = markers.find(m => m.id === draggedMarker);
+    
+    if (markerToUpdate) {
+      // Update marker position in database
+      const updateData = {
+        position_x: x,
+        position_y: y
+      };
+      
+      apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, updateData)
+        .then(() => {
+          // Refresh markers
+          queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+        })
+        .catch(err => {
+          console.error('Error updating marker position:', err);
+          toast({
+            title: "Error",
+            description: "Failed to update marker position",
+            variant: "destructive",
+          });
+        });
+    }
+    
+    // Reset dragged marker
+    setDraggedMarker(null);
+  };
+  
+  // Cancel drag operation
+  const handleDragEnd = () => {
+    setDraggedMarker(null);
+  };
+  
+  // Setup event listeners for drag operations
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (draggedMarker) {
+        const container = containerRef.current;
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        
+        // Calculate the new position as percentage
+        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        
+        // Update marker position in UI immediately for smooth movement
+        const markerElement = document.getElementById(`marker-${draggedMarker}`);
+        if (markerElement) {
+          markerElement.style.left = `${x}%`;
+          markerElement.style.top = `${y}%`;
+        }
+      }
+    };
+    
+    const handleMouseUp = (e: MouseEvent) => {
+      if (draggedMarker) {
+        handleDrag(e as unknown as React.MouseEvent);
+      }
+    };
+    
+    if (draggedMarker) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggedMarker]);
+  
+  // Resize marker
+  const resizeMarker = (markerId: number, increase: boolean) => {
+    // Get current size or set default
+    const currentSize = markerSize[markerId] || { width: 6, height: 6 };
+    
+    // Calculate new size (min: 4, max: 12)
+    const newWidth = Math.max(4, Math.min(12, increase ? currentSize.width + 1 : currentSize.width - 1));
+    const newHeight = Math.max(4, Math.min(12, increase ? currentSize.height + 1 : currentSize.height - 1));
+    
+    // Update size in state
+    setMarkerSize({
+      ...markerSize,
+      [markerId]: { width: newWidth, height: newHeight }
+    });
+  };
+  
+  // Duplicate marker
+  const duplicateMarker = (marker: any) => {
+    // Create new marker at a slightly offset position
+    const newX = Math.min(100, marker.position_x + 2);
+    const newY = Math.min(100, marker.position_y + 2);
+    
+    const duplicateData = {
+      floorplan_id: marker.floorplan_id,
+      page: marker.page,
+      marker_type: marker.marker_type,
+      equipment_id: marker.equipment_id,
+      position_x: newX,
+      position_y: newY,
+      label: marker.label
+    };
+    
+    apiRequest('POST', '/api/floorplan-markers', duplicateData)
+      .then(() => {
+        // Refresh markers
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+        if (onMarkersUpdated) onMarkersUpdated();
+        toast({
+          title: "Success",
+          description: `Duplicated ${marker.marker_type === 'access_point' ? 'access point' : 'camera'} marker`,
+        });
+      })
+      .catch(err => {
+        console.error('Error duplicating marker:', err);
+        toast({
+          title: "Error",
+          description: "Failed to duplicate marker",
+          variant: "destructive",
+        });
+      });
+  };
+  
+  // Edit marker
+  const editMarker = (marker: any) => {
+    setNewMarkerPosition({ x: marker.position_x, y: marker.position_y });
+    setMarkerType(marker.marker_type as 'access_point' | 'camera');
+    setMarkerDialogOpen(true);
+    
+    // Pass the existing marker info
+    const existingMarkerInfo = { 
+      id: marker.id, 
+      equipment_id: marker.equipment_id 
+    };
+    
+    // Store this temporarily for the form
+    (window as any).__currentEditingMarker = existingMarkerInfo;
+  };
+  
+  // Marker context menu
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    markerId: number;
+    marker: any;
+  } | null>(null);
+  
+  // Handle right-click on marker
+  const handleMarkerRightClick = (e: React.MouseEvent, marker: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      markerId: marker.id,
+      marker: marker
+    });
+  };
+  
+  // Hide context menu
+  useEffect(() => {
+    const hideContextMenu = () => setContextMenu(null);
+    document.addEventListener('click', hideContextMenu);
+    
+    return () => {
+      document.removeEventListener('click', hideContextMenu);
+    };
+  }, []);
+
   // Render markers on the PDF
   const renderMarkers = () => {
-    return markers.map((marker) => (
-      <div
-        key={marker.id}
-        className={`absolute rounded-full flex items-center justify-center cursor-pointer z-50
-                   ${marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500'}
-                   text-white font-bold text-xs w-6 h-6 hover:w-7 hover:h-7 transition-all`}
+    return markers.map((marker) => {
+      // Get marker size from state or use default
+      const size = markerSize[marker.id] || { width: 6, height: 6 };
+      
+      return (
+        <div
+          id={`marker-${marker.id}`}
+          key={marker.id}
+          className={`absolute rounded-full flex items-center justify-center cursor-move z-50
+                     ${marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500'}
+                     text-white font-bold text-xs select-none shadow-md hover:shadow-lg`}
+          style={{
+            left: `${marker.position_x}%`,
+            top: `${marker.position_y}%`,
+            width: `${size.width}rem`,
+            height: `${size.height}rem`,
+            transform: 'translate(-50%, -50%)',
+            transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease'
+          }}
+          title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
+          onMouseDown={(e) => {
+            if (e.button === 0) { // Left click
+              handleDragStart(e, marker.id);
+            }
+          }}
+          onDoubleClick={() => editMarker(marker)}
+          onContextMenu={(e) => handleMarkerRightClick(e, marker)}
+        >
+          {marker.id}
+        </div>
+      );
+    });
+  };
+  
+  // Render context menu
+  const renderContextMenu = () => {
+    if (!contextMenu || !contextMenu.visible) return null;
+    
+    return (
+      <div 
+        className="absolute bg-white shadow-lg rounded-md p-1 z-50 border"
         style={{
-          left: `${marker.position_x}%`,
-          top: `${marker.position_y}%`,
-          transform: 'translate(-50%, -50%)'
-        }}
-        title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
-        onClick={() => {
-          if (window.confirm(`Delete this ${marker.marker_type.replace('_', ' ')} marker?`)) {
-            deleteMarkerMutation.mutate(marker.id);
-          }
+          left: contextMenu.x,
+          top: contextMenu.y
         }}
       >
-        {marker.id}
+        <div className="text-xs font-semibold px-2 py-1 border-b">
+          {contextMenu.marker.marker_type === 'access_point' ? 'Access Point' : 'Camera'} #{contextMenu.markerId}
+        </div>
+        <button 
+          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100"
+          onClick={() => {
+            editMarker(contextMenu.marker);
+            setContextMenu(null);
+          }}
+        >
+          Edit
+        </button>
+        <button 
+          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100"
+          onClick={() => {
+            resizeMarker(contextMenu.markerId, true);
+            setContextMenu(null);
+          }}
+        >
+          Increase Size
+        </button>
+        <button 
+          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100"
+          onClick={() => {
+            resizeMarker(contextMenu.markerId, false);
+            setContextMenu(null);
+          }}
+        >
+          Decrease Size
+        </button>
+        <button 
+          className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100"
+          onClick={() => {
+            duplicateMarker(contextMenu.marker);
+            setContextMenu(null);
+          }}
+        >
+          Duplicate
+        </button>
+        <button 
+          className="w-full text-left px-2 py-1 text-sm text-red-600 hover:bg-gray-100"
+          onClick={() => {
+            deleteMarkerMutation.mutate(contextMenu.markerId);
+            setContextMenu(null);
+          }}
+        >
+          Delete
+        </button>
       </div>
-    ));
+    );
   };
 
   return (
@@ -480,6 +754,17 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       
       {selectedFloorplan ? (
         <div className="border rounded-md p-4 max-w-full overflow-auto relative">
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm">
+            <h3 className="font-semibold text-blue-800 mb-1">Working with Floorplan Markers:</h3>
+            <ul className="list-disc pl-5 space-y-1 text-blue-700">
+              <li><span className="font-semibold">Add Markers:</span> Use the "Add Access Point" or "Add Camera" buttons above, then click on the floorplan</li>
+              <li><span className="font-semibold">Move Markers:</span> Click and drag any marker to reposition it</li>
+              <li><span className="font-semibold">Resize Markers:</span> Right-click a marker and select "Increase Size" or "Decrease Size"</li>
+              <li><span className="font-semibold">Edit Properties:</span> Double-click a marker or right-click and select "Edit"</li>
+              <li><span className="font-semibold">Duplicate or Delete:</span> Right-click a marker for more options</li>
+            </ul>
+          </div>
+          
           <div 
             ref={containerRef}
             className="relative" 
@@ -560,7 +845,9 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       <Dialog open={markerDialogOpen && markerType === 'access_point'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Access Point</DialogTitle>
+            <DialogTitle>
+              {(window as any).__currentEditingMarker ? "Edit Access Point" : "Add Access Point"}
+            </DialogTitle>
             <DialogDescription>
               Configure the access point details for this marker.
             </DialogDescription>
@@ -568,22 +855,112 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           {newMarkerPosition && (
             <AccessPointMarkerForm
               projectId={projectId}
-              onSubmit={(equipmentId, label) => {
+              existingMarker={(window as any).__currentEditingMarker}
+              onSubmit={(equipmentId, label, accessPointData) => {
                 if (!selectedFloorplan || !newMarkerPosition) return;
                 
-                createMarkerMutation.mutateAsync({
-                  floorplan_id: selectedFloorplan.id,
-                  page: 1, // We're using a simpler viewer without pages
-                  marker_type: 'access_point',
-                  equipment_id: equipmentId,
-                  position_x: newMarkerPosition.x,
-                  position_y: newMarkerPosition.y,
-                  label
-                });
+                if ((window as any).__currentEditingMarker) {
+                  // We're editing an existing marker
+                  const markerId = (window as any).__currentEditingMarker.id;
+                  
+                  // Update the equipment data
+                  if (accessPointData) {
+                    apiRequest('PUT', `/api/access-points/${equipmentId}`, accessPointData)
+                      .then(() => {
+                        // Equipment updated successfully, now refresh the data
+                        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/access-points', equipmentId] });
+                        if (onMarkersUpdated) onMarkersUpdated();
+                        
+                        // Also update the marker label if it changed
+                        if (label) {
+                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, { label })
+                            .then(() => {
+                              queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+                            });
+                        }
+                        
+                        // Close the dialog and clean up
+                        setMarkerDialogOpen(false);
+                        setNewMarkerPosition(null);
+                        (window as any).__currentEditingMarker = null;
+                        
+                        toast({
+                          title: "Success",
+                          description: "Access point updated successfully",
+                        });
+                      })
+                      .catch(err => {
+                        console.error('Error updating access point:', err);
+                        toast({
+                          title: "Error",
+                          description: "Failed to update access point",
+                          variant: "destructive",
+                        });
+                      });
+                  }
+                } else {
+                  // Creating a new marker
+                  if (equipmentId === 0 && accessPointData) {
+                    // First create the access point
+                    apiRequest('POST', '/api/access-points', accessPointData)
+                      .then(async (res) => {
+                        const newAccessPoint = await res.json();
+                        
+                        // Then create the marker with the new access point ID
+                        return createMarkerMutation.mutateAsync({
+                          floorplan_id: selectedFloorplan.id,
+                          page: 1, // We're using a simpler viewer without pages
+                          marker_type: 'access_point',
+                          equipment_id: newAccessPoint.id,
+                          position_x: newMarkerPosition.x,
+                          position_y: newMarkerPosition.y,
+                          label: label || newAccessPoint.location
+                        });
+                      })
+                      .then(() => {
+                        // Everything successful, refresh data
+                        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+                        if (onMarkersUpdated) onMarkersUpdated();
+                        
+                        // Close dialog
+                        setMarkerDialogOpen(false);
+                        setNewMarkerPosition(null);
+                        
+                        toast({
+                          title: "Success",
+                          description: "Access point created and marker added",
+                        });
+                      })
+                      .catch(err => {
+                        console.error('Error creating access point and marker:', err);
+                        toast({
+                          title: "Error",
+                          description: "Failed to create access point and marker",
+                          variant: "destructive",
+                        });
+                      });
+                  } else {
+                    // Using an existing access point
+                    createMarkerMutation.mutateAsync({
+                      floorplan_id: selectedFloorplan.id,
+                      page: 1,
+                      marker_type: 'access_point',
+                      equipment_id: equipmentId,
+                      position_x: newMarkerPosition.x,
+                      position_y: newMarkerPosition.y,
+                      label
+                    });
+                    
+                    setMarkerDialogOpen(false);
+                    setNewMarkerPosition(null);
+                  }
+                }
               }}
               onCancel={() => {
                 setMarkerDialogOpen(false);
                 setNewMarkerPosition(null);
+                (window as any).__currentEditingMarker = null;
               }}
               position={newMarkerPosition}
             />
@@ -595,7 +972,9 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
       <Dialog open={markerDialogOpen && markerType === 'camera'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Camera</DialogTitle>
+            <DialogTitle>
+              {(window as any).__currentEditingMarker ? "Edit Camera" : "Add Camera"}
+            </DialogTitle>
             <DialogDescription>
               Configure the camera details for this marker.
             </DialogDescription>
@@ -603,28 +982,121 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           {newMarkerPosition && (
             <CameraMarkerForm
               projectId={projectId}
-              onSubmit={(equipmentId, label) => {
+              existingMarker={(window as any).__currentEditingMarker}
+              onSubmit={(equipmentId, label, cameraData) => {
                 if (!selectedFloorplan || !newMarkerPosition) return;
                 
-                createMarkerMutation.mutateAsync({
-                  floorplan_id: selectedFloorplan.id,
-                  page: 1, // We're using a simpler viewer without pages
-                  marker_type: 'camera',
-                  equipment_id: equipmentId,
-                  position_x: newMarkerPosition.x,
-                  position_y: newMarkerPosition.y,
-                  label
-                });
+                if ((window as any).__currentEditingMarker) {
+                  // We're editing an existing marker
+                  const markerId = (window as any).__currentEditingMarker.id;
+                  
+                  // Update the equipment data
+                  if (cameraData) {
+                    apiRequest('PUT', `/api/cameras/${equipmentId}`, cameraData)
+                      .then(() => {
+                        // Equipment updated successfully, now refresh the data
+                        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/cameras', equipmentId] });
+                        if (onMarkersUpdated) onMarkersUpdated();
+                        
+                        // Also update the marker label if it changed
+                        if (label) {
+                          apiRequest('PUT', `/api/floorplan-markers/${markerId}`, { label })
+                            .then(() => {
+                              queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+                            });
+                        }
+                        
+                        // Close the dialog and clean up
+                        setMarkerDialogOpen(false);
+                        setNewMarkerPosition(null);
+                        (window as any).__currentEditingMarker = null;
+                        
+                        toast({
+                          title: "Success",
+                          description: "Camera updated successfully",
+                        });
+                      })
+                      .catch(err => {
+                        console.error('Error updating camera:', err);
+                        toast({
+                          title: "Error",
+                          description: "Failed to update camera",
+                          variant: "destructive",
+                        });
+                      });
+                  }
+                } else {
+                  // Creating a new marker
+                  if (equipmentId === 0 && cameraData) {
+                    // First create the camera
+                    apiRequest('POST', '/api/cameras', cameraData)
+                      .then(async (res) => {
+                        const newCamera = await res.json();
+                        
+                        // Then create the marker with the new camera ID
+                        return createMarkerMutation.mutateAsync({
+                          floorplan_id: selectedFloorplan.id,
+                          page: 1, // We're using a simpler viewer without pages
+                          marker_type: 'camera',
+                          equipment_id: newCamera.id,
+                          position_x: newMarkerPosition.x,
+                          position_y: newMarkerPosition.y,
+                          label: label || newCamera.location
+                        });
+                      })
+                      .then(() => {
+                        // Everything successful, refresh data
+                        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+                        if (onMarkersUpdated) onMarkersUpdated();
+                        
+                        // Close dialog
+                        setMarkerDialogOpen(false);
+                        setNewMarkerPosition(null);
+                        
+                        toast({
+                          title: "Success",
+                          description: "Camera created and marker added",
+                        });
+                      })
+                      .catch(err => {
+                        console.error('Error creating camera and marker:', err);
+                        toast({
+                          title: "Error",
+                          description: "Failed to create camera and marker",
+                          variant: "destructive",
+                        });
+                      });
+                  } else {
+                    // Using an existing camera
+                    createMarkerMutation.mutateAsync({
+                      floorplan_id: selectedFloorplan.id,
+                      page: 1,
+                      marker_type: 'camera',
+                      equipment_id: equipmentId,
+                      position_x: newMarkerPosition.x,
+                      position_y: newMarkerPosition.y,
+                      label
+                    });
+                    
+                    setMarkerDialogOpen(false);
+                    setNewMarkerPosition(null);
+                  }
+                }
               }}
               onCancel={() => {
                 setMarkerDialogOpen(false);
                 setNewMarkerPosition(null);
+                (window as any).__currentEditingMarker = null;
               }}
               position={newMarkerPosition}
             />
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Render the context menu */}
+      {renderContextMenu()}
     </div>
   );
 };

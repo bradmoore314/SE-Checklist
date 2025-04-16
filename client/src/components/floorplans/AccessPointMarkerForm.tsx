@@ -9,29 +9,29 @@ import {
   SelectTrigger,
   SelectValue 
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2 } from 'lucide-react';
+import { AccessPoint } from '@shared/schema';
 
 interface AccessPointMarkerFormProps {
   projectId: number;
-  onSubmit: (equipmentId: number, label: string | null) => void;
+  onSubmit: (equipmentId: number, label: string | null, accessPointData?: any) => void;
   onCancel: () => void;
   position: { x: number, y: number } | null;
+  existingMarker?: { id: number; equipment_id: number };
 }
 
 const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
   projectId,
   onSubmit,
   onCancel,
-  position
+  position,
+  existingMarker
 }) => {
-  const [label, setLabel] = useState<string>("");
-  const [selectedAccessPointId, setSelectedAccessPointId] = useState<number>(0);
-  const [createNew, setCreateNew] = useState<boolean>(true);
-
   // Fetch existing access points
-  const { data: accessPoints, isLoading } = useQuery({
+  const { data: accessPoints, isLoading } = useQuery<AccessPoint[]>({
     queryKey: ['/api/projects', projectId, 'access-points'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/access-points`);
@@ -39,57 +39,247 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
     },
     enabled: !!projectId,
   });
+  
+  // Fetch specific access point if we're editing an existing marker
+  const { data: existingAccessPoint, isLoading: isLoadingExisting } = useQuery<AccessPoint>({
+    queryKey: ['/api/access-points', existingMarker?.equipment_id],
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/access-points/${existingMarker?.equipment_id}`);
+      return await res.json();
+    },
+    enabled: !!existingMarker?.equipment_id,
+  });
+
+  // Form state
+  const [createNew, setCreateNew] = useState<boolean>(!existingMarker);
+  const [selectedAccessPointId, setSelectedAccessPointId] = useState<number>(existingMarker?.equipment_id || 0);
+  
+  // Access point details state - prepopulated if editing
+  const [location, setLocation] = useState<string>(existingAccessPoint?.location || "");
+  const [quickConfig, setQuickConfig] = useState<string>(existingAccessPoint?.quick_config || "Default Config");
+  const [readerType, setReaderType] = useState<string>(existingAccessPoint?.reader_type || "KR-1");
+  const [lockType, setLockType] = useState<string>(existingAccessPoint?.lock_type || "Strike");
+  const [monitoringType, setMonitoringType] = useState<string>(existingAccessPoint?.monitoring_type || "None");
+  const [interiorPerimeter, setInteriorPerimeter] = useState<string>(existingAccessPoint?.interior_perimeter || "Interior");
+  const [notes, setNotes] = useState<string>(existingAccessPoint?.notes || "");
+
+  // Update form fields if existing access point data loads
+  React.useEffect(() => {
+    if (existingAccessPoint) {
+      setLocation(existingAccessPoint.location || "");
+      setQuickConfig(existingAccessPoint.quick_config || "Default Config");
+      setReaderType(existingAccessPoint.reader_type || "KR-1");
+      setLockType(existingAccessPoint.lock_type || "Strike");
+      setMonitoringType(existingAccessPoint.monitoring_type || "None");
+      setInteriorPerimeter(existingAccessPoint.interior_perimeter || "Interior");
+      setNotes(existingAccessPoint.notes || "");
+    }
+  }, [existingAccessPoint]);
 
   const handleSubmit = () => {
     if (createNew) {
-      // Equipment ID 0 signals backend to create a new access point
-      onSubmit(0, label || null);
+      // For new access points, pass all the form data to create a complete record
+      const accessPointData = {
+        location,
+        quick_config: quickConfig,
+        reader_type: readerType,
+        lock_type: lockType,
+        monitoring_type: monitoringType,
+        interior_perimeter: interiorPerimeter,
+        notes,
+        project_id: projectId
+      };
+      
+      // Pass 0 for equipmentId to signal creating a new one, along with the form data
+      onSubmit(0, location, accessPointData);
+    } else if (existingMarker) {
+      // If we're editing an existing marker, pass the updated data
+      const updatedData = {
+        location,
+        quick_config: quickConfig,
+        reader_type: readerType,
+        lock_type: lockType,
+        monitoring_type: monitoringType,
+        interior_perimeter: interiorPerimeter,
+        notes
+      };
+      
+      // Pass the existing equipment ID and the form data for updates
+      onSubmit(existingMarker.equipment_id, location, updatedData);
     } else {
-      // Use selected existing access point
+      // Using an existing access point without modifications
       onSubmit(selectedAccessPointId, null);
     }
   };
+
+  // If we're loading an existing marker's details, show a loading state
+  if (existingMarker && isLoadingExisting) {
+    return (
+      <div className="flex flex-col items-center justify-center p-4">
+        <Loader2 className="h-8 w-8 animate-spin mb-2" />
+        <p>Loading access point details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="border-b pb-2">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-4 h-4 rounded-full bg-red-500"></div>
-          <span className="font-medium">Adding Access Point Marker at Position {position?.x}%, {position?.y}%</span>
+          <span className="font-medium">
+            {existingMarker 
+              ? `Editing Access Point Marker #${existingMarker.id}` 
+              : `Adding Access Point Marker at Position ${position?.x}%, ${position?.y}%`}
+          </span>
         </div>
       </div>
 
       <div className="space-y-4 pt-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="marker-type">Marker Type</Label>
-          <Select
-            value={createNew ? "new" : "existing"}
-            onValueChange={(value) => setCreateNew(value === "new")}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new">Create New Access Point</SelectItem>
-              <SelectItem value="existing">Use Existing Access Point</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {createNew ? (
+        {!existingMarker && (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="label">Access Point Label</Label>
-            <Input
-              id="label"
-              placeholder="e.g., Main Entrance Door"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              This will create a new access point with default settings.
-            </p>
+            <Label htmlFor="marker-type">Marker Type</Label>
+            <Select
+              value={createNew ? "new" : "existing"}
+              onValueChange={(value) => setCreateNew(value === "new")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new">Create New Access Point</SelectItem>
+                <SelectItem value="existing">Use Existing Access Point</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {createNew || existingMarker ? (
+          // Form for new access point or editing existing one
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location/Name</Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., Main Entrance Door"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="quick-config">Quick Config</Label>
+                  <Select 
+                    value={quickConfig} 
+                    onValueChange={setQuickConfig}
+                  >
+                    <SelectTrigger id="quick-config">
+                      <SelectValue placeholder="Select configuration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Default Config">Default Config</SelectItem>
+                      <SelectItem value="In/Out Reader">In/Out Reader</SelectItem>
+                      <SelectItem value="Request to Exit">Request to Exit</SelectItem>
+                      <SelectItem value="Single Door Strike">Single Door Strike</SelectItem>
+                      <SelectItem value="Apartment Entrance">Apartment Entrance</SelectItem>
+                      <SelectItem value="Gate Control">Gate Control</SelectItem>
+                      <SelectItem value="N/A">N/A</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="interior-perimeter">Interior/Perimeter</Label>
+                  <Select 
+                    value={interiorPerimeter} 
+                    onValueChange={setInteriorPerimeter}
+                  >
+                    <SelectTrigger id="interior-perimeter">
+                      <SelectValue placeholder="Select location type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Interior">Interior</SelectItem>
+                      <SelectItem value="Perimeter">Perimeter</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reader-type">Reader Type</Label>
+                  <Select 
+                    value={readerType} 
+                    onValueChange={setReaderType}
+                  >
+                    <SelectTrigger id="reader-type">
+                      <SelectValue placeholder="Select reader type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="KR-1">KR-1</SelectItem>
+                      <SelectItem value="KR-2">KR-2</SelectItem>
+                      <SelectItem value="KR-2M">KR-2M</SelectItem>
+                      <SelectItem value="KMS">KMS</SelectItem>
+                      <SelectItem value="MKR-51">MKR-51</SelectItem>
+                      <SelectItem value="Existing">Existing</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="lock-type">Lock Type</Label>
+                  <Select 
+                    value={lockType} 
+                    onValueChange={setLockType}
+                  >
+                    <SelectTrigger id="lock-type">
+                      <SelectValue placeholder="Select lock type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Strike">Strike</SelectItem>
+                      <SelectItem value="Mag">Mag</SelectItem>
+                      <SelectItem value="Panic Bar">Panic Bar</SelectItem>
+                      <SelectItem value="Electric Latch">Electric Latch</SelectItem>
+                      <SelectItem value="Provided by Others">Provided by Others</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="monitoring-type">Monitoring Type</Label>
+                <Select 
+                  value={monitoringType} 
+                  onValueChange={setMonitoringType}
+                >
+                  <SelectTrigger id="monitoring-type">
+                    <SelectValue placeholder="Select monitoring type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="None">None</SelectItem>
+                    <SelectItem value="DPS">DPS</SelectItem>
+                    <SelectItem value="REX">REX</SelectItem>
+                    <SelectItem value="DPS + REX">DPS + REX</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Additional information about this access point"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
           </div>
         ) : (
+          // Form for selecting existing access point
           <div className="flex flex-col gap-2">
             <Label htmlFor="existing-access-point">Select Existing Access Point</Label>
             {isLoading ? (
@@ -106,7 +296,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                   <SelectValue placeholder="Select an access point" />
                 </SelectTrigger>
                 <SelectContent>
-                  {accessPoints.map((ap: any) => (
+                  {accessPoints.map((ap) => (
                     <SelectItem key={ap.id} value={ap.id.toString()}>
                       {ap.location}
                     </SelectItem>
@@ -125,7 +315,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
           Cancel
         </Button>
         <Button onClick={handleSubmit}>
-          Add Marker
+          {existingMarker ? "Update Marker" : "Add Marker"}
         </Button>
       </div>
     </div>
