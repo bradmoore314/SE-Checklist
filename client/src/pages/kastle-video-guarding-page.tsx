@@ -41,33 +41,8 @@ import {
   ImageIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-// Stream type definition
-interface Stream {
-  id: number;
-  quantity: number;
-  description: string;
-  monitoredArea: string;
-  accessibility: string;
-  useCase: string;
-  analyticRule1: string;
-  dwellTime1: number;
-  analyticRule2: string;
-  dwellTime2: number;
-  daysOfWeek: string[];
-  schedule: string;
-  eventVolume: number;
-  patrolType: string;
-  patrolsPerWeek: number;
-  images: StreamImage[];
-}
-
-// Image type definition for streams
-interface StreamImage {
-  id: number;
-  imageData: string; // base64 data
-  filename: string;
-}
+import type { Stream, StreamImage } from "../types";
+import StreamImagesModal from "../components/modals/StreamImagesModal";
 
 interface FormData {
   // Discovery tab fields
@@ -169,6 +144,8 @@ interface FormData {
 
 const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
+  const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
+  const [isImagesModalOpen, setIsImagesModalOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     // Discovery tab fields
     bdmOwner: "",
@@ -1096,11 +1073,8 @@ const KastleVideoGuardingPage: React.FC = () => {
                                       size="icon"
                                       title="View Images"
                                       onClick={() => {
-                                        // In a real implementation, this would open a modal to show all images
-                                        toast({
-                                          title: "View Images",
-                                          description: `${stream.images.length} images for this stream`
-                                        });
+                                        setSelectedStream(stream);
+                                        setIsImagesModalOpen(true);
                                       }}
                                     >
                                       <ImageIcon size={16} />
