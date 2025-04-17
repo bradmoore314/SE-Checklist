@@ -6,10 +6,14 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"), // Password can be null for Microsoft logins
   email: text("email").notNull(),
   fullName: text("full_name"),
   role: text("role").default("user"),
+  // Microsoft Entra ID fields
+  microsoftId: text("microsoft_id").unique(), // Microsoft OID
+  refreshToken: text("refresh_token"), // Token for Microsoft Graph API
+  lastLogin: timestamp("last_login"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
