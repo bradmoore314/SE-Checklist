@@ -111,7 +111,7 @@ export default function AddCameraModal({
                       Location *
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter location" {...field} />
+                      <Input placeholder="Enter location" autoComplete="off" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

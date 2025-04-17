@@ -171,6 +171,7 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                   placeholder="e.g., Main Entrance Camera"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
               
@@ -258,6 +259,7 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                     placeholder="e.g., 4MP, 1080p"
                     value={resolution}
                     onChange={(e) => setResolution(e.target.value)}
+                    autoComplete="off"
                   />
                 </div>
                 
@@ -268,6 +270,7 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                     placeholder="e.g., 120°, Wide Angle"
                     value={fieldOfView}
                     onChange={(e) => setFieldOfView(e.target.value)}
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -280,6 +283,7 @@ const CameraMarkerForm: React.FC<CameraMarkerFormProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
+                  autoComplete="off"
                 />
               </div>
             </div>
