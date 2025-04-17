@@ -54,6 +54,6 @@ export async function translateText(
     return translatedText.trim();
   } catch (error) {
     console.error("Gemini translation error:", error);
-    throw new Error(`Translation failed: ${error.message}`);
+    throw new Error(`Translation failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

@@ -441,10 +441,11 @@ const KastleVideoGuardingPage: React.FC = () => {
       });
     } catch (error) {
       console.error("Translation error:", error);
-      setTranslationError(error.message || "An error occurred during translation");
+      const errorMessage = error instanceof Error ? error.message : "An error occurred during translation";
+      setTranslationError(errorMessage);
       toast({
         title: "Translation Failed",
-        description: error.message || "An error occurred during translation",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

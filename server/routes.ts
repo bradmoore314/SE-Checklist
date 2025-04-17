@@ -24,6 +24,7 @@ import { z } from "zod";
 import { setupAuth } from "./auth";
 import { generateSiteWalkAnalysis } from "./utils/gemini";
 import { areAzureCredentialsAvailable } from "./services/microsoft-auth";
+import { translateText } from "./services/gemini-translation";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -1238,6 +1239,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       configured: areAzureCredentialsAvailable()
     });
+  });
+  
+  // Gemini AI Translation endpoint
+  app.post("/api/gemini-translate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { text, targetLanguage, sourceLanguage = 'en' } = req.body;
+      
+      if (!text || !targetLanguage) {
+        return res.status(400).json({ 
+          error: "Missing required parameters. Please provide 'text' and 'targetLanguage'." 
+        });
+      }
+      
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ 
+          error: "Gemini API key is not configured on the server." 
+        });
+      }
+      
+      const translatedText = await translateText(text, targetLanguage, sourceLanguage);
+      
+      res.json({
+        success: true,
+        translatedText,
+        sourceLanguage,
+        targetLanguage
+      });
+    } catch (error) {
+      console.error("Translation error:", error);
+      res.status(500).json({ 
+        success: false,
+        error: error instanceof Error ? error.message : "An unknown error occurred during translation" 
+      });
+    }
   });
 
   const httpServer = createServer(app);
