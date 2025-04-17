@@ -312,23 +312,23 @@ const KastleVideoGuardingPage: React.FC = () => {
               <CardContent>
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Stream #</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Monitored Area</TableHead>
-                        <TableHead>Accessibility</TableHead>
-                        <TableHead>Use Case</TableHead>
-                        <TableHead>Analytic Rule 1</TableHead>
-                        <TableHead>Dwell Time 1 (sec)</TableHead>
-                        <TableHead>Analytic Rule 2</TableHead>
-                        <TableHead>Dwell Time 2 (sec)</TableHead>
-                        <TableHead>Schedule</TableHead>
-                        <TableHead>Event Volume (events/mo)</TableHead>
-                        <TableHead>Patrol Type</TableHead>
-                        <TableHead>#Patrols/wk</TableHead>
-                        <TableHead>Actions</TableHead>
+                    <TableHeader className="bg-red-600">
+                      <TableRow className="bg-red-600">
+                        <TableHead className="text-white">Stream #</TableHead>
+                        <TableHead className="text-white">Quantity</TableHead>
+                        <TableHead className="text-white">Description</TableHead>
+                        <TableHead className="text-white">Monitored Area</TableHead>
+                        <TableHead className="text-white">Accessibility</TableHead>
+                        <TableHead className="text-white">Use Case</TableHead>
+                        <TableHead className="text-white">Analytic Rule 1</TableHead>
+                        <TableHead className="text-white">Dwell Time 1 (sec)</TableHead>
+                        <TableHead className="text-white">Analytic Rule 2</TableHead>
+                        <TableHead className="text-white">Dwell Time 2 (sec)</TableHead>
+                        <TableHead className="text-white">Schedule</TableHead>
+                        <TableHead className="text-white">Event Volume (events/mo)</TableHead>
+                        <TableHead className="text-white">Patrol Type</TableHead>
+                        <TableHead className="text-white">#Patrols/wk</TableHead>
+                        <TableHead className="text-white">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
