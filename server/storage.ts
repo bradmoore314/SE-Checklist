@@ -19,7 +19,9 @@ export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByMicrosoftId(microsoftId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserRefreshToken(userId: number, refreshToken: string): Promise<User | undefined>;
   
   // Projects
   getProjects(): Promise<Project[]>;
@@ -137,6 +139,9 @@ export class MemStorage implements IStorage {
       email: "admin@example.com",
       fullName: "Admin User",
       role: "admin",
+      microsoftId: null,
+      refreshToken: null,
+      lastLogin: null,
       created_at: new Date(),
       updated_at: new Date()
     });
@@ -178,12 +183,38 @@ export class MemStorage implements IStorage {
       email: insertUser.email,
       fullName: insertUser.fullName ?? null,
       role: insertUser.role ?? "user",
+      microsoftId: insertUser.microsoftId ?? null,
+      refreshToken: insertUser.refreshToken ?? null,
+      lastLogin: insertUser.lastLogin ?? null,
       created_at: now,
       updated_at: now
     };
     
     this.users.set(id, user);
     return user;
+  }
+  
+  async getUserByMicrosoftId(microsoftId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.microsoftId === microsoftId
+    );
+  }
+  
+  async updateUserRefreshToken(userId: number, refreshToken: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) {
+      return undefined;
+    }
+    
+    const updatedUser: User = {
+      ...user,
+      refreshToken,
+      lastLogin: new Date(),
+      updated_at: new Date()
+    };
+    
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 
   // Projects
@@ -210,6 +241,8 @@ export class MemStorage implements IStorage {
       building_count: insertProject.building_count ?? null,
       progress_percentage: insertProject.progress_percentage ?? 0,
       progress_notes: insertProject.progress_notes ?? null,
+      equipment_notes: insertProject.equipment_notes ?? null,
+      scope_notes: insertProject.scope_notes ?? null,
       created_at: now,
       updated_at: now,
       replace_readers: insertProject.replace_readers ?? false,
