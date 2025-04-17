@@ -36,7 +36,6 @@ import {
   Trash2, 
   Copy
 } from "lucide-react";
-import MainLayout from "@/layouts/MainLayout";
 import { useToast } from "@/hooks/use-toast";
 
 // Stream type definition
@@ -146,9 +145,8 @@ const KastleVideoGuardingPage: React.FC = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="container mx-auto py-6">
-        <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
+    <div className="container mx-auto py-6">
+      <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
 
         <Tabs defaultValue="discovery" className="w-full">
           <TabsList className="grid grid-cols-5 mb-6">
@@ -621,8 +619,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
-  );
+    );
 };
 
 export default KastleVideoGuardingPage;
