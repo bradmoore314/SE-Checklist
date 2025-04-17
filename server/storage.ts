@@ -179,7 +179,7 @@ export class MemStorage implements IStorage {
     const user: User = { 
       id,
       username: insertUser.username,
-      password: insertUser.password,
+      password: insertUser.password ?? null, // Ensure proper type
       email: insertUser.email,
       fullName: insertUser.fullName ?? null,
       role: insertUser.role ?? "user",
@@ -208,7 +208,7 @@ export class MemStorage implements IStorage {
     
     const updatedUser: User = {
       ...user,
-      refreshToken,
+      refreshToken: refreshToken as string | null, // Ensure proper type
       lastLogin: new Date(),
       updated_at: new Date()
     };
