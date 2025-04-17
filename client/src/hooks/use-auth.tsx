@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading: microsoftAuthStatusLoading 
   } = useQuery<{ configured: boolean }, Error>({
     queryKey: ["/api/auth/microsoft/status"],
-    queryFn: getQueryFn({}),
+    queryFn: getQueryFn({ on401: "throw" }),
     staleTime: 1000 * 60 * 60, // Cache for 1 hour
   });
 

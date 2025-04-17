@@ -40,7 +40,15 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
-  const { user, isLoading, loginMutation, registerMutation, bypassAuth } = useAuth();
+  const { 
+    user, 
+    isLoading, 
+    loginMutation, 
+    registerMutation, 
+    bypassAuth, 
+    microsoftAuthConfigured,
+    microsoftAuthStatusLoading 
+  } = useAuth();
   
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -157,22 +165,47 @@ export default function AuthPage() {
                         <span className="bg-card px-2 text-white">Or continue with</span>
                       </div>
                     </div>
-                    <a href="/auth/azure">
+                    {microsoftAuthStatusLoading ? (
                       <Button 
                         type="button"
                         variant="outline"
-                        className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                        className="w-full bg-gray-600 hover:bg-gray-600 text-white hover:text-white border-0"
+                        disabled
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
-                          <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
-                          <path fill="#0078d4" d="M1 1h10v10H1z"/>
-                          <path fill="#0078d4" d="M12 1h10v10H12z"/>
-                          <path fill="#0078d4" d="M1 12h10v10H1z"/>
-                          <path fill="#0078d4" d="M12 12h10v10H12z"/>
-                        </svg>
-                        Microsoft
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Checking Microsoft Authentication...
                       </Button>
-                    </a>
+                    ) : microsoftAuthConfigured ? (
+                      <a href="/auth/azure">
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
+                            <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
+                            <path fill="#0078d4" d="M1 1h10v10H1z"/>
+                            <path fill="#0078d4" d="M12 1h10v10H12z"/>
+                            <path fill="#0078d4" d="M1 12h10v10H1z"/>
+                            <path fill="#0078d4" d="M12 12h10v10H12z"/>
+                          </svg>
+                          Microsoft
+                        </Button>
+                      </a>
+                    ) : (
+                      <div className="rounded-md bg-yellow-50 p-3 text-sm border border-yellow-200">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 text-yellow-500">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2 text-yellow-700">
+                            <p>Microsoft login requires Azure configuration. Contact your administrator to enable this feature.</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <Button 
                     type="button"
@@ -288,22 +321,47 @@ export default function AuthPage() {
                         <span className="bg-card px-2 text-white">Or sign up with</span>
                       </div>
                     </div>
-                    <a href="/auth/azure">
+                    {microsoftAuthStatusLoading ? (
                       <Button 
                         type="button"
                         variant="outline"
-                        className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                        className="w-full bg-gray-600 hover:bg-gray-600 text-white hover:text-white border-0"
+                        disabled
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
-                          <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
-                          <path fill="#0078d4" d="M1 1h10v10H1z"/>
-                          <path fill="#0078d4" d="M12 1h10v10H12z"/>
-                          <path fill="#0078d4" d="M1 12h10v10H1z"/>
-                          <path fill="#0078d4" d="M12 12h10v10H12z"/>
-                        </svg>
-                        Microsoft
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Checking Microsoft Authentication...
                       </Button>
-                    </a>
+                    ) : microsoftAuthConfigured ? (
+                      <a href="/auth/azure">
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
+                            <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
+                            <path fill="#0078d4" d="M1 1h10v10H1z"/>
+                            <path fill="#0078d4" d="M12 1h10v10H12z"/>
+                            <path fill="#0078d4" d="M1 12h10v10H1z"/>
+                            <path fill="#0078d4" d="M12 12h10v10H12z"/>
+                          </svg>
+                          Microsoft
+                        </Button>
+                      </a>
+                    ) : (
+                      <div className="rounded-md bg-yellow-50 p-3 text-sm border border-yellow-200">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 text-yellow-500">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2 text-yellow-700">
+                            <p>Microsoft login requires Azure configuration. Contact your administrator to enable this feature.</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <p className="text-sm text-white text-center">
                     Already have an account?{" "}
