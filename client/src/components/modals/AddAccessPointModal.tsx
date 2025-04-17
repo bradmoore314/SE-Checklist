@@ -158,7 +158,7 @@ export default function AddAccessPointModal({
                       Location *
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter location" {...field} />
+                      <Input placeholder="Enter location" {...field} autoComplete="off" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -96,6 +96,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
         reader_type: readerType,
         lock_type: lockType,
         monitoring_type: monitoringType,
+        lock_provider: lockProvider,
         interior_perimeter: interiorPerimeter,
         notes,
         project_id: projectId
@@ -111,6 +112,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
         reader_type: readerType,
         lock_type: lockType,
         monitoring_type: monitoringType,
+        lock_provider: lockProvider,
         interior_perimeter: interiorPerimeter,
         notes
       };
@@ -176,6 +178,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                   placeholder="e.g., Main Entrance Door"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
               
@@ -316,6 +319,35 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="lock-provider">Lock Provider</Label>
+                <Select 
+                  value={lockProvider} 
+                  onValueChange={setLockProvider}
+                >
+                  <SelectTrigger id="lock-provider">
+                    <SelectValue placeholder="Select lock provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isLoadingLookups ? (
+                      <SelectItem value="loading">Loading...</SelectItem>
+                    ) : lookupData?.lockProviderOptions ? (
+                      lookupData.lockProviderOptions.map((provider: string) => (
+                        <SelectItem key={provider} value={provider}>
+                          {provider}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <>
+                        <SelectItem value="Kastle">Kastle</SelectItem>
+                        <SelectItem value="PPI">PPI</SelectItem>
+                        <SelectItem value="Client">Client</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
                   id="notes"
@@ -323,6 +355,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
+                  autoComplete="off"
                 />
               </div>
             </div>
