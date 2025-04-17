@@ -6,7 +6,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { User, InsertUser } from "@shared/schema";
 import { storage } from "./storage";
-import { setupMicrosoftAuth } from "./services/microsoft-auth";
+import { setupMicrosoftAuth, sendEmail } from "./services/microsoft-auth";
 
 declare global {
   namespace Express {
@@ -284,7 +284,6 @@ export function setupAuth(app: Express) {
       }
       
       // Try to send email using Microsoft Graph
-      const { sendEmail } = require('./services/microsoft-auth');
       await sendEmail(user.id, recipients, subject, body, isHtml || false);
       
       res.json({
