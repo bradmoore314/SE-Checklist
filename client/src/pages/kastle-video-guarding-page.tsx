@@ -60,6 +60,7 @@ interface Stream {
 const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
+    // Discovery tab fields
     bdmOwner: "",
     salesEngineer: "",
     kvgSme: "",
@@ -71,6 +72,36 @@ const KastleVideoGuardingPage: React.FC = () => {
     numSites: 1,
     technology: "Kastle Video Cloud",
     installType: "New Construction",
+    
+    // Site Assessment tab fields
+    lightingRequirements: "Adequate",
+    cameraFieldOfView: "Clear",
+    networkConnectivity: "",
+    
+    // Use Case tab fields
+    useCaseCommitment: "",
+    
+    // VOC Protocol tab fields
+    amName: "",
+    projectId: "",
+    escalationProcess1: "",
+    escalationProcess2: "",
+    escalationProcess3: "",
+    
+    // Project Deployment tab fields
+    pmName: "",
+    gatewayCredentials: "",
+    streamNames: "",
+    speakersWork: "N/A",
+    
+    // Additional Services section
+    vocEscalations: 0,
+    dispatchResponses: 0,
+    gdodsPatrols: 0,
+    sgppPatrols: 0,
+    forensicInvestigations: 0,
+    appUsers: 0,
+    audioDevices: 0,
   });
 
   const [streams, setStreams] = useState<Stream[]>([]);
@@ -550,21 +581,111 @@ const KastleVideoGuardingPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Auto-synced fields from Discovery tab */}
+                  <div className="space-y-2">
+                    <Label htmlFor="saBdmOwner">BDM Owner</Label>
+                    <Input 
+                      id="saBdmOwner"
+                      value={formData.bdmOwner}
+                      onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="saSalesEngineer">Sales Engineer</Label>
+                    <Input 
+                      id="saSalesEngineer"
+                      value={formData.salesEngineer}
+                      onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="saCustomerName">Customer Name</Label>
+                    <Input 
+                      id="saCustomerName"
+                      value={formData.customerName}
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="saSiteAddress">Site Address</Label>
+                    <Input 
+                      id="saSiteAddress"
+                      value={formData.siteAddress}
+                      onChange={(e) => handleFormChange("siteAddress", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="saCityStateZip">City, State, Zip</Label>
+                    <Input 
+                      id="saCityStateZip"
+                      value={formData.cityStateZip}
+                      onChange={(e) => handleFormChange("cityStateZip", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Environment & Lighting</CardTitle>
+                <CardDescription>Document the site environment conditions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
-                    <Select defaultValue="Adequate">
+                    <Select 
+                      value={formData.lightingRequirements || "Adequate"}
+                      onValueChange={(value) => handleFormChange("lightingRequirements", value)}
+                    >
                       <SelectTrigger id="lightingRequirements">
                         <SelectValue placeholder="Select lighting requirements" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Adequate">Adequate</SelectItem>
+                        <SelectItem value="Needs Improvement">Needs Improvement</SelectItem>
                         <SelectItem value="Inadequate">Inadequate</SelectItem>
-                        <SelectItem value="Unknown">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
-                  {/* More site assessment fields would be added here */}
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
+                    <Select 
+                      value={formData.cameraFieldOfView || "Clear"}
+                      onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
+                    >
+                      <SelectTrigger id="cameraFieldOfView">
+                        <SelectValue placeholder="Select field of view" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Clear">Clear</SelectItem>
+                        <SelectItem value="Partial Obstruction">Partial Obstruction</SelectItem>
+                        <SelectItem value="Heavy Obstruction">Heavy Obstruction</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2 col-span-3">
+                    <Label htmlFor="networkConnectivity">Network & Connectivity</Label>
+                    <Textarea 
+                      id="networkConnectivity"
+                      value={formData.networkConnectivity || ""}
+                      onChange={(e) => handleFormChange("networkConnectivity", e.target.value)}
+                      rows={3}
+                      autoComplete="off"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -572,15 +693,72 @@ const KastleVideoGuardingPage: React.FC = () => {
 
           {/* Use Case Tab Content */}
           <TabsContent value="use-case">
-            <Card>
+            <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Use Case & Statement of Work</CardTitle>
-                <CardDescription>Define the use case for KVG</CardDescription>
+                <CardTitle>Use Case Design & SOW</CardTitle>
+                <CardDescription>Define the statement of work and use case</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4">
-                  {/* Use case fields would be added here */}
-                  <p>Use case configuration fields will be added here based on your requirements.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="ucBdmOwner">BDM Owner</Label>
+                    <Input 
+                      id="ucBdmOwner"
+                      value={formData.bdmOwner}
+                      onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="ucKvgSme">KVG SME</Label>
+                    <Input 
+                      id="ucKvgSme"
+                      value={formData.kvgSme}
+                      onChange={(e) => handleFormChange("kvgSme", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="ucCustomerName">Customer Name</Label>
+                    <Input 
+                      id="ucCustomerName"
+                      value={formData.customerName}
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="ucCrmOpportunity">CRM Opportunity #</Label>
+                    <Input 
+                      id="ucCrmOpportunity"
+                      value={formData.crmOpportunity}
+                      onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Use Case Commitment</CardTitle>
+                <CardDescription>Define the detailed use case commitment</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Textarea 
+                    id="useCaseCommitment"
+                    placeholder="Enter Use Case commitment details"
+                    value={formData.useCaseCommitment || ""}
+                    onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
+                    rows={4}
+                    className="w-full"
+                    autoComplete="off"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -588,15 +766,85 @@ const KastleVideoGuardingPage: React.FC = () => {
 
           {/* VOC Protocol Tab Content */}
           <TabsContent value="voc-protocol">
-            <Card>
+            <Card className="mb-6">
               <CardHeader>
-                <CardTitle>VOC Protocol</CardTitle>
-                <CardDescription>Voice of Customer protocol settings</CardDescription>
+                <CardTitle>VOC Protocol Configuration</CardTitle>
+                <CardDescription>Configure Voice of Customer protocols</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4">
-                  {/* VOC protocol fields would be added here */}
-                  <p>VOC protocol configuration fields will be added here based on your requirements.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amName">AM Name</Label>
+                    <Input 
+                      id="amName"
+                      value={formData.amName || ""}
+                      onChange={(e) => handleFormChange("amName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="projectId">Project ID</Label>
+                    <Input 
+                      id="projectId"
+                      value={formData.projectId || ""}
+                      onChange={(e) => handleFormChange("projectId", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="vocCustomerName">Customer Name</Label>
+                    <Input 
+                      id="vocCustomerName"
+                      value={formData.customerName}
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Escalation Process</CardTitle>
+                <CardDescription>Define escalation procedures</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess1">Escalation Process 1</Label>
+                    <Textarea 
+                      id="escalationProcess1"
+                      value={formData.escalationProcess1 || ""}
+                      onChange={(e) => handleFormChange("escalationProcess1", e.target.value)}
+                      rows={3}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess2">Escalation Process 2</Label>
+                    <Textarea 
+                      id="escalationProcess2"
+                      value={formData.escalationProcess2 || ""}
+                      onChange={(e) => handleFormChange("escalationProcess2", e.target.value)}
+                      rows={3}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess3">Escalation Process 3</Label>
+                    <Textarea 
+                      id="escalationProcess3"
+                      value={formData.escalationProcess3 || ""}
+                      onChange={(e) => handleFormChange("escalationProcess3", e.target.value)}
+                      rows={3}
+                      autoComplete="off"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -604,20 +852,199 @@ const KastleVideoGuardingPage: React.FC = () => {
 
           {/* Project Deployment Tab Content */}
           <TabsContent value="deployment">
-            <Card>
+            <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Project Deployment</CardTitle>
-                <CardDescription>Project deployment details</CardDescription>
+                <CardTitle>Project Deployment Planning</CardTitle>
+                <CardDescription>Configure project deployment details</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4">
-                  {/* Deployment fields would be added here */}
-                  <p>Project deployment configuration fields will be added here based on your requirements.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="pmName">PM Name</Label>
+                    <Input 
+                      id="pmName"
+                      value={formData.pmName || ""}
+                      onChange={(e) => handleFormChange("pmName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="deployCustomerName">Customer Name</Label>
+                    <Input 
+                      id="deployCustomerName"
+                      value={formData.customerName}
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="deployCrmOpportunity">CRM Opportunity #</Label>
+                    <Input 
+                      id="deployCrmOpportunity"
+                      value={formData.crmOpportunity}
+                      onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Equipment Configuration</CardTitle>
+                <CardDescription>Verify equipment setup and configuration</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="gatewayCredentials">Verified Gateway/Server Credentials</Label>
+                    <Input 
+                      id="gatewayCredentials"
+                      value={formData.gatewayCredentials || ""}
+                      onChange={(e) => handleFormChange("gatewayCredentials", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="streamNames">Verified Stream Names</Label>
+                    <Input 
+                      id="streamNames"
+                      value={formData.streamNames || ""}
+                      onChange={(e) => handleFormChange("streamNames", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="speakersWork">Verified Speakers Work</Label>
+                    <Select 
+                      value={formData.speakersWork || "N/A"}
+                      onValueChange={(value) => handleFormChange("speakersWork", value)}
+                    >
+                      <SelectTrigger id="speakersWork">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="N/A">N/A</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
+        
+        {/* Additional Services Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Additional Services</CardTitle>
+            <CardDescription>Add additional services to this quote</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="vocEscalations">Additional VOC Escalations</Label>
+                <Input 
+                  id="vocEscalations"
+                  type="number"
+                  min="0"
+                  value={formData.vocEscalations}
+                  onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="dispatchResponses">Additional Dispatch Responses</Label>
+                <Input 
+                  id="dispatchResponses"
+                  type="number"
+                  min="0"
+                  value={formData.dispatchResponses}
+                  onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="gdodsPatrols">GDoDS-RSPD-OnDemand Patrols</Label>
+                <Input 
+                  id="gdodsPatrols"
+                  type="number"
+                  min="0"
+                  value={formData.gdodsPatrols}
+                  onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="sgppPatrols">SGPP-RSPD-Scheduled Patrols</Label>
+                <Input 
+                  id="sgppPatrols"
+                  type="number"
+                  min="0"
+                  value={formData.sgppPatrols}
+                  onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="forensicInvestigations">Forensic Investigations</Label>
+                <Input 
+                  id="forensicInvestigations"
+                  type="number"
+                  min="0"
+                  value={formData.forensicInvestigations}
+                  onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="appUsers"># Arm/Disarm App Users</Label>
+                <Input 
+                  id="appUsers"
+                  type="number"
+                  min="0"
+                  value={formData.appUsers}
+                  onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="audioDevices"># of Audio Devices</Label>
+                <Input 
+                  id="audioDevices"
+                  type="number"
+                  min="0"
+                  value={formData.audioDevices}
+                  onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Calculate Quote Button */}
+        <div className="flex justify-center mt-6">
+          <Button 
+            onClick={calculatePrice} 
+            className="bg-orange-600 hover:bg-orange-700 px-8 py-6 text-lg"
+          >
+            Generate Quote
+          </Button>
+        </div>
       </div>
     );
 };
