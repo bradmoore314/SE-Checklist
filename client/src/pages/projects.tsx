@@ -239,15 +239,28 @@ export default function Projects() {
                   <h3 className="text-lg font-medium truncate" title={project.name}>
                     {project.name}
                   </h3>
-                  <button
-                    className="text-neutral-400 hover:text-red-500"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSiteWalk(project);
-                    }}
-                  >
-                    <span className="material-icons">delete</span>
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      className="text-neutral-400 hover:text-blue-500"
+                      title="Quote Review"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation(`/projects/${project.id}/quote-review`);
+                      }}
+                    >
+                      <span className="material-icons">assessment</span>
+                    </button>
+                    <button
+                      className="text-neutral-400 hover:text-red-500"
+                      title="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSiteWalk(project);
+                      }}
+                    >
+                      <span className="material-icons">delete</span>
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="text-sm text-neutral-500 mb-4">
