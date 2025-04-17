@@ -71,6 +71,45 @@ interface FormData {
   technology: string;
   installType: string;
   
+  // Incident Types
+  obviousCriminalAct: string;
+  activeBreakIn: string;
+  destructionOfProperty: string;
+  carDrivingThroughGate: string;
+  carBurglaries: string;
+  trespassing: string;
+  carsBrokenIntoAfterFact: string;
+  brokenGlassWindows: string;
+  suspiciousActivity: string;
+  intentToCommitCriminalAct: string;
+  checkingMultipleCarDoors: string;
+  dumpsterDivingOrDumping: string;
+  urinationOrOtherBodilyFunctions: string;
+  presenceOfScooters: string;
+  emergencyServices: string;
+  personInjuredOrDistress: string;
+  leavingTrash: string;
+  tenantsMovingOut: string;
+  largeItemsMovedAfterHours: string;
+  obviousMedicalEmergency: string;
+  visibleFireOrSmoke: string;
+  personInRestrictedArea: string;
+  sittingOrSleeping: string;
+  presentInProhibitedArea: string;
+  loitering: string;
+  activeGathering: string;
+  groupsLoiteringGathering: string;
+  homelessVagrant: string;
+  sleepingOnSiteEncampments: string;
+  loiteringInStairwells: string;
+  personsSmoking: string;
+  vehicleLoiteringInArea: string;
+  customIncidentType1: string;
+  customIncidentType2: string;
+  customIncidentType3: string;
+  customIncidentType4: string;
+  customIncidentType5: string;
+  
   // Site Assessment tab fields
   lightingRequirements: string;
   cameraFieldOfView: string;
@@ -117,6 +156,45 @@ const KastleVideoGuardingPage: React.FC = () => {
     numSites: 1,
     technology: "Kastle Video Cloud",
     installType: "New Construction",
+    
+    // Incident Types - Default values
+    obviousCriminalAct: "Yes",
+    activeBreakIn: "Select",
+    destructionOfProperty: "Select",
+    carDrivingThroughGate: "Select",
+    carBurglaries: "Select",
+    trespassing: "Select",
+    carsBrokenIntoAfterFact: "Select",
+    brokenGlassWindows: "Select",
+    suspiciousActivity: "Yes",
+    intentToCommitCriminalAct: "Select",
+    checkingMultipleCarDoors: "Select",
+    dumpsterDivingOrDumping: "Select",
+    urinationOrOtherBodilyFunctions: "Select",
+    presenceOfScooters: "Select",
+    emergencyServices: "Select",
+    personInjuredOrDistress: "Select",
+    leavingTrash: "Select",
+    tenantsMovingOut: "Select",
+    largeItemsMovedAfterHours: "Select",
+    obviousMedicalEmergency: "Select",
+    visibleFireOrSmoke: "Select",
+    personInRestrictedArea: "Select",
+    sittingOrSleeping: "Select",
+    presentInProhibitedArea: "Select",
+    loitering: "Yes",
+    activeGathering: "Select",
+    groupsLoiteringGathering: "Select",
+    homelessVagrant: "Select",
+    sleepingOnSiteEncampments: "Select",
+    loiteringInStairwells: "Select",
+    personsSmoking: "Select",
+    vehicleLoiteringInArea: "Select",
+    customIncidentType1: "Select",
+    customIncidentType2: "Select",
+    customIncidentType3: "Select",
+    customIncidentType4: "Select",
+    customIncidentType5: "Select",
     
     // Site Assessment tab fields
     lightingRequirements: "Adequate",
