@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Toggle } from "@/components/ui/toggle";
 import { 
   Plus, 
   Trash2, 
@@ -71,44 +72,58 @@ interface FormData {
   technology: string;
   installType: string;
   
-  // Incident Types
-  obviousCriminalAct: string;
-  activeBreakIn: string;
-  destructionOfProperty: string;
-  carDrivingThroughGate: string;
-  carBurglaries: string;
-  trespassing: string;
-  carsBrokenIntoAfterFact: string;
-  brokenGlassWindows: string;
-  suspiciousActivity: string;
-  intentToCommitCriminalAct: string;
-  checkingMultipleCarDoors: string;
-  dumpsterDivingOrDumping: string;
-  urinationOrOtherBodilyFunctions: string;
-  presenceOfScooters: string;
-  emergencyServices: string;
-  personInjuredOrDistress: string;
-  leavingTrash: string;
-  tenantsMovingOut: string;
-  largeItemsMovedAfterHours: string;
-  obviousMedicalEmergency: string;
-  visibleFireOrSmoke: string;
-  personInRestrictedArea: string;
-  sittingOrSleeping: string;
-  presentInProhibitedArea: string;
-  loitering: string;
-  activeGathering: string;
-  groupsLoiteringGathering: string;
-  homelessVagrant: string;
-  sleepingOnSiteEncampments: string;
-  loiteringInStairwells: string;
-  personsSmoking: string;
-  vehicleLoiteringInArea: string;
-  customIncidentType1: string;
-  customIncidentType2: string;
-  customIncidentType3: string;
-  customIncidentType4: string;
-  customIncidentType5: string;
+  // Incident Types - Criminal Activity Group
+  obviousCriminalAct: boolean;
+  activeBreakIn: boolean;
+  destructionOfProperty: boolean;
+  carDrivingThroughGate: boolean;
+  carBurglaries: boolean;
+  trespassing: boolean;
+  carsBrokenIntoAfterFact: boolean;
+  brokenGlassWindows: boolean;
+  
+  // Suspicious Activity Group
+  suspiciousActivity: boolean;
+  intentToCommitCriminalAct: boolean;
+  checkingMultipleCarDoors: boolean;
+  dumpsterDivingOrDumping: boolean;
+  
+  // Nuisance Activity Group
+  urinationOrOtherBodilyFunctions: boolean;
+  presenceOfScooters: boolean;
+  leavingTrash: boolean;
+  
+  // Emergency/Medical Group
+  emergencyServices: boolean;
+  personInjuredOrDistress: boolean;
+  obviousMedicalEmergency: boolean;
+  visibleFireOrSmoke: boolean;
+  
+  // Tenant Activity Group
+  tenantsMovingOut: boolean;
+  largeItemsMovedAfterHours: boolean;
+  
+  // Restricted Access Group
+  personInRestrictedArea: boolean;
+  sittingOrSleeping: boolean;
+  presentInProhibitedArea: boolean;
+  
+  // Loitering Group
+  loitering: boolean;
+  activeGathering: boolean;
+  groupsLoiteringGathering: boolean;
+  homelessVagrant: boolean;
+  sleepingOnSiteEncampments: boolean;
+  loiteringInStairwells: boolean;
+  personsSmoking: boolean;
+  vehicleLoiteringInArea: boolean;
+  
+  // Custom Incident Types
+  customIncidentType1: boolean;
+  customIncidentType2: boolean;
+  customIncidentType3: boolean;
+  customIncidentType4: boolean;
+  customIncidentType5: boolean;
   
   // Site Assessment tab fields
   lightingRequirements: string;
@@ -158,43 +173,58 @@ const KastleVideoGuardingPage: React.FC = () => {
     installType: "New Construction",
     
     // Incident Types - Default values
-    obviousCriminalAct: "Yes",
-    activeBreakIn: "Select",
-    destructionOfProperty: "Select",
-    carDrivingThroughGate: "Select",
-    carBurglaries: "Select",
-    trespassing: "Select",
-    carsBrokenIntoAfterFact: "Select",
-    brokenGlassWindows: "Select",
-    suspiciousActivity: "Yes",
-    intentToCommitCriminalAct: "Select",
-    checkingMultipleCarDoors: "Select",
-    dumpsterDivingOrDumping: "Select",
-    urinationOrOtherBodilyFunctions: "Select",
-    presenceOfScooters: "Select",
-    emergencyServices: "Select",
-    personInjuredOrDistress: "Select",
-    leavingTrash: "Select",
-    tenantsMovingOut: "Select",
-    largeItemsMovedAfterHours: "Select",
-    obviousMedicalEmergency: "Select",
-    visibleFireOrSmoke: "Select",
-    personInRestrictedArea: "Select",
-    sittingOrSleeping: "Select",
-    presentInProhibitedArea: "Select",
-    loitering: "Yes",
-    activeGathering: "Select",
-    groupsLoiteringGathering: "Select",
-    homelessVagrant: "Select",
-    sleepingOnSiteEncampments: "Select",
-    loiteringInStairwells: "Select",
-    personsSmoking: "Select",
-    vehicleLoiteringInArea: "Select",
-    customIncidentType1: "Select",
-    customIncidentType2: "Select",
-    customIncidentType3: "Select",
-    customIncidentType4: "Select",
-    customIncidentType5: "Select",
+    // Criminal Activity Group
+    obviousCriminalAct: true,
+    activeBreakIn: false,
+    destructionOfProperty: false,
+    carDrivingThroughGate: false,
+    carBurglaries: false,
+    trespassing: false,
+    carsBrokenIntoAfterFact: false,
+    brokenGlassWindows: false,
+    
+    // Suspicious Activity Group
+    suspiciousActivity: true,
+    intentToCommitCriminalAct: false,
+    checkingMultipleCarDoors: false,
+    dumpsterDivingOrDumping: false,
+    
+    // Nuisance Activity Group
+    urinationOrOtherBodilyFunctions: false,
+    presenceOfScooters: false,
+    leavingTrash: false,
+    
+    // Emergency/Medical Group
+    emergencyServices: false,
+    personInjuredOrDistress: false,
+    obviousMedicalEmergency: false,
+    visibleFireOrSmoke: false,
+    
+    // Tenant Activity Group
+    tenantsMovingOut: false,
+    largeItemsMovedAfterHours: false,
+    
+    // Restricted Access Group
+    personInRestrictedArea: false,
+    sittingOrSleeping: false,
+    presentInProhibitedArea: false,
+    
+    // Loitering Group
+    loitering: true,
+    activeGathering: false,
+    groupsLoiteringGathering: false,
+    homelessVagrant: false,
+    sleepingOnSiteEncampments: false,
+    loiteringInStairwells: false,
+    personsSmoking: false,
+    vehicleLoiteringInArea: false,
+    
+    // Custom Incident Types
+    customIncidentType1: false,
+    customIncidentType2: false,
+    customIncidentType3: false,
+    customIncidentType4: false,
+    customIncidentType5: false,
     
     // Site Assessment tab fields
     lightingRequirements: "Adequate",
@@ -231,7 +261,7 @@ const KastleVideoGuardingPage: React.FC = () => {
   const [nextStreamId, setNextStreamId] = useState(1);
 
   // Handler for form field changes
-  const handleFormChange = (field: string, value: string | number) => {
+  const handleFormChange = (field: string, value: string | number | boolean) => {
     setFormData({
       ...formData,
       [field]: value,
@@ -464,28 +494,32 @@ const KastleVideoGuardingPage: React.FC = () => {
               <CardDescription>Select which incident types will be monitored at this site</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Column 1 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Column 1 - Criminal Activity Group */}
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <Label className="font-bold">OBVIOUS CRIMINAL ACT</Label>
-                    <Select 
-                      value={formData.obviousCriminalAct}
-                      onValueChange={(value) => handleFormChange("obviousCriminalAct", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3">Criminal Activity</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.obviousCriminalAct}
+                        onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Obvious Criminal Act
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.activeBreakIn}
+                        onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Active Break-In
+                      </Toggle>
+                    </div>
                   </div>
                   
                   <div className="space-y-1">
-                    <Label>ACTIVE BREAK-IN</Label>
+                    <Label>DESTRUCTION OF PROPERTY</Label>
                     <Select 
                       value={formData.activeBreakIn}
                       onValueChange={(value) => handleFormChange("activeBreakIn", value)}
