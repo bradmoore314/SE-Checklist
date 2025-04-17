@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
+import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -832,8 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
       
-      // Import the project questions analysis module
-      const { analyzeProject, generateProjectAnalysis } = require('./services/project-questions-analysis');
+      // Use the project questions analysis module
       
       // Get all equipment for the project
       const accessPoints = await storage.getAccessPoints(projectId);
