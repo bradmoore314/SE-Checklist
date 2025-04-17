@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { Loader2, ShieldCheck } from "lucide-react";
 import kastleLogo from "@/assets/kastle-logo.png";
+import { Separator } from "@/components/ui/separator";
 
 // Login form schema
 const loginSchema = z.object({
@@ -147,6 +148,32 @@ export default function AuthPage() {
                   </Form>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
+                  <div className="w-full space-y-2">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-gray-300"></span>
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-white">Or continue with</span>
+                      </div>
+                    </div>
+                    <a href="/auth/azure">
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
+                          <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
+                          <path fill="#0078d4" d="M1 1h10v10H1z"/>
+                          <path fill="#0078d4" d="M12 1h10v10H12z"/>
+                          <path fill="#0078d4" d="M1 12h10v10H1z"/>
+                          <path fill="#0078d4" d="M12 12h10v10H12z"/>
+                        </svg>
+                        Microsoft
+                      </Button>
+                    </a>
+                  </div>
                   <Button 
                     type="button"
                     variant="outline"
@@ -251,8 +278,34 @@ export default function AuthPage() {
                     </form>
                   </Form>
                 </CardContent>
-                <CardFooter className="flex justify-center">
-                  <p className="text-sm text-white">
+                <CardFooter className="flex flex-col space-y-4">
+                  <div className="w-full space-y-2">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-gray-300"></span>
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-white">Or sign up with</span>
+                      </div>
+                    </div>
+                    <a href="/auth/azure">
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        className="w-full bg-[#0078d4] hover:bg-[#0078d4]/90 text-white hover:text-white border-0"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="18" height="18" className="mr-2">
+                          <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
+                          <path fill="#0078d4" d="M1 1h10v10H1z"/>
+                          <path fill="#0078d4" d="M12 1h10v10H12z"/>
+                          <path fill="#0078d4" d="M1 12h10v10H1z"/>
+                          <path fill="#0078d4" d="M12 12h10v10H12z"/>
+                        </svg>
+                        Microsoft
+                      </Button>
+                    </a>
+                  </div>
+                  <p className="text-sm text-white text-center">
                     Already have an account?{" "}
                     <Button 
                       variant="link" 
