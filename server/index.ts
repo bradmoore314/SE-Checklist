@@ -7,8 +7,9 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Increase JSON payload size limit to 50MB
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 // Session setup
 const SessionStore = MemoryStore(session);
