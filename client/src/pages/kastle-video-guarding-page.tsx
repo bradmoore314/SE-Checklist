@@ -38,11 +38,14 @@ import {
   Copy,
   Calculator,
   Camera,
-  ImageIcon
+  ImageIcon,
+  Globe,
+  Languages
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Stream, StreamImage } from "../types";
 import StreamImagesModal from "../components/modals/StreamImagesModal";
+import { Badge } from "@/components/ui/badge";
 
 interface FormData {
   // Discovery tab fields
@@ -146,6 +149,12 @@ const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
   const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
   const [isImagesModalOpen, setIsImagesModalOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
+  const [translatedLanguage, setTranslatedLanguage] = useState<string | null>(null);
+  const [originalSOW, setOriginalSOW] = useState<string | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translationError, setTranslationError] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState<FormData>({
     // Discovery tab fields
     bdmOwner: "",
@@ -315,6 +324,132 @@ const KastleVideoGuardingPage: React.FC = () => {
       title: "Price Calculation",
       description: "Price calculation feature coming soon!",
     });
+  };
+  
+  // Language selection handler
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+    
+    // If switching back to English
+    if (language === "en" && originalSOW) {
+      handleFormChange("useCaseCommitment", originalSOW);
+      setOriginalSOW(null);
+      setTranslatedLanguage(null);
+    }
+  };
+  
+  // Get language label from code
+  const getLanguageLabel = (code: string): string => {
+    const languages: Record<string, string> = {
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      zh: "Mandarin",
+      hi: "Hindi",
+      ar: "Arabic",
+      ru: "Russian",
+      pt: "Portuguese",
+      ja: "Japanese"
+    };
+    
+    return languages[code] || code;
+  };
+  
+  // Function to translate SOW using Gemini API
+  const translateSOW = async () => {
+    const text = formData.useCaseCommitment.trim();
+    
+    if (!text) {
+      toast({
+        title: "Empty Content",
+        description: "Please enter content in the Scope of Work field before translating.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (selectedLanguage === 'en') {
+      toast({
+        title: "No Translation Needed",
+        description: "The current language is already English."
+      });
+      return;
+    }
+    
+    setIsTranslating(true);
+    setTranslationError(null);
+    
+    try {
+      // Save original English text if not already saved
+      if (!originalSOW) {
+        setOriginalSOW(text);
+      }
+      
+      // Create the request body for Gemini API
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              {
+                text: `Translate the following Scope of Work document from English to ${getLanguageLabel(selectedLanguage)}. 
+                Maintain professional language and business terminology. Keep the format intact:
+                
+                ${text}`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192,
+        }
+      };
+
+      // Make API request to backend proxy
+      const response = await fetch('/api/gemini-translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text,
+          targetLanguage: selectedLanguage,
+          sourceLanguage: 'en'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Translation failed: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      // Update the form with translated text
+      handleFormChange("useCaseCommitment", data.translatedText);
+      setTranslatedLanguage(selectedLanguage);
+      
+      toast({
+        title: "Translation Complete",
+        description: `Successfully translated to ${getLanguageLabel(selectedLanguage)}`
+      });
+    } catch (error) {
+      console.error("Translation error:", error);
+      setTranslationError(error.message || "An error occurred during translation");
+      toast({
+        title: "Translation Failed",
+        description: error.message || "An error occurred during translation",
+        variant: "destructive"
+      });
+    } finally {
+      setIsTranslating(false);
+    }
   };
 
   return (
@@ -1271,21 +1406,96 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="use-case">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Use Case - Scope of Work</CardTitle>
-              <CardDescription>Define the service level agreement and commitment</CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Use Case - Scope of Work</CardTitle>
+                  <CardDescription>Define the service level agreement and commitment</CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select 
+                    defaultValue="en" 
+                    onValueChange={(value) => handleLanguageChange(value)}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Spanish</SelectItem>
+                      <SelectItem value="fr">French</SelectItem>
+                      <SelectItem value="de">German</SelectItem>
+                      <SelectItem value="zh">Mandarin</SelectItem>
+                      <SelectItem value="hi">Hindi</SelectItem>
+                      <SelectItem value="ar">Arabic</SelectItem>
+                      <SelectItem value="ru">Russian</SelectItem>
+                      <SelectItem value="pt">Portuguese</SelectItem>
+                      <SelectItem value="ja">Japanese</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    className="gap-1" 
+                    variant="outline"
+                    onClick={translateSOW}
+                    disabled={isTranslating}
+                  >
+                    {isTranslating ? (
+                      <>
+                        <span className="animate-spin">⟳</span> Translating...
+                      </>
+                    ) : (
+                      <>
+                        <Globe size={16} /> Translate
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="useCaseCommitment">Use Case Commitment Details</Label>
-                  <Textarea 
-                    id="useCaseCommitment"
-                    value={formData.useCaseCommitment}
-                    onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
-                    placeholder="Document the specific use case details and service commitments"
-                    rows={10}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="useCaseCommitment" className="text-lg font-medium">
+                      Scope of Work
+                    </Label>
+                    {translatedLanguage && (
+                      <Badge variant="outline" className="text-xs">
+                        {getLanguageLabel(translatedLanguage)}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-px rounded-md">
+                    <Textarea 
+                      id="useCaseCommitment"
+                      value={formData.useCaseCommitment}
+                      onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
+                      placeholder="Document the specific use case details and service commitments"
+                      rows={10}
+                      className="resize-none rounded-[3px]"
+                    />
+                  </div>
+                  
+                  {translationError && (
+                    <div className="text-red-500 text-sm mt-2">
+                      {translationError}
+                    </div>
+                  )}
+                  
+                  <div className="text-sm text-muted-foreground mt-4">
+                    <p>The Scope of Work is a critical component of your project. It defines the exact services, 
+                    deliverables, and expectations that will be fulfilled. Use this section to clearly outline 
+                    what will be provided, service levels, and any special requirements.</p>
+                  </div>
                 </div>
+                
+                {originalSOW && (
+                  <div className="space-y-2 pt-4 border-t">
+                    <Label className="text-sm font-medium">Original Text (English)</Label>
+                    <div className="bg-muted p-4 rounded-md">
+                      <p className="text-sm whitespace-pre-wrap">{originalSOW}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
