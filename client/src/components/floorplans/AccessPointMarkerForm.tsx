@@ -65,10 +65,11 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
   
   // Access point details state - prepopulated if editing
   const [location, setLocation] = useState<string>(existingAccessPoint?.location || "");
-  const [quickConfig, setQuickConfig] = useState<string>(existingAccessPoint?.quick_config || "Default Config");
-  const [readerType, setReaderType] = useState<string>(existingAccessPoint?.reader_type || "KR-1");
-  const [lockType, setLockType] = useState<string>(existingAccessPoint?.lock_type || "Strike");
-  const [monitoringType, setMonitoringType] = useState<string>(existingAccessPoint?.monitoring_type || "None");
+  const [quickConfig, setQuickConfig] = useState<string>(existingAccessPoint?.quick_config || "");
+  const [readerType, setReaderType] = useState<string>(existingAccessPoint?.reader_type || "KR-100");
+  const [lockType, setLockType] = useState<string>(existingAccessPoint?.lock_type || "Standard");
+  const [monitoringType, setMonitoringType] = useState<string>(existingAccessPoint?.monitoring_type || "Prop Monitoring");
+  const [lockProvider, setLockProvider] = useState<string>(existingAccessPoint?.lock_provider || "Kastle");
   const [interiorPerimeter, setInteriorPerimeter] = useState<string>(existingAccessPoint?.interior_perimeter || "Interior");
   const [notes, setNotes] = useState<string>(existingAccessPoint?.notes || "");
 
@@ -76,10 +77,11 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
   React.useEffect(() => {
     if (existingAccessPoint) {
       setLocation(existingAccessPoint.location || "");
-      setQuickConfig(existingAccessPoint.quick_config || "Default Config");
-      setReaderType(existingAccessPoint.reader_type || "KR-1");
-      setLockType(existingAccessPoint.lock_type || "Strike");
-      setMonitoringType(existingAccessPoint.monitoring_type || "None");
+      setQuickConfig(existingAccessPoint.quick_config || "");
+      setReaderType(existingAccessPoint.reader_type || "KR-100");
+      setLockType(existingAccessPoint.lock_type || "Standard");
+      setMonitoringType(existingAccessPoint.monitoring_type || "Prop Monitoring");
+      setLockProvider(existingAccessPoint.lock_provider || "Kastle");
       setInteriorPerimeter(existingAccessPoint.interior_perimeter || "Interior");
       setNotes(existingAccessPoint.notes || "");
     }

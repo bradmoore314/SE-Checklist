@@ -101,10 +101,10 @@ export default function AddAccessPointModal({
       project_id: projectId,
       location: "",
       quick_config: "",
-      reader_type: "",
-      lock_type: "",
-      monitoring_type: "",
-      lock_provider: "",
+      reader_type: "KR-100", // Set default reader type
+      lock_type: "Standard", // Set default lock type
+      monitoring_type: "Prop Monitoring", // Set default monitoring type
+      lock_provider: "Kastle", // Set default lock provider
       takeover: "No",
       interior_perimeter: "Interior",
       exst_panel_location: "",
