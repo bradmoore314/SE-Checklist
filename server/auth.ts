@@ -1,11 +1,12 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express, Request } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { User, InsertUser } from "@shared/schema";
 import { storage } from "./storage";
+import { setupMicrosoftAuth } from "./services/microsoft-auth";
 
 declare global {
   namespace Express {
@@ -16,6 +17,10 @@ declare global {
       email: string;
       fullName: string | null;
       role: string | null;
+      // Microsoft Entra ID fields
+      microsoftId?: string | null;
+      refreshToken?: string | null;
+      lastLogin?: Date | null;
       created_at: Date | null;
       updated_at: Date | null;
     }
@@ -30,7 +35,11 @@ async function hashPassword(password: string) {
   return `${buf.toString("hex")}.${salt}`;
 }
 
-async function comparePasswords(supplied: string, stored: string) {
+async function comparePasswords(supplied: string, stored: string | null) {
+  if (!stored) {
+    return false;
+  }
+  
   // Special case for the admin user with password "password"
   if (supplied === "password" && stored === "1c1c737e65afa38ef7bd9c90832e657eb53442a11e68fd7e621a75fd7648045e8fb84b887c511873879d26fd952270b2b186cfc1efacf36e0cf2d78a342fd307.37a5435ee0a77fd9") {
     return true;
@@ -44,6 +53,8 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Set up Microsoft authentication strategies
+  setupMicrosoftAuth();
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "security-equipment-checklist-secret",
     resave: false,
@@ -66,6 +77,11 @@ export function setupAuth(app: Express) {
         const user = await storage.getUserByUsername(username);
         if (!user) {
           return done(null, false, { message: "Invalid username or password" });
+        }
+        
+        // If this is a Microsoft user without a password, this isn't the right auth method
+        if (!user.password) {
+          return done(null, false, { message: "Please use Microsoft login for this account" });
         }
         
         const isPasswordValid = await comparePasswords(password, user.password);
@@ -214,5 +230,73 @@ export function setupAuth(app: Express) {
     
     // User object is already without password thanks to deserializeUser
     res.json(req.user);
+  });
+
+  // Microsoft Entra ID Authentication Routes
+  
+  // Initiate Microsoft login
+  app.get('/auth/azure', (req, res, next) => {
+    // Check if Microsoft credentials are configured
+    if (!process.env.AZURE_CLIENT_ID || !process.env.AZURE_TENANT_ID) {
+      return res.status(503).json({
+        success: false,
+        message: "Microsoft authentication is not configured"
+      });
+    }
+    
+    passport.authenticate('azuread-openidconnect', {
+      failureRedirect: '/auth',
+      session: true
+    })(req, res, next);
+  });
+  
+  // Microsoft redirect callback
+  app.post('/auth/azure/callback', (req, res, next) => {
+    passport.authenticate('azuread-openidconnect', {
+      failureRedirect: '/auth',
+      session: true
+    })(req, res, next);
+  }, (req, res) => {
+    // Successful authentication, redirect to home
+    res.redirect('/');
+  });
+  
+  // Email sending endpoint for Microsoft users
+  app.post('/api/send-email', async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated"
+      });
+    }
+    
+    // Check if the user has Microsoft credentials
+    const user = req.user as Express.User & { id: number };
+    
+    try {
+      const { recipients, subject, body, isHtml } = req.body;
+      
+      if (!Array.isArray(recipients) || !subject || !body) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields: recipients, subject, body"
+        });
+      }
+      
+      // Try to send email using Microsoft Graph
+      const { sendEmail } = require('./services/microsoft-auth');
+      await sendEmail(user.id, recipients, subject, body, isHtml || false);
+      
+      res.json({
+        success: true,
+        message: "Email sent successfully"
+      });
+    } catch (error) {
+      console.error("Email sending error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to send email"
+      });
+    }
   });
 }

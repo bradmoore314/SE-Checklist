@@ -7,20 +7,37 @@ import * as msal from '@azure/msal-node';
 import { Client } from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
 
-// Initialize MSAL configuration for token acquisition
-const msalConfig = {
-  auth: {
-    clientId: azureConfig.credentials.clientID,
-    authority: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}`,
-    clientSecret: azureConfig.credentials.clientSecret,
-  }
+// Check if all required Azure credentials are available
+const areAzureCredentialsAvailable = () => {
+  return Boolean(
+    azureConfig.credentials.clientID && 
+    azureConfig.credentials.clientSecret && 
+    azureConfig.credentials.tenantID
+  );
 };
 
-// Initialize MSAL application for acquiring tokens
-const confidentialClientApplication = new msal.ConfidentialClientApplication(msalConfig);
+// Initialize MSAL configuration for token acquisition (only if credentials are available)
+let confidentialClientApplication: msal.ConfidentialClientApplication | null = null;
+
+if (areAzureCredentialsAvailable()) {
+  const msalConfig = {
+    auth: {
+      clientId: azureConfig.credentials.clientID,
+      authority: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}`,
+      clientSecret: azureConfig.credentials.clientSecret,
+    }
+  };
+
+  // Initialize MSAL application for acquiring tokens
+  confidentialClientApplication = new msal.ConfidentialClientApplication(msalConfig);
+}
 
 // Create a Microsoft Graph client factory
 export const getGraphClient = async (userId: number) => {
+  if (!areAzureCredentialsAvailable() || !confidentialClientApplication) {
+    throw new Error('Microsoft authentication is not configured');
+  }
+
   const user = await storage.getUser(userId);
   
   if (!user || !user.microsoftId || !user.refreshToken) {
@@ -34,7 +51,8 @@ export const getGraphClient = async (userId: number) => {
   };
   
   try {
-    const response = await confidentialClientApplication.acquireTokenByRefreshToken(msalTokenRequest);
+    // We know confidentialClientApplication is not null here due to the check above
+    const response = await confidentialClientApplication!.acquireTokenByRefreshToken(msalTokenRequest);
     
     // Initialize the Graph client with the acquired token
     const graphClient = Client.init({
@@ -50,88 +68,102 @@ export const getGraphClient = async (userId: number) => {
   }
 };
 
-// Configure OIDC strategy for authentication
-const oidcStrategy = new OIDCStrategy(
-  {
-    identityMetadata: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}/${azureConfig.metadata.discovery}`,
-    clientID: azureConfig.credentials.clientID,
-    responseType: 'code id_token',
-    responseMode: 'form_post',
-    redirectUrl: azureConfig.redirectUrl,
-    allowHttpForRedirectUrl: process.env.NODE_ENV !== 'production',
-    clientSecret: azureConfig.credentials.clientSecret,
-    validateIssuer: azureConfig.settings.validateIssuer,
-    passReqToCallback: azureConfig.settings.passReqToCallback as true,
-    scope: azureConfig.scopes,
-    loggingLevel: azureConfig.settings.loggingLevel as any,
-    loggingNoPII: azureConfig.settings.loggingNoPII,
-  } as IOIDCStrategyOptionWithRequest,
-  async (req: any, iss: any, sub: any, profile: any, accessToken: string, refreshToken: string, done: Function) => {
-    try {
-      if (!profile.oid) {
-        return done(new Error('No OID found in user profile'));
-      }
-      
-      // Check if user exists in database
-      let user = await storage.getUserByMicrosoftId(profile.oid);
-      
-      if (!user) {
-        // If user does not exist, create new user
-        const newUser = {
-          username: profile.preferred_username || profile.upn || profile.emails?.[0] || '',
-          email: profile.preferred_username || profile.upn || profile.emails?.[0] || '',
-          fullName: profile.name || profile.displayName || '',
-          role: 'user',
-          password: '', // No password for Microsoft login
-          microsoftId: profile.oid,
-          refreshToken: refreshToken,
-        };
-        
-        user = await storage.createUser(newUser);
-      } else {
-        // Update existing user's refresh token
-        await storage.updateUserRefreshToken(user.id, refreshToken);
-      }
-      
-      return done(null, user);
-    } catch (error) {
-      console.error('Error during authentication:', error);
-      return done(error);
-    }
-  }
-);
+// Create OIDC and Bearer strategies only if credentials are available
+// These will be undefined if credentials are not available
+let oidcStrategy: OIDCStrategy | undefined;
+let bearerStrategy: BearerStrategy | undefined;
 
-// Configure Bearer strategy for API access
-const bearerStrategy = new BearerStrategy(
-  {
-    identityMetadata: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}/${azureConfig.metadata.discovery}`,
-    clientID: azureConfig.credentials.clientID,
-    validateIssuer: azureConfig.settings.validateIssuer,
-    passReqToCallback: false,
-    loggingLevel: azureConfig.settings.loggingLevel as any,
-    loggingNoPII: azureConfig.settings.loggingNoPII,
-  },
-  async (token: any, done: Function) => {
-    try {
-      // Find user by microsoft id
-      const user = await storage.getUserByMicrosoftId(token.oid);
-      
-      if (!user) {
-        return done(null, false, { message: 'User not found' });
+if (areAzureCredentialsAvailable()) {
+  // Configure OIDC strategy for authentication
+  oidcStrategy = new OIDCStrategy(
+    {
+      identityMetadata: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}/${azureConfig.metadata.discovery}`,
+      clientID: azureConfig.credentials.clientID,
+      responseType: 'code id_token',
+      responseMode: 'form_post',
+      redirectUrl: azureConfig.redirectUrl,
+      allowHttpForRedirectUrl: process.env.NODE_ENV !== 'production',
+      clientSecret: azureConfig.credentials.clientSecret,
+      validateIssuer: azureConfig.settings.validateIssuer,
+      passReqToCallback: azureConfig.settings.passReqToCallback as true,
+      scope: azureConfig.scopes,
+      loggingLevel: azureConfig.settings.loggingLevel as any,
+      loggingNoPII: azureConfig.settings.loggingNoPII,
+    } as IOIDCStrategyOptionWithRequest,
+    async (req: any, iss: any, sub: any, profile: any, accessToken: string, refreshToken: string, done: Function) => {
+      try {
+        if (!profile.oid) {
+          return done(new Error('No OID found in user profile'));
+        }
+        
+        // Check if user exists in database
+        let user = await storage.getUserByMicrosoftId(profile.oid);
+        
+        if (!user) {
+          // If user does not exist, create new user
+          const newUser = {
+            username: profile.preferred_username || profile.upn || profile.emails?.[0] || '',
+            email: profile.preferred_username || profile.upn || profile.emails?.[0] || '',
+            fullName: profile.name || profile.displayName || '',
+            role: 'user',
+            password: '', // No password for Microsoft login
+            microsoftId: profile.oid,
+            refreshToken: refreshToken,
+          };
+          
+          user = await storage.createUser(newUser);
+        } else {
+          // Update existing user's refresh token
+          await storage.updateUserRefreshToken(user.id, refreshToken);
+        }
+        
+        return done(null, user);
+      } catch (error) {
+        console.error('Error during authentication:', error);
+        return done(error);
       }
-      
-      return done(null, user, token);
-    } catch (error) {
-      console.error('Error validating token:', error);
-      return done(error);
     }
-  }
-);
+  );
+
+  // Configure Bearer strategy for API access
+  bearerStrategy = new BearerStrategy(
+    {
+      identityMetadata: `https://${azureConfig.metadata.authority}/${azureConfig.credentials.tenantID}/${azureConfig.metadata.version}/${azureConfig.metadata.discovery}`,
+      clientID: azureConfig.credentials.clientID,
+      validateIssuer: azureConfig.settings.validateIssuer,
+      passReqToCallback: false,
+      loggingLevel: azureConfig.settings.loggingLevel as any,
+      loggingNoPII: azureConfig.settings.loggingNoPII,
+    },
+    async (token: any, done: Function) => {
+      try {
+        // Find user by microsoft id
+        const user = await storage.getUserByMicrosoftId(token.oid);
+        
+        if (!user) {
+          return done(null, false, { message: 'User not found' });
+        }
+        
+        return done(null, user, token);
+      } catch (error) {
+        console.error('Error validating token:', error);
+        return done(error);
+      }
+    }
+  );
+}
 
 export const setupMicrosoftAuth = () => {
-  passport.use('azuread-openidconnect', oidcStrategy);
-  passport.use(bearerStrategy);
+  if (!areAzureCredentialsAvailable() || !oidcStrategy || !bearerStrategy) {
+    console.log('Microsoft authentication not configured - skipping setup');
+    return;
+  }
   
+  // Use 'as any' to avoid TypeScript errors with the passport-azure-ad types
+  passport.use('azuread-openidconnect', oidcStrategy as any);
+  passport.use(bearerStrategy as any);
+  
+  console.log('Microsoft authentication configured successfully');
   // Routes will be set up in server/auth.ts
 };
 
