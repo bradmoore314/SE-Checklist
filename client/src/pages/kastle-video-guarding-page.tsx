@@ -35,7 +35,8 @@ import { Toggle } from "@/components/ui/toggle";
 import { 
   Plus, 
   Trash2, 
-  Copy
+  Copy,
+  Calculator
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -498,7 +499,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                 {/* Column 1 - Criminal Activity Group */}
                 <div className="space-y-4">
                   <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3">Criminal Activity</h3>
+                    <h3 className="text-lg font-semibold mb-3 text-red-800">Criminal Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.obviousCriminalAct}
@@ -515,1307 +516,867 @@ const KastleVideoGuardingPage: React.FC = () => {
                       >
                         Active Break-In
                       </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.destructionOfProperty}
+                        onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Destruction of Property
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.carDrivingThroughGate}
+                        onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Car Driving Through Parking Gate
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.carBurglaries}
+                        onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Car Burglaries
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.trespassing}
+                        onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Trespassing
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.carsBrokenIntoAfterFact}
+                        onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Cars Broken Into After the Fact
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.brokenGlassWindows}
+                        onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                      >
+                        Broken Glass - Windows/Doors
+                      </Toggle>
                     </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <Label>DESTRUCTION OF PROPERTY</Label>
-                    <Select 
-                      value={formData.activeBreakIn}
-                      onValueChange={(value) => handleFormChange("activeBreakIn", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>DESTRUCTION OF PROPERTY</Label>
-                    <Select 
-                      value={formData.destructionOfProperty}
-                      onValueChange={(value) => handleFormChange("destructionOfProperty", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CAR DRIVING THROUGH (DAMAGE) PARKING GATE</Label>
-                    <Select 
-                      value={formData.carDrivingThroughGate}
-                      onValueChange={(value) => handleFormChange("carDrivingThroughGate", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CAR BURGLARIES</Label>
-                    <Select 
-                      value={formData.carBurglaries}
-                      onValueChange={(value) => handleFormChange("carBurglaries", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>TRESSPASSING</Label>
-                    <Select 
-                      value={formData.trespassing}
-                      onValueChange={(value) => handleFormChange("trespassing", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CARS BROKEN INTO AFTER THE FACT</Label>
-                    <Select 
-                      value={formData.carsBrokenIntoAfterFact}
-                      onValueChange={(value) => handleFormChange("carsBrokenIntoAfterFact", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>BROKEN GLASS - WINDOWS/DOORS (After)</Label>
-                    <Select 
-                      value={formData.brokenGlassWindows}
-                      onValueChange={(value) => handleFormChange("brokenGlassWindows", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label className="font-bold">SUSPICIOUS INDIVIDUAL(S)/ACTIVITY</Label>
-                    <Select 
-                      value={formData.suspiciousActivity}
-                      onValueChange={(value) => handleFormChange("suspiciousActivity", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1 ml-4">
-                    <Label>I.E. INTENT TO COMMIT CRIMINAL ACT</Label>
-                    <Select 
-                      value={formData.intentToCommitCriminalAct}
-                      onValueChange={(value) => handleFormChange("intentToCommitCriminalAct", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1 ml-4">
-                    <Label>(EX: CHECKING MULTIPLE CAR DOORS)</Label>
-                    <Select 
-                      value={formData.checkingMultipleCarDoors}
-                      onValueChange={(value) => handleFormChange("checkingMultipleCarDoors", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>DUMPSTER DIVING OR DUMPING</Label>
-                    <Select 
-                      value={formData.dumpsterDivingOrDumping}
-                      onValueChange={(value) => handleFormChange("dumpsterDivingOrDumping", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-orange-800">Suspicious Activity</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.suspiciousActivity}
+                        onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                      >
+                        Suspicious Individual(s)/Activity
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.intentToCommitCriminalAct}
+                        onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                      >
+                        Intent to Commit Criminal Act
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.checkingMultipleCarDoors}
+                        onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                      >
+                        Checking Multiple Car Doors
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.dumpsterDivingOrDumping}
+                        onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                      >
+                        Dumpster Diving or Dumping
+                      </Toggle>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Column 2 */}
+                {/* Column 2 - Nuisance, Emergency, Tenant Activity */}
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <Label>URINATION OR OTHER BODILY FUNCTIONS</Label>
-                    <Select 
-                      value={formData.urinationOrOtherBodilyFunctions}
-                      onValueChange={(value) => handleFormChange("urinationOrOtherBodilyFunctions", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-gray-800">Nuisance Activity</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.urinationOrOtherBodilyFunctions}
+                        onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                      >
+                        Urination or Other Bodily Functions
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.presenceOfScooters}
+                        onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                      >
+                        Presence of Scooters, Bicycles, Skateboards
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.leavingTrash}
+                        onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                      >
+                        Leaving Trash in Parking Lots or Perimeter
+                      </Toggle>
+                    </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <Label>PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS</Label>
-                    <Select 
-                      value={formData.presenceOfScooters}
-                      onValueChange={(value) => handleFormChange("presenceOfScooters", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-blue-800">Emergency/Medical</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.emergencyServices}
+                        onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                      >
+                        Emergency Services on Site
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.personInjuredOrDistress}
+                        onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                      >
+                        Person Presumed Injured or in Distress
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.obviousMedicalEmergency}
+                        onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                      >
+                        Obvious Medical Emergency
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.visibleFireOrSmoke}
+                        onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                      >
+                        Visible Fire or Smoke
+                      </Toggle>
+                    </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <Label>EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)</Label>
-                    <Select 
-                      value={formData.emergencyServices}
-                      onValueChange={(value) => handleFormChange("emergencyServices", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>PERSON PRESUMED INJURED OR IN DISTRESS</Label>
-                    <Select 
-                      value={formData.personInjuredOrDistress}
-                      onValueChange={(value) => handleFormChange("personInjuredOrDistress", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER</Label>
-                    <Select 
-                      value={formData.leavingTrash}
-                      onValueChange={(value) => handleFormChange("leavingTrash", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>TENANTS MOVING OUT OF THE BUILDING</Label>
-                    <Select 
-                      value={formData.tenantsMovingOut}
-                      onValueChange={(value) => handleFormChange("tenantsMovingOut", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS</Label>
-                    <Select 
-                      value={formData.largeItemsMovedAfterHours}
-                      onValueChange={(value) => handleFormChange("largeItemsMovedAfterHours", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>OBVIOUS MEDICAL EMERGENCY</Label>
-                    <Select 
-                      value={formData.obviousMedicalEmergency}
-                      onValueChange={(value) => handleFormChange("obviousMedicalEmergency", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>VISIBLE FIRE OR HEAVY SMOKE</Label>
-                    <Select 
-                      value={formData.visibleFireOrSmoke}
-                      onValueChange={(value) => handleFormChange("visibleFireOrSmoke", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.</Label>
-                    <Select 
-                      value={formData.personInRestrictedArea}
-                      onValueChange={(value) => handleFormChange("personInRestrictedArea", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1 ml-4">
-                    <Label>SITTING OR SLEEPING IN/ON (SPECIFIED AREA)</Label>
-                    <Select 
-                      value={formData.sittingOrSleeping}
-                      onValueChange={(value) => handleFormChange("sittingOrSleeping", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1 ml-4">
-                    <Label>PRESENT IN PROHIBITED AREA</Label>
-                    <Select 
-                      value={formData.presentInProhibitedArea}
-                      onValueChange={(value) => handleFormChange("presentInProhibitedArea", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-green-800">Tenant Activity</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.tenantsMovingOut}
+                        onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
+                      >
+                        Tenants Moving Out of Building
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.largeItemsMovedAfterHours}
+                        onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
+                      >
+                        Large Items Being Moved After Hours
+                      </Toggle>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Column 3 */}
+                {/* Column 3 - Restricted Access, Loitering, Custom Types */}
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <Label className="font-bold">LOITERING</Label>
-                    <Select 
-                      value={formData.loitering}
-                      onValueChange={(value) => handleFormChange("loitering", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-purple-800">Restricted Access</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.personInRestrictedArea}
+                        onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                      >
+                        Person in Restricted Area
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.sittingOrSleeping}
+                        onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                      >
+                        Sitting or Sleeping in Prohibited Area
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.presentInProhibitedArea}
+                        onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                      >
+                        Present in Prohibited Area
+                      </Toggle>
+                    </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <Label>ACTIVE GATHERING</Label>
-                    <Select 
-                      value={formData.activeGathering}
-                      onValueChange={(value) => handleFormChange("activeGathering", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-amber-800">Loitering</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.loitering}
+                        onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Loitering
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.activeGathering}
+                        onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Active Gathering
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.groupsLoiteringGathering}
+                        onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Groups Loitering/Gathering
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.homelessVagrant}
+                        onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Homeless/Vagrant
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.sleepingOnSiteEncampments}
+                        onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Sleeping on Site/Encampments
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.loiteringInStairwells}
+                        onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Loitering in Stairwells
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.personsSmoking}
+                        onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Persons Smoking
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.vehicleLoiteringInArea}
+                        onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                      >
+                        Vehicle Loitering in Area
+                      </Toggle>
+                    </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <Label>GROUPS LOITERING/GATHERING</Label>
-                    <Select 
-                      value={formData.groupsLoiteringGathering}
-                      onValueChange={(value) => handleFormChange("groupsLoiteringGathering", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>HOMELESS/VAGRANT</Label>
-                    <Select 
-                      value={formData.homelessVagrant}
-                      onValueChange={(value) => handleFormChange("homelessVagrant", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>SLEEPING ON SITE/ENCAMPMENTS</Label>
-                    <Select 
-                      value={formData.sleepingOnSiteEncampments}
-                      onValueChange={(value) => handleFormChange("sleepingOnSiteEncampments", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>LOITERING IN STAIRWELLS</Label>
-                    <Select 
-                      value={formData.loiteringInStairwells}
-                      onValueChange={(value) => handleFormChange("loiteringInStairwells", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>PERSONS SMOKING</Label>
-                    <Select 
-                      value={formData.personsSmoking}
-                      onValueChange={(value) => handleFormChange("personsSmoking", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>VEHICLE LOITERING/GATHERING IN AREA</Label>
-                    <Select 
-                      value={formData.vehicleLoiteringInArea}
-                      onValueChange={(value) => handleFormChange("vehicleLoiteringInArea", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CUSTOM INCIDENT TYPE 1</Label>
-                    <Select 
-                      value={formData.customIncidentType1}
-                      onValueChange={(value) => handleFormChange("customIncidentType1", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CUSTOM INCIDENT TYPE 2</Label>
-                    <Select 
-                      value={formData.customIncidentType2}
-                      onValueChange={(value) => handleFormChange("customIncidentType2", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label>CUSTOM INCIDENT TYPE 3</Label>
-                    <Select 
-                      value={formData.customIncidentType3}
-                      onValueChange={(value) => handleFormChange("customIncidentType3", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Select">Select</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="border rounded-md p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-indigo-800">Custom Incident Types</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.customIncidentType1}
+                        onPressedChange={(pressed) => handleFormChange("customIncidentType1", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                      >
+                        Custom Incident Type 1
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.customIncidentType2}
+                        onPressedChange={(pressed) => handleFormChange("customIncidentType2", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                      >
+                        Custom Incident Type 2
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.customIncidentType3}
+                        onPressedChange={(pressed) => handleFormChange("customIncidentType3", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                      >
+                        Custom Incident Type 3
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.customIncidentType4}
+                        onPressedChange={(pressed) => handleFormChange("customIncidentType4", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                      >
+                        Custom Incident Type 4
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.customIncidentType5}
+                        onPressedChange={(pressed) => handleFormChange("customIncidentType5", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                      >
+                        Custom Incident Type 5
+                      </Toggle>
+                    </div>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          <Card>
+          
+          <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Stream Details</CardTitle>
-              <CardDescription>Add streams for this video guarding project</CardDescription>
+              <CardTitle>Pricing</CardTitle>
+              <CardDescription>Enter camera stream details for monitoring and surveillance</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader className="bg-red-600">
-                    <TableRow className="bg-red-600">
-                      <TableHead className="text-white">Stream #</TableHead>
-                      <TableHead className="text-white">Quantity</TableHead>
-                      <TableHead className="text-white">Description</TableHead>
-                      <TableHead className="text-white">Monitored Area</TableHead>
-                      <TableHead className="text-white">Accessibility</TableHead>
-                      <TableHead className="text-white">Use Case</TableHead>
-                      <TableHead className="text-white">Analytic Rule 1</TableHead>
-                      <TableHead className="text-white">Dwell Time 1 (sec)</TableHead>
-                      <TableHead className="text-white">Analytic Rule 2</TableHead>
-                      <TableHead className="text-white">Dwell Time 2 (sec)</TableHead>
-                      <TableHead className="text-white">Schedule</TableHead>
-                      <TableHead className="text-white">Event Volume (events/mo)</TableHead>
-                      <TableHead className="text-white">Patrol Type</TableHead>
-                      <TableHead className="text-white">#Patrols/wk</TableHead>
-                      <TableHead className="text-white">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {streams.map((stream) => (
-                      <TableRow key={stream.id}>
-                        <TableCell>Stream {stream.id}</TableCell>
-                        <TableCell>
-                          <Input 
-                            type="number" 
-                            min="1" 
-                            value={stream.quantity} 
-                            onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
-                            className="w-16"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input 
-                            type="text" 
-                            value={stream.description} 
-                            onChange={(e) => updateStream(stream.id, "description", e.target.value)}
-                            className="w-full"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.monitoredArea}
-                            onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select area" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Pool">Pool</SelectItem>
-                              <SelectItem value="Stairwells">Stairwells</SelectItem>
-                              <SelectItem value="Front or Main Lobby">Front or Main Lobby</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.accessibility}
-                            onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select accessibility" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Secure">Secure</SelectItem>
-                              <SelectItem value="Semi-Secure">Semi-Secure</SelectItem>
-                              <SelectItem value="Restricted">Restricted</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Textarea 
-                            value={stream.useCase} 
-                            onChange={(e) => updateStream(stream.id, "useCase", e.target.value)}
-                            className="min-h-[60px] w-[140px]"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.analyticRule1}
-                            onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select rule" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Person Detected">Person Detected</SelectItem>
-                              <SelectItem value="Crowd Forming">Crowd Forming</SelectItem>
-                              <SelectItem value="Loitering">Loitering</SelectItem>
-                              <SelectItem value="None">None</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            value={stream.dwellTime1} 
-                            onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
-                            className="w-16"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.analyticRule2}
-                            onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select rule" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Person Detected">Person Detected</SelectItem>
-                              <SelectItem value="Crowd Forming">Crowd Forming</SelectItem>
-                              <SelectItem value="Loitering">Loitering</SelectItem>
-                              <SelectItem value="None">None</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            value={stream.dwellTime2} 
-                            onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
-                            className="w-16"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.schedule}
-                            onValueChange={(value) => updateStream(stream.id, "schedule", value)}
-                          >
-                            <SelectTrigger className="w-[120px]">
-                              <SelectValue placeholder="Select schedule" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="24/7">24/7</SelectItem>
-                              <SelectItem value="Business Hours">Business Hours</SelectItem>
-                              <SelectItem value="After Hours">After Hours</SelectItem>
-                              <SelectItem value="Custom">Custom</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            value={stream.eventVolume} 
-                            onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
-                            className="w-24"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select 
-                            value={stream.patrolType}
-                            onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
-                          >
-                            <SelectTrigger className="w-[120px]">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Standard">Standard</SelectItem>
-                              <SelectItem value="Enhanced">Enhanced</SelectItem>
-                              <SelectItem value="None">None</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            value={stream.patrolsPerWeek} 
-                            onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
-                            className="w-16"
-                            autoComplete="off"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-1">
-                            <Button 
-                              variant="outline" 
-                              size="icon" 
-                              onClick={() => addStream(stream)}
-                              title="Duplicate stream"
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="destructive" 
-                              size="icon" 
-                              onClick={() => removeStream(stream.id)}
-                              title="Remove stream"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              <div className="mt-4 flex flex-col gap-4">
-                <Button 
-                  variant="secondary" 
-                  className="w-full md:w-40"
-                  onClick={() => addStream()}
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Add Stream
-                </Button>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Camera Streams</h3>
+                  <Button onClick={() => addStream()} className="flex items-center gap-1">
+                    <Plus size={16} /> Add Stream
+                  </Button>
+                </div>
                 
-                <Button 
-                  className="w-full md:w-40"
-                  onClick={calculatePrice}
-                >
-                  Calculate Price
-                </Button>
+                {streams.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Qty</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Monitored Area</TableHead>
+                          <TableHead>Accessibility</TableHead>
+                          <TableHead>Analytic Rule 1</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Rule 2</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Schedule</TableHead>
+                          <TableHead>Event Volume</TableHead>
+                          <TableHead>Patrol Type</TableHead>
+                          <TableHead>Patrols/Week</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {streams.map((stream) => (
+                          <TableRow key={stream.id}>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="1" 
+                                value={stream.quantity}
+                                onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
+                                className="w-16"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                value={stream.description}
+                                onChange={(e) => updateStream(stream.id, "description", e.target.value)}
+                                placeholder="Stream description"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.monitoredArea}
+                                onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select area" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Pool">Pool</SelectItem>
+                                  <SelectItem value="Parking Lot">Parking Lot</SelectItem>
+                                  <SelectItem value="Entrance">Entrance</SelectItem>
+                                  <SelectItem value="Lobby">Lobby</SelectItem>
+                                  <SelectItem value="Garage">Garage</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.accessibility}
+                                onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select accessibility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Secure">Secure</SelectItem>
+                                  <SelectItem value="Open">Open</SelectItem>
+                                  <SelectItem value="Restricted">Restricted</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule1}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select rule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.dwellTime1}
+                                onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.analyticRule1 === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule2}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select rule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.dwellTime2}
+                                onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.analyticRule2 === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.schedule}
+                                onValueChange={(value) => updateStream(stream.id, "schedule", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select schedule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="24/7">24/7</SelectItem>
+                                  <SelectItem value="Business Hours">Business Hours</SelectItem>
+                                  <SelectItem value="After Hours">After Hours</SelectItem>
+                                  <SelectItem value="Custom">Custom</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                max="1000"
+                                value={stream.eventVolume}
+                                onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
+                                className="w-16"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.patrolType}
+                                onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Standard">Standard</SelectItem>
+                                  <SelectItem value="Premium">Premium</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.patrolsPerWeek}
+                                onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.patrolType === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => addStream(stream)}
+                                  title="Duplicate Stream"
+                                >
+                                  <Copy size={16} />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => removeStream(stream.id)}
+                                  className="text-red-500 hover:text-red-700"
+                                  title="Remove Stream"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border rounded-md border-dashed">
+                    <p className="text-muted-foreground">No streams added yet. Add a stream to get started.</p>
+                  </div>
+                )}
+                
+                <div className="flex justify-between items-center mt-6">
+                  <h3 className="text-lg font-semibold">Additional Services</h3>
+                  <Button variant="outline" onClick={calculatePrice} className="flex items-center gap-1">
+                    <Calculator size={16} /> Calculate Price
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vocEscalations">VOC Escalations</Label>
+                    <Input 
+                      id="vocEscalations"
+                      type="number"
+                      min="0"
+                      value={formData.vocEscalations}
+                      onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="dispatchResponses">Dispatch Responses</Label>
+                    <Input 
+                      id="dispatchResponses"
+                      type="number"
+                      min="0"
+                      value={formData.dispatchResponses}
+                      onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="gdodsPatrols">GDODS Patrols</Label>
+                    <Input 
+                      id="gdodsPatrols"
+                      type="number"
+                      min="0"
+                      value={formData.gdodsPatrols}
+                      onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="sgppPatrols">SGPP Patrols</Label>
+                    <Input 
+                      id="sgppPatrols"
+                      type="number"
+                      min="0"
+                      value={formData.sgppPatrols}
+                      onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="forensicInvestigations">Forensic Investigations</Label>
+                    <Input 
+                      id="forensicInvestigations"
+                      type="number"
+                      min="0"
+                      value={formData.forensicInvestigations}
+                      onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="appUsers">App Users</Label>
+                    <Input 
+                      id="appUsers"
+                      type="number"
+                      min="0"
+                      value={formData.appUsers}
+                      onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="audioDevices">Audio Devices</Label>
+                    <Input 
+                      id="audioDevices"
+                      type="number"
+                      min="0"
+                      value={formData.audioDevices}
+                      onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
+                    />
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
+        
         {/* Site Assessment Tab Content */}
         <TabsContent value="site-assessment">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Site Assessment & Design</CardTitle>
-              <CardDescription>Enter details about the site environment</CardDescription>
+              <CardTitle>Site Assessment</CardTitle>
+              <CardDescription>Technical assessment of the site conditions</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Auto-synced fields from Discovery tab */}
-                <div className="space-y-2">
-                  <Label htmlFor="saBdmOwner">BDM Owner</Label>
-                  <Input 
-                    id="saBdmOwner"
-                    value={formData.bdmOwner}
-                    onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
-                    autoComplete="off"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
+                    <Select 
+                      value={formData.lightingRequirements}
+                      onValueChange={(value) => handleFormChange("lightingRequirements", value)}
+                    >
+                      <SelectTrigger id="lightingRequirements">
+                        <SelectValue placeholder="Select lighting status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Adequate">Adequate</SelectItem>
+                        <SelectItem value="Needs Improvement">Needs Improvement</SelectItem>
+                        <SelectItem value="Poor">Poor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
+                    <Select 
+                      value={formData.cameraFieldOfView}
+                      onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
+                    >
+                      <SelectTrigger id="cameraFieldOfView">
+                        <SelectValue placeholder="Select field of view status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Clear">Clear</SelectItem>
+                        <SelectItem value="Partially Obstructed">Partially Obstructed</SelectItem>
+                        <SelectItem value="Significantly Obstructed">Significantly Obstructed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="saSalesEngineer">Sales Engineer</Label>
-                  <Input 
-                    id="saSalesEngineer"
-                    value={formData.salesEngineer}
-                    onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="saCustomerName">Customer Name</Label>
-                  <Input 
-                    id="saCustomerName"
-                    value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="saSiteAddress">Site Address</Label>
-                  <Input 
-                    id="saSiteAddress"
-                    value={formData.siteAddress}
-                    onChange={(e) => handleFormChange("siteAddress", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="saCityStateZip">City, State, Zip</Label>
-                  <Input 
-                    id="saCityStateZip"
-                    value={formData.cityStateZip}
-                    onChange={(e) => handleFormChange("cityStateZip", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Site Environment & Lighting</CardTitle>
-              <CardDescription>Document the site environment conditions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
-                  <Select 
-                    value={formData.lightingRequirements}
-                    onValueChange={(value) => handleFormChange("lightingRequirements", value)}
-                  >
-                    <SelectTrigger id="lightingRequirements">
-                      <SelectValue placeholder="Select lighting requirements" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Adequate">Adequate</SelectItem>
-                      <SelectItem value="Needs Improvement">Needs Improvement</SelectItem>
-                      <SelectItem value="Inadequate">Inadequate</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
-                  <Select 
-                    value={formData.cameraFieldOfView}
-                    onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
-                  >
-                    <SelectTrigger id="cameraFieldOfView">
-                      <SelectValue placeholder="Select field of view" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Clear">Clear</SelectItem>
-                      <SelectItem value="Partial Obstruction">Partial Obstruction</SelectItem>
-                      <SelectItem value="Heavy Obstruction">Heavy Obstruction</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2 col-span-3">
-                  <Label htmlFor="networkConnectivity">Network & Connectivity</Label>
-                  <Textarea 
-                    id="networkConnectivity"
-                    value={formData.networkConnectivity}
-                    onChange={(e) => handleFormChange("networkConnectivity", e.target.value)}
-                    rows={3}
-                    autoComplete="off"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="networkConnectivity">Network Connectivity Notes</Label>
+                    <Textarea 
+                      id="networkConnectivity"
+                      value={formData.networkConnectivity}
+                      onChange={(e) => handleFormChange("networkConnectivity", e.target.value)}
+                      placeholder="Document any network constraints or requirements"
+                      rows={5}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
+        
         {/* Use Case Tab Content */}
         <TabsContent value="use-case">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Use Case Design & SOW</CardTitle>
-              <CardDescription>Define the statement of work and use case</CardDescription>
+              <CardTitle>Use Case - Scope of Work</CardTitle>
+              <CardDescription>Define the service level agreement and commitment</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="ucBdmOwner">BDM Owner</Label>
-                  <Input 
-                    id="ucBdmOwner"
-                    value={formData.bdmOwner}
-                    onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
-                    autoComplete="off"
+                  <Label htmlFor="useCaseCommitment">Use Case Commitment Details</Label>
+                  <Textarea 
+                    id="useCaseCommitment"
+                    value={formData.useCaseCommitment}
+                    onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
+                    placeholder="Document the specific use case details and service commitments"
+                    rows={10}
                   />
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="ucKvgSme">KVG SME</Label>
-                  <Input 
-                    id="ucKvgSme"
-                    value={formData.kvgSme}
-                    onChange={(e) => handleFormChange("kvgSme", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="ucCustomerName">Customer Name</Label>
-                  <Input 
-                    id="ucCustomerName"
-                    value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="ucCrmOpportunity">CRM Opportunity #</Label>
-                  <Input 
-                    id="ucCrmOpportunity"
-                    value={formData.crmOpportunity}
-                    onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Use Case Commitment</CardTitle>
-              <CardDescription>Define the detailed use case commitment</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Textarea 
-                  id="useCaseCommitment"
-                  placeholder="Enter Use Case commitment details"
-                  value={formData.useCaseCommitment}
-                  onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
-                  rows={4}
-                  className="w-full"
-                  autoComplete="off"
-                />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
+        
         {/* VOC Protocol Tab Content */}
         <TabsContent value="voc-protocol">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>VOC Protocol Configuration</CardTitle>
-              <CardDescription>Configure Voice of Customer protocols</CardDescription>
+              <CardTitle>VOC Protocol</CardTitle>
+              <CardDescription>Establish customer communication protocols</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="amName">AM Name</Label>
-                  <Input 
-                    id="amName"
-                    value={formData.amName}
-                    onChange={(e) => handleFormChange("amName", e.target.value)}
-                    autoComplete="off"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amName">Account Manager Name</Label>
+                    <Input 
+                      id="amName"
+                      value={formData.amName}
+                      onChange={(e) => handleFormChange("amName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="projectId">Project ID</Label>
+                    <Input 
+                      id="projectId"
+                      value={formData.projectId}
+                      onChange={(e) => handleFormChange("projectId", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="projectId">Project ID</Label>
-                  <Input 
-                    id="projectId"
-                    value={formData.projectId}
-                    onChange={(e) => handleFormChange("projectId", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="vocCustomerName">Customer Name</Label>
-                  <Input 
-                    id="vocCustomerName"
-                    value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Escalation Process</CardTitle>
-              <CardDescription>Define escalation procedures</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="escalationProcess1">Escalation Process 1</Label>
-                  <Textarea 
-                    id="escalationProcess1"
-                    value={formData.escalationProcess1}
-                    onChange={(e) => handleFormChange("escalationProcess1", e.target.value)}
-                    rows={3}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="escalationProcess2">Escalation Process 2</Label>
-                  <Textarea 
-                    id="escalationProcess2"
-                    value={formData.escalationProcess2}
-                    onChange={(e) => handleFormChange("escalationProcess2", e.target.value)}
-                    rows={3}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="escalationProcess3">Escalation Process 3</Label>
-                  <Textarea 
-                    id="escalationProcess3"
-                    value={formData.escalationProcess3}
-                    onChange={(e) => handleFormChange("escalationProcess3", e.target.value)}
-                    rows={3}
-                    autoComplete="off"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess1">Escalation Process Level 1</Label>
+                    <Textarea 
+                      id="escalationProcess1"
+                      value={formData.escalationProcess1}
+                      onChange={(e) => handleFormChange("escalationProcess1", e.target.value)}
+                      placeholder="Document the first level escalation protocol"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess2">Escalation Process Level 2</Label>
+                    <Textarea 
+                      id="escalationProcess2"
+                      value={formData.escalationProcess2}
+                      onChange={(e) => handleFormChange("escalationProcess2", e.target.value)}
+                      placeholder="Document the second level escalation protocol"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="escalationProcess3">Escalation Process Level 3</Label>
+                    <Textarea 
+                      id="escalationProcess3"
+                      value={formData.escalationProcess3}
+                      onChange={(e) => handleFormChange("escalationProcess3", e.target.value)}
+                      placeholder="Document the third level escalation protocol"
+                      rows={3}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
+        
         {/* Project Deployment Tab Content */}
         <TabsContent value="deployment">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Project Deployment Planning</CardTitle>
-              <CardDescription>Configure project deployment details</CardDescription>
+              <CardTitle>Project Deployment</CardTitle>
+              <CardDescription>Define implementation details</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="pmName">PM Name</Label>
-                  <Input 
-                    id="pmName"
-                    value={formData.pmName}
-                    onChange={(e) => handleFormChange("pmName", e.target.value)}
-                    autoComplete="off"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="pmName">Project Manager Name</Label>
+                    <Input 
+                      id="pmName"
+                      value={formData.pmName}
+                      onChange={(e) => handleFormChange("pmName", e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="gatewayCredentials">Gateway Credentials</Label>
+                    <Textarea 
+                      id="gatewayCredentials"
+                      value={formData.gatewayCredentials}
+                      onChange={(e) => handleFormChange("gatewayCredentials", e.target.value)}
+                      placeholder="Document the gateway access credentials"
+                      rows={3}
+                    />
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="deployCustomerName">Customer Name</Label>
-                  <Input 
-                    id="deployCustomerName"
-                    value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="deployCrmOpportunity">CRM Opportunity #</Label>
-                  <Input 
-                    id="deployCrmOpportunity"
-                    value={formData.crmOpportunity}
-                    onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Equipment Configuration</CardTitle>
-              <CardDescription>Verify equipment setup and configuration</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="gatewayCredentials">Verified Gateway/Server Credentials</Label>
-                  <Input 
-                    id="gatewayCredentials"
-                    value={formData.gatewayCredentials}
-                    onChange={(e) => handleFormChange("gatewayCredentials", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="streamNames">Verified Stream Names</Label>
-                  <Input 
-                    id="streamNames"
-                    value={formData.streamNames}
-                    onChange={(e) => handleFormChange("streamNames", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="speakersWork">Verified Speakers Work</Label>
-                  <Select 
-                    value={formData.speakersWork}
-                    onValueChange={(value) => handleFormChange("speakersWork", value)}
-                  >
-                    <SelectTrigger id="speakersWork">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                      <SelectItem value="N/A">N/A</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="streamNames">Stream Names</Label>
+                    <Textarea 
+                      id="streamNames"
+                      value={formData.streamNames}
+                      onChange={(e) => handleFormChange("streamNames", e.target.value)}
+                      placeholder="List the stream names"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="speakersWork">Speakers Functionality</Label>
+                    <Select 
+                      value={formData.speakersWork}
+                      onValueChange={(value) => handleFormChange("speakersWork", value)}
+                    >
+                      <SelectTrigger id="speakersWork">
+                        <SelectValue placeholder="Select speaker status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Partially">Partially</SelectItem>
+                        <SelectItem value="N/A">N/A</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-      
-      {/* Additional Services Section */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Additional Services</CardTitle>
-          <CardDescription>Add additional services to this quote</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="vocEscalations">Additional VOC Escalations</Label>
-              <Input 
-                id="vocEscalations"
-                type="number"
-                min="0"
-                value={formData.vocEscalations}
-                onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="dispatchResponses">Additional Dispatch Responses</Label>
-              <Input 
-                id="dispatchResponses"
-                type="number"
-                min="0"
-                value={formData.dispatchResponses}
-                onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="gdodsPatrols">GDoDS-RSPD-OnDemand Patrols</Label>
-              <Input 
-                id="gdodsPatrols"
-                type="number"
-                min="0"
-                value={formData.gdodsPatrols}
-                onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="sgppPatrols">SGPP-RSPD-Scheduled Patrols</Label>
-              <Input 
-                id="sgppPatrols"
-                type="number"
-                min="0"
-                value={formData.sgppPatrols}
-                onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="forensicInvestigations">Forensic Investigations</Label>
-              <Input 
-                id="forensicInvestigations"
-                type="number"
-                min="0"
-                value={formData.forensicInvestigations}
-                onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="appUsers"># Arm/Disarm App Users</Label>
-              <Input 
-                id="appUsers"
-                type="number"
-                min="0"
-                value={formData.appUsers}
-                onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="audioDevices"># of Audio Devices</Label>
-              <Input 
-                id="audioDevices"
-                type="number"
-                min="0"
-                value={formData.audioDevices}
-                onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Calculate Quote Button */}
-      <div className="flex justify-center mt-6">
-        <Button 
-          onClick={calculatePrice} 
-          className="bg-orange-600 hover:bg-orange-700 px-8 py-6 text-lg"
-        >
-          Generate Quote
-        </Button>
-      </div>
     </div>
   );
 };
