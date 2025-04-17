@@ -1428,6 +1428,27 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Stream Images Modal */}
+      {selectedStream && (
+        <StreamImagesModal
+          isOpen={isImagesModalOpen}
+          onClose={() => setIsImagesModalOpen(false)}
+          streamName={selectedStream.description || `Stream ${selectedStream.id}`}
+          images={selectedStream.images}
+          onDeleteImage={(imageId) => {
+            if (selectedStream) {
+              const updatedImages = selectedStream.images.filter(img => img.id !== imageId);
+              updateStream(selectedStream.id, "images", updatedImages);
+              
+              toast({
+                title: "Image Deleted",
+                description: "The image has been removed from this stream."
+              });
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
