@@ -231,6 +231,7 @@ export default function AddCameraModal({
                     <FormControl>
                       <Input
                         placeholder="Enter field of view (e.g., 90°)"
+                        autoComplete="off"
                         {...field}
                       />
                     </FormControl>
@@ -252,6 +253,7 @@ export default function AddCameraModal({
                     <Textarea
                       placeholder="Enter additional notes"
                       rows={3}
+                      autoComplete="off"
                       {...field}
                     />
                   </FormControl>

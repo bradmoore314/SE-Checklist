@@ -90,7 +90,7 @@ export default function EditCameraModal({
                 <FormItem>
                   <FormLabel>Location *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter location" {...field} />
+                    <Input placeholder="Enter location" autoComplete="off" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -192,6 +192,7 @@ export default function EditCameraModal({
                   <FormControl>
                     <Input 
                       placeholder="Enter field of view (e.g., 90°)" 
+                      autoComplete="off"
                       {...field} 
                       value={field.value || ""}
                     />
@@ -211,6 +212,7 @@ export default function EditCameraModal({
                     <Textarea 
                       placeholder="Enter any notes about this camera" 
                       className="resize-none" 
+                      autoComplete="off"
                       {...field} 
                       value={field.value || ""}
                     />
