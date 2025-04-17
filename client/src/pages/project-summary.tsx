@@ -325,7 +325,7 @@ export default function SiteWalkSummary() {
                           {ap.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.image_data} 
+                                src={`data:image/jpeg;base64,${img.image_data}`} 
                                 alt={`Image for ${ap.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -397,7 +397,7 @@ export default function SiteWalkSummary() {
                           {camera.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.image_data} 
+                                src={`data:image/jpeg;base64,${img.image_data}`} 
                                 alt={`Image for ${camera.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -469,7 +469,7 @@ export default function SiteWalkSummary() {
                           {elevator.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.image_data} 
+                                src={`data:image/jpeg;base64,${img.image_data}`} 
                                 alt={`Image for ${elevator.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -533,7 +533,7 @@ export default function SiteWalkSummary() {
                           {intercom.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={img.image_data} 
+                                src={`data:image/jpeg;base64,${img.image_data}`} 
                                 alt={`Image for ${intercom.location}`} 
                                 className="w-full h-full object-cover"
                               />
