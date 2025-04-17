@@ -36,7 +36,9 @@ import {
   Plus, 
   Trash2, 
   Copy,
-  Calculator
+  Calculator,
+  Camera,
+  ImageIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -57,6 +59,14 @@ interface Stream {
   eventVolume: number;
   patrolType: string;
   patrolsPerWeek: number;
+  images: StreamImage[];
+}
+
+// Image type definition for streams
+interface StreamImage {
+  id: number;
+  imageData: string; // base64 data
+  filename: string;
 }
 
 interface FormData {
@@ -289,6 +299,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           eventVolume: 100,
           patrolType: "Standard",
           patrolsPerWeek: 0,
+          images: [],
         };
 
     setStreams([...streams, newStream]);
@@ -875,6 +886,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           <TableHead>Event Volume</TableHead>
                           <TableHead>Patrol Type</TableHead>
                           <TableHead>Patrols/Week</TableHead>
+                          <TableHead>Images</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1031,6 +1043,71 @@ const KastleVideoGuardingPage: React.FC = () => {
                                 className="w-16"
                                 disabled={stream.patrolType === "None"}
                               />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{stream.images.length} images</span>
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    title="Upload Image"
+                                    onClick={() => {
+                                      // Create file input element
+                                      const input = document.createElement('input');
+                                      input.type = 'file';
+                                      input.accept = 'image/*';
+                                      input.onchange = (e) => {
+                                        const file = (e.target as HTMLInputElement).files?.[0];
+                                        if (file) {
+                                          const reader = new FileReader();
+                                          reader.onload = (event) => {
+                                            const imageData = event.target?.result as string;
+                                            // Remove data URL prefix for consistent storage
+                                            const base64Data = imageData.split(',')[1];
+                                            
+                                            // Create new image object
+                                            const newImage: StreamImage = {
+                                              id: Date.now(),
+                                              imageData: base64Data,
+                                              filename: file.name
+                                            };
+                                            
+                                            // Update stream with new image
+                                            const updatedImages = [...stream.images, newImage];
+                                            updateStream(stream.id, "images", updatedImages);
+                                            
+                                            toast({
+                                              title: "Image Added",
+                                              description: `Image "${file.name}" added to stream`
+                                            });
+                                          };
+                                          reader.readAsDataURL(file);
+                                        }
+                                      };
+                                      input.click();
+                                    }}
+                                  >
+                                    <Camera size={16} />
+                                  </Button>
+                                  {stream.images.length > 0 && (
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      title="View Images"
+                                      onClick={() => {
+                                        // In a real implementation, this would open a modal to show all images
+                                        toast({
+                                          title: "View Images",
+                                          description: `${stream.images.length} images for this stream`
+                                        });
+                                      }}
+                                    >
+                                      <ImageIcon size={16} />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-1">
