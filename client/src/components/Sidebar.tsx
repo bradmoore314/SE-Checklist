@@ -146,6 +146,23 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           </Link>
         </div>
         
+        <div>
+          <Link href="/kastle-video-guarding">
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
+              isActive("/kastle-video-guarding") 
+                ? "border-r-4 nav-item active" 
+                : "nav-item hover:bg-gray-100"
+            } cursor-pointer`}
+               style={isActive("/kastle-video-guarding") ? { 
+                 backgroundColor: 'var(--red-accent)', 
+                 borderColor: 'var(--red-accent)' 
+               } : {}}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/kastle-video-guarding") ? "text-white" : "text-gray-600"}`}>video_camera_front</span>
+              {!collapsed && <span className={isActive("/kastle-video-guarding") ? "text-white" : "text-gray-800 font-medium"}>Kastle Video Guarding</span>}
+            </div>
+          </Link>
+        </div>
+        
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 mt-4 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>
           {collapsed ? "" : "FLOORPLANS"}
         </div>
