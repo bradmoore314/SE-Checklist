@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVG Pricing App</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #1e88e5;
+            --primary-dark: #1565c0;
+            --secondary: #ff5722;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --surface-light: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0bec5;
+            --success: #4caf50;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s ease;
+            
+            /* Page-specific colors */
+            --discovery-color: #4CAF50;
+            --site-assessment-color: #2196F3;
+            --use-case-color: #9C27B0;
+            --voc-protocol-color: #FF5722;
+            --deployment-color: #3F51B5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+            color: var(--primary);
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary-dark);
+            padding-bottom: 8px;
+        }
+
+        .section {
+            background: var(--surface);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        input, select, textarea {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            border: 1px solid #444;
+            padding: 10px 15px;
+            width: 100%;
+            border-radius: var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+        }
+
+        select[multiple] {
+            height: 80px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(30, 136, 229, 0.3);
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
+        }
+
+        #calculate-btn {
+            background: var(--secondary);
+            font-size: 16px;
+            padding: 15px 30px;
+            margin: 20px auto;
+            display: block;
+            min-width: 250px;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        #calculate-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.5);
+        }
+
+        #streamsTable {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
+
+        #streamsTable th, #streamsTable td {
+            border: 1px solid #444;
+            padding: 12px;
+            text-align: left;
+        }
+
+        #streamsTable th {
+            background: var(--primary-dark);
+            color: white;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        #streamsTable tr:nth-child(even) {
+            background: var(--surface-light);
+        }
+
+        #streamsTable tr {
+            transition: var(--transition);
+        }
+
+        #streamsTable tr:hover {
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        #streamsTable input, #streamsTable select, #streamsTable textarea {
+            padding: 8px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .add-stream-btn {
+            background: var(--success);
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-stream-btn:hover {
+            background: #388e3c;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            margin: 2px;
+            font-size: 12px;
+        }
+
+        .duplicate-btn {
+            background: #2196f3;
+        }
+
+        .remove-btn {
+            background: #f44336;
+        }
+
+        .summary {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 30px;
+            border-left: 4px solid var(--secondary);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .summary h2 {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .price-highlight {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 20px 0;
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 87, 34, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-icon {
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        /* Tab Navigation Styles */
+        .tabs-container {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            margin: 0;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: none;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .tab-button:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .tab-button:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .tab-button.active {
+            font-weight: 700;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: white;
+        }
+
+        .tab-button:hover {
+            transform: none;
+            box-shadow: none;
+            filter: brightness(1.2);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Page-specific tab colors */
+        #tab-discovery {
+            background-color: var(--discovery-color);
+        }
+
+        #tab-site-assessment {
+            background-color: var(--site-assessment-color);
+        }
+
+        #tab-use-case {
+            background-color: var(--use-case-color);
+        }
+
+        #tab-voc-protocol {
+            background-color: var(--voc-protocol-color);
+        }
+
+        #tab-deployment {
+            background-color: var(--deployment-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #calculate-btn {
+                width: 100%;
+            }
+
+            .tab-button {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>KVG Pricing App</h1>
+
+    <!-- Tab Navigation -->
+    <div class="tabs-container">
+        <div class="tabs-nav">
+            <button id="tab-discovery" class="tab-button active" onclick="openTab('discovery')">1. Discovery - BDM</button>
+            <button id="tab-site-assessment" class="tab-button" onclick="openTab('site-assessment')">2. Site Assessment - SE</button>
+            <button id="tab-use-case" class="tab-button" onclick="openTab('use-case')">3. Use Case - SOW - SME</button>
+            <button id="tab-voc-protocol" class="tab-button" onclick="openTab('voc-protocol')">4. VOC Protocol - AM</button>
+            <button id="tab-deployment" class="tab-button" onclick="openTab('deployment')">5. Project Deployment - PM</button>
+        </div>
+
+        <!-- Discovery Tab Content -->
+        <div id="discovery" class="tab-content active">
+            <!-- Opportunity Details Section -->
+            <div class="section">
+                <h2>Opportunity Details</h2>
+                <div class="form-grid">
+                    <label>BDM Owner: <input type="text" id="bdmOwner" class="sync-field" data-field="bdmOwner"></label>
+                    <label>Sales Engineer: <input type="text" id="salesEngineer" class="sync-field" data-field="salesEngineer"></label>
+                    <label>KVG SME: <input type="text" id="kvgSme" class="sync-field" data-field="kvgSme"></label>
+                    <label>Customer Name: <input type="text" id="customerName" class="sync-field" data-field="customerName"></label>
+                    <label>Site Address: <input type="text" id="siteAddress" class="sync-field" data-field="siteAddress"></label>
+                    <label>City, State, Zip: <input type="text" id="cityStateZip" class="sync-field" data-field="cityStateZip"></label>
+                    <label>CRM Opportunity #: <input type="text" id="crmOpportunity" class="sync-field" data-field="crmOpportunity"></label>
+                    <label>Date Quote Generated: <input type="date" id="quoteDate" class="sync-field" data-field="quoteDate"></label>
+                    <label>Number of Sites: <input type="number" id="numSites" value="1" min="1" class="sync-field" data-field="numSites"></label>
+                    <label>Technology Required:
+                        <select id="technology" class="sync-field" data-field="technology">
+                            <option value="Kastle Video Cloud">Kastle Video Cloud</option>
+                            <option value="Avigilon Cameras">Avigilon Cameras</option>
+                        </select>
+                    </label>
+                    <label>Type of Install:
+                        <select id="installType" class="sync-field" data-field="installType">
+                            <option value="New Construction">New Construction</option>
+                            <option value="Existing Customer Add-on">Existing Customer Add-on</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Stream Details Section -->
+            <div class="section">
+                <h2>Stream Details</h2>
+                <div class="table-container">
+                    <table id="streamsTable">
+                        <thead>
+                            <tr>
+                                <th>Stream #</th>
+                                <th>Quantity</th>
+                                <th>Description</th>
+                                <th>Monitored Area</th>
+                                <th>Accessibility</th>
+                                <th>Use Case</th>
+                                <th>Analytic Rule 1</th>
+                                <th>Dwell Time 1 (sec)</th>
+                                <th>Analytic Rule 2</th>
+                                <th>Dwell Time 2 (sec)</th>
+                                <th>Days of Week</th>
+                                <th>Schedule</th>
+                                <th>Event Volume (events/mo)</th>
+                                <th>Patrol Type</th>
+                                <th>#Patrols/wk</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <button onclick="addStream()" class="add-stream-btn">Add Stream</button>
+            </div>
+        </div>
+
+        <!-- Site Assessment Tab Content -->
+        <div id="site-assessment" class="tab-content">
+            <div class="section">
+                <h2>Site Assessment & Design</h2>
+                <div class="form-grid">
+                    <label>BDM Owner: <input type="text" class="sync-field" data-field="bdmOwner"></label>
+                    <label>Sales Engineer: <input type="text" class="sync-field" data-field="salesEngineer"></label>
+                    <label>Customer Name: <input type="text" class="sync-field" data-field="customerName"></label>
+                    <label>Site Address: <input type="text" class="sync-field" data-field="siteAddress"></label>
+                    <label>City, State, Zip: <input type="text" class="sync-field" data-field="cityStateZip"></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Site Environment & Lighting</h2>
+                <div class="form-grid">
+                    <label>Lighting Requirements:
+                        <select id="lightingRequirements">
+                            <option value="Adequate">Adequate</option>
+                            <option value="Needs Improvement">Needs Improvement</option>
+                            <option value="Inadequate">Inadequate</option>
+                        </select>
+                    </label>
+                    <label>Camera Field of View:
+                        <select id="cameraFieldOfView">
+                            <option value="Clear">Clear</option>
+                            <option value="Partial Obstruction">Partial Obstruction</option>
+                            <option value="Heavy Obstruction">Heavy Obstruction</option>
+                        </select>
+                    </label>
+                    <label>Network & Connectivity:
+                        <textarea id="networkConnectivity" rows="3"></textarea>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case Tab Content -->
+        <div id="use-case" class="tab-content">
+            <div class="section">
+                <h2>Use Case Design & SOW</h2>
+                <div class="form-grid">
+                    <label>BDM Owner: <input type="text" class="sync-field" data-field="bdmOwner"></label>
+                    <label>KVG SME: <input type="text" class="sync-field" data-field="kvgSme"></label>
+                    <label>Customer Name: <input type="text" class="sync-field" data-field="customerName"></label>
+                    <label>CRM Opportunity #: <input type="text" class="sync-field" data-field="crmOpportunity"></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Use Case Commitment</h2>
+                <textarea id="useCaseCommitment" rows="4" placeholder="Enter Use Case commitment details"></textarea>
+            </div>
+        </div>
+
+        <!-- VOC Protocol Tab Content -->
+        <div id="voc-protocol" class="tab-content">
+            <div class="section">
+                <h2>VOC Protocol Configuration</h2>
+                <div class="form-grid">
+                    <label>AM Name: <input type="text" id="amName"></label>
+                    <label>Project ID: <input type="text" id="projectId"></label>
+                    <label>Customer Name: <input type="text" class="sync-field" data-field="customerName"></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Escalation Process</h2>
+                <div class="form-grid">
+                    <label>Escalation Process 1:
+                        <textarea id="escalationProcess1" rows="3"></textarea>
+                    </label>
+                    <label>Escalation Process 2:
+                        <textarea id="escalationProcess2" rows="3"></textarea>
+                    </label>
+                    <label>Escalation Process 3:
+                        <textarea id="escalationProcess3" rows="3"></textarea>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Deployment Tab Content -->
+        <div id="deployment" class="tab-content">
+            <div class="section">
+                <h2>Project Deployment Planning</h2>
+                <div class="form-grid">
+                    <label>PM Name: <input type="text" id="pmName"></label>
+                    <label>Customer Name: <input type="text" class="sync-field" data-field="customerName"></label>
+                    <label>CRM Opportunity #: <input type="text" class="sync-field" data-field="crmOpportunity"></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Equipment Configuration</h2>
+                <div class="form-grid">
+                    <label>Verified Gateway/Server Credentials:
+                        <input type="text" id="gatewayCredentials">
+                    </label>
+                    <label>Verified Stream Names:
+                        <input type="text" id="streamNames">
+                    </label>
+                    <label>Verified Speakers Work:
+                        <select id="speakersWork">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Services Section -->
+    <div class="section">
+        <h2>Additional Services</h2>
+        <div class="form-grid">
+            <label>Additional VOC Escalations: <input type="number" id="vocEscalations" value="0" min="0"></label>
+            <label>Additional Dispatch Responses: <input type="number" id="dispatchResponses" value="0" min="0"></label>
+            <label>GDoDS-RSPD-OnDemand Patrols: <input type="number" id="gdodsPatrols" value="0" min="0"></label>
+            <label>SGPP-RSPD-Scheduled Patrols: <input type="number" id="sgppPatrols" value="0" min="0"></label>
+            <label>Forensic Investigations: <input type="number" id="forensicInvestigations" value="0" min="0"></label>
+            <label># Arm/Disarm App Users: <input type="number" id="appUsers" value="0" min="0"></label>
+            <label># of Audio Devices: <input type="number" id="audioDevices" value="0" min="0"></label>
+        </div>
+    </div>
+
+    <!-- Calculate Quote Button -->
+    <button onclick="calculateQuote()" id="calculate-btn">Generate Quote</button>
+
+    <!-- Quote Summary Section -->
+    <div class="summary" id="summary"></div>
+
+    <script>
+        let streamCount = 0;
+        const formData = {};
+
+        // Tab navigation
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show the selected tab content and activate the button
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // Set up field synchronization
+        function setupFieldSync() {
+            const syncFields = document.querySelectorAll('.sync-field');
+            
+            syncFields.forEach(field => {
+                const fieldName = field.dataset.field;
+                
+                // Initialize field with stored data if available
+                if (formData[fieldName]) {
+                    if (field.type === 'date') {
+                        field.valueAsDate = new Date(formData[fieldName]);
+                    } else {
+                        field.value = formData[fieldName];
+                    }
+                }
+                
+                // Add event listener to update all related fields when this one changes
+                field.addEventListener('input', function() {
+                    const newValue = this.value;
+                    formData[fieldName] = newValue;
+                    
+                    // Update all fields with the same data-field attribute
+                    document.querySelectorAll(`.sync-field[data-field="${fieldName}"]`).forEach(relatedField => {
+                        if (relatedField !== this) {
+                            relatedField.value = newValue;
+                        }
+                    });
+                });
+            });
+        }
+
+        // Set default date to today
+        document.getElementById('quoteDate').valueAsDate = new Date();
+        
+        // Setup field synchronization
+        setupFieldSync();
+
+        // Add a new stream with optional values for duplication
+        function addStream(values = {}) {
+            streamCount++;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>Stream ${streamCount}</td>
+                <td><input type="number" class="quantity" value="${values.quantity || 1}" min="1"></td>
+                <td><input type="text" class="description" value="${values.description || ''}"></td>
+                <td><select class="monitoredArea">
+                    <option value="Pool" ${values.monitoredArea === 'Pool' ? 'selected' : ''}>Pool</option>
+                    <option value="Stairwells" ${values.monitoredArea === 'Stairwells' ? 'selected' : ''}>Stairwells</option>
+                    <option value="Front or Main Lobby" ${values.monitoredArea === 'Front or Main Lobby' ? 'selected' : ''}>Front or Main Lobby</option>
+                </select></td>
+                <td><select class="accessibility">
+                    <option value="Secure" ${values.accessibility === 'Secure' ? 'selected' : ''}>Secure</option>
+                    <option value="Semi-Secure" ${values.accessibility === 'Semi-Secure' ? 'selected' : ''}>Semi-Secure</option>
+                    <option value="Restricted" ${values.accessibility === 'Restricted' ? 'selected' : ''}>Restricted</option>
+                </select></td>
+                <td><textarea class="useCase">${values.useCase || ''}</textarea></td>
+                <td><select class="analyticRule1">
+                    <option value="Restricted Zone Detection" ${values.analyticRule1 === 'Restricted Zone Detection' ? 'selected' : ''}>Restricted Zone Detection</option>
+                    <option value="Loitering" ${values.analyticRule1 === 'Loitering' ? 'selected' : ''}>Loitering</option>
+                </select></td>
+                <td><input type="number" class="dwellTime1" value="${values.dwellTime1 || 0}" min="0"></td>
+                <td><select class="analyticRule2">
+                    <option value="None" ${values.analyticRule2 === 'None' ? 'selected' : ''}>None</option>
+                    <option value="Restricted Zone Detection" ${values.analyticRule2 === 'Restricted Zone Detection' ? 'selected' : ''}>Restricted Zone Detection</option>
+                    <option value="Loitering" ${values.analyticRule2 === 'Loitering' ? 'selected' : ''}>Loitering</option>
+                </select></td>
+                <td><input type="number" class="dwellTime2" value="${values.dwellTime2 || 0}" min="0"></td>
+                <td><select class="daysOfWeek" multiple>
+                    <option value="M" ${values.daysOfWeek?.includes('M') ? 'selected' : ''}>M</option>
+                    <option value="T" ${values.daysOfWeek?.includes('T') ? 'selected' : ''}>T</option>
+                    <option value="W" ${values.daysOfWeek?.includes('W') ? 'selected' : ''}>W</option>
+                    <option value="Th" ${values.daysOfWeek?.includes('Th') ? 'selected' : ''}>Th</option>
+                    <option value="F" ${values.daysOfWeek?.includes('F') ? 'selected' : ''}>F</option>
+                    <option value="Sa" ${values.daysOfWeek?.includes('Sa') ? 'selected' : ''}>Sa</option>
+                    <option value="Su" ${values.daysOfWeek?.includes('Su') ? 'selected' : ''}>Su</option>
+                </select></td>
+                <td><select class="schedule">
+                    <option value="After Hours" ${values.schedule === 'After Hours' ? 'selected' : ''}>After Hours</option>
+                    <option value="Daytime" ${values.schedule === 'Daytime' ? 'selected' : ''}>Daytime</option>
+                </select></td>
+                <td><input type="number" class="eventVolume" value="${values.eventVolume || 0}" min="0"></td>
+                <td><select class="patrolType">
+                    <option value="None" ${values.patrolType === 'None' ? 'selected' : ''}>None</option>
+                    <option value="Camera Health Check" ${values.patrolType === 'Camera Health Check' ? 'selected' : ''}>Camera Health Check</option>
+                    <option value="Scheduled" ${values.patrolType === 'Scheduled' ? 'selected' : ''}>Scheduled</option>
+                </select></td>
+                <td><input type="number" class="patrolsPerWeek" value="${values.patrolsPerWeek || 0}" min="0"></td>
+                <td>
+                    <button onclick="duplicateStream(this)" class="action-btn duplicate-btn">Duplicate</button>
+                    <button onclick="removeStream(this)" class="action-btn remove-btn">Remove</button>
+                </td>
+            `;
+            document.querySelector('#streamsTable tbody').appendChild(row);
+            row.classList.add('new-row');
+            setTimeout(() => row.classList.remove('new-row'), 500);
+        }
+
+        // Duplicate an existing stream
+        function duplicateStream(button) {
+            const row = button.closest('tr');
+            const values = {
+                quantity: row.querySelector('.quantity').value,
+                description: row.querySelector('.description').value,
+                monitoredArea: row.querySelector('.monitoredArea').value,
+                accessibility: row.querySelector('.accessibility').value,
+                useCase: row.querySelector('.useCase').value,
+                analyticRule1: row.querySelector('.analyticRule1').value,
+                dwellTime1: row.querySelector('.dwellTime1').value,
+                analyticRule2: row.querySelector('.analyticRule2').value,
+                dwellTime2: row.querySelector('.dwellTime2').value,
+                daysOfWeek: Array.from(row.querySelector('.daysOfWeek').selectedOptions).map(opt => opt.value),
+                schedule: row.querySelector('.schedule').value,
+                eventVolume: row.querySelector('.eventVolume').value,
+                patrolType: row.querySelector('.patrolType').value,
+                patrolsPerWeek: row.querySelector('.patrolsPerWeek').value
+            };
+            addStream(values);
+        }
+
+        // Remove a stream
+        function removeStream(button) {
+            const row = button.closest('tr');
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            setTimeout(() => row.remove(), 300);
+        }
+
+        // Calculate and display the quote
+        function calculateQuote() {
+            // Opportunity Details
+            const bdmOwner = formData.bdmOwner || "N/A";
+            const salesEngineer = formData.salesEngineer || "N/A";
+            const kvgSme = formData.kvgSme || "N/A";
+            const customerName = formData.customerName || "N/A";
+            const siteAddress = formData.siteAddress || "N/A";
+            const cityStateZip = formData.cityStateZip || "N/A";
+            const crmOpportunity = formData.crmOpportunity || "N/A";
+            const quoteDate = document.getElementById('quoteDate').value;
+            const numSites = parseInt(formData.numSites) || 1;
+            const technology = formData.technology || "Kastle Video Cloud";
+            const installType = formData.installType || "New Construction";
+            const isNewCustomer = installType === "New Construction";
+
+            // Stream Details
+            const streams = [];
+            document.querySelectorAll('#streamsTable tbody tr').forEach(row => {
+                const stream = {
+                    quantity: parseInt(row.querySelector('.quantity').value) || 1,
+                    description: row.querySelector('.description').value || "N/A",
+                    monitoredArea: row.querySelector('.monitoredArea').value,
+                    accessibility: row.querySelector('.accessibility').value,
+                    useCase: row.querySelector('.useCase').value || "",
+                    analyticRule1: row.querySelector('.analyticRule1').value,
+                    dwellTime1: parseInt(row.querySelector('.dwellTime1').value) || 0,
+                    analyticRule2: row.querySelector('.analyticRule2').value,
+                    dwellTime2: parseInt(row.querySelector('.dwellTime2').value) || 0,
+                    daysOfWeek: Array.from(row.querySelector('.daysOfWeek').selectedOptions).map(opt => opt.value),
+                    schedule: row.querySelector('.schedule').value,
+                    eventVolume: parseInt(row.querySelector('.eventVolume').value) || 0,
+                    patrolType: row.querySelector('.patrolType').value,
+                    patrolsPerWeek: parseInt(row.querySelector('.patrolsPerWeek').value) || 0
+                };
+                streams.push(stream);
+            });
+
+            // Additional Services
+            const additionalServices = {
+                vocEscalations: parseInt(document.getElementById('vocEscalations').value) || 0,
+                dispatchResponses: parseInt(document.getElementById('dispatchResponses').value) || 0,
+                gdodsPatrols: parseInt(document.getElementById('gdodsPatrols').value) || 0,
+                sgppPatrols: parseInt(document.getElementById('sgppPatrols').value) || 0,
+                forensicInvestigations: parseInt(document.getElementById('forensicInvestigations').value) || 0,
+                appUsers: parseInt(document.getElementById('appUsers').value) || 0,
+                audioDevices: parseInt(document.getElementById('audioDevices').value) || 0
+            };
+
+            // Calculations
+            const totalEvents = streams.reduce((sum, s) => sum + (s.eventVolume > 0 ? s.eventVolume * s.quantity : 0), 0);
+            const totalCameras = streams.reduce((sum, s) => sum + s.quantity, 0);
+            const eventFee = calculateEventFee(totalEvents);
+
+            let totalPatrolsPerMonth = 0;
+            let patrolHours = 0;
+            streams.forEach(s => {
+                if (s.patrolsPerWeek > 0) {
+                    const patrolsPerMonth = s.patrolsPerWeek * 4.33 * s.quantity;
+                    totalPatrolsPerMonth += patrolsPerMonth;
+                    patrolHours += (patrolsPerMonth * 5 / 60); // 5 minutes per patrol
+                }
+            });
+            const patrolFee = patrolHours * 85; // $85/hour
+
+            const additionalFees = (
+                additionalServices.vocEscalations * 10 +
+                additionalServices.dispatchResponses * 0 +
+                additionalServices.gdodsPatrols * 425 +
+                additionalServices.sgppPatrols * 60 +
+                additionalServices.forensicInvestigations * 60 +
+                additionalServices.appUsers * 5 +
+                additionalServices.audioDevices * 0
+            );
+
+            let totalFee = eventFee + patrolFee + additionalFees;
+            const minFee = isNewCustomer ? 250 : 200;
+            totalFee = Math.max(totalFee, minFee);
+            const approvalNote = !isNewCustomer && totalFee < 200 ? "<p class='approval-note'>Note: Existing customers with fees < $200 per site require review and approval.</p>" : "";
+
+            // Quote Summary
+            const quoteSummary = `
+                <h2>Quote Summary & Terms</h2>
+                <div class="summary-content">
+                    <p>This is a budgetary quote based on information provided about the site, types of incidents and activity levels in an estimated monthly volume up to a maximum ${totalEvents} video events, ${Math.round(totalPatrolsPerMonth)} scheduled patrols, ${additionalServices.vocEscalations} VOC incident escalations, for ${totalCameras} camera video streams.</p>
+                    <p>Pricing is valid for 30 days from initial quote (${quoteDate}) and will expire after that date. Should event volume exceed the above monthly volume of ${totalEvents} video events >10% over a 60-day period, your monthly fee will increase by $75 for each additional 50 events shown above. Overage fees will be in increments of $75 and will not be pro-rated.</p>
+                    <div class="price-highlight">Total KVG Price/mo: $${totalFee.toFixed(2)}</div>
+                    ${approvalNote}
+                </div>
+            `;
+
+            // SOW Details
+            const monitoredAreas = [...new Set(streams.map(s => s.monitoredArea))].join(", ");
+            const sowDetails = `
+                <h2>SOW Details</h2>
+                <div class="summary-content">
+                    <p>Kastle will provide Video Event-based (max ${totalEvents}/mth) remote monitoring for ${totalCameras} camera video streams covering "${monitoredAreas}".</p>
+                    <p>Kastle will provide Virtual Guard Tours (max ${Math.round(totalPatrolsPerMonth)}/mth) remote monitoring for ${totalCameras} camera video streams covering "${monitoredAreas}".</p>
+                    ${additionalServices.sgppPatrols > 0 ? `<p>Kastle will provide RSPNDR Pre-Scheduled OnSite Guard Tours (max ${additionalServices.sgppPatrols}/mth) at a frequency defined by the customer to patrol "${monitoredAreas}".</p>` : ""}
+                    <p>Remote monitoring operators will subjectively view the scene for "homeless loitering, suspicious loitering of people or vehicles, obvious criminal acts, trespassing on property, break-ins in or around the perimeter of the building and the interior spaces".</p>
+                    <p>Health Monitoring PATROL (once daily - 30 total/mth) for health monitoring checks of the cameras for clear image, proper positioning of a field of view and other failures.</p>
+                </div>
+            `;
+
+            const summaryElement = document.getElementById('summary');
+            summaryElement.innerHTML = quoteSummary + sowDetails;
+            summaryElement.style.opacity = '0';
+            summaryElement.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                summaryElement.style.opacity = '1';
+                summaryElement.style.transform = 'translateY(0)';
+                summaryElement.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        // Event Fee Calculation
+        function calculateEventFee(totalEvents) {
+            const tiers = [
+                { max: 500, price: 625 }, { max: 750, price: 935 }, { max: 1000, price: 1250 },
+                { max: 1250, price: 1560 }, { max: 1500, price: 1875 }, { max: 1750, price: 2190 },
+                { max: 2000, price: 2400 }, { max: 2250, price: 2700 }, { max: 2500, price: 3000 },
+                { max: 2750, price: 3300 }, { max: 3000, price: 3600 }
+            ];
+            const tier = tiers.find(t => totalEvents <= t.max) || tiers[tiers.length - 1];
+            return totalEvents > 0 ? tier.price : 0;
+        }
+
+        // Add an initial stream
+        if (streamCount === 0) {
+            addStream();
+        }
+    </script>
+</body>
+</html>

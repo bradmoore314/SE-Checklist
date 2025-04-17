@@ -15,6 +15,7 @@ import SiteWalkSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import FloorplansPage from "@/pages/floorplans-page";
+import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
@@ -36,6 +37,7 @@ function Router() {
       <ProtectedRoute path="/cameras" component={Cameras} />
       <ProtectedRoute path="/elevators" component={Elevators} />
       <ProtectedRoute path="/intercoms" component={Intercoms} />
+      <ProtectedRoute path="/kastle-video-guarding" component={KastleVideoGuardingPage} />
       
       {/* Report routes */}
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
