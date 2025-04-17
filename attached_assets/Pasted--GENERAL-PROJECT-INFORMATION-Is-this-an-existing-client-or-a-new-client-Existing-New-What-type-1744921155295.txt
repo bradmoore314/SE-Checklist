@@ -1,0 +1,165 @@
+🏢 GENERAL PROJECT INFORMATION
+Is this an existing client or a new client? (Existing/New)
+
+What type of client is it? (CRE/MF)
+
+Is this for an entire building or a tenant space? (Building/Tenant)
+
+Is this a new installation or a takeover of an existing system? (Takeover/New)
+
+If new, what type of construction is it? (Ground-Up / Build-Out / Finished)
+
+Is this a new location or a system addition? (New/Addition)
+
+What systems are included? (Access Control / Video / Both)
+
+What is the building name and address? (Location Input)
+
+What is the installation timeline or deadline? (Timeline Input)
+
+Is the client sensitive to deadlines or expectations? (Client Input)
+
+Are we adding to an existing system or starting fresh? (New/Existing)
+
+What are the customer’s expectations regarding labor and power supply? (Expectations Input)
+
+🔧 SCOPE OF WORK
+What hardware is being installed or replaced? (Hardware Input)
+
+Are we reusing existing systems (e.g., DoorKing, Honeywell)? (Yes/No)
+
+What reader/lock models are being used? (Model Input)
+
+Are credentials needed (fobs, tags, BLE/NFC)? (Yes/No)
+
+How many credentials are required? (Quantity Input)
+
+Who is providing the locks? (Kastle/Customer)
+
+What system layout is being used? (Head-End Boards / Bus Run Above Doors)
+
+How many head-end locations are there? (Numeric Input)
+
+Is conduit needed? Who is installing it? (Yes/No)
+
+Is network being provided by the customer? (Yes/No)
+
+Is power existing at each head-end location? (Existing/Needed)
+
+How is lock power being managed? (Altronix / Other)
+
+Are fire relays required? (Yes/No)
+
+Are crash bars or auto door openers included? (Yes/No)
+
+Are intercoms or KFO in scope? (Yes/No)
+
+Are there any devices that need external enclosures (e.g., Hoffman boxes)? (Yes/No)
+
+Are media converters or point-to-point devices needed? (Yes/No/Input)
+
+Are the readers surface-mounted or panel-integrated? (Surface / Swing Panel)
+
+Do we need junction boxes or additional wiring infrastructure? (Yes/No)
+
+Are any site-specific wiring upgrades required? (Existing / Upgrades)
+
+🛗 ELEVATOR INTEGRATION
+What type of elevator access is being installed? (Type A / Type C)
+
+Are elevator companies involved in their portion of work? (Yes/No)
+
+How many elevator banks and cars are there? (Numeric Input)
+
+Are all elevator cabs serving the same floors? Any basement or rear door variations? (Yes/No)
+
+Are the readers BLE-compatible? (BLE / Prox / Standard)
+
+Are enclosures needed in the elevator machine room? (Yes/No)
+
+Is there elevator access control integration needed? (Yes/No)
+
+💵 CHANGE ORDERS & PRICING
+What change orders are being reviewed? (Details Input)
+
+What hardware is changing (add/remove/modify)? (Hardware Input)
+
+Is labor included for the change order? (Yes/No)
+
+How does the change impact cost? (Cost Input)
+
+Are hardware models clearly specified? (Yes/No)
+
+Is pricing aligned with customer expectations? (Yes/No)
+
+Is price protection language included? (Yes/No)
+
+Do quotes need to be rebuilt? (Yes/No)
+
+Are there new RMR opportunities? (Yes/No)
+
+🧑‍🔧 INSTALLATION & LABOR DETAILS
+Is this project local or remote? (Local/Remote)
+
+Who is performing the work? (Kastle Tech / Partner)
+
+What are the total labor hours quoted? (Input)
+
+Has labor been adjusted for any scope reductions? (Yes/No)
+
+Is subcontractor labor accounted for? (Yes/No)
+
+Who is commissioning the locks? (Kastle/Subcontractor)
+
+Has labor been reviewed for accuracy? (Yes/No)
+
+🌐 NETWORK & POWER
+Is the customer providing the network? (Yes/No)
+
+Are all head-ends on the same VLAN/Subnet? (Yes/No)
+
+Is power existing at head-ends? (Existing/Needed)
+
+Are fire relays required and where? (Yes/No/Input)
+
+Will the network in the elevator machine room match the rest of the system? (Yes/No)
+
+📍 SITE-SPECIFIC CONSIDERATIONS
+Are there contact-only doors? What’s their function? (Yes/No)
+
+What is the condition of existing infrastructure? (Condition Input)
+
+Are relays, conduit, or new wiring needed? (Yes/No)
+
+Are there auto-openers or crash bars? (Yes/No)
+
+Do we need to engage other trades/vendors? (Yes/No)
+
+Are site-specific exclusions documented? (Yes/No)
+
+Are there caveats or risks called out in the proposal? (Yes/No)
+
+🧠 CLIENT COMMUNICATION & STRATEGY
+Has the client requested special features like image display, visitor management? (Yes/No)
+
+Do they understand their role in device programming? (Yes/No)
+
+Are there objections to subscriptions or RMR? (Yes/No)
+
+Are other vendor solutions being considered? (Yes/No)
+
+📞 FOLLOW-UPS & TURNOVER
+What are the next steps to finalize the quote? (Input)
+
+Are there outstanding approvals? (Yes/No)
+
+Are additional review calls needed? (Yes/No)
+
+Who is responsible for next actions? (Name Input)
+
+✅ FINAL WRAP-UP
+Are all scope, labor, and pricing items resolved? (Yes/No)
+
+What exclusions/caveats need to be documented? (Input)
+
+Are there any unresolved risks or questions? (Yes/No)
