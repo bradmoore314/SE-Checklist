@@ -444,6 +444,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter existing panel location" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -464,6 +465,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter existing panel type" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -484,6 +486,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter existing reader type" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -504,6 +507,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter new panel location" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -524,6 +528,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter new panel type" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -544,6 +549,7 @@ export default function AddAccessPointModal({
                           placeholder="Enter new reader type" 
                           {...field} 
                           disabled={quickConfigEnabled}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -672,6 +678,7 @@ export default function AddAccessPointModal({
                       rows={3}
                       {...field}
                       disabled={quickConfigEnabled}
+                      autoComplete="off"
                     />
                   </FormControl>
                   <FormMessage />
