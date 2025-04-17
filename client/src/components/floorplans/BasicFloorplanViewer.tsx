@@ -672,6 +672,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   onChange={(e) => setNewFloorplanName(e.target.value)}
                   placeholder="First Floor"
                   className="h-8 text-sm"
+                  autoComplete="off"
                 />
               </div>
               
@@ -683,6 +684,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                   accept="application/pdf"
                   onChange={handleFileChange}
                   className="h-8 text-xs"
+                  autoComplete="off"
                 />
               </div>
               
