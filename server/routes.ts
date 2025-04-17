@@ -819,6 +819,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // AI Analysis endpoint
+  // New endpoint for project questions analysis
+  app.get("/api/projects/:projectId/ai-analysis/questions", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Import the project questions analysis module
+      const { analyzeProject, generateProjectAnalysis } = require('./services/project-questions-analysis');
+      
+      // Get all equipment for the project
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+      
+      // Generate the static analysis (no AI)
+      const staticAnalysis = generateProjectAnalysis();
+      
+      // If the request includes a 'full' parameter, generate the AI analysis as well
+      let aiAnalysis = null;
+      if (req.query.full === 'true') {
+        aiAnalysis = await analyzeProject(project, accessPoints, cameras, elevators, intercoms);
+      }
+      
+      res.json({
+        project,
+        staticAnalysis,
+        aiAnalysis
+      });
+    } catch (error) {
+      console.error("Error in project questions analysis:", error);
+      res.status(500).json({ error: "Failed to analyze project questions" });
+    }
+  });
+
   app.post("/api/projects/:projectId/ai-analysis", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const projectId = parseInt(req.params.projectId);
