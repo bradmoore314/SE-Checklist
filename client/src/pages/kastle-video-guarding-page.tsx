@@ -458,6 +458,620 @@ const KastleVideoGuardingPage: React.FC = () => {
             </CardContent>
           </Card>
 
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Incident Types</CardTitle>
+              <CardDescription>Select which incident types will be monitored at this site</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Column 1 */}
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <Label className="font-bold">OBVIOUS CRIMINAL ACT</Label>
+                    <Select 
+                      value={formData.obviousCriminalAct}
+                      onValueChange={(value) => handleFormChange("obviousCriminalAct", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>ACTIVE BREAK-IN</Label>
+                    <Select 
+                      value={formData.activeBreakIn}
+                      onValueChange={(value) => handleFormChange("activeBreakIn", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>DESTRUCTION OF PROPERTY</Label>
+                    <Select 
+                      value={formData.destructionOfProperty}
+                      onValueChange={(value) => handleFormChange("destructionOfProperty", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CAR DRIVING THROUGH (DAMAGE) PARKING GATE</Label>
+                    <Select 
+                      value={formData.carDrivingThroughGate}
+                      onValueChange={(value) => handleFormChange("carDrivingThroughGate", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CAR BURGLARIES</Label>
+                    <Select 
+                      value={formData.carBurglaries}
+                      onValueChange={(value) => handleFormChange("carBurglaries", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>TRESSPASSING</Label>
+                    <Select 
+                      value={formData.trespassing}
+                      onValueChange={(value) => handleFormChange("trespassing", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CARS BROKEN INTO AFTER THE FACT</Label>
+                    <Select 
+                      value={formData.carsBrokenIntoAfterFact}
+                      onValueChange={(value) => handleFormChange("carsBrokenIntoAfterFact", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>BROKEN GLASS - WINDOWS/DOORS (After)</Label>
+                    <Select 
+                      value={formData.brokenGlassWindows}
+                      onValueChange={(value) => handleFormChange("brokenGlassWindows", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label className="font-bold">SUSPICIOUS INDIVIDUAL(S)/ACTIVITY</Label>
+                    <Select 
+                      value={formData.suspiciousActivity}
+                      onValueChange={(value) => handleFormChange("suspiciousActivity", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1 ml-4">
+                    <Label>I.E. INTENT TO COMMIT CRIMINAL ACT</Label>
+                    <Select 
+                      value={formData.intentToCommitCriminalAct}
+                      onValueChange={(value) => handleFormChange("intentToCommitCriminalAct", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1 ml-4">
+                    <Label>(EX: CHECKING MULTIPLE CAR DOORS)</Label>
+                    <Select 
+                      value={formData.checkingMultipleCarDoors}
+                      onValueChange={(value) => handleFormChange("checkingMultipleCarDoors", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>DUMPSTER DIVING OR DUMPING</Label>
+                    <Select 
+                      value={formData.dumpsterDivingOrDumping}
+                      onValueChange={(value) => handleFormChange("dumpsterDivingOrDumping", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Column 2 */}
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <Label>URINATION OR OTHER BODILY FUNCTIONS</Label>
+                    <Select 
+                      value={formData.urinationOrOtherBodilyFunctions}
+                      onValueChange={(value) => handleFormChange("urinationOrOtherBodilyFunctions", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS</Label>
+                    <Select 
+                      value={formData.presenceOfScooters}
+                      onValueChange={(value) => handleFormChange("presenceOfScooters", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)</Label>
+                    <Select 
+                      value={formData.emergencyServices}
+                      onValueChange={(value) => handleFormChange("emergencyServices", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>PERSON PRESUMED INJURED OR IN DISTRESS</Label>
+                    <Select 
+                      value={formData.personInjuredOrDistress}
+                      onValueChange={(value) => handleFormChange("personInjuredOrDistress", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER</Label>
+                    <Select 
+                      value={formData.leavingTrash}
+                      onValueChange={(value) => handleFormChange("leavingTrash", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>TENANTS MOVING OUT OF THE BUILDING</Label>
+                    <Select 
+                      value={formData.tenantsMovingOut}
+                      onValueChange={(value) => handleFormChange("tenantsMovingOut", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS</Label>
+                    <Select 
+                      value={formData.largeItemsMovedAfterHours}
+                      onValueChange={(value) => handleFormChange("largeItemsMovedAfterHours", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>OBVIOUS MEDICAL EMERGENCY</Label>
+                    <Select 
+                      value={formData.obviousMedicalEmergency}
+                      onValueChange={(value) => handleFormChange("obviousMedicalEmergency", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>VISIBLE FIRE OR HEAVY SMOKE</Label>
+                    <Select 
+                      value={formData.visibleFireOrSmoke}
+                      onValueChange={(value) => handleFormChange("visibleFireOrSmoke", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.</Label>
+                    <Select 
+                      value={formData.personInRestrictedArea}
+                      onValueChange={(value) => handleFormChange("personInRestrictedArea", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1 ml-4">
+                    <Label>SITTING OR SLEEPING IN/ON (SPECIFIED AREA)</Label>
+                    <Select 
+                      value={formData.sittingOrSleeping}
+                      onValueChange={(value) => handleFormChange("sittingOrSleeping", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1 ml-4">
+                    <Label>PRESENT IN PROHIBITED AREA</Label>
+                    <Select 
+                      value={formData.presentInProhibitedArea}
+                      onValueChange={(value) => handleFormChange("presentInProhibitedArea", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Column 3 */}
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <Label className="font-bold">LOITERING</Label>
+                    <Select 
+                      value={formData.loitering}
+                      onValueChange={(value) => handleFormChange("loitering", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>ACTIVE GATHERING</Label>
+                    <Select 
+                      value={formData.activeGathering}
+                      onValueChange={(value) => handleFormChange("activeGathering", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>GROUPS LOITERING/GATHERING</Label>
+                    <Select 
+                      value={formData.groupsLoiteringGathering}
+                      onValueChange={(value) => handleFormChange("groupsLoiteringGathering", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>HOMELESS/VAGRANT</Label>
+                    <Select 
+                      value={formData.homelessVagrant}
+                      onValueChange={(value) => handleFormChange("homelessVagrant", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>SLEEPING ON SITE/ENCAMPMENTS</Label>
+                    <Select 
+                      value={formData.sleepingOnSiteEncampments}
+                      onValueChange={(value) => handleFormChange("sleepingOnSiteEncampments", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>LOITERING IN STAIRWELLS</Label>
+                    <Select 
+                      value={formData.loiteringInStairwells}
+                      onValueChange={(value) => handleFormChange("loiteringInStairwells", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>PERSONS SMOKING</Label>
+                    <Select 
+                      value={formData.personsSmoking}
+                      onValueChange={(value) => handleFormChange("personsSmoking", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>VEHICLE LOITERING/GATHERING IN AREA</Label>
+                    <Select 
+                      value={formData.vehicleLoiteringInArea}
+                      onValueChange={(value) => handleFormChange("vehicleLoiteringInArea", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CUSTOM INCIDENT TYPE 1</Label>
+                    <Select 
+                      value={formData.customIncidentType1}
+                      onValueChange={(value) => handleFormChange("customIncidentType1", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CUSTOM INCIDENT TYPE 2</Label>
+                    <Select 
+                      value={formData.customIncidentType2}
+                      onValueChange={(value) => handleFormChange("customIncidentType2", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label>CUSTOM INCIDENT TYPE 3</Label>
+                    <Select 
+                      value={formData.customIncidentType3}
+                      onValueChange={(value) => handleFormChange("customIncidentType3", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Stream Details</CardTitle>
