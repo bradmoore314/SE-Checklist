@@ -22,6 +22,7 @@ import {
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { generateSiteWalkAnalysis } from "./utils/gemini";
+import { areAzureCredentialsAvailable } from "./services/microsoft-auth";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -1188,6 +1189,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     res.status(204).end();
+  });
+
+  // API endpoint to check if Microsoft authentication is configured
+  app.get("/api/auth/microsoft/status", (req, res) => {
+    res.json({
+      configured: areAzureCredentialsAvailable()
+    });
   });
 
   const httpServer = createServer(app);

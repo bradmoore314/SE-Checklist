@@ -8,7 +8,7 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
 
 // Check if all required Azure credentials are available
-const areAzureCredentialsAvailable = () => {
+export const areAzureCredentialsAvailable = () => {
   return Boolean(
     azureConfig.credentials.clientID && 
     azureConfig.credentials.clientSecret && 

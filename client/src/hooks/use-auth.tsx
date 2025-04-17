@@ -16,6 +16,8 @@ type AuthContextType = {
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, InsertUser>;
   bypassAuth: () => User; // Added for development bypass
+  microsoftAuthConfigured: boolean;
+  microsoftAuthStatusLoading: boolean;
 };
 
 type LoginData = {
@@ -27,6 +29,16 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  
+  // Query to check if Microsoft authentication is configured
+  const { 
+    data: microsoftAuthStatus, 
+    isLoading: microsoftAuthStatusLoading 
+  } = useQuery<{ configured: boolean }, Error>({
+    queryKey: ["/api/auth/microsoft/status"],
+    queryFn: getQueryFn({}),
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+  });
 
   // Add a function to bypass authentication for development purposes
   const bypassAuth = () => {
@@ -143,7 +155,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
-        bypassAuth, // Add the bypass method
+        bypassAuth,
+        microsoftAuthConfigured: microsoftAuthStatus?.configured ?? false,
+        microsoftAuthStatusLoading
       }}
     >
       {children}
