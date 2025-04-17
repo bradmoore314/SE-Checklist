@@ -150,19 +150,19 @@ const KastleVideoGuardingPage: React.FC = () => {
 
         <Tabs defaultValue="discovery" className="w-full">
           <TabsList className="grid grid-cols-5 mb-6">
-            <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700">
+            <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white">
               1. Discovery - BDM
             </TabsTrigger>
-            <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700">
+            <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700 text-white">
               2. Site Assessment - SE
             </TabsTrigger>
-            <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700">
+            <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700 text-white">
               3. Use Case - SOW - SME
             </TabsTrigger>
-            <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700">
+            <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700 text-white">
               4. VOC Protocol - AM
             </TabsTrigger>
-            <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700">
+            <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white">
               5. Project Deployment - PM
             </TabsTrigger>
           </TabsList>
