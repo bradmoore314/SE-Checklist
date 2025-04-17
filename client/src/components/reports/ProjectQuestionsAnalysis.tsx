@@ -286,14 +286,22 @@ const ProjectQuestionsAnalysis: React.FC<ProjectQuestionsAnalysisProps> = ({ pro
                   Generate an AI-powered summary of which questions can be answered with existing data and
                   suggestions for a turnover call agenda.
                 </p>
-                <Button onClick={handleGenerateAiSummary} disabled={generateAiSummary}>
+                <Button 
+                  onClick={handleGenerateAiSummary} 
+                  disabled={generateAiSummary}
+                  className="relative group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg hover:shadow-indigo-500/50"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-500/20 to-indigo-600/20 rounded-md blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   {generateAiSummary ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Generating...
                     </>
                   ) : (
-                    "Generate Summary"
+                    <>
+                      <span className="material-icons mr-2 text-sm">auto_awesome</span>
+                      Generate AI Summary
+                    </>
                   )}
                 </Button>
               </div>
@@ -345,14 +353,22 @@ const ProjectQuestionsAnalysis: React.FC<ProjectQuestionsAnalysisProps> = ({ pro
             "Click 'Generate Summary' to create AI-powered quote review and turnover call summaries."}
         </div>
         {!aiAnalysis && activeTab === "summary" && (
-          <Button onClick={handleGenerateAiSummary} disabled={generateAiSummary}>
+          <Button 
+            onClick={handleGenerateAiSummary} 
+            disabled={generateAiSummary}
+            className="relative group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg hover:shadow-indigo-500/50"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-500/20 to-indigo-600/20 rounded-md blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></span>
             {generateAiSummary ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Generating...
               </>
             ) : (
-              "Generate Summary"
+              <>
+                <span className="material-icons mr-2 text-sm">auto_awesome</span>
+                Generate AI Summary
+              </>
             )}
           </Button>
         )}

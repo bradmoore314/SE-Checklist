@@ -241,14 +241,17 @@ export default function Projects() {
                   </h3>
                   <div className="flex space-x-2">
                     <button
-                      className="text-neutral-400 hover:text-blue-500"
+                      className="relative group"
                       title="AI Review"
                       onClick={(e) => {
                         e.stopPropagation();
                         setLocation(`/projects/${project.id}/quote-review`);
                       }}
                     >
-                      <span className="material-icons">assessment</span>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
+                        <span className="material-icons text-sm">auto_awesome</span>
+                      </div>
                     </button>
                     <button
                       className="text-neutral-400 hover:text-red-500"
