@@ -242,7 +242,7 @@ export default function Projects() {
                   <div className="flex space-x-2">
                     <button
                       className="text-neutral-400 hover:text-blue-500"
-                      title="Quote Review"
+                      title="AI Review"
                       onClick={(e) => {
                         e.stopPropagation();
                         setLocation(`/projects/${project.id}/quote-review`);

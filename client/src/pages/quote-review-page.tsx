@@ -30,7 +30,7 @@ const QuoteReviewPage: React.FC = () => {
   // Fetch project data
   const { data: project, isLoading, error } = useQuery({
     queryKey: [`/api/projects/${projectId}`],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "throw" }),
     enabled: !!projectId
   });
   
