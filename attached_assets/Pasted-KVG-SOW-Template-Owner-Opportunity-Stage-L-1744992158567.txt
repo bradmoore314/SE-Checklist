@@ -1,0 +1,172 @@
+KVG SOW Template											
+											
+											
+											
+	Owner: 			Opportunity Stage:		Legend					
+	KVG SME			Expect		Notes or Text Descriptions	Don't Overwrite	Don't Overwrite			
+						Fill text in box	Type text	Type text			
+						Drop-down	Select	Select			
+						Auto-fill Text	Don't Overwrite	Don't Overwrite			
+	Description:										
+	This form is to be completed in summary to the final design and part of the SOW in the Quote process. Please attached this complete Workbook to the Opportunity prior to generating your quote, in the quote itself please copy and include the SOW section as part of the proposal and final quote before customer signing. Please attached the form to the Opportunity so it can be shared and tracked along the stages and with various teams. Be sure that the SE has included pictures, scene and activity notes, as well be sure to align the compatible analytic and monitored service with the documented Use Case Problem in the "BDM Discovery form".										
+											
+	Reviewer(s):										
+	RVG SME and BDM will review prior to the quote signing as part of the approval process. If there are any uncommon uses of the analytics or Monitoring protocols, the VOC must also review and approve to ensure that Kastle can meet the customer expectations.										
+											
+Opportunity Stage Ownership											
+											
+	BDM Name:		Region: 		Customer Vertical:		Property Category:				
+	fill in		Select		Select		Select				
+											
+	KVG SME Name: 		KVG SME Approval:		Date Complete:		Attach to Opportunity in CRM and Teams				
+	Select		Select		4/18/2025		Select				
+											
+Location											
+											
+	CRM Opportunity				Time Zone						
+	fill in				Select						
+											
+	Site Name:				Customer:						
+	fill in				fill in						
+											
+	Site Address:										
+	fill in										
+											
+	City:		State: 		Zip Code:						
+	fill in		Select		fill in						
+											
+											
+SOW Outline											
+											
+	Head-end										
+	Technology Designed/Deployed 		Type of Cameras		RSPNDR - GDoDS			RSPNDR Subscriptions			
+	Select		Select		Select			Select			
+											
+	Type of Install Account		Event Video|Trigger Streams	Virtual Patrol Streams	Event Action Clip Streams	Event Action - Multi-View Streams	Health Streams	Audio Talk-Down Speakers			
+	Select		fill in	fill in	fill in	fill in	fill in	fill in			
+											
+	Total Events/Mth - Maximum		Total Virtual Patrols/Mth	Patrol Frequency (Hourly/30 Mins/Other)	Total Health Patrols/Mth	Total Event Action Multi-Views/Mth	Total Escalations - Maximum	GDoDS -  Dispatches/Mth	SGPP - Scheduled Patrols/Mth		
+	fill in		fill in	fill in	30	fill in	fill in	fill in	fill in		
+											
+	On Demand Guard Dispatch Detail			SGPP - Scheduled Guard Patrol Detail			SGPP - Scheduled Guard Patrols - Schedule Detail				
+	fill in what the Guard needs to do on the Dispatches, expand in the SOW if needed			fill in what the Guard needs to do on Scheduled Patrols, expand in the SOW if needed			fill in schedule details for the days of week/month, hours of day, frequency of patrols, expand in the SOW if needed				
+											
+											
+											
+	Incident types to be monitored:	Typically 3-4 max per camera stream, clarify in use case and if needed call out unique use cases per camera in the camera list below.									
+											
+	OBVIOUS CRIMINAL ACT		Yes	URINATION OR OTHER BODILY FUNCTIONS 			Select	LOITERING		Yes	
+	ACTIVE BREAK-IN 		Select	PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS			Select	   ACTIVE GATHERING		Select	
+	DESTRUCTION OF PROPERTY		Select	EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)			Select	   GROUPS LOITERING/GATHERING		Select	
+	CAR DRIVING THROUGH (DAMAGE) PARKING GATE		Select	PERSON PRESUMED INJURED OR IN DISTRESS			Select	   HOMELESS/VAGRANT		Select	
+	CAR BURGLARIES		Select	LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER			Select	   SLEEPING ON SITE/ENCAMPMENTS		Select	
+	TRESSPASSING		Select	TENANTS MOVING OUT OF THE BUILDING			Select	   LOITERING IN STAIRWELLS		Select	
+	CARS BROKEN INTO AFTER THE FACT		Select	 LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS			Select	   PERSONS SMOKING		Select	
+	BROKEN GLASS - WINDOWS/DOORS (After)		Select	OBVIOUS MEDICAL EMERGENCY 			Select	   VEHICLE LOITERING/GATHERING IN AREA		Select	
+	SUSPICIOUS INDIVIDUAL(S)/ACTIVITY		Yes	VISIBLE FIRE OR HEAVY SMOKE			Select	fill in if incident type not shown		Select	
+	   I.E. INTENT TO COMMIT CRIMINAL ACT 		Select	PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.			Select	fill in if incident type not shown		Select	
+	   (EX: CHECKING MULTIPLE CAR DOORS)		Select	    SITTING OR SLEEPING IN/ON (SPECIFIED AREA)			Select	fill in if incident type not shown		Select	
+	DUMPSTER DIVING OR DUMPING		Select	    PRESENT IN PROHIBITED AREA			Select	fill in if incident type not shown		Select	
+	fill in if incident type not shown		Select	fill in if incident type not shown			Select	fill in if incident type not shown		Select	
+											
+	Use Case Commitment: 										
+	fill in or modify from Discovery tab										
+											
+	Use Case Response:										
+	fill in or modify from Discovery tab, add in any needs for RSPNDR Guard Dispatch on Demand Services										
+											
+	SOW Detailed Outline:										
+	"fill in from price quoting worksheet				"										
+											
+											
+											
+	Schedule Details								RSPNDR SGPP - Scheduled Patrol Frequency, Days and Hours		
+	fill in from tab on or detail complex schedules based on different days or camera groups								Fill in what type of RSPNDR Guard Services response is needed for this KVG customer		
+											
+	Note: 										
+	Paste KVG Quote Calculator Rows A14 through R14 and associated content rows below that have data associated with the cameras streams, use cases, events, patrols, schedules and other details. This can also be found in the KVG Process Output Form from Calc.										
+											
+Paste Screen-shot of KVG Services Quote											
+											
+	Description:										
+	The KVG SME Quote must be attached before completing any CRM Opportunity Quote.										
+											
+	Quote with SOW Attached	Select									
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+Paste spread sheet of KVG Services configuration from Calculator											
+				KVG SME to paste in this area from the KVG calculator "KVG Process Output" Rows 6 to End and Column A-Q. Paste in same columns here and add pics in columns designated after R.							
+Quote Design Attached	Select										
+											
+											
+											
+											
+											
