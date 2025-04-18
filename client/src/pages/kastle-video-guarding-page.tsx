@@ -139,10 +139,27 @@ interface FormData {
   customIncidentType4: boolean;
   customIncidentType5: boolean;
   
-  // Site Assessment tab fields
+  // Site Assessment tab fields - Lighting Assessment
   lightingRequirements: string;
+  infraredCapability?: string;
+  lightingNotes?: string;
+  
+  // Site Assessment tab fields - Camera Assessment
   cameraFieldOfView: string;
+  mountingLocations?: string;
+  cameraAssessmentNotes?: string;
+  
+  // Site Assessment tab fields - Network Assessment
   networkConnectivity: string;
+  networkBandwidth?: string;
+  wirelessAvailability?: string;
+  networkUpgrade?: string;
+  networkAssessmentNotes?: string;
+  
+  // Site Assessment tab fields - Audio Assessment
+  speakerRequirements?: string;
+  audioEquipment?: string;
+  audioAssessmentNotes?: string;
   
   // Use Case tab fields
   useCaseCommitment: string;
@@ -1709,57 +1726,266 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="site-assessment">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Site Assessment</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <span>🔍</span> Site Assessment
+              </CardTitle>
               <CardDescription>Technical assessment of the site conditions</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
-                    <Select 
-                      value={formData.lightingRequirements}
-                      onValueChange={(value) => handleFormChange("lightingRequirements", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select lighting requirements" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Excellent">Excellent</SelectItem>
-                        <SelectItem value="Adequate">Adequate</SelectItem>
-                        <SelectItem value="Additional Needed">Additional Needed</SelectItem>
-                        <SelectItem value="IR Required">IR Required</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>💡</span> Lighting Assessment
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
+                      <Select 
+                        value={formData.lightingRequirements}
+                        onValueChange={(value) => handleFormChange("lightingRequirements", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select lighting type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - No additional lighting needed</SelectItem>
+                          <SelectItem value="Adequate">Adequate - Minor enhancement</SelectItem>
+                          <SelectItem value="Additional Needed">Additional Needed - Moderate lighting required</SelectItem>
+                          <SelectItem value="IR Required">IR Required - Night vision necessary</SelectItem>
+                          <SelectItem value="Complete Update">Complete Update - Full lighting installation</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="infraredCapability">Infrared Capability Required</Label>
+                      <Select 
+                        value={formData.infraredCapability || ""}
+                        onValueChange={(value) => handleFormChange("infraredCapability", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select IR requirement" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Essential">Essential - Dark conditions</SelectItem>
+                          <SelectItem value="Recommended">Recommended - Low light areas</SelectItem>
+                          <SelectItem value="Optional">Optional - Supplemental only</SelectItem>
+                          <SelectItem value="Not Required">Not Required - Good lighting</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
-                    <Select 
-                      value={formData.cameraFieldOfView}
-                      onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select field of view" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Clear">Clear</SelectItem>
-                        <SelectItem value="Partially Obstructed">Partially Obstructed</SelectItem>
-                        <SelectItem value="Heavily Obstructed">Heavily Obstructed</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="lightingNotes">Lighting Assessment Notes</Label>
+                    <Textarea 
+                      id="lightingNotes"
+                      value={formData.lightingNotes || ""}
+                      onChange={(e) => handleFormChange("lightingNotes", e.target.value)}
+                      placeholder="Describe lighting conditions, requirements, and recommendations"
+                      rows={2}
+                    />
                   </div>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="networkConnectivity">Network Connectivity Notes</Label>
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>📹</span> Camera Assessment
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
+                      <Select 
+                        value={formData.cameraFieldOfView}
+                        onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select field of view" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Clear">Clear - Unobstructed view</SelectItem>
+                          <SelectItem value="Partially Obstructed">Partially Obstructed - Some obstacles</SelectItem>
+                          <SelectItem value="Heavily Obstructed">Heavily Obstructed - Significant obstacles</SelectItem>
+                          <SelectItem value="Mixed">Mixed - Varies by location</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="mountingLocations">Mounting Locations Available</Label>
+                      <Select 
+                        value={formData.mountingLocations || ""}
+                        onValueChange={(value) => handleFormChange("mountingLocations", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select mounting options" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - Multiple optimal locations</SelectItem>
+                          <SelectItem value="Good">Good - Suitable locations available</SelectItem>
+                          <SelectItem value="Limited">Limited - Few options available</SelectItem>
+                          <SelectItem value="Challenging">Challenging - Difficult mounting conditions</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="cameraAssessmentNotes">Camera Assessment Notes</Label>
                     <Textarea 
-                      id="networkConnectivity"
-                      value={formData.networkConnectivity}
-                      onChange={(e) => handleFormChange("networkConnectivity", e.target.value)}
-                      placeholder="Enter details about network connectivity and requirements"
-                      rows={5}
+                      id="cameraAssessmentNotes"
+                      value={formData.cameraAssessmentNotes || ""}
+                      onChange={(e) => handleFormChange("cameraAssessmentNotes", e.target.value)}
+                      placeholder="Describe camera positioning, challenges, and recommendations"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>🌐</span> Network Assessment
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="networkConnectivity">Network Connectivity</Label>
+                      <Select 
+                        value={formData.networkConnectivity}
+                        onValueChange={(value) => handleFormChange("networkConnectivity", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select network status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - High-speed reliable connection</SelectItem>
+                          <SelectItem value="Good">Good - Consistent connection</SelectItem>
+                          <SelectItem value="Fair">Fair - Occasional issues</SelectItem>
+                          <SelectItem value="Poor">Poor - Frequent disconnections</SelectItem>
+                          <SelectItem value="None">None - Network installation required</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="networkBandwidth">Available Bandwidth</Label>
+                      <Select 
+                        value={formData.networkBandwidth || ""}
+                        onValueChange={(value) => handleFormChange("networkBandwidth", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select bandwidth" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="High">High (100+ Mbps)</SelectItem>
+                          <SelectItem value="Medium">Medium (25-100 Mbps)</SelectItem>
+                          <SelectItem value="Low">Low (5-25 Mbps)</SelectItem>
+                          <SelectItem value="Very Low">Very Low (&lt; 5 Mbps)</SelectItem>
+                          <SelectItem value="Unknown">Unknown - Testing required</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="wirelessAvailability">Wireless Availability</Label>
+                      <Select 
+                        value={formData.wirelessAvailability || ""}
+                        onValueChange={(value) => handleFormChange("wirelessAvailability", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select wireless status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Complete">Complete - Site-wide coverage</SelectItem>
+                          <SelectItem value="Partial">Partial - Coverage in main areas</SelectItem>
+                          <SelectItem value="Minimal">Minimal - Limited coverage</SelectItem>
+                          <SelectItem value="None">None - No wireless available</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="networkUpgrade">Network Upgrade Required</Label>
+                      <Select 
+                        value={formData.networkUpgrade || ""}
+                        onValueChange={(value) => handleFormChange("networkUpgrade", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select upgrade requirement" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="None">None - Existing network sufficient</SelectItem>
+                          <SelectItem value="Minor">Minor - Small enhancements needed</SelectItem>
+                          <SelectItem value="Moderate">Moderate - Several upgrades required</SelectItem>
+                          <SelectItem value="Major">Major - Significant network overhaul</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="networkAssessmentNotes">Network Assessment Notes</Label>
+                    <Textarea 
+                      id="networkAssessmentNotes"
+                      value={formData.networkAssessmentNotes || ""}
+                      onChange={(e) => handleFormChange("networkAssessmentNotes", e.target.value)}
+                      placeholder="Describe network conditions, challenges, and requirements"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>🔊</span> Audio Assessment
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="speakerRequirements">Speaker Requirements</Label>
+                      <Select 
+                        value={formData.speakerRequirements || ""}
+                        onValueChange={(value) => handleFormChange("speakerRequirements", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select speaker needs" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="None">None - Not required</SelectItem>
+                          <SelectItem value="Minimal">Minimal - Basic announcement capability</SelectItem>
+                          <SelectItem value="Standard">Standard - Clear audio in key areas</SelectItem>
+                          <SelectItem value="Advanced">Advanced - High-quality full coverage</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="audioEquipment">Audio Equipment Status</Label>
+                      <Select 
+                        value={formData.audioEquipment || ""}
+                        onValueChange={(value) => handleFormChange("audioEquipment", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select audio status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Existing">Existing - Can reuse</SelectItem>
+                          <SelectItem value="Upgrade">Upgrade - Existing needs enhancement</SelectItem>
+                          <SelectItem value="New">New - Complete installation required</SelectItem>
+                          <SelectItem value="Not Applicable">Not Applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="audioAssessmentNotes">Audio Assessment Notes</Label>
+                    <Textarea 
+                      id="audioAssessmentNotes"
+                      value={formData.audioAssessmentNotes || ""}
+                      onChange={(e) => handleFormChange("audioAssessmentNotes", e.target.value)}
+                      placeholder="Describe audio requirements, speaker placement, and challenges"
+                      rows={2}
                     />
                   </div>
                 </div>
