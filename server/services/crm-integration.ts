@@ -4,6 +4,37 @@ import { crmSettings, projects, CrmSettings, Project, equipmentImages, equipment
 import { eq } from "drizzle-orm";
 import "isomorphic-fetch";
 
+// Type definition for CRM settings
+interface SharePointSettings {
+  sharePointSiteId: string;
+  sharePointDriveId: string;
+  opportunitiesFolderId?: string;
+}
+
+// Helper function to safely parse SharePoint settings
+function parseSharePointSettings(settings: CrmSettings): SharePointSettings | null {
+  if (!settings || !settings.settings) {
+    return null;
+  }
+  
+  try {
+    const settingsObj = settings.settings as Record<string, any>;
+    
+    if (!settingsObj.sharePointSiteId || !settingsObj.sharePointDriveId) {
+      return null;
+    }
+    
+    return {
+      sharePointSiteId: settingsObj.sharePointSiteId,
+      sharePointDriveId: settingsObj.sharePointDriveId,
+      opportunitiesFolderId: settingsObj.opportunitiesFolderId
+    };
+  } catch (error) {
+    console.error("Error parsing SharePoint settings:", error);
+    return null;
+  }
+}
+
 // Utility function to make authenticated API calls to Dataverse
 async function callDataverseApi(
   url: string, 
@@ -191,12 +222,13 @@ export class DynamicsCrm implements CrmSystem {
     
     // Get settings for SharePoint site/drive info
     const settings = await this.getSettings();
+    const sharePointSettings = parseSharePointSettings(settings);
     
-    if (!settings || !settings.settings.sharePointSiteId || !settings.settings.sharePointDriveId) {
-      throw new Error("SharePoint settings not configured");
+    if (!sharePointSettings) {
+      throw new Error("SharePoint settings not configured or incomplete");
     }
     
-    const { sharePointSiteId, sharePointDriveId, opportunitiesFolderId } = settings.settings as any;
+    const { sharePointSiteId, sharePointDriveId, opportunitiesFolderId } = sharePointSettings;
     
     // Create folder in SharePoint
     // Get the userId from somewhere - for now hardcode to 1 (first user)
@@ -383,12 +415,13 @@ export class DataverseCrm implements CrmSystem {
     
     // Get settings for SharePoint site/drive info
     const settings = await this.getSettings();
+    const sharePointSettings = parseSharePointSettings(settings);
     
-    if (!settings || !settings.settings.sharePointSiteId || !settings.settings.sharePointDriveId) {
-      throw new Error("SharePoint settings not configured");
+    if (!sharePointSettings) {
+      throw new Error("SharePoint settings not configured or incomplete");
     }
     
-    const { sharePointSiteId, sharePointDriveId, opportunitiesFolderId } = settings.settings as any;
+    const { sharePointSiteId, sharePointDriveId, opportunitiesFolderId } = sharePointSettings;
     
     // Create folder in SharePoint
     // Get the userId from somewhere - for now hardcode to 1 (first user)
