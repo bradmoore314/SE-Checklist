@@ -458,21 +458,27 @@ const KastleVideoGuardingPage: React.FC = () => {
       <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
 
       <Tabs defaultValue="discovery" className="w-full">
-        <TabsList className="grid grid-cols-5 mb-6">
+        <TabsList className="grid grid-cols-7 mb-6">
           <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white">
             1. Discovery - BDM
           </TabsTrigger>
           <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700 text-white">
             2. Site Assessment - SE
           </TabsTrigger>
+          <TabsTrigger value="stream-details" className="bg-teal-600 data-[state=active]:bg-teal-700 text-white">
+            3. Stream Details
+          </TabsTrigger>
+          <TabsTrigger value="pricing" className="bg-pink-600 data-[state=active]:bg-pink-700 text-white">
+            4. Pricing
+          </TabsTrigger>
           <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700 text-white">
-            3. Use Case - SOW - SME
+            5. Use Case - SOW - SME
           </TabsTrigger>
           <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700 text-white">
-            4. VOC Protocol - AM
+            6. VOC Protocol - AM
           </TabsTrigger>
           <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white">
-            5. Project Deployment - PM
+            7. Project Deployment - PM
           </TabsTrigger>
         </TabsList>
 
