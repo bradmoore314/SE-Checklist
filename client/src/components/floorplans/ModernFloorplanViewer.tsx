@@ -59,12 +59,16 @@ type Floorplan = {
 // Drawing annotation types
 type Annotation = {
   id: string;
-  type: 'line' | 'rectangle' | 'circle' | 'text';
+  type: 'line' | 'rectangle' | 'circle' | 'text' | 'measurement';
   points: { x: number, y: number }[];
   text?: string;
   strokeColor: string;
   strokeWidth: number;
   fillColor?: string;
+  // Additional measurement properties
+  measurementValue?: number;
+  measurementUnit?: string;
+  measurementScale?: number; // pixels per unit
 };
 
 // Layer configuration types
@@ -661,7 +665,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
 
   // Check if current mode is a drawing mode
   const isDrawingMode = () => {
-    return ['draw_line', 'draw_rectangle', 'draw_circle', 'add_text'].includes(viewerMode);
+    return ['draw_line', 'draw_rectangle', 'draw_circle', 'add_text', 'measure'].includes(viewerMode);
   };
 
   // Handle pan start
@@ -878,11 +882,21 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
 
   // Render annotations
   const renderAnnotations = () => {
-    if (!isLayerVisible('annotations')) {
+    if (!isLayerVisible('annotations') && !isLayerVisible('measurements')) {
       return null;
     }
     
     return annotations.map(annotation => {
+      // Skip measurement annotations if measurements layer is not visible
+      if (annotation.type === 'measurement' && !isLayerVisible('measurements')) {
+        return null;
+      }
+      
+      // Skip non-measurement annotations if annotations layer is not visible
+      if (annotation.type !== 'measurement' && !isLayerVisible('annotations')) {
+        return null;
+      }
+      
       switch (annotation.type) {
         case 'line':
           if (annotation.points.length < 2) return null;
@@ -978,6 +992,91 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
             </div>
           );
           
+        case 'measurement':
+          if (annotation.points.length < 2) return null;
+          
+          const [measureStart, measureEnd] = annotation.points;
+          
+          // Calculate distance in percentage points 
+          const distanceX = measureEnd.x - measureStart.x;
+          const distanceY = measureEnd.y - measureStart.y;
+          const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+          
+          // Calculate midpoint for label placement
+          const midX = (measureStart.x + measureEnd.x) / 2;
+          const midY = (measureStart.y + measureEnd.y) / 2;
+          
+          // Calculate angle for proper text rotation
+          const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI);
+          
+          // Format distance with proper unit
+          const unit = annotation.measurementUnit || 'px';
+          const value = annotation.measurementValue || distance.toFixed(2);
+          const label = annotation.text || `${value} ${unit}`;
+          
+          return (
+            <div key={annotation.id} className="pointer-events-none">
+              <svg
+                className="absolute top-0 left-0 w-full h-full"
+                style={{ zIndex: 25 }}
+              >
+                {/* Main measurement line */}
+                <line
+                  x1={`${measureStart.x}%`}
+                  y1={`${measureStart.y}%`}
+                  x2={`${measureEnd.x}%`}
+                  y2={`${measureEnd.y}%`}
+                  stroke="#2563eb" // Blue color for measurements
+                  strokeWidth="2"
+                  markerEnd="url(#arrowhead)"
+                  markerStart="url(#arrowhead)"
+                  strokeDasharray="4,2"
+                />
+                
+                {/* Start and end points */}
+                <circle 
+                  cx={`${measureStart.x}%`} 
+                  cy={`${measureStart.y}%`} 
+                  r="4" 
+                  fill="#2563eb" 
+                />
+                <circle 
+                  cx={`${measureEnd.x}%`} 
+                  cy={`${measureEnd.y}%`} 
+                  r="4" 
+                  fill="#2563eb" 
+                />
+                
+                {/* Define the arrowhead marker */}
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="10"
+                    markerHeight="7"
+                    refX="0"
+                    refY="3.5"
+                    orient="auto"
+                  >
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb" />
+                  </marker>
+                </defs>
+              </svg>
+              
+              {/* Measurement label */}
+              <div
+                className="absolute bg-white px-2 py-0.5 rounded-md shadow-sm border border-blue-300 text-blue-700 text-xs font-medium"
+                style={{
+                  left: `${midX}%`,
+                  top: `${midY}%`,
+                  transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                  zIndex: 26
+                }}
+              >
+                {label}
+              </div>
+            </div>
+          );
+          
         default:
           return null;
       }
@@ -1062,6 +1161,74 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
               strokeDasharray="5,5"
             />
           </svg>
+        );
+        
+      case 'measurement':
+        if (currentAnnotation.points.length < 2) return null;
+        
+        const [measureStart, measureEnd] = currentAnnotation.points;
+        
+        // Calculate distance in percentage points 
+        const distanceX = measureEnd.x - measureStart.x;
+        const distanceY = measureEnd.y - measureStart.y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        
+        // Calculate midpoint for label placement
+        const midX = (measureStart.x + measureEnd.x) / 2;
+        const midY = (measureStart.y + measureEnd.y) / 2;
+        
+        // Calculate angle for proper text rotation
+        const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI);
+        
+        // Format distance
+        const unit = 'px';  // Temporary unit during drawing
+        const value = distance.toFixed(2);
+        
+        return (
+          <div className="pointer-events-none">
+            <svg
+              className="absolute top-0 left-0 w-full h-full"
+              style={{ zIndex: 25 }}
+            >
+              {/* Main measurement line */}
+              <line
+                x1={`${measureStart.x}%`}
+                y1={`${measureStart.y}%`}
+                x2={`${measureEnd.x}%`}
+                y2={`${measureEnd.y}%`}
+                stroke="#2563eb" // Blue color for measurements
+                strokeWidth="2"
+                strokeDasharray="4,2"
+              />
+              
+              {/* Start and end points */}
+              <circle 
+                cx={`${measureStart.x}%`} 
+                cy={`${measureStart.y}%`} 
+                r="4" 
+                fill="#2563eb" 
+              />
+              <circle 
+                cx={`${measureEnd.x}%`} 
+                cy={`${measureEnd.y}%`} 
+                r="4" 
+                fill="#2563eb" 
+              />
+            </svg>
+            
+            {/* Temporary measurement label */}
+            <div
+              className="absolute bg-white px-2 py-0.5 rounded-md shadow-sm border border-blue-300 text-blue-700 text-xs font-medium"
+              style={{
+                left: `${midX}%`,
+                top: `${midY}%`,
+                transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                zIndex: 26
+              }}
+            >
+              {`${value} ${unit}`}
+            </div>
+          </div>
         );
         
       default:
