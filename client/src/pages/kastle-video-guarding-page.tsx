@@ -5,6 +5,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Stream, StreamImage } from "@/types";
 
 // FormData interface for all form fields
 interface FormData {
@@ -422,32 +423,7 @@ const KastleVideoGuardingPage: React.FC = () => {
     });
   };
   
-  // Stream interface
-  interface StreamImage {
-    id: string;
-    url: string;
-    filename: string;
-    uploadDate: Date;
-  }
-
-  interface Stream {
-    id: number;
-    location: string;
-    fovAccessibility: string;
-    cameraType: string;
-    useCaseProblem: string;
-    speakerAssociation: string;
-    audioTalkDown: string;
-    eventMonitoring: string;
-    monitoringStartTime: string;
-    monitoringEndTime: string;
-    patrolGroups: string;
-    patrolStartTime: string;
-    patrolEndTime: string;
-    images: StreamImage[];
-  }
-
-  // Function to add a new stream
+  // Stream functions
   const addStream = (streamToClone?: Stream) => {
     const newStream: Stream = streamToClone 
       ? { ...streamToClone, id: streams.length + 1, images: [] } 
@@ -455,7 +431,9 @@ const KastleVideoGuardingPage: React.FC = () => {
           id: streams.length + 1,
           location: "",
           fovAccessibility: "Select",
+          cameraAccessibility: "Select",
           cameraType: "Select",
+          environment: "",
           useCaseProblem: "",
           speakerAssociation: "",
           audioTalkDown: "Select",
@@ -465,6 +443,21 @@ const KastleVideoGuardingPage: React.FC = () => {
           patrolGroups: "Select",
           patrolStartTime: "",
           patrolEndTime: "",
+          // Legacy fields
+          quantity: 1,
+          description: "",
+          monitoredArea: "",
+          accessibility: "",
+          useCase: "",
+          analyticRule1: "",
+          dwellTime1: 0,
+          analyticRule2: "",
+          dwellTime2: 0,
+          daysOfWeek: [],
+          schedule: "",
+          eventVolume: 0,
+          patrolType: "",
+          patrolsPerWeek: 0,
           images: []
         };
     
@@ -516,10 +509,9 @@ const KastleVideoGuardingPage: React.FC = () => {
           
           // Create a new stream image
           const newImage: StreamImage = {
-            id: `stream_${streamId}_img_${Date.now()}_${i}`,
-            url: e.target.result,
-            filename: file.name,
-            uploadDate: new Date()
+            id: Date.now() + i,
+            imageData: e.target.result,
+            filename: file.name
           };
           
           // Update the stream with the new image
