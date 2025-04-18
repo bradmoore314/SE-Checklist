@@ -28,6 +28,25 @@ interface FormData {
   customerVertical: string;
   propertyCategory: string;
   
+  // Project Deployment - PM tab fields
+  pmName: string;
+  deploymentDate: string;
+  opportunityNumber: string;
+  projectManager: string;
+  siteSupervisor: string;
+  technician: string;
+  projectScopeDescription: string;
+  deploymentRequirements: string;
+  installationRequirements: string;
+  partsListCredentials: string;
+  gatewayIpAddress: string;
+  gatewayPort: string;
+  gatewayUsername: string;
+  gatewayPassword: string;
+  streamNamesIds: string;
+  streamHealthVerification: string;
+  speakerVerification: string;
+  
   // Technology fields
   technology: string;
   technologyDeployed: string;
@@ -366,6 +385,25 @@ const KastleVideoGuardingPage: React.FC = () => {
     vocScript: "",
     vocContactName: "",
     typeOfInstallAccount: "",
+    
+    // Project Deployment - PM tab fields
+    pmName: "",
+    deploymentDate: "",
+    opportunityNumber: "",
+    projectManager: "",
+    siteSupervisor: "",
+    technician: "",
+    projectScopeDescription: "",
+    deploymentRequirements: "",
+    installationRequirements: "",
+    partsListCredentials: "",
+    gatewayIpAddress: "",
+    gatewayPort: "",
+    gatewayUsername: "",
+    gatewayPassword: "",
+    streamNamesIds: "",
+    streamHealthVerification: "",
+    speakerVerification: "",
     
     // Escalation Process 1 fields
     escalationProcess1: "",
@@ -3646,7 +3684,272 @@ const KastleVideoGuardingPage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="deployment">
-          <div>Deployment content would go here</div>
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-indigo-800">
+                <span className="p-1.5 bg-indigo-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  5
+                </span>
+                KVG Pre-Deployment Prep
+              </CardTitle>
+              <CardDescription className="text-base text-indigo-700">
+                Configure deployment settings, installation requirements, and gateway credentials for your Kastle Video Guarding project
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-5">
+              {/* Opportunity Info Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-indigo-800 border-b border-indigo-100 pb-2 mb-4">
+                  Opportunity Info
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div>
+                    <Label htmlFor="opportunityNumber" className="text-indigo-700">Opportunity Number:</Label>
+                    <Input 
+                      id="opportunityNumber" 
+                      value={formData.opportunityNumber}
+                      onChange={(e) => handleFormChange("opportunityNumber", e.target.value)}
+                      className="mt-1 bg-white"
+                      placeholder="Enter opportunity number"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="projectManager" className="text-indigo-700">Project Manager:</Label>
+                    <Input 
+                      id="projectManager" 
+                      value={formData.projectManager}
+                      onChange={(e) => handleFormChange("projectManager", e.target.value)}
+                      className="mt-1 bg-white"
+                      placeholder="Enter project manager name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="deploymentDate" className="text-indigo-700">Deployment Date:</Label>
+                    <Input 
+                      id="deploymentDate" 
+                      value={formData.deploymentDate}
+                      onChange={(e) => handleFormChange("deploymentDate", e.target.value)}
+                      className="mt-1 bg-white"
+                      type="date"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Contacts Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-indigo-800 border-b border-indigo-100 pb-2 mb-4">
+                  Contacts
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div>
+                    <Label htmlFor="pmName" className="text-indigo-700">Project Manager:</Label>
+                    <Input 
+                      id="pmName" 
+                      value={formData.pmName}
+                      onChange={(e) => handleFormChange("pmName", e.target.value)}
+                      className="mt-1 bg-white"
+                      placeholder="Enter PM name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="siteSupervisor" className="text-indigo-700">Site Supervisor:</Label>
+                    <Input 
+                      id="siteSupervisor" 
+                      value={formData.siteSupervisor}
+                      onChange={(e) => handleFormChange("siteSupervisor", e.target.value)}
+                      className="mt-1 bg-white"
+                      placeholder="Enter site supervisor name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="technician" className="text-indigo-700">Technician:</Label>
+                    <Input 
+                      id="technician" 
+                      value={formData.technician}
+                      onChange={(e) => handleFormChange("technician", e.target.value)}
+                      className="mt-1 bg-white"
+                      placeholder="Enter technician name"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Project Scope Description Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-indigo-800 border-b border-indigo-100 pb-2 mb-4">
+                  Project Scope Description
+                </h3>
+                <div>
+                  <Label htmlFor="projectScopeDescription" className="text-indigo-700">Description:</Label>
+                  <Textarea 
+                    id="projectScopeDescription"
+                    value={formData.projectScopeDescription}
+                    onChange={(e) => handleFormChange("projectScopeDescription", e.target.value)}
+                    className="mt-1 bg-white h-32"
+                    placeholder="Enter detailed project scope description"
+                  />
+                </div>
+              </div>
+              
+              {/* Project Deployment/Installation Requirements Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-indigo-800 border-b border-indigo-100 pb-2 mb-4">
+                  Project Deployment/Installation Requirements (Configuration Details Required)
+                </h3>
+                <div className="mb-5">
+                  <Label htmlFor="deploymentRequirements" className="text-indigo-700">Deployment Requirements:</Label>
+                  <Textarea 
+                    id="deploymentRequirements"
+                    value={formData.deploymentRequirements}
+                    onChange={(e) => handleFormChange("deploymentRequirements", e.target.value)}
+                    className="mt-1 bg-white h-24"
+                    placeholder="Enter deployment requirements and configuration details"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="installationRequirements" className="text-indigo-700">Installation Requirements:</Label>
+                  <Textarea 
+                    id="installationRequirements"
+                    value={formData.installationRequirements}
+                    onChange={(e) => handleFormChange("installationRequirements", e.target.value)}
+                    className="mt-1 bg-white h-24"
+                    placeholder="Enter installation requirements"
+                  />
+                </div>
+              </div>
+              
+              {/* Parts or Fill in Pan List of Parts, IP addresses and Credentials */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold bg-black text-white px-4 py-2 mb-4">
+                  Parts or Fill in Pan List of Parts, IP addresses and Credentials
+                </h3>
+                <div>
+                  <Textarea 
+                    id="partsListCredentials"
+                    value={formData.partsListCredentials}
+                    onChange={(e) => handleFormChange("partsListCredentials", e.target.value)}
+                    className="bg-white h-40"
+                    placeholder="Enter list of parts, IP addresses, and credentials"
+                  />
+                </div>
+              </div>
+              
+              {/* Gateway & Video Stream Configuration */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-indigo-800 border-b border-indigo-100 pb-2 mb-4">
+                  Gateway & Video Stream Configuration
+                </h3>
+                
+                {/* Gateway Credentials */}
+                <div className="bg-indigo-50 p-4 rounded-lg mb-6">
+                  <h4 className="font-semibold text-indigo-800 mb-3">Gateway Credentials</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="gatewayIpAddress" className="text-indigo-700">IP Address:</Label>
+                      <Input 
+                        id="gatewayIpAddress" 
+                        value={formData.gatewayIpAddress}
+                        onChange={(e) => handleFormChange("gatewayIpAddress", e.target.value)}
+                        className="mt-1 bg-white"
+                        placeholder="Enter gateway IP address"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="gatewayPort" className="text-indigo-700">Port:</Label>
+                      <Input 
+                        id="gatewayPort" 
+                        value={formData.gatewayPort}
+                        onChange={(e) => handleFormChange("gatewayPort", e.target.value)}
+                        className="mt-1 bg-white"
+                        placeholder="Enter gateway port"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="gatewayUsername" className="text-indigo-700">Username:</Label>
+                      <Input 
+                        id="gatewayUsername" 
+                        value={formData.gatewayUsername}
+                        onChange={(e) => handleFormChange("gatewayUsername", e.target.value)}
+                        className="mt-1 bg-white"
+                        placeholder="Enter gateway username"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="gatewayPassword" className="text-indigo-700">Password:</Label>
+                      <Input 
+                        id="gatewayPassword" 
+                        value={formData.gatewayPassword}
+                        onChange={(e) => handleFormChange("gatewayPassword", e.target.value)}
+                        className="mt-1 bg-white"
+                        type="password"
+                        placeholder="Enter gateway password"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stream Configuration */}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-blue-800 mb-3">Stream Configuration</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="streamNamesIds" className="text-blue-700">Stream Names/IDs:</Label>
+                      <Textarea 
+                        id="streamNamesIds"
+                        value={formData.streamNamesIds}
+                        onChange={(e) => handleFormChange("streamNamesIds", e.target.value)}
+                        className="mt-1 bg-white h-24"
+                        placeholder="Enter stream names and IDs"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="streamHealthVerification" className="text-blue-700">Stream Health Verification:</Label>
+                      <Select
+                        value={formData.streamHealthVerification}
+                        onValueChange={(value) => handleFormChange("streamHealthVerification", value)}
+                      >
+                        <SelectTrigger className="w-full bg-white">
+                          <SelectValue placeholder="Select verification status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Verified">Verified</SelectItem>
+                          <SelectItem value="Partially Verified">Partially Verified</SelectItem>
+                          <SelectItem value="Not Verified">Not Verified</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="speakerVerification" className="text-blue-700">Speaker Verification:</Label>
+                      <Select
+                        value={formData.speakerVerification}
+                        onValueChange={(value) => handleFormChange("speakerVerification", value)}
+                      >
+                        <SelectTrigger className="w-full bg-white">
+                          <SelectValue placeholder="Select verification status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Working">Working</SelectItem>
+                          <SelectItem value="Not Working">Not Working</SelectItem>
+                          <SelectItem value="N/A">N/A</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Save Button */}
+              <div className="flex justify-end mt-8">
+                <Button 
+                  onClick={handleSave}
+                  className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md flex items-center gap-2"
+                >
+                  <Save size={18} /> Save Deployment Configuration
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
         <TabsContent value="pricing">
