@@ -412,41 +412,49 @@ const KastleVideoGuardingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">Kastle Video Guarding</h1>
+      <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+        Configure video monitoring settings, patrol schedules, and service commitments for your Kastle Video Guarding project
+      </p>
 
       <Tabs defaultValue="stream-details" className="w-full">
-        <TabsList className="grid grid-cols-7 mb-6">
-          <TabsTrigger value="stream-details" className="bg-teal-600 data-[state=active]:bg-teal-700 text-white flex items-center justify-center gap-1">
-            <span>📹</span> Stream Details
+        <TabsList className="grid grid-cols-7 mb-6 p-1 gap-1.5 rounded-xl bg-gradient-to-r from-gray-100 to-slate-200 shadow-md">
+          <TabsTrigger value="stream-details" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">📹</span> Stream Details
           </TabsTrigger>
-          <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white flex items-center justify-center gap-1">
-            <span>🔍</span> 1. Discovery - BDM
+          <TabsTrigger value="discovery" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">🔍</span> 1. Discovery - BDM
           </TabsTrigger>
-          <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700 text-white flex items-center justify-center gap-1">
-            <span>🏢</span> 2. Site Assessment - SE
+          <TabsTrigger value="site-assessment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">🏢</span> 2. Site Assessment - SE
           </TabsTrigger>
-          <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700 text-white flex items-center justify-center gap-1">
-            <span>📝</span> 3. Use Case - SOW - SME
+          <TabsTrigger value="use-case" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">📝</span> 3. Use Case - SOW - SME
           </TabsTrigger>
-          <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700 text-white flex items-center justify-center gap-1">
-            <span>🎯</span> 4. VOC Protocol - AM
+          <TabsTrigger value="voc-protocol" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">🎯</span> 4. VOC Protocol - AM
           </TabsTrigger>
-          <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white flex items-center justify-center gap-1">
-            <span>🚀</span> 5. Project Deployment - PM
+          <TabsTrigger value="deployment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">🚀</span> 5. Project Deployment - PM
           </TabsTrigger>
-          <TabsTrigger value="pricing" className="bg-pink-600 data-[state=active]:bg-pink-700 text-white flex items-center justify-center gap-1">
-            <span>💰</span> Pricing
+          <TabsTrigger value="pricing" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+            <span className="text-xl">💰</span> Pricing
           </TabsTrigger>
         </TabsList>
 
         {/* Stream Details Tab Content */}
         <TabsContent value="stream-details">
           <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <span>📹</span> Camera Video Stream Details
+            <CardHeader className="bg-gradient-to-r from-teal-50 to-blue-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-teal-800">
+                <span className="p-1.5 bg-teal-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <VideoIcon size={20} />
+                </span>
+                Camera Video Stream Details
               </CardTitle>
-              <CardDescription className="text-base">Configure and manage your camera streams with detailed settings for monitoring and patrol groups</CardDescription>
+              <CardDescription className="text-base text-teal-700">
+                Configure and manage your camera streams with detailed settings for monitoring and patrol groups
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex justify-end mb-4">
@@ -738,11 +746,18 @@ const KastleVideoGuardingPage: React.FC = () => {
         
         <TabsContent value="use-case">
           <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span>📝</span> Use Case - SOW - SME
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-purple-800">
+                <span className="p-1.5 bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                  </svg>
+                </span>
+                Use Case - SOW - SME
               </CardTitle>
-              <CardDescription>Define the use case, scope of work, and service commitment</CardDescription>
+              <CardDescription className="text-base text-purple-700">
+                Define the use case, scope of work, and service commitment details for this project
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-6">
