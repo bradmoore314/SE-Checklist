@@ -1598,6 +1598,36 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
                     </Button>
                   </div>
                   
+                  {/* Measurement unit selector - only show when in measure mode */}
+                  {viewerMode === 'measure' && (
+                    <div className="mt-3 p-2 bg-blue-50 rounded-md border border-blue-100">
+                      <h4 className="text-xs font-medium mb-2 text-blue-700">Measurement Units</h4>
+                      <div className="flex items-center">
+                        <Select 
+                          value={measurementUnit} 
+                          onValueChange={(value) => {
+                            console.log("Measurement unit changed to:", value);
+                            setMeasurementUnit(value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full h-8 text-xs">
+                            <SelectValue placeholder="Select unit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="px">Pixels</SelectItem>
+                            <SelectItem value="ft">Feet</SelectItem>
+                            <SelectItem value="m">Meters</SelectItem>
+                            <SelectItem value="cm">Centimeters</SelectItem>
+                            <SelectItem value="in">Inches</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-2">
+                        Create measurements by clicking and dragging on the floorplan
+                      </p>
+                    </div>
+                  )}
+                  
                   {/* Selection tools - only show when in select mode and markers are selected */}
                   {viewerMode === 'select' && selectedMarkers.length > 0 && (
                     <div className="mt-4 pt-4 border-t">
