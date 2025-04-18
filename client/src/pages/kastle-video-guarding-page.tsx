@@ -143,14 +143,25 @@ interface FormData {
   lightingRequirements: string;
   infraredCapability?: string;
   lightingNotes?: string;
+  lightingAppropriate?: string;
   
   // Site Assessment tab fields - Camera Assessment
   cameraFieldOfView: string;
+  cameraFovClear?: string;
   mountingLocations?: string;
   cameraAssessmentNotes?: string;
   
+  // Site Assessment tab fields - System & Power Assessment
+  headendEnvironment?: string;
+  powerStable?: string;
+  powerRequirements?: string;
+  headendNotes?: string;
+  
   // Site Assessment tab fields - Network Assessment
   networkConnectivity: string;
+  siteSwitchPorts?: string;
+  cloudUplinkCapacity?: string;
+  networkCabling?: string;
   networkBandwidth?: string;
   wirelessAvailability?: string;
   networkUpgrade?: string;
@@ -158,8 +169,28 @@ interface FormData {
   
   // Site Assessment tab fields - Audio Assessment
   speakerRequirements?: string;
+  speakerCoverage?: string;
   audioEquipment?: string;
+  audioCompatible?: string;
   audioAssessmentNotes?: string;
+  
+  // Site Assessment tab fields - Technology (Take-Over)
+  cameraCompatibilityVerified?: string;
+  cameraCompatibilityLink?: string;
+  cameraCompatibilityNotes?: string;
+  fisheyeCompatibility?: string;
+  dewarpingAtEdge?: string;
+  edgeStreamsSupport?: string;
+  
+  // Site Assessment tab fields - Site Plan Design
+  sitePlanLink?: string;
+  sitePlanNotes?: string;
+  sitePhotoLink?: string;
+  
+  // Site Assessment tab fields - Equipment List
+  equipmentListLink?: string;
+  equipmentNotes?: string;
+  equipmentBom?: string;
   
   // Use Case tab fields
   useCaseCommitment: string;
@@ -1729,17 +1760,26 @@ const KastleVideoGuardingPage: React.FC = () => {
               <CardTitle className="flex items-center gap-2">
                 <span>🔍</span> Site Assessment
               </CardTitle>
-              <CardDescription>Technical assessment of the site conditions</CardDescription>
+              <CardDescription>
+                This form is completed during or following the Customer Discovery process and during the "Engage stage" to ensure that all the customer site details and Kastle KVG services are documented properly by the SE.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <span>💡</span> Lighting Assessment
+                    <span>💡</span> Site Environment & Lighting Assessment
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label htmlFor="lightingRequirements">Lighting Requirements</Label>
+                      <Label htmlFor="lightingRequirements" className="flex items-center gap-1">
+                        Lighting Requirements
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="Depending on the environment, external lighting averages a horizontal illuminance level at grade: Storefronts/entrances (20 footcandles), Small parking lots/pools (15 footcandles), Large parking lots (10 footcandles), Other areas (5 footcandles)">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
                       <Select 
                         value={formData.lightingRequirements}
                         onValueChange={(value) => handleFormChange("lightingRequirements", value)}
@@ -1758,26 +1798,32 @@ const KastleVideoGuardingPage: React.FC = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="infraredCapability">Infrared Capability Required</Label>
+                      <Label htmlFor="lightingAppropriate">Lighting Appropriate for Night Monitoring</Label>
                       <Select 
-                        value={formData.infraredCapability || ""}
-                        onValueChange={(value) => handleFormChange("infraredCapability", value)}
+                        value={formData.lightingAppropriate || ""}
+                        onValueChange={(value) => handleFormChange("lightingAppropriate", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select IR requirement" />
+                          <SelectValue placeholder="Verify lighting sufficiency" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Essential">Essential - Dark conditions</SelectItem>
-                          <SelectItem value="Recommended">Recommended - Low light areas</SelectItem>
-                          <SelectItem value="Optional">Optional - Supplemental only</SelectItem>
-                          <SelectItem value="Not Required">Not Required - Good lighting</SelectItem>
+                          <SelectItem value="Yes">Yes - Lighting is appropriate</SelectItem>
+                          <SelectItem value="No">No - Lighting is inadequate</SelectItem>
+                          <SelectItem value="Partial">Partial - Some areas need improvement</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   
                   <div className="space-y-2 mb-4">
-                    <Label htmlFor="lightingNotes">Lighting Assessment Notes</Label>
+                    <Label htmlFor="lightingNotes" className="flex items-center gap-1">
+                      Lighting and FOV Notes
+                      <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                        <div className="tooltip" title="Include details about lighting conditions, specific areas needing improvement, and any special requirements for night monitoring">
+                          <span>ⓘ</span>
+                        </div>
+                      </Button>
+                    </Label>
                     <Textarea 
                       id="lightingNotes"
                       value={formData.lightingNotes || ""}
@@ -1794,7 +1840,14 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label htmlFor="cameraFieldOfView">Camera Field of View</Label>
+                      <Label htmlFor="cameraFieldOfView" className="flex items-center gap-1">
+                        Camera Field of View
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="The FOV of the camera view should be free and clear of any obstructions. There should be no trees, signs, banners, trucks parked at docks or areas that the video analytic is required to detect events.">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
                       <Select 
                         value={formData.cameraFieldOfView}
                         onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
@@ -1812,19 +1865,18 @@ const KastleVideoGuardingPage: React.FC = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="mountingLocations">Mounting Locations Available</Label>
+                      <Label htmlFor="cameraFovClear">FOV Clear from Obstructions</Label>
                       <Select 
-                        value={formData.mountingLocations || ""}
-                        onValueChange={(value) => handleFormChange("mountingLocations", value)}
+                        value={formData.cameraFovClear || ""}
+                        onValueChange={(value) => handleFormChange("cameraFovClear", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select mounting options" />
+                          <SelectValue placeholder="Verify FOV clarity" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Excellent">Excellent - Multiple optimal locations</SelectItem>
-                          <SelectItem value="Good">Good - Suitable locations available</SelectItem>
-                          <SelectItem value="Limited">Limited - Few options available</SelectItem>
-                          <SelectItem value="Challenging">Challenging - Difficult mounting conditions</SelectItem>
+                          <SelectItem value="Yes">Yes - Views are clear</SelectItem>
+                          <SelectItem value="No">No - Significant obstructions</SelectItem>
+                          <SelectItem value="Partial">Partial - Some cameras affected</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1844,30 +1896,141 @@ const KastleVideoGuardingPage: React.FC = () => {
                 
                 <div className="border-t pt-6">
                   <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <span>🌐</span> Network Assessment
+                    <span>⚡</span> System & Power Assessment
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label htmlFor="networkConnectivity">Network Connectivity</Label>
+                      <Label htmlFor="powerRequirements" className="flex items-center gap-1">
+                        Power Requirements
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="Power budget is based on the individual systems and devices connected to the system. Each device has a power draw that must be accounted for in the total power budget.">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
                       <Select 
-                        value={formData.networkConnectivity}
-                        onValueChange={(value) => handleFormChange("networkConnectivity", value)}
+                        value={formData.powerStable || ""}
+                        onValueChange={(value) => handleFormChange("powerStable", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select network status" />
+                          <SelectValue placeholder="Power status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Excellent">Excellent - High-speed reliable connection</SelectItem>
-                          <SelectItem value="Good">Good - Consistent connection</SelectItem>
-                          <SelectItem value="Fair">Fair - Occasional issues</SelectItem>
-                          <SelectItem value="Poor">Poor - Frequent disconnections</SelectItem>
-                          <SelectItem value="None">None - Network installation required</SelectItem>
+                          <SelectItem value="Yes">Yes - Power is stable and ample</SelectItem>
+                          <SelectItem value="No">No - Power is insufficient</SelectItem>
+                          <SelectItem value="Needs Assessment">Needs Assessment - Further evaluation required</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="networkBandwidth">Available Bandwidth</Label>
+                      <Label htmlFor="headendEnvironment" className="flex items-center gap-1">
+                        Headend Environment
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="The headend is where all network and server equipment will be installed. This area must be secure, properly ventilated, and have adequate power.">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
+                      <Select 
+                        value={formData.headendEnvironment || ""}
+                        onValueChange={(value) => handleFormChange("headendEnvironment", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Headend status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Secure and properly vented</SelectItem>
+                          <SelectItem value="No">No - Issues with security or ventilation</SelectItem>
+                          <SelectItem value="Needs Improvement">Needs Improvement - Requires modifications</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="headendNotes" className="flex items-center gap-1">
+                      System Headend Notes
+                      <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                        <div className="tooltip" title="Fill in any additional details that are important for the install prep or design">
+                          <span>ⓘ</span>
+                        </div>
+                      </Button>
+                    </Label>
+                    <Textarea 
+                      id="headendNotes"
+                      value={formData.headendNotes || ""}
+                      onChange={(e) => handleFormChange("headendNotes", e.target.value)}
+                      placeholder="Add details about headend environment, power, and system requirements"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>🌐</span> Network Assessment
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="siteSwitchPorts" className="flex items-center gap-1">
+                        Site Switch(es) Port Availability
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="Verify that there are sufficient network switch ports available for all required devices">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
+                      <Select 
+                        value={formData.siteSwitchPorts || ""}
+                        onValueChange={(value) => handleFormChange("siteSwitchPorts", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Network switch status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Sufficient ports available</SelectItem>
+                          <SelectItem value="No">No - Additional switches needed</SelectItem>
+                          <SelectItem value="Partial">Partial - Some areas need expansion</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="cloudUplinkCapacity" className="flex items-center gap-1">
+                        Cloud Uplink Capacity
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="Verify that the internet connection has sufficient bandwidth for cloud video transmission">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
+                      <Select 
+                        value={formData.cloudUplinkCapacity || ""}
+                        onValueChange={(value) => handleFormChange("cloudUplinkCapacity", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Cloud capacity status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Sufficient uplink available</SelectItem>
+                          <SelectItem value="No">No - Uplink upgrade required</SelectItem>
+                          <SelectItem value="Unknown">Unknown - Testing needed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="networkBandwidth" className="flex items-center gap-1">
+                        Network Bandwidth
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                          <div className="tooltip" title="Bandwidth is dependent upon camera compression, frame rate, resolution and scene content. You must properly budget for all cameras based on switches and port capabilities.">
+                            <span>ⓘ</span>
+                          </div>
+                        </Button>
+                      </Label>
                       <Select 
                         value={formData.networkBandwidth || ""}
                         onValueChange={(value) => handleFormChange("networkBandwidth", value)}
@@ -1884,48 +2047,34 @@ const KastleVideoGuardingPage: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="wirelessAvailability">Wireless Availability</Label>
-                      <Select 
-                        value={formData.wirelessAvailability || ""}
-                        onValueChange={(value) => handleFormChange("wirelessAvailability", value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select wireless status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Complete">Complete - Site-wide coverage</SelectItem>
-                          <SelectItem value="Partial">Partial - Coverage in main areas</SelectItem>
-                          <SelectItem value="Minimal">Minimal - Limited coverage</SelectItem>
-                          <SelectItem value="None">None - No wireless available</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="networkUpgrade">Network Upgrade Required</Label>
+                      <Label htmlFor="networkCabling">Network Cabling & Connectors</Label>
                       <Select 
-                        value={formData.networkUpgrade || ""}
-                        onValueChange={(value) => handleFormChange("networkUpgrade", value)}
+                        value={formData.networkCabling || ""}
+                        onValueChange={(value) => handleFormChange("networkCabling", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select upgrade requirement" />
+                          <SelectValue placeholder="Cabling status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="None">None - Existing network sufficient</SelectItem>
-                          <SelectItem value="Minor">Minor - Small enhancements needed</SelectItem>
-                          <SelectItem value="Moderate">Moderate - Several upgrades required</SelectItem>
-                          <SelectItem value="Major">Major - Significant network overhaul</SelectItem>
+                          <SelectItem value="Yes">Yes - Sufficient cabling exists</SelectItem>
+                          <SelectItem value="No">No - New cabling required</SelectItem>
+                          <SelectItem value="Partial">Partial - Some areas need new cabling</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="networkAssessmentNotes">Network Assessment Notes</Label>
+                    <Label htmlFor="networkAssessmentNotes" className="flex items-center gap-1">
+                      Networking & Power Notes
+                      <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                        <div className="tooltip" title="Document any specific network requirements, issues, or considerations for installation">
+                          <span>ⓘ</span>
+                        </div>
+                      </Button>
+                    </Label>
                     <Textarea 
                       id="networkAssessmentNotes"
                       value={formData.networkAssessmentNotes || ""}
@@ -1942,37 +2091,35 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label htmlFor="speakerRequirements">Speaker Requirements</Label>
+                      <Label htmlFor="speakerCoverage">Verify Proper Speaker Coverage</Label>
                       <Select 
-                        value={formData.speakerRequirements || ""}
-                        onValueChange={(value) => handleFormChange("speakerRequirements", value)}
+                        value={formData.speakerCoverage || ""}
+                        onValueChange={(value) => handleFormChange("speakerCoverage", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select speaker needs" />
+                          <SelectValue placeholder="Speaker coverage status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="None">None - Not required</SelectItem>
-                          <SelectItem value="Minimal">Minimal - Basic announcement capability</SelectItem>
-                          <SelectItem value="Standard">Standard - Clear audio in key areas</SelectItem>
-                          <SelectItem value="Advanced">Advanced - High-quality full coverage</SelectItem>
+                          <SelectItem value="Yes">Yes - Coverage is sufficient</SelectItem>
+                          <SelectItem value="No">No - Additional speakers needed</SelectItem>
+                          <SelectItem value="Not Required">Not Required - Audio not needed</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="audioEquipment">Audio Equipment Status</Label>
+                      <Label htmlFor="audioCompatible">Audio Speakers Compatible</Label>
                       <Select 
-                        value={formData.audioEquipment || ""}
-                        onValueChange={(value) => handleFormChange("audioEquipment", value)}
+                        value={formData.audioCompatible || ""}
+                        onValueChange={(value) => handleFormChange("audioCompatible", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select audio status" />
+                          <SelectValue placeholder="Compatibility status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Existing">Existing - Can reuse</SelectItem>
-                          <SelectItem value="Upgrade">Upgrade - Existing needs enhancement</SelectItem>
-                          <SelectItem value="New">New - Complete installation required</SelectItem>
-                          <SelectItem value="Not Applicable">Not Applicable</SelectItem>
+                          <SelectItem value="Yes">Yes - Compatible with system</SelectItem>
+                          <SelectItem value="No">No - Replacement needed</SelectItem>
+                          <SelectItem value="Not Applicable">Not Applicable - No audio</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1986,6 +2133,191 @@ const KastleVideoGuardingPage: React.FC = () => {
                       onChange={(e) => handleFormChange("audioAssessmentNotes", e.target.value)}
                       placeholder="Describe audio requirements, speaker placement, and challenges"
                       rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>🖥️</span> Technology (Take-Over)
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Please identify the Manufacturers, Model Numbers and software version if there is existing equipment that will be taken over.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="cameraCompatibilityVerified">Camera Compatibility Verified</Label>
+                      <Select 
+                        value={formData.cameraCompatibilityVerified || ""}
+                        onValueChange={(value) => handleFormChange("cameraCompatibilityVerified", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Compatibility status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Compatibility confirmed</SelectItem>
+                          <SelectItem value="No">No - Compatibility issues</SelectItem>
+                          <SelectItem value="Partial">Partial - Some cameras compatible</SelectItem>
+                          <SelectItem value="Not Applicable">Not Applicable - No takeover</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="cameraCompatibilityLink">Link to Compatibility Documentation</Label>
+                      <Input
+                        id="cameraCompatibilityLink"
+                        value={formData.cameraCompatibilityLink || ""}
+                        onChange={(e) => handleFormChange("cameraCompatibilityLink", e.target.value)}
+                        placeholder="Enter URL to documentation"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fisheyeCompatibility">Fisheye Camera Compatibility</Label>
+                      <Select 
+                        value={formData.fisheyeCompatibility || ""}
+                        onValueChange={(value) => handleFormChange("fisheyeCompatibility", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Fisheye status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Compatible</SelectItem>
+                          <SelectItem value="No">No - Not compatible</SelectItem>
+                          <SelectItem value="NA">N/A - No fisheye cameras</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="dewarpingAtEdge">Dewarping at the Edge</Label>
+                      <Select 
+                        value={formData.dewarpingAtEdge || ""}
+                        onValueChange={(value) => handleFormChange("dewarpingAtEdge", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Dewarping status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Supports edge dewarping</SelectItem>
+                          <SelectItem value="No">No - Server dewarping needed</SelectItem>
+                          <SelectItem value="NA">N/A - No fisheye cameras</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="edgeStreamsSupport">Edge Streams Support</Label>
+                      <Select 
+                        value={formData.edgeStreamsSupport || ""}
+                        onValueChange={(value) => handleFormChange("edgeStreamsSupport", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Edge streams status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Yes">Yes - Supports quad/dual pano</SelectItem>
+                          <SelectItem value="No">No - Not supported</SelectItem>
+                          <SelectItem value="NA">N/A - No fisheye cameras</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraCompatibilityNotes">Additional Compatibility Notes</Label>
+                    <Textarea 
+                      id="cameraCompatibilityNotes"
+                      value={formData.cameraCompatibilityNotes || ""}
+                      onChange={(e) => handleFormChange("cameraCompatibilityNotes", e.target.value)}
+                      placeholder="Add any compatibility notes for cameras and equipment"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>🗺️</span> Site Plan Design Layout
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Add in the completed Site plans that have been detailed for this opportunity utilizing IPVM, Kastle design tools or similar. This should show all exterior cameras in the proper location/FOV position with names.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="sitePlanLink">Site Plan Link</Label>
+                      <Input
+                        id="sitePlanLink"
+                        value={formData.sitePlanLink || ""}
+                        onChange={(e) => handleFormChange("sitePlanLink", e.target.value)}
+                        placeholder="Link to IPVM or Blue Beam site plan (editable)"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="sitePhotoLink">Link to Site Photos</Label>
+                      <Input
+                        id="sitePhotoLink"
+                        value={formData.sitePhotoLink || ""}
+                        onChange={(e) => handleFormChange("sitePhotoLink", e.target.value)}
+                        placeholder="Link to photos with associated name/number from Discovery"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="sitePlanNotes">Site Plan Notes</Label>
+                    <Textarea 
+                      id="sitePlanNotes"
+                      value={formData.sitePlanNotes || ""}
+                      onChange={(e) => handleFormChange("sitePlanNotes", e.target.value)}
+                      placeholder="Any site notes of benefit in regards to scene, site, environment, surrounding areas or other"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>📋</span> Equipment List
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    The equipment list must be loaded into CPQ for proper loads and pricing. Any discounting should be done post adding the equipment.
+                  </p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="equipmentListLink">Link to SE Equipment List</Label>
+                    <Input
+                      id="equipmentListLink"
+                      value={formData.equipmentListLink || ""}
+                      onChange={(e) => handleFormChange("equipmentListLink", e.target.value)}
+                      placeholder="Fill in with link to file if naming for each view is clear, include speakers and servers if required"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="equipmentNotes">Equipment Notes</Label>
+                    <Textarea 
+                      id="equipmentNotes"
+                      value={formData.equipmentNotes || ""}
+                      onChange={(e) => handleFormChange("equipmentNotes", e.target.value)}
+                      placeholder="Enter any specific notes or requirements in regards to equipment"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="equipmentBom">Bill of Materials (BOM)</Label>
+                    <Textarea 
+                      id="equipmentBom"
+                      value={formData.equipmentBom || ""}
+                      onChange={(e) => handleFormChange("equipmentBom", e.target.value)}
+                      placeholder="Paste BOM Here with Video, Speakers, Servers, Appliance, Transmission and Other"
+                      rows={4}
                     />
                   </div>
                 </div>

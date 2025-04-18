@@ -1,0 +1,158 @@
+KVG Site Assessment Form - Part I										
+										
+										
+										
+	Owner: 		Forecast Stage:				Legend			
+	Sales Engineer		Select				Notes or Text Descriptions	Don't Overwrite	Don't Overwrite	
+							Fill text in box	Type text	Type text	
+							Drop-down	Select	Select	
+	Description:						Auto-fill Text	Don't Overwrite	Don't Overwrite	
+	This form is completed during or following the Customer Discovery process and during the "Engage stage" to ensure that all the customer site details and Kastle KVG services are documented properly by the SE. Be sure to include pictures camera views, scene and activity notes and any take over equipment. Please attached the form to the Opportunity so it can be shared and tracked along the stages and with various teams.									
+										
+	Reviewer(s):									
+	RVG SME will review prior to the quote being finalized as part of the approval process. If there are any issues with the documented power, network, infrastructure or technology being use, there will need to be recommendations, modifications or technology replacements called out as a follow-on to this Site Assessment. Quotes should note be given until final approvals from KVG SME.									
+										
+										
+Opportunity Stage Ownership										
+										
+	SE Name:									
+	fill in									
+										
+	CRM Opportunity		Time Zone		Send to KVG Team after Tab 1-3 are completed					
+	fill in		Select		KVG-RVM-Quote@kastle.com					
+										
+	Site Name:		Customer:							
+	fill in		fill in							
+										
+	Site Address:									
+	fill in									
+										
+	City:		State: 		Zip Code:					
+	fill in		Select		fill in					
+										
+Site Environment & Lighting										
+										
+	Lighting Requirements:			FOV Requirements:		Power Requirements:		Head-end and Appliance:		
+	"As a reference the following is to be used as an example: 
+Depending on the environment in all outdoor areas frequented by members of the general public, external lighting averages a horizontal illuminance level, at grade, according to the following standards for proper lighting illumination:
+          •      	For a “Storefronts and main entrances to buildings,” at least twenty (20) footcandles in all outdoor areas;
+          •      	For a “Small Parking Lot or Multi-family pool Entity,” at least fifteen (15) footcandles. The 15 footcandle requirement is limited to the parking area; the entrance area must maintain a 20 footcandle footprint.
+          •      	For a “Large Parking Lot Entity,” at least ten (10) footcandles. The 10 footcandle requirement is limited to the parking area; the entrance area must maintain a 20 footcandle footprint.
+          •      	External lighting at all other property areas will average a horizontal illuminance, at grade, of at least five (5) footcandles, including at the Entity’s property line."			The FOV of the camera view that is to be observed should be free and clear of any obstructions. There should be no trees, signs, banners, trucks parked at docks or areas that the video analytic is required to detect events.		Power budget is based on the individual systems and devices connected to the power source(s). Please verify what the power draw is per system or device and ensure that the power source is capable to support the load.		The video gateway, hub, appliance and or switches should be mounted in an indoor temperature controlled environment whenever possible. Typically in an IDF room, closet or defined location for this type of equipment in a building. If it is not, there should be proper use of environmentally rated appliances and devices for this environment or a properly sealed and vented environment for the heat related to both the environmental changes and the heat dissipation of the appliances in the enclosures.		
+										
+								Network Requirements:		
+		Approved			Approved			Bandwidth is dependent upon camera compression, frame rate, resolution and depending on bit rate controls scene content and activity. You must properly budget for the make up of all your cameras based on switches and port capabilities.		
+	Lighting is appropriate for night monitoring	Select		Site Switch(es) port and power availability	Select					
+	Camera Field of Views are clear from obstructions	Select		Cloud Uplink Capacity Sufficient	Select					
+	Headend Environment secure and properly vented	Select		Network Cabling & Connectors	Select					
+	Power Stable  & Ample	Select		Verify Proper Speaker Coverage & Count	Select					
+										
+										
+	Lighting and FOV Notes:				System Headend Notes			Networking & Power Notes:		
+	fill in				Fill in any additional details that are of important for the install prep or design			Fill in		
+										
+Technology (Take-Over)										
+										
+	Description:									
+	Please identify the Manufacturers, Model Numbers and software version. This is done if there is existing equipment that we will be taking over. 									
+										
+	Camera Compatibility Verified with CV Support:	Select		Audio Speakers Compatible:	Select		Link to Compatibility Documentation	fill in text box		
+										
+	Camera Notes:									
+	Additional Compatibility notes									
+										
+										
+	Fisheye Camera Compatibility		Dewarping at the edge		Supports Edge streams for Quad or Dual Pano at the edge					
+	Select		Select		Select					
+										
+										
+	Add CV Team Approval of Camera Compatibility									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+Site Plan(s) Design Layout										
+										
+	Description:									
+	Add in the completed Site plans that have been detailed for this opportunity utilizing IPVM, Kastle design tools or similar standard. This should show all exterior cameras in the proper location/FOV position with names and appropriate detail for the Project Manager and Install team to deploy with certainty. It is important to have a reference of direction on the site plan (N/S/E/W)									
+										
+	Site Plan:	fill in link to IPVM or Blue Beam site plan (editable)			Link to File Share	fill in link to photos with associated name or number from Discovery Tab naming				
+										
+	Notes:	Any site notes of benefit in regards to scene, site, environment, surrounding areas or other								
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+Equipment List										
+										
+	Description:									
+	The equipment list must be loaded into CPQ for proper loads and pricing. Any discounting should be done post adding the equipment so as to not have errors on pricing and materials.									
+										
+	Link to SE Equipment List		Fill in with link to file if naming for each view is clear, include speakers and servers if required							
+										
+	Notes:	Enter any specific notes or requirements in regards to equipment								
+										
+										
+										
+	Paste BOM Here with Video, Speakers, Servers, Appliance, Transmission and Other									
+										
+										
+										
+										
+										
+										
+										
+										
