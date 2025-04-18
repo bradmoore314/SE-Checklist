@@ -1235,11 +1235,6 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Incident Types</CardTitle>
-              <CardDescription>Select which incident types will be monitored at this site</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
