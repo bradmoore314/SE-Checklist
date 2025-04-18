@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { 
   Loader2, Download, MoveHorizontal, MousePointer, Camera, 
@@ -124,6 +131,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
   const [strokeColor, setStrokeColor] = useState('#ff0000');
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [fillColor, setFillColor] = useState('#00000000'); // Transparent by default
+  const [measurementUnit, setMeasurementUnit] = useState<string>('ft'); // Default to feet
 
   // Marker interaction state
   const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
@@ -494,7 +502,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
       
       // For measurements, add additional properties
       if (viewerMode === 'measure') {
-        newAnnotation.measurementUnit = 'px';
+        newAnnotation.measurementUnit = measurementUnit;
       }
       
       setCurrentAnnotation(newAnnotation);
@@ -1233,7 +1241,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
         const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI);
         
         // Format distance
-        const unit = 'px';  // Temporary unit during drawing
+        const unit = currentAnnotation.measurementUnit || measurementUnit;
         const value = distance.toFixed(2);
         
         return (
