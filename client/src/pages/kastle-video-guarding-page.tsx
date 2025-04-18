@@ -5,6 +5,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  AlertTriangle,
+  X
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Stream, StreamImage } from "@/types";
 
 // Price Stream data for the pricing calculator
@@ -480,6 +485,119 @@ const KastleVideoGuardingPage: React.FC = () => {
     escalationProcess3AudioMessage: "",
   });
   
+  // Pricing calculation helper functions
+  const calculateEventFee = (totalEvents: number): number => {
+    const tiers = [
+      { max: 500, price: 625 }, { max: 750, price: 935 }, { max: 1000, price: 1250 },
+      { max: 1250, price: 1560 }, { max: 1500, price: 1875 }, { max: 1750, price: 2190 },
+      { max: 2000, price: 2400 }, { max: 2250, price: 2700 }, { max: 2500, price: 3000 },
+      { max: 2750, price: 3300 }, { max: 3000, price: 3600 }
+    ];
+    const tier = tiers.find(t => totalEvents <= t.max) || tiers[tiers.length - 1];
+    return totalEvents > 0 ? tier.price : 0;
+  };
+
+  const getEventTier = (totalEvents: number): string => {
+    if (totalEvents <= 0) return "N/A";
+    if (totalEvents <= 500) return "Tier 1 (≤ 500)";
+    if (totalEvents <= 750) return "Tier 2 (≤ 750)";
+    if (totalEvents <= 1000) return "Tier 3 (≤ 1000)";
+    if (totalEvents <= 1250) return "Tier 4 (≤ 1250)";
+    if (totalEvents <= 1500) return "Tier 5 (≤ 1500)";
+    if (totalEvents <= 1750) return "Tier 6 (≤ 1750)";
+    if (totalEvents <= 2000) return "Tier 7 (≤ 2000)";
+    if (totalEvents <= 2250) return "Tier 8 (≤ 2250)";
+    if (totalEvents <= 2500) return "Tier 9 (≤ 2500)";
+    if (totalEvents <= 2750) return "Tier 10 (≤ 2750)";
+    return "Tier 11 (≤ 3000)";
+  };
+
+  // Calculate pricing based on current form data
+  const pricingResults = useMemo(() => {
+    const isNewCustomer = formData.customerType === "new";
+    
+    // 1. Event Fee
+    const totalEvents = formData.streams.reduce((sum, s) => sum + (s.eventVolume * s.quantity), 0);
+    const totalCameras = formData.streams.reduce((sum, s) => sum + s.quantity, 0);
+    const eventFee = calculateEventFee(totalEvents);
+    const eventTier = getEventTier(totalEvents);
+
+    // 2. Patrol Fee
+    let totalPatrolsPerMonth = 0;
+    let patrolHours = 0;
+    formData.streams.forEach(s => {
+      if (s.patrolsPerWeek > 0) {
+        const patrolsPerMonth = s.patrolsPerWeek * 4.33 * s.quantity;
+        totalPatrolsPerMonth += patrolsPerMonth;
+        patrolHours += patrolsPerMonth * (5 / 60); // each patrol = 5 min
+      }
+    });
+    const patrolFee = patrolHours * 85;
+
+    // 3. Additional Services Fee
+    const additionalFees =
+      formData.vocEscalations * 10 +
+      formData.dispatchResponses * 0 +
+      formData.gdodsPatrols * 425 +
+      formData.sgppPatrols * 60 +
+      formData.forensicInvestigations * 60 +
+      formData.appUsers * 5 +
+      formData.audioDevices * 0;
+
+    // 4. Total Calculation
+    let totalFee = eventFee + patrolFee + additionalFees;
+    const minimumFee = isNewCustomer ? 250 : 200;
+    const minimumFeeApplied = totalFee < minimumFee;
+    totalFee = Math.max(totalFee, minimumFee);
+
+    return {
+      totalFee,
+      totalEvents,
+      totalCameras,
+      patrolsPerMonth: Math.round(totalPatrolsPerMonth),
+      patrolHours,
+      isNewCustomer,
+      approvalNeeded: !isNewCustomer && totalFee < 200,
+      eventFee,
+      patrolFee,
+      additionalFees,
+      minimumFee,
+      minimumFeeApplied,
+      eventTier
+    };
+  }, [formData]);
+
+  // Functions for pricing tab
+  const handleAddStream = () => {
+    setFormData(prev => ({
+      ...prev,
+      streams: [
+        ...prev.streams,
+        {
+          quantity: 1,
+          eventVolume: 0,
+          patrolsPerWeek: 0
+        }
+      ]
+    }));
+  };
+
+  const handleRemoveStream = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      streams: prev.streams.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleStreamChange = (index: number, field: keyof PriceStream, value: number) => {
+    setFormData(prev => ({
+      ...prev,
+      streams: prev.streams.map((stream, i) =>
+        i === index ? { ...stream, [field]: value } : stream
+      )
+    }));
+  };
+
   // Handle form data change
   const handleFormChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
