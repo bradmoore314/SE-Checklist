@@ -443,14 +443,17 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="stream-details">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-xl">
                 <span>📹</span> Camera Video Stream Details
               </CardTitle>
-              <CardDescription>Configure and manage your camera streams with detailed settings for monitoring and patrol groups</CardDescription>
+              <CardDescription className="text-base">Configure and manage your camera streams with detailed settings for monitoring and patrol groups</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex justify-end mb-4">
-                <Button onClick={() => addStream()} className="flex items-center gap-1">
+                <Button 
+                  onClick={() => addStream()} 
+                  className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                >
                   <Plus size={16} /> Add Stream
                 </Button>
               </div>
@@ -460,16 +463,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <table className="w-full text-sm">
                     <thead className="text-xs bg-gray-100">
                       <tr className="border-b border-gray-300">
-                        <th colSpan={3} className="px-2 py-3 text-center bg-teal-100">Camera Video Stream Details</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-blue-100">FOV Area Accessibility</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-indigo-100">Camera Type & Environment</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-purple-100">Unique Use Case Problem</th>
-                        <th colSpan={2} className="px-2 py-3 text-center bg-pink-100">Speaker Video Stream Association & Name</th>
-                        <th colSpan={3} className="px-2 py-3 text-center bg-orange-100">Event Monitoring Details</th>
-                        <th colSpan={3} className="px-2 py-3 text-center bg-red-100">Patrol Group Details</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-gray-200">Actions</th>
+                        <th colSpan={3} className="px-2 py-3 text-center bg-teal-600 text-white font-semibold rounded-tl-lg">Camera Video Stream Details</th>
+                        <th colSpan={1} className="px-2 py-3 text-center bg-blue-600 text-white font-semibold">FOV Area Accessibility</th>
+                        <th colSpan={1} className="px-2 py-3 text-center bg-indigo-600 text-white font-semibold">Camera Type & Environment</th>
+                        <th colSpan={1} className="px-2 py-3 text-center bg-purple-600 text-white font-semibold">Unique Use Case Problem</th>
+                        <th colSpan={2} className="px-2 py-3 text-center bg-pink-600 text-white font-semibold">Speaker Video Stream Association & Name</th>
+                        <th colSpan={3} className="px-2 py-3 text-center bg-orange-600 text-white font-semibold">Event Monitoring Details</th>
+                        <th colSpan={3} className="px-2 py-3 text-center bg-red-600 text-white font-semibold">Patrol Group Details</th>
+                        <th colSpan={1} className="px-2 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg">Actions</th>
                       </tr>
-                      <tr className="border-b text-center">
+                      <tr className="border-b text-center bg-gray-200 font-semibold">
                         <th className="px-2 py-2 w-10">Stream #</th>
                         <th className="px-2 py-2 w-60">Camera/Video Stream Location/Name</th>
                         <th className="px-2 py-2 w-16">Images</th>
@@ -492,12 +495,17 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <tr key={stream.id} className="border-b hover:bg-gray-50">
                           <td className="px-2 py-3 text-center font-medium">{stream.id}</td>
                           <td className="px-2 py-3">
-                            <Textarea 
-                              value={stream.location || ""}
-                              onChange={(e) => updateStream(stream.id, "location", e.target.value)}
-                              className="h-14"
-                              placeholder="Enter the location and naming of the camera video stream - see note example"
-                            />
+                            <div className="relative">
+                              <Textarea 
+                                value={stream.location || ""}
+                                onChange={(e) => updateStream(stream.id, "location", e.target.value)}
+                                className="min-h-[80px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm"
+                                placeholder="Enter the location and naming of the camera video stream - see note example"
+                              />
+                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                {stream.location?.length || 0} chars
+                              </div>
+                            </div>
                           </td>
                           <td className="px-2 py-3 text-center">
                             <div className="flex flex-col items-center gap-1">
@@ -557,20 +565,30 @@ const KastleVideoGuardingPage: React.FC = () => {
                             </Select>
                           </td>
                           <td className="px-2 py-3">
-                            <Textarea 
-                              value={stream.useCaseProblem || ""}
-                              onChange={(e) => updateStream(stream.id, "useCaseProblem", e.target.value)}
-                              className="h-14"
-                              placeholder="Enter any unique use case problem for this camera or scene if different from the site problem defined above."
-                            />
+                            <div className="relative">
+                              <Textarea 
+                                value={stream.useCaseProblem || ""}
+                                onChange={(e) => updateStream(stream.id, "useCaseProblem", e.target.value)}
+                                className="min-h-[100px] resize-y focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 bg-white/90 text-sm"
+                                placeholder="Enter any unique use case problem for this camera or scene if different from the site problem defined above."
+                              />
+                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                {stream.useCaseProblem?.length || 0} chars
+                              </div>
+                            </div>
                           </td>
                           <td className="px-2 py-3">
-                            <Textarea 
-                              value={stream.speakerAssociation || ""}
-                              onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
-                              className="h-14"
-                              placeholder="Fill in if speaker is dedicated to single camera or a group of cameras (ref numbers in column A)"
-                            />
+                            <div className="relative">
+                              <Textarea 
+                                value={stream.speakerAssociation || ""}
+                                onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
+                                className="min-h-[100px] resize-y focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200 bg-white/90 text-sm"
+                                placeholder="Fill in if speaker is dedicated to single camera or a group of cameras (ref numbers in column A)"
+                              />
+                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                {stream.speakerAssociation?.length || 0} chars
+                              </div>
+                            </div>
                           </td>
                           <td className="px-2 py-3 text-center">
                             <Select 
@@ -681,29 +699,29 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <div className="mt-4 p-8 border rounded-md text-center text-muted-foreground">
-                  <div className="flex flex-col items-center gap-2 mb-4">
-                    <VideoIcon size={48} className="text-muted-foreground/50" />
-                    <h3 className="text-lg font-medium">No Camera Streams Configured</h3>
-                  </div>
-                  <p className="max-w-md mx-auto mb-4">
+                <div className="text-center bg-gray-50 p-8 rounded-md border border-gray-200 shadow-sm">
+                  <VideoIcon className="w-12 h-12 text-teal-500 mx-auto mb-3" />
+                  <h3 className="text-lg font-medium">No camera streams added yet</h3>
+                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
                     Start by adding camera streams to configure video monitoring and patrol settings for your KVG project.
                   </p>
-                  <Button onClick={() => addStream()} className="flex items-center gap-2">
-                    <Plus size={16} /> Add Your First Stream
+                  <Button onClick={() => addStream()} className="flex items-center gap-1 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+                    <Plus size={16} /> Add your first stream
                   </Button>
                 </div>
               )}
               
-              <div className="mt-6 bg-blue-50 p-4 rounded-md">
-                <h3 className="text-md font-semibold flex items-center gap-2 mb-2">
-                  <InfoIcon size={18} className="text-blue-600" />
-                  About Camera Streams
-                </h3>
-                <p className="text-sm">
-                  Configure each camera stream with its associated monitoring and patrol details. You can associate speakers with cameras, 
-                  set up event monitoring schedules, and define patrol group timings for each stream. Use the duplicate function to quickly create similar streams.
-                </p>
+              <div className="mt-8 mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-md border border-blue-100 shadow-sm">
+                <div className="flex items-start gap-2">
+                  <InfoIcon className="text-blue-600 w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-medium text-blue-800 text-base">About Camera Streams</h3>
+                    <p className="text-sm text-blue-900">
+                      Configure each camera stream with its specified monitoring and patrol details. You can specify unique problem descriptions for each camera and associate speakers with one or multiple cameras. 
+                      The text fields support larger entries for detailed descriptions. Use the duplicate function (copy icon) to quickly create similar streams.
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
