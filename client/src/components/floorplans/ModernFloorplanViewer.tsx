@@ -40,6 +40,10 @@ type Marker = {
   position_y: number;
   label: string | null;
   created_at: string;
+  // Additional camera properties
+  view_angle?: number; // Field of view angle in degrees
+  view_direction?: number; // Direction angle in degrees (0-360)
+  view_distance?: number; // View distance in arbitrary units
 };
 
 type Floorplan = {
@@ -741,70 +745,135 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
     }
   };
 
+  // Render camera field of view
+  const renderCameraFieldOfView = (marker: Marker) => {
+    if (!isLayerVisible('cameras') || marker.marker_type !== 'camera') {
+      return null;
+    }
+    
+    // Default values if not set
+    const viewAngle = marker.view_angle || 60; // 60 degree field of view
+    const viewDirection = marker.view_direction || 0; // 0 degrees = right, 90 = down
+    const viewDistance = marker.view_distance || 30; // 30% of container
+    
+    // Calculate points for the field of view triangle
+    const startAngle = (viewDirection - viewAngle / 2) * (Math.PI / 180);
+    const endAngle = (viewDirection + viewAngle / 2) * (Math.PI / 180);
+    
+    // Camera position
+    const x = marker.position_x;
+    const y = marker.position_y;
+    
+    // Create path for the view cone
+    const path = `
+      M ${x} ${y}
+      L ${x + viewDistance * Math.cos(startAngle)} ${y + viewDistance * Math.sin(startAngle)}
+      A ${viewDistance} ${viewDistance} 0 0 1 ${x + viewDistance * Math.cos(endAngle)} ${y + viewDistance * Math.sin(endAngle)}
+      Z
+    `;
+    
+    return (
+      <svg 
+        key={`fov-${marker.id}`}
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 20 }}
+      >
+        <path
+          d={path}
+          fill="rgba(0, 100, 255, 0.1)"
+          stroke="rgba(0, 100, 255, 0.5)"
+          strokeWidth="1"
+          strokeDasharray="5,3"
+        />
+        
+        {/* Direction line */}
+        <line
+          x1={x}
+          y1={y}
+          x2={x + (viewDistance / 2) * Math.cos(viewDirection * (Math.PI / 180))}
+          y2={y + (viewDistance / 2) * Math.sin(viewDirection * (Math.PI / 180))}
+          stroke="rgba(0, 100, 255, 0.7)"
+          strokeWidth="1"
+        />
+      </svg>
+    );
+  };
+
   // Render markers
   const renderMarkers = () => {
     if (!isLayerVisible('access_points') && !isLayerVisible('cameras')) {
       return null;
     }
     
-    return markers
+    const filteredMarkers = markers
       .filter(marker => 
         (marker.marker_type === 'access_point' && isLayerVisible('access_points')) ||
         (marker.marker_type === 'camera' && isLayerVisible('cameras'))
       )
-      .filter(marker => marker.page === currentPage)
-      .map((marker) => {
-        // Get marker size from state or use default
-        const size = markerSize[marker.id] || { width: 6, height: 6 };
+      .filter(marker => marker.page === currentPage);
+    
+    return (
+      <>
+        {/* Render camera field of view first (under markers) */}
+        {filteredMarkers
+          .filter(marker => marker.marker_type === 'camera')
+          .map(marker => renderCameraFieldOfView(marker))}
         
-        // Get equipment number from label if available or display sequential number
-        const markerLabel = marker.label || '';
-        const markerNumber = getMarkerNumber(markerLabel);
-        
-        // Check if this marker is selected
-        const isSelected = selectedMarkers.includes(marker.id);
-        
-        return (
-          <div
-            id={`marker-${marker.id}`}
-            key={marker.id}
-            className={cn(
-              "absolute rounded-full flex items-center justify-center cursor-move z-30",
-              marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500',
-              "text-white font-bold text-xs select-none shadow-md hover:shadow-lg",
-              "pointer-events-auto transition-transform",
-              isSelected && "ring-2 ring-yellow-400 ring-offset-1",
-              draggedMarker === marker.id && "opacity-70"
-            )}
-            style={{
-              left: `${marker.position_x}%`,
-              top: `${marker.position_y}%`,
-              width: `${size.width}rem`,
-              height: `${size.height}rem`,
-              transform: 'translate(-50%, -50%)',
-              transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease',
-              pointerEvents: isLayerLocked(marker.marker_type === 'access_point' ? 'access_points' : 'cameras') ? 'none' : 'auto'
-            }}
-            title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
-            onMouseDown={(e) => handleDragStart(e, marker.id)}
-            onDoubleClick={() => editMarker(marker)}
-            onClick={(e) => {
-              // Control key for multi-select
-              if (e.ctrlKey || e.metaKey) {
-                setSelectedMarkers(prev => 
-                  prev.includes(marker.id) 
-                    ? prev.filter(id => id !== marker.id) 
-                    : [...prev, marker.id]
-                );
-              } else {
-                setSelectedMarkers([marker.id]);
-              }
-            }}
-          >
-            {markerNumber || (marker.marker_type === 'access_point' ? 'AP' : 'C')}
-          </div>
-        );
-      });
+        {/* Render the actual markers */}
+        {filteredMarkers.map((marker) => {
+          // Get marker size from state or use default
+          const size = markerSize[marker.id] || { width: 6, height: 6 };
+          
+          // Get equipment number from label if available or display sequential number
+          const markerLabel = marker.label || '';
+          const markerNumber = getMarkerNumber(markerLabel);
+          
+          // Check if this marker is selected
+          const isSelected = selectedMarkers.includes(marker.id);
+          
+          return (
+            <div
+              id={`marker-${marker.id}`}
+              key={marker.id}
+              className={cn(
+                "absolute rounded-full flex items-center justify-center cursor-move z-30",
+                marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500',
+                "text-white font-bold text-xs select-none shadow-md hover:shadow-lg",
+                "pointer-events-auto transition-transform",
+                isSelected && "ring-2 ring-yellow-400 ring-offset-1",
+                draggedMarker === marker.id && "opacity-70"
+              )}
+              style={{
+                left: `${marker.position_x}%`,
+                top: `${marker.position_y}%`,
+                width: `${size.width}rem`,
+                height: `${size.height}rem`,
+                transform: 'translate(-50%, -50%)',
+                transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease',
+                pointerEvents: isLayerLocked(marker.marker_type === 'access_point' ? 'access_points' : 'cameras') ? 'none' : 'auto'
+              }}
+              title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
+              onMouseDown={(e) => handleDragStart(e, marker.id)}
+              onDoubleClick={() => editMarker(marker)}
+              onClick={(e) => {
+                // Control key for multi-select
+                if (e.ctrlKey || e.metaKey) {
+                  setSelectedMarkers(prev => 
+                    prev.includes(marker.id) 
+                      ? prev.filter(id => id !== marker.id) 
+                      : [...prev, marker.id]
+                  );
+                } else {
+                  setSelectedMarkers([marker.id]);
+                }
+              }}
+            >
+              {markerNumber || (marker.marker_type === 'access_point' ? 'AP' : 'C')}
+            </div>
+          );
+        })}
+      </>
+    );
   };
 
   // Render annotations
