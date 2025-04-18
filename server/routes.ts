@@ -12,13 +12,21 @@ import {
   insertImageSchema,
   insertFloorplanSchema,
   insertFloorplanMarkerSchema,
+  insertKvgSchema,
+  insertKvgStreamSchema,
+  insertKvgStreamImageSchema,
+  insertKvgPriceStreamSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
   InsertImage,
   InsertFloorplan,
-  InsertFloorplanMarker
+  InsertFloorplanMarker,
+  InsertKastleVideoGuarding,
+  InsertKvgStream,
+  InsertKvgStreamImage,
+  InsertKvgPriceStream
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
@@ -1536,6 +1544,401 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error deleting CRM settings:", error);
       res.status(500).json({ 
         error: error instanceof Error ? error.message : "Unknown error deleting CRM settings" 
+      });
+    }
+  });
+
+  // Kastle Video Guarding endpoints
+  app.get("/api/projects/:projectId/kvg", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      const kvg = await storage.getKvgByProject(projectId);
+      if (!kvg) {
+        return res.status(404).json({ message: "KVG data not found for this project" });
+      }
+
+      res.json(kvg);
+    } catch (error) {
+      console.error("Error fetching KVG data:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error fetching KVG data" 
+      });
+    }
+  });
+
+  app.post("/api/projects/:projectId/kvg", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Check if KVG data already exists for this project
+      const existingKvg = await storage.getKvgByProject(projectId);
+      if (existingKvg) {
+        return res.status(409).json({ 
+          message: "KVG data already exists for this project",
+          kvgId: existingKvg.id 
+        });
+      }
+
+      const result = insertKvgSchema.safeParse({ 
+        ...req.body,
+        project_id: projectId 
+      });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const kvgData = await storage.createKvg(result.data);
+      res.status(201).json(kvgData);
+    } catch (error) {
+      console.error("Error creating KVG data:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error creating KVG data" 
+      });
+    }
+  });
+
+  app.put("/api/kvg/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const kvgId = parseInt(req.params.id);
+      if (isNaN(kvgId)) {
+        return res.status(400).json({ message: "Invalid KVG ID" });
+      }
+
+      const result = insertKvgSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const kvgData = await storage.updateKvg(kvgId, result.data);
+      if (!kvgData) {
+        return res.status(404).json({ message: "KVG data not found" });
+      }
+
+      res.json(kvgData);
+    } catch (error) {
+      console.error("Error updating KVG data:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error updating KVG data" 
+      });
+    }
+  });
+
+  // KVG Streams endpoints
+  app.get("/api/kvg/:kvgId/streams", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const kvgId = parseInt(req.params.kvgId);
+      if (isNaN(kvgId)) {
+        return res.status(400).json({ message: "Invalid KVG ID" });
+      }
+
+      const kvg = await storage.getKvg(kvgId);
+      if (!kvg) {
+        return res.status(404).json({ message: "KVG data not found" });
+      }
+
+      const streams = await storage.getKvgStreams(kvgId);
+      res.json(streams);
+    } catch (error) {
+      console.error("Error fetching KVG streams:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error fetching KVG streams" 
+      });
+    }
+  });
+
+  app.post("/api/kvg/:kvgId/streams", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const kvgId = parseInt(req.params.kvgId);
+      if (isNaN(kvgId)) {
+        return res.status(400).json({ message: "Invalid KVG ID" });
+      }
+
+      const kvg = await storage.getKvg(kvgId);
+      if (!kvg) {
+        return res.status(404).json({ message: "KVG data not found" });
+      }
+
+      const result = insertKvgStreamSchema.safeParse({
+        ...req.body,
+        kvg_id: kvgId,
+        project_id: kvg.project_id
+      });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG stream data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const stream = await storage.createKvgStream(result.data);
+      res.status(201).json(stream);
+    } catch (error) {
+      console.error("Error creating KVG stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error creating KVG stream" 
+      });
+    }
+  });
+
+  app.put("/api/kvg/streams/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const streamId = parseInt(req.params.id);
+      if (isNaN(streamId)) {
+        return res.status(400).json({ message: "Invalid stream ID" });
+      }
+
+      const result = insertKvgStreamSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG stream data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const stream = await storage.updateKvgStream(streamId, result.data);
+      if (!stream) {
+        return res.status(404).json({ message: "KVG stream not found" });
+      }
+
+      res.json(stream);
+    } catch (error) {
+      console.error("Error updating KVG stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error updating KVG stream" 
+      });
+    }
+  });
+
+  app.delete("/api/kvg/streams/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const streamId = parseInt(req.params.id);
+      if (isNaN(streamId)) {
+        return res.status(400).json({ message: "Invalid stream ID" });
+      }
+
+      const success = await storage.deleteKvgStream(streamId);
+      if (!success) {
+        return res.status(404).json({ message: "KVG stream not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting KVG stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error deleting KVG stream" 
+      });
+    }
+  });
+
+  // KVG Stream Images endpoints
+  app.get("/api/kvg/streams/:streamId/images", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const streamId = parseInt(req.params.streamId);
+      if (isNaN(streamId)) {
+        return res.status(400).json({ message: "Invalid stream ID" });
+      }
+
+      const stream = await storage.getKvgStream(streamId);
+      if (!stream) {
+        return res.status(404).json({ message: "KVG stream not found" });
+      }
+
+      const images = await storage.getKvgStreamImages(streamId);
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching KVG stream images:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error fetching KVG stream images" 
+      });
+    }
+  });
+
+  app.post("/api/kvg/streams/:streamId/images", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const streamId = parseInt(req.params.streamId);
+      if (isNaN(streamId)) {
+        return res.status(400).json({ message: "Invalid stream ID" });
+      }
+
+      const stream = await storage.getKvgStream(streamId);
+      if (!stream) {
+        return res.status(404).json({ message: "KVG stream not found" });
+      }
+
+      const result = insertKvgStreamImageSchema.safeParse({
+        ...req.body,
+        stream_id: streamId,
+        kvg_id: stream.kvg_id,
+        project_id: stream.project_id
+      });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG stream image data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const image = await storage.createKvgStreamImage(result.data);
+      res.status(201).json(image);
+    } catch (error) {
+      console.error("Error creating KVG stream image:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error creating KVG stream image" 
+      });
+    }
+  });
+
+  app.delete("/api/kvg/stream-images/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const imageId = parseInt(req.params.id);
+      if (isNaN(imageId)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+
+      const success = await storage.deleteKvgStreamImage(imageId);
+      if (!success) {
+        return res.status(404).json({ message: "KVG stream image not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting KVG stream image:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error deleting KVG stream image" 
+      });
+    }
+  });
+
+  // KVG Price Streams endpoints
+  app.get("/api/kvg/:kvgId/price-streams", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const kvgId = parseInt(req.params.kvgId);
+      if (isNaN(kvgId)) {
+        return res.status(400).json({ message: "Invalid KVG ID" });
+      }
+
+      const kvg = await storage.getKvg(kvgId);
+      if (!kvg) {
+        return res.status(404).json({ message: "KVG data not found" });
+      }
+
+      const priceStreams = await storage.getKvgPriceStreams(kvgId);
+      res.json(priceStreams);
+    } catch (error) {
+      console.error("Error fetching KVG price streams:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error fetching KVG price streams" 
+      });
+    }
+  });
+
+  app.post("/api/kvg/:kvgId/price-streams", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const kvgId = parseInt(req.params.kvgId);
+      if (isNaN(kvgId)) {
+        return res.status(400).json({ message: "Invalid KVG ID" });
+      }
+
+      const kvg = await storage.getKvg(kvgId);
+      if (!kvg) {
+        return res.status(404).json({ message: "KVG data not found" });
+      }
+
+      const result = insertKvgPriceStreamSchema.safeParse({
+        ...req.body,
+        kvg_id: kvgId,
+        project_id: kvg.project_id
+      });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG price stream data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const priceStream = await storage.createKvgPriceStream(result.data);
+      res.status(201).json(priceStream);
+    } catch (error) {
+      console.error("Error creating KVG price stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error creating KVG price stream" 
+      });
+    }
+  });
+
+  app.put("/api/kvg/price-streams/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const priceStreamId = parseInt(req.params.id);
+      if (isNaN(priceStreamId)) {
+        return res.status(400).json({ message: "Invalid price stream ID" });
+      }
+
+      const result = insertKvgPriceStreamSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid KVG price stream data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const priceStream = await storage.updateKvgPriceStream(priceStreamId, result.data);
+      if (!priceStream) {
+        return res.status(404).json({ message: "KVG price stream not found" });
+      }
+
+      res.json(priceStream);
+    } catch (error) {
+      console.error("Error updating KVG price stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error updating KVG price stream" 
+      });
+    }
+  });
+
+  app.delete("/api/kvg/price-streams/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const priceStreamId = parseInt(req.params.id);
+      if (isNaN(priceStreamId)) {
+        return res.status(400).json({ message: "Invalid price stream ID" });
+      }
+
+      const success = await storage.deleteKvgPriceStream(priceStreamId);
+      if (!success) {
+        return res.status(404).json({ message: "KVG price stream not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting KVG price stream:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error deleting KVG price stream" 
       });
     }
   });

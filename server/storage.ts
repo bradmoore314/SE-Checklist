@@ -9,7 +9,11 @@ import {
   Floorplan, InsertFloorplan,
   FloorplanMarker, InsertFloorplanMarker,
   CrmSettings, InsertCrmSettings,
-  EquipmentImage, InsertEquipmentImage
+  EquipmentImage, InsertEquipmentImage,
+  KastleVideoGuarding, InsertKastleVideoGuarding,
+  KvgStream, InsertKvgStream,
+  KvgStreamImage, InsertKvgStreamImage,
+  KvgPriceStream, InsertKvgPriceStream
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -178,6 +182,12 @@ export class MemStorage implements IStorage {
     this.crmSettings = new Map();
     this.equipmentImages = new Map();
     
+    // Initialize KVG maps
+    this.kvg = new Map();
+    this.kvgStreams = new Map();
+    this.kvgStreamImages = new Map();
+    this.kvgPriceStreams = new Map();
+    
     this.currentUserId = 1;
     this.currentProjectId = 1;
     this.currentAccessPointId = 1;
@@ -189,6 +199,10 @@ export class MemStorage implements IStorage {
     this.currentFloorplanMarkerId = 1;
     this.currentCrmSettingsId = 1;
     this.currentEquipmentImageId = 1;
+    this.currentKvgId = 1;
+    this.currentKvgStreamId = 1;
+    this.currentKvgStreamImageId = 1;
+    this.currentKvgPriceStreamId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -845,6 +859,173 @@ export class MemStorage implements IStorage {
 
   async deleteEquipmentImage(id: number): Promise<boolean> {
     return this.equipmentImages.delete(id);
+  }
+  
+  // Kastle Video Guarding methods
+  async getKvg(id: number): Promise<KastleVideoGuarding | undefined> {
+    return this.kvg.get(id);
+  }
+  
+  async getKvgByProject(projectId: number): Promise<KastleVideoGuarding | undefined> {
+    return Array.from(this.kvg.values()).find(
+      (k) => k.project_id === projectId
+    );
+  }
+  
+  async createKvg(insertKvg: InsertKastleVideoGuarding): Promise<KastleVideoGuarding> {
+    const id = this.currentKvgId++;
+    const now = new Date();
+    
+    const kvgData: KastleVideoGuarding = {
+      id,
+      ...insertKvg,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.kvg.set(id, kvgData);
+    return kvgData;
+  }
+  
+  async updateKvg(id: number, updateKvg: Partial<InsertKastleVideoGuarding>): Promise<KastleVideoGuarding | undefined> {
+    const kvgData = this.kvg.get(id);
+    if (!kvgData) {
+      return undefined;
+    }
+    
+    const updatedKvg: KastleVideoGuarding = {
+      ...kvgData,
+      ...updateKvg,
+      updated_at: new Date()
+    };
+    
+    this.kvg.set(id, updatedKvg);
+    return updatedKvg;
+  }
+  
+  async deleteKvg(id: number): Promise<boolean> {
+    return this.kvg.delete(id);
+  }
+  
+  // KVG Stream methods
+  async getKvgStreams(kvgId: number): Promise<KvgStream[]> {
+    return Array.from(this.kvgStreams.values()).filter(
+      (s) => s.kvg_id === kvgId
+    );
+  }
+  
+  async getKvgStream(id: number): Promise<KvgStream | undefined> {
+    return this.kvgStreams.get(id);
+  }
+  
+  async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
+    const id = this.currentKvgStreamId++;
+    const now = new Date();
+    
+    const stream: KvgStream = {
+      id,
+      ...insertStream,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.kvgStreams.set(id, stream);
+    return stream;
+  }
+  
+  async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
+    const stream = this.kvgStreams.get(id);
+    if (!stream) {
+      return undefined;
+    }
+    
+    const updatedStream: KvgStream = {
+      ...stream,
+      ...updateStream,
+      updated_at: new Date()
+    };
+    
+    this.kvgStreams.set(id, updatedStream);
+    return updatedStream;
+  }
+  
+  async deleteKvgStream(id: number): Promise<boolean> {
+    return this.kvgStreams.delete(id);
+  }
+  
+  // KVG Stream Images methods
+  async getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]> {
+    return Array.from(this.kvgStreamImages.values()).filter(
+      (i) => i.stream_id === streamId
+    );
+  }
+  
+  async getKvgStreamImage(id: number): Promise<KvgStreamImage | undefined> {
+    return this.kvgStreamImages.get(id);
+  }
+  
+  async createKvgStreamImage(insertImage: InsertKvgStreamImage): Promise<KvgStreamImage> {
+    const id = this.currentKvgStreamImageId++;
+    const now = new Date();
+    
+    const image: KvgStreamImage = {
+      id,
+      ...insertImage,
+      created_at: now
+    };
+    
+    this.kvgStreamImages.set(id, image);
+    return image;
+  }
+  
+  async deleteKvgStreamImage(id: number): Promise<boolean> {
+    return this.kvgStreamImages.delete(id);
+  }
+  
+  // KVG Price Streams methods
+  async getKvgPriceStreams(kvgId: number): Promise<KvgPriceStream[]> {
+    return Array.from(this.kvgPriceStreams.values()).filter(
+      (p) => p.kvg_id === kvgId
+    );
+  }
+  
+  async getKvgPriceStream(id: number): Promise<KvgPriceStream | undefined> {
+    return this.kvgPriceStreams.get(id);
+  }
+  
+  async createKvgPriceStream(insertPriceStream: InsertKvgPriceStream): Promise<KvgPriceStream> {
+    const id = this.currentKvgPriceStreamId++;
+    const now = new Date();
+    
+    const priceStream: KvgPriceStream = {
+      id,
+      ...insertPriceStream,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.kvgPriceStreams.set(id, priceStream);
+    return priceStream;
+  }
+  
+  async updateKvgPriceStream(id: number, updatePriceStream: Partial<InsertKvgPriceStream>): Promise<KvgPriceStream | undefined> {
+    const priceStream = this.kvgPriceStreams.get(id);
+    if (!priceStream) {
+      return undefined;
+    }
+    
+    const updatedPriceStream: KvgPriceStream = {
+      ...priceStream,
+      ...updatePriceStream,
+      updated_at: new Date()
+    };
+    
+    this.kvgPriceStreams.set(id, updatedPriceStream);
+    return updatedPriceStream;
+  }
+  
+  async deleteKvgPriceStream(id: number): Promise<boolean> {
+    return this.kvgPriceStreams.delete(id);
   }
 }
 
