@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { 
   Loader2, Download, MoveHorizontal, MousePointer, Camera, 
   Layers, Eye, EyeOff, ZoomIn, ZoomOut, Lock, Unlock, TextCursor, 
-  Square, Circle, Minus, Ruler
+  Square, Circle, Minus, PencilRuler
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -1585,7 +1585,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
                       title="Measure Distance"
                       disabled={!isLayerVisible('measurements') || isLayerLocked('measurements')}
                     >
-                      <Ruler className="h-3 w-3 mr-1" />
+                      <PencilRuler className="h-3 w-3 mr-1" />
                       Measure
                     </Button>
                   </div>
