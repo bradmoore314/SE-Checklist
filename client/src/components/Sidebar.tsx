@@ -242,13 +242,20 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
       </nav>
       
-      {/* Settings Link */}
+      {/* Settings Links */}
       <div className="border-t p-4" style={{ borderColor: 'var(--medium-grey)' }}>
-        <div>
+        <div className="space-y-2">
           <Link href="/settings">
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`}>
               <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>settings</span>
               {!collapsed && <span className="text-gray-800 font-medium">Settings</span>}
+            </div>
+          </Link>
+          
+          <Link href="/crm-settings">
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>cloud_sync</span>
+              {!collapsed && <span className="text-gray-800 font-medium">CRM Integration</span>}
             </div>
           </Link>
         </div>
