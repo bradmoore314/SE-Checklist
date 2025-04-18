@@ -169,9 +169,9 @@ const KastleVideoGuardingPage: React.FC = () => {
     technology: "Kastle Video Cloud",
     installType: "New Construction",
     
-    // Incident Types - Default values
+    // Incident Types - All unchecked by default
     // Criminal Activity Group
-    obviousCriminalAct: true,
+    obviousCriminalAct: false,
     activeBreakIn: false,
     destructionOfProperty: false,
     carDrivingThroughGate: false,
@@ -181,7 +181,7 @@ const KastleVideoGuardingPage: React.FC = () => {
     brokenGlassWindows: false,
     
     // Suspicious Activity Group
-    suspiciousActivity: true,
+    suspiciousActivity: false,
     intentToCommitCriminalAct: false,
     checkingMultipleCarDoors: false,
     dumpsterDivingOrDumping: false,
@@ -207,7 +207,7 @@ const KastleVideoGuardingPage: React.FC = () => {
     presentInProhibitedArea: false,
     
     // Loitering Group
-    loitering: true,
+    loitering: false,
     activeGathering: false,
     groupsLoiteringGathering: false,
     homelessVagrant: false,
