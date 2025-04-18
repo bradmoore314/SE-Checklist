@@ -1287,7 +1287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get all CRM settings
       const crmSystems = ["dynamics365", "dataverse"];
-      const crmStatuses = {};
+      const crmStatuses: Record<string, { configured: boolean; name?: string; error?: string }> = {};
       
       for (const crmType of crmSystems) {
         try {
@@ -1297,10 +1297,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             name: crm.name
           };
         } catch (e) {
-          crmStatuses[crmType] = {
-            configured: false,
-            error: e.message
-          };
+          if (e instanceof Error) {
+            crmStatuses[crmType] = {
+              configured: false,
+              error: e.message
+            };
+          } else {
+            crmStatuses[crmType] = {
+              configured: false,
+              error: "Unknown error occurred"
+            };
+          }
         }
       }
       

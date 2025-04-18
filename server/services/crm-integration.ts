@@ -222,7 +222,9 @@ export class DynamicsCrm implements CrmSystem {
     
     // Get settings for SharePoint site/drive info
     const settings = await this.getSettings();
-    const sharePointSettings = parseSharePointSettings(settings);
+    
+    // Safely parse SharePoint settings only if settings exists
+    const sharePointSettings = settings ? parseSharePointSettings(settings) : null;
     
     if (!sharePointSettings) {
       throw new Error("SharePoint settings not configured or incomplete");
@@ -415,7 +417,9 @@ export class DataverseCrm implements CrmSystem {
     
     // Get settings for SharePoint site/drive info
     const settings = await this.getSettings();
-    const sharePointSettings = parseSharePointSettings(settings);
+    
+    // Safely parse SharePoint settings only if settings exists
+    const sharePointSettings = settings ? parseSharePointSettings(settings) : null;
     
     if (!sharePointSettings) {
       throw new Error("SharePoint settings not configured or incomplete");
