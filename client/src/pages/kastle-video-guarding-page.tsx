@@ -1551,12 +1551,14 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
                   </span>
-                  Incident Types to Monitor
+                  <span className="flex items-center gap-2">📋 Incident Types to Monitor</span>
                 </h3>
                 <div className="grid gap-6">
                   {/* Criminal Activity */}
                   <div>
-                    <h4 className="font-semibold text-amber-900 mb-2">Criminal Activity</h4>
+                    <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                      <span className="text-lg">🚨</span> Criminal Activity
+                    </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       <Toggle 
                         pressed={formData.obviousCriminalAct}
@@ -1565,7 +1567,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.obviousCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Obvious Criminal Act
+                        <span className="flex items-center gap-1">🦹‍♂️ Obvious Criminal Act</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1575,7 +1577,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.activeBreakIn ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Active Break-in
+                        <span className="flex items-center gap-1">🔨 Active Break-in</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1585,7 +1587,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.destructionOfProperty ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Destruction of Property
+                        <span className="flex items-center gap-1">💥 Destruction of Property</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1595,7 +1597,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.carDrivingThroughGate ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Car Driving Through Gate
+                        <span className="flex items-center gap-1">🚗 Car Driving Through Gate</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1605,7 +1607,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.carBurglaries ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Car Burglaries
+                        <span className="flex items-center gap-1">🚙 Car Burglaries</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1615,7 +1617,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.trespassing ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Trespassing
+                        <span className="flex items-center gap-1">⛔ Trespassing</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1625,7 +1627,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.carsBrokenIntoAfterFact ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Cars Broken Into (After Fact)
+                        <span className="flex items-center gap-1">🔎 Cars Broken Into (After Fact)</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1635,14 +1637,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.brokenGlassWindows ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Broken Glass/Windows
+                        <span className="flex items-center gap-1">🪟 Broken Glass/Windows</span>
                       </Toggle>
                     </div>
                   </div>
                   
                   {/* Suspicious Activity */}
                   <div>
-                    <h4 className="font-semibold text-amber-900 mb-2">Suspicious Activity</h4>
+                    <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                      <span className="text-lg">👁️</span> Suspicious Activity
+                    </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       <Toggle 
                         pressed={formData.suspiciousActivity}
@@ -1651,7 +1655,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.suspiciousActivity ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Suspicious Activity
+                        <span className="flex items-center gap-1">🕵️ Suspicious Activity</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1661,7 +1665,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.intentToCommitCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Intent to Commit Criminal Act
+                        <span className="flex items-center gap-1">📝 Intent to Commit Crime</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1671,7 +1675,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.checkingMultipleCarDoors ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Checking Multiple Car Doors
+                        <span className="flex items-center gap-1">🚪 Checking Car Doors</span>
                       </Toggle>
                       
                       <Toggle 
@@ -1681,7 +1685,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         size="sm"
                         className={formData.dumpsterDivingOrDumping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
-                        Dumpster Diving/Dumping
+                        <span className="flex items-center gap-1">🗑️ Dumpster Diving/Dumping</span>
                       </Toggle>
                     </div>
                   </div>
@@ -1690,7 +1694,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Nuisance Activity */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Nuisance Activity</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">😒</span> Nuisance Activity
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.urinationOrOtherBodilyFunctions}
@@ -1699,7 +1705,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.urinationOrOtherBodilyFunctions ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Urination/Other Bodily Functions
+                          <span className="flex items-center gap-1">💦 Urination/Bodily Functions</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1709,7 +1715,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.presenceOfScooters ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Presence of Scooters
+                          <span className="flex items-center gap-1">🛴 Presence of Scooters</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1719,14 +1725,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.leavingTrash ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Leaving Trash
+                          <span className="flex items-center gap-1">🗑️ Leaving Trash</span>
                         </Toggle>
                       </div>
                     </div>
                     
                     {/* Emergency/Medical */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Emergency/Medical</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">🚑</span> Emergency/Medical
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.emergencyServices}
@@ -1735,7 +1743,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.emergencyServices ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Emergency Services
+                          <span className="flex items-center gap-1">🚒 Emergency Services</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1745,7 +1753,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.personInjuredOrDistress ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Person Injured/In Distress
+                          <span className="flex items-center gap-1">🤕 Person Injured/In Distress</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1755,7 +1763,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.obviousMedicalEmergency ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Obvious Medical Emergency
+                          <span className="flex items-center gap-1">⚕️ Medical Emergency</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1765,14 +1773,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.visibleFireOrSmoke ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Visible Fire/Smoke
+                          <span className="flex items-center gap-1">🔥 Visible Fire/Smoke</span>
                         </Toggle>
                       </div>
                     </div>
                     
                     {/* Loitering Group */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Loitering</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">🧍</span> Loitering
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.loitering}
@@ -1781,7 +1791,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.loitering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Loitering
+                          <span className="flex items-center gap-1">⌛ Loitering</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1791,7 +1801,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.activeGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Active Gathering
+                          <span className="flex items-center gap-1">👪 Active Gathering</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1801,7 +1811,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.groupsLoiteringGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Groups Loitering/Gathering
+                          <span className="flex items-center gap-1">👥 Groups Loitering</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1811,7 +1821,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.homelessVagrant ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Homeless/Vagrant
+                          <span className="flex items-center gap-1">🧳 Homeless/Vagrant</span>
                         </Toggle>
                       </div>
                     </div>
@@ -1821,7 +1831,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Tenant Activity */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Tenant Activity</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">🏢</span> Tenant Activity
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.tenantsMovingOut}
@@ -1830,7 +1842,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.tenantsMovingOut ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Tenants Moving Out
+                          <span className="flex items-center gap-1">📦 Tenants Moving Out</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1840,14 +1852,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.largeItemsMovedAfterHours ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Large Items Moved After Hours
+                          <span className="flex items-center gap-1">🛋️ Items Moved After Hours</span>
                         </Toggle>
                       </div>
                     </div>
                     
                     {/* Restricted Access */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Restricted Access</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">🚫</span> Restricted Access
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.personInRestrictedArea}
@@ -1856,7 +1870,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.personInRestrictedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Person in Restricted Area
+                          <span className="flex items-center gap-1">🚷 Person in Restricted Area</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1866,7 +1880,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.sittingOrSleeping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Sitting or Sleeping
+                          <span className="flex items-center gap-1">😴 Sitting or Sleeping</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1876,14 +1890,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.presentInProhibitedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Present in Prohibited Area
+                          <span className="flex items-center gap-1">⛔ Present in Prohibited Area</span>
                         </Toggle>
                       </div>
                     </div>
                     
                     {/* More Loitering */}
                     <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">More Loitering Types</h4>
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span className="text-lg">👥</span> More Loitering Types
+                      </h4>
                       <div className="grid grid-cols-1 gap-2">
                         <Toggle 
                           pressed={formData.sleepingOnSiteEncampments}
@@ -1892,7 +1908,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.sleepingOnSiteEncampments ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Sleeping on Site/Encampments
+                          <span className="flex items-center gap-1">🏕️ Sleeping on Site</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1902,7 +1918,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.loiteringInStairwells ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Loitering in Stairwells
+                          <span className="flex items-center gap-1">🪜 Loitering in Stairwells</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1912,7 +1928,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.personsSmoking ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Persons Smoking
+                          <span className="flex items-center gap-1">🚬 Persons Smoking</span>
                         </Toggle>
                         
                         <Toggle 
@@ -1922,7 +1938,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.vehicleLoiteringInArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
-                          Vehicle Loitering in Area
+                          <span className="flex items-center gap-1">🚘 Vehicle Loitering</span>
                         </Toggle>
                       </div>
                     </div>
@@ -1930,7 +1946,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                   
                   {/* Custom Incident Types */}
                   <div>
-                    <h4 className="font-semibold text-amber-900 mb-3">Custom Incident Types</h4>
+                    <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+                      <span className="text-lg">⚙️</span> Custom Incident Types
+                    </h4>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="flex items-center gap-3">
                         <Toggle 
@@ -1940,7 +1958,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.customIncidentType1Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
-                          Custom Type 1
+                          <span className="flex items-center gap-1">🔶 Custom Type 1</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType1 || ""}
@@ -1958,7 +1976,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.customIncidentType2Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
-                          Custom Type 2
+                          <span className="flex items-center gap-1">🔷 Custom Type 2</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType2 || ""}
@@ -1976,7 +1994,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           size="sm"
                           className={formData.customIncidentType3Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
-                          Custom Type 3
+                          <span className="flex items-center gap-1">💠 Custom Type 3</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType3 || ""}
@@ -1998,7 +2016,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                     </svg>
                   </span>
-                  Use Case Problem Information
+                  <span className="flex items-center gap-2">🔍 Use Case Problem Information</span>
                 </h3>
                 <div className="relative">
                   <Textarea 
