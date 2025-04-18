@@ -562,7 +562,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="quoteDate">Date Quote Generated</Label>
+                  <Label htmlFor="quoteDate">Quote Date</Label>
                   <Input 
                     id="quoteDate"
                     type="date"
@@ -585,56 +585,58 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="technology">Technology Required</Label>
+                  <Label htmlFor="technology">Technology</Label>
                   <Select 
                     value={formData.technology}
                     onValueChange={(value) => handleFormChange("technology", value)}
                   >
-                    <SelectTrigger id="technology">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select technology" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Kastle Video Cloud">Kastle Video Cloud</SelectItem>
-                      <SelectItem value="Avigilon Cameras">Avigilon Cameras</SelectItem>
+                      <SelectItem value="On-Premise Server">On-Premise Server</SelectItem>
+                      <SelectItem value="Hybrid">Hybrid</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="installType">Type of Install</Label>
-                  <Select
+                  <Label htmlFor="installType">Installation Type</Label>
+                  <Select 
                     value={formData.installType}
                     onValueChange={(value) => handleFormChange("installType", value)}
                   >
-                    <SelectTrigger id="installType">
-                      <SelectValue placeholder="Select install type" />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select installation type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="New Construction">New Construction</SelectItem>
-                      <SelectItem value="Existing Customer Add-on">Existing Customer Add-on</SelectItem>
+                      <SelectItem value="Retrofit">Retrofit</SelectItem>
+                      <SelectItem value="Replacement">Replacement</SelectItem>
+                      <SelectItem value="Expansion">Expansion</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             </CardContent>
           </Card>
-
+          
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Incident Types</CardTitle>
               <CardDescription>Select which incident types will be monitored at this site</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Column 1 - Criminal Activity Group */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  <div>
                     <h3 className="text-lg font-semibold mb-3 text-red-800">Criminal Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.obviousCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
                         Obvious Criminal Act
                       </Toggle>
@@ -642,15 +644,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.activeBreakIn}
                         onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
-                        Active Break-In
+                        Active Break-in
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.destructionOfProperty}
                         onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
                         Destruction of Property
                       </Toggle>
@@ -658,15 +660,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.carDrivingThroughGate}
                         onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
-                        Car Driving Through Parking Gate
+                        Car Driving Through Gate
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.carBurglaries}
                         onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
                         Car Burglaries
                       </Toggle>
@@ -674,7 +676,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.trespassing}
                         onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
                         Trespassing
                       </Toggle>
@@ -682,36 +684,36 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.carsBrokenIntoAfterFact}
                         onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
-                        Cars Broken Into After the Fact
+                        Cars Broken Into After Fact
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.brokenGlassWindows}
                         onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start data-[state=on]:bg-red-50"
                       >
-                        Broken Glass - Windows/Doors
+                        Broken Glass/Windows
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
+                  <div>
                     <h3 className="text-lg font-semibold mb-3 text-orange-800">Suspicious Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.suspiciousActivity}
                         onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                        className="w-full justify-start data-[state=on]:bg-orange-50"
                       >
-                        Suspicious Individual(s)/Activity
+                        Suspicious Activity
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.intentToCommitCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                        className="w-full justify-start data-[state=on]:bg-orange-50"
                       >
                         Intent to Commit Criminal Act
                       </Toggle>
@@ -719,7 +721,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.checkingMultipleCarDoors}
                         onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                        className="w-full justify-start data-[state=on]:bg-orange-50"
                       >
                         Checking Multiple Car Doors
                       </Toggle>
@@ -727,68 +729,65 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.dumpsterDivingOrDumping}
                         onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                        className="w-full justify-start data-[state=on]:bg-orange-50"
                       >
-                        Dumpster Diving or Dumping
+                        Dumpster Diving/Dumping
                       </Toggle>
                     </div>
                   </div>
-                </div>
-                
-                {/* Column 2 - Nuisance, Emergency, Tenant Activity */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">Nuisance Activity</h3>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-yellow-800">Nuisance Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.urinationOrOtherBodilyFunctions}
                         onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start data-[state=on]:bg-yellow-50"
                       >
-                        Urination or Other Bodily Functions
+                        Urination/Other Bodily Functions
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.presenceOfScooters}
                         onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start data-[state=on]:bg-yellow-50"
                       >
-                        Presence of Scooters, Bicycles, Skateboards
+                        Presence of Scooters
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.leavingTrash}
                         onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start data-[state=on]:bg-yellow-50"
                       >
-                        Leaving Trash in Parking Lots or Perimeter
+                        Leaving Trash
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-blue-800">Emergency/Medical</h3>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-purple-800">Emergency/Medical</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.emergencyServices}
                         onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start data-[state=on]:bg-purple-50"
                       >
-                        Emergency Services on Site
+                        Emergency Services Response
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.personInjuredOrDistress}
                         onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start data-[state=on]:bg-purple-50"
                       >
-                        Person Presumed Injured or in Distress
+                        Person Injured/In Distress
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.obviousMedicalEmergency}
                         onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start data-[state=on]:bg-purple-50"
                       >
                         Obvious Medical Emergency
                       </Toggle>
@@ -796,44 +795,43 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.visibleFireOrSmoke}
                         onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start data-[state=on]:bg-purple-50"
                       >
-                        Visible Fire or Smoke
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-green-800">Tenant Activity</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.tenantsMovingOut}
-                        onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        Tenants Moving Out of Building
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.largeItemsMovedAfterHours}
-                        onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        Large Items Being Moved After Hours
+                        Visible Fire/Smoke
                       </Toggle>
                     </div>
                   </div>
                 </div>
                 
-                {/* Column 3 - Restricted Access, Loitering, Custom Types */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-purple-800">Restricted Access</h3>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-blue-800">Tenant Activity</h3>
+                    <div className="space-y-2">
+                      <Toggle
+                        pressed={formData.tenantsMovingOut}
+                        onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-50"
+                      >
+                        Tenants Moving Out
+                      </Toggle>
+                      
+                      <Toggle
+                        pressed={formData.largeItemsMovedAfterHours}
+                        onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
+                        className="w-full justify-start data-[state=on]:bg-blue-50"
+                      >
+                        Large Items Moved After Hours
+                      </Toggle>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-teal-800">Restricted Access</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.personInRestrictedArea}
                         onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start data-[state=on]:bg-teal-50"
                       >
                         Person in Restricted Area
                       </Toggle>
@@ -841,28 +839,28 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.sittingOrSleeping}
                         onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start data-[state=on]:bg-teal-50"
                       >
-                        Sitting or Sleeping in Prohibited Area
+                        Sitting/Sleeping
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.presentInProhibitedArea}
                         onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start data-[state=on]:bg-teal-50"
                       >
                         Present in Prohibited Area
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-amber-800">Loitering</h3>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-green-800">Loitering</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.loitering}
                         onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Loitering
                       </Toggle>
@@ -870,7 +868,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.activeGathering}
                         onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Active Gathering
                       </Toggle>
@@ -878,7 +876,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.groupsLoiteringGathering}
                         onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Groups Loitering/Gathering
                       </Toggle>
@@ -886,7 +884,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.homelessVagrant}
                         onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Homeless/Vagrant
                       </Toggle>
@@ -894,15 +892,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.sleepingOnSiteEncampments}
                         onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
-                        Sleeping on Site/Encampments
+                        Sleeping On Site/Encampments
                       </Toggle>
                       
                       <Toggle
                         pressed={formData.loiteringInStairwells}
                         onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Loitering in Stairwells
                       </Toggle>
@@ -910,7 +908,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.personsSmoking}
                         onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Persons Smoking
                       </Toggle>
@@ -918,20 +916,20 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.vehicleLoiteringInArea}
                         onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start data-[state=on]:bg-green-50"
                       >
                         Vehicle Loitering in Area
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
+                  <div>
                     <h3 className="text-lg font-semibold mb-3 text-indigo-800">Custom Incident Types</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.customIncidentType1}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType1", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start data-[state=on]:bg-indigo-50"
                       >
                         Custom Incident Type 1
                       </Toggle>
@@ -939,7 +937,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType2}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType2", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start data-[state=on]:bg-indigo-50"
                       >
                         Custom Incident Type 2
                       </Toggle>
@@ -947,7 +945,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType3}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType3", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start data-[state=on]:bg-indigo-50"
                       >
                         Custom Incident Type 3
                       </Toggle>
@@ -955,7 +953,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType4}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType4", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start data-[state=on]:bg-indigo-50"
                       >
                         Custom Incident Type 4
                       </Toggle>
@@ -963,7 +961,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType5}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType5", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start data-[state=on]:bg-indigo-50"
                       >
                         Custom Incident Type 5
                       </Toggle>
@@ -973,11 +971,14 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-          
+        </TabsContent>
+        
+        {/* Stream Details Tab Content */}
+        <TabsContent value="stream-details">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Pricing</CardTitle>
-              <CardDescription>Enter camera stream details for monitoring and surveillance</CardDescription>
+              <CardTitle>Camera Stream Details</CardTitle>
+              <CardDescription>Configure camera streams for monitoring and surveillance</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -1256,332 +1257,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <p className="text-muted-foreground">No streams added yet. Add a stream to get started.</p>
                   </div>
                 )}
-                
-                <div className="flex justify-between items-center mt-6">
-                  <h3 className="text-lg font-semibold">Additional Services</h3>
-                  <Button variant="outline" onClick={calculatePrice} className="flex items-center gap-1">
-                    <Calculator size={16} /> Calculate Price
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="vocEscalations">VOC Escalations</Label>
-                    <Input 
-                      id="vocEscalations"
-                      type="number"
-                      min="0"
-                      value={formData.vocEscalations}
-                      onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="dispatchResponses">Dispatch Responses</Label>
-                    <Input 
-                      id="dispatchResponses"
-                      type="number"
-                      min="0"
-                      value={formData.dispatchResponses}
-                      onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="gdodsPatrols">GDODS Patrols</Label>
-                    <Input 
-                      id="gdodsPatrols"
-                      type="number"
-                      min="0"
-                      value={formData.gdodsPatrols}
-                      onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="sgppPatrols">SGPP Patrols</Label>
-                    <Input 
-                      id="sgppPatrols"
-                      type="number"
-                      min="0"
-                      value={formData.sgppPatrols}
-                      onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="forensicInvestigations">Forensic Investigations</Label>
-                    <Input 
-                      id="forensicInvestigations"
-                      type="number"
-                      min="0"
-                      value={formData.forensicInvestigations}
-                      onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="appUsers">App Users</Label>
-                    <Input 
-                      id="appUsers"
-                      type="number"
-                      min="0"
-                      value={formData.appUsers}
-                      onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="audioDevices">Audio Devices</Label>
-                    <Input 
-                      id="audioDevices"
-                      type="number"
-                      min="0"
-                      value={formData.audioDevices}
-                      onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Stream Details Tab Content */}
-        <TabsContent value="stream-details">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Camera Stream Details</CardTitle>
-              <CardDescription>Configure camera streams for monitoring and surveillance</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Camera Streams</h3>
-                  <Button onClick={() => addStream()} className="flex items-center gap-1">
-                    <Plus size={16} /> Add Stream
-                  </Button>
-                </div>
-                
-                {streams.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Qty</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Monitored Area</TableHead>
-                          <TableHead>Accessibility</TableHead>
-                          <TableHead>Analytic Rule 1</TableHead>
-                          <TableHead>Dwell Time</TableHead>
-                          <TableHead>Rule 2</TableHead>
-                          <TableHead>Dwell Time</TableHead>
-                          <TableHead>Schedule</TableHead>
-                          <TableHead>Event Volume</TableHead>
-                          <TableHead>Patrol Type</TableHead>
-                          <TableHead>Patrols/Week</TableHead>
-                          <TableHead>Images</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {streams.map((stream) => (
-                          <TableRow key={stream.id}>
-                            <TableCell>
-                              <Input 
-                                type="number" 
-                                min="1"
-                                value={stream.quantity} 
-                                onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
-                                className="w-16"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input 
-                                value={stream.description}
-                                onChange={(e) => updateStream(stream.id, "description", e.target.value)}
-                                className="w-full"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.monitoredArea}
-                                onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
-                              >
-                                <SelectTrigger className="w-28">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Pool">Pool</SelectItem>
-                                  <SelectItem value="Lobby">Lobby</SelectItem>
-                                  <SelectItem value="Garage">Garage</SelectItem>
-                                  <SelectItem value="Perimeter">Perimeter</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.accessibility}
-                                onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
-                              >
-                                <SelectTrigger className="w-28">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Secure">Secure</SelectItem>
-                                  <SelectItem value="Semi-Secure">Semi-Secure</SelectItem>
-                                  <SelectItem value="Open">Open</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.analyticRule1}
-                                onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
-                              >
-                                <SelectTrigger className="w-32">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
-                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
-                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
-                                  <SelectItem value="None">None</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input 
-                                type="number" 
-                                min="0"
-                                value={stream.dwellTime1} 
-                                onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
-                                className="w-20"
-                                suffix="s"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.analyticRule2}
-                                onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
-                              >
-                                <SelectTrigger className="w-32">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
-                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
-                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
-                                  <SelectItem value="None">None</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input 
-                                type="number" 
-                                min="0"
-                                value={stream.dwellTime2} 
-                                onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
-                                className="w-20"
-                                suffix="s"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.schedule}
-                                onValueChange={(value) => updateStream(stream.id, "schedule", value)}
-                              >
-                                <SelectTrigger className="w-20">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="24/7">24/7</SelectItem>
-                                  <SelectItem value="After Hours">After Hours</SelectItem>
-                                  <SelectItem value="Weekends">Weekends</SelectItem>
-                                  <SelectItem value="Custom">Custom</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input 
-                                type="number" 
-                                min="0"
-                                value={stream.eventVolume} 
-                                onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
-                                className="w-24"
-                                suffix="/day"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select 
-                                value={stream.patrolType}
-                                onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
-                              >
-                                <SelectTrigger className="w-24">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="None">None</SelectItem>
-                                  <SelectItem value="Standard">Standard</SelectItem>
-                                  <SelectItem value="Premium">Premium</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input 
-                                type="number" 
-                                min="0"
-                                value={stream.patrolsPerWeek} 
-                                onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
-                                className="w-20"
-                                disabled={stream.patrolType === "None"}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">{stream.images.length} images</span>
-                                <Button 
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => {
-                                    setSelectedStream(stream);
-                                    setIsImagesModalOpen(true);
-                                  }}
-                                >
-                                  <ImageIcon size={16} />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-1">
-                                <Button 
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => addStream(stream)}
-                                >
-                                  <Copy size={16} />
-                                </Button>
-                                <Button 
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => removeStream(stream.id)}
-                                  className="text-destructive"
-                                >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                ) : (
-                  <div className="text-center py-10 border rounded-lg bg-muted/20">
-                    <p className="text-muted-foreground">No camera streams added yet.</p>
-                    <p className="text-sm text-muted-foreground mt-1">Click "Add Stream" to add your first camera stream.</p>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -1709,13 +1384,14 @@ const KastleVideoGuardingPage: React.FC = () => {
                       value={formData.lightingRequirements}
                       onValueChange={(value) => handleFormChange("lightingRequirements", value)}
                     >
-                      <SelectTrigger id="lightingRequirements">
-                        <SelectValue placeholder="Select lighting status" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select lighting requirements" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="Excellent">Excellent</SelectItem>
                         <SelectItem value="Adequate">Adequate</SelectItem>
-                        <SelectItem value="Needs Improvement">Needs Improvement</SelectItem>
-                        <SelectItem value="Poor">Poor</SelectItem>
+                        <SelectItem value="Additional Needed">Additional Needed</SelectItem>
+                        <SelectItem value="IR Required">IR Required</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1726,13 +1402,13 @@ const KastleVideoGuardingPage: React.FC = () => {
                       value={formData.cameraFieldOfView}
                       onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
                     >
-                      <SelectTrigger id="cameraFieldOfView">
-                        <SelectValue placeholder="Select field of view status" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select field of view" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Clear">Clear</SelectItem>
                         <SelectItem value="Partially Obstructed">Partially Obstructed</SelectItem>
-                        <SelectItem value="Significantly Obstructed">Significantly Obstructed</SelectItem>
+                        <SelectItem value="Heavily Obstructed">Heavily Obstructed</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1745,7 +1421,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       id="networkConnectivity"
                       value={formData.networkConnectivity}
                       onChange={(e) => handleFormChange("networkConnectivity", e.target.value)}
-                      placeholder="Document any network constraints or requirements"
+                      placeholder="Enter details about network connectivity and requirements"
                       rows={5}
                     />
                   </div>
@@ -1759,96 +1435,71 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="use-case">
           <Card className="mb-6">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Use Case - Scope of Work</CardTitle>
-                  <CardDescription>Define the service level agreement and commitment</CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Select 
-                    defaultValue="en" 
-                    onValueChange={(value) => handleLanguageChange(value)}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                      <SelectItem value="de">German</SelectItem>
-                      <SelectItem value="zh">Mandarin</SelectItem>
-                      <SelectItem value="hi">Hindi</SelectItem>
-                      <SelectItem value="ar">Arabic</SelectItem>
-                      <SelectItem value="ru">Russian</SelectItem>
-                      <SelectItem value="pt">Portuguese</SelectItem>
-                      <SelectItem value="ja">Japanese</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    className="gap-1" 
-                    variant="outline"
-                    onClick={translateSOW}
-                    disabled={isTranslating}
-                  >
-                    {isTranslating ? (
-                      <>
-                        <span className="animate-spin">⟳</span> Translating...
-                      </>
-                    ) : (
-                      <>
-                        <Globe size={16} /> Translate
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <CardTitle>Use Case Commitment</CardTitle>
+              <CardDescription>Scope of work and commitment for monitoring</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="useCaseCommitment" className="text-lg font-medium">
-                      Scope of Work
-                    </Label>
-                    {translatedLanguage && (
-                      <Badge variant="outline" className="text-xs">
-                        {getLanguageLabel(translatedLanguage)}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-px rounded-md">
-                    <Textarea 
-                      id="useCaseCommitment"
-                      value={formData.useCaseCommitment}
-                      onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
-                      placeholder="Document the specific use case details and service commitments"
-                      rows={10}
-                      className="resize-none rounded-[3px]"
-                    />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-x-2">
+                    <Select 
+                      value={selectedLanguage}
+                      onValueChange={handleLanguageChange}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          <SelectValue />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Spanish</SelectItem>
+                        <SelectItem value="fr">French</SelectItem>
+                        <SelectItem value="de">German</SelectItem>
+                        <SelectItem value="zh">Mandarin</SelectItem>
+                        <SelectItem value="hi">Hindi</SelectItem>
+                        <SelectItem value="ar">Arabic</SelectItem>
+                        <SelectItem value="ru">Russian</SelectItem>
+                        <SelectItem value="pt">Portuguese</SelectItem>
+                        <SelectItem value="ja">Japanese</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Button 
+                      onClick={translateSOW}
+                      disabled={selectedLanguage === 'en' || isTranslating}
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <Languages className="h-4 w-4" />
+                      {isTranslating ? "Translating..." : "Translate"}
+                    </Button>
                   </div>
                   
-                  {translationError && (
-                    <div className="text-red-500 text-sm mt-2">
-                      {translationError}
-                    </div>
+                  {translatedLanguage && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700">
+                      Translated to {getLanguageLabel(translatedLanguage)}
+                    </Badge>
                   )}
-                  
-                  <div className="text-sm text-muted-foreground mt-4">
-                    <p>The Scope of Work is a critical component of your project. It defines the exact services, 
-                    deliverables, and expectations that will be fulfilled. Use this section to clearly outline 
-                    what will be provided, service levels, and any special requirements.</p>
-                  </div>
                 </div>
                 
-                {originalSOW && (
-                  <div className="space-y-2 pt-4 border-t">
-                    <Label className="text-sm font-medium">Original Text (English)</Label>
-                    <div className="bg-muted p-4 rounded-md">
-                      <p className="text-sm whitespace-pre-wrap">{originalSOW}</p>
-                    </div>
+                {translationError && (
+                  <div className="p-3 text-sm bg-red-50 text-red-800 rounded-md">
+                    {translationError}
                   </div>
                 )}
+                
+                <div className="space-y-2">
+                  <Label htmlFor="useCaseCommitment">Scope of Work (SOW)</Label>
+                  <Textarea 
+                    id="useCaseCommitment"
+                    value={formData.useCaseCommitment}
+                    onChange={(e) => handleFormChange("useCaseCommitment", e.target.value)}
+                    placeholder="Enter detailed scope of work for Kastle Video Guarding services"
+                    rows={10}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1858,14 +1509,14 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="voc-protocol">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>VOC Protocol</CardTitle>
-              <CardDescription>Establish customer communication protocols</CardDescription>
+              <CardTitle>Video Operations Center Protocol</CardTitle>
+              <CardDescription>Setup instructions for VOC operations</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="amName">Account Manager Name</Label>
+                    <Label htmlFor="amName">Account Manager</Label>
                     <Input 
                       id="amName"
                       value={formData.amName}
@@ -1887,35 +1538,35 @@ const KastleVideoGuardingPage: React.FC = () => {
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="escalationProcess1">Escalation Process Level 1</Label>
+                    <Label htmlFor="escalationProcess1">Escalation Process - Step 1</Label>
                     <Textarea 
                       id="escalationProcess1"
                       value={formData.escalationProcess1}
                       onChange={(e) => handleFormChange("escalationProcess1", e.target.value)}
-                      placeholder="Document the first level escalation protocol"
-                      rows={3}
+                      placeholder="First escalation step"
+                      rows={2}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="escalationProcess2">Escalation Process Level 2</Label>
+                    <Label htmlFor="escalationProcess2">Escalation Process - Step 2</Label>
                     <Textarea 
                       id="escalationProcess2"
                       value={formData.escalationProcess2}
                       onChange={(e) => handleFormChange("escalationProcess2", e.target.value)}
-                      placeholder="Document the second level escalation protocol"
-                      rows={3}
+                      placeholder="Second escalation step"
+                      rows={2}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="escalationProcess3">Escalation Process Level 3</Label>
+                    <Label htmlFor="escalationProcess3">Escalation Process - Step 3</Label>
                     <Textarea 
                       id="escalationProcess3"
                       value={formData.escalationProcess3}
                       onChange={(e) => handleFormChange("escalationProcess3", e.target.value)}
-                      placeholder="Document the third level escalation protocol"
-                      rows={3}
+                      placeholder="Third escalation step"
+                      rows={2}
                     />
                   </div>
                 </div>
@@ -1929,13 +1580,13 @@ const KastleVideoGuardingPage: React.FC = () => {
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Project Deployment</CardTitle>
-              <CardDescription>Define implementation details</CardDescription>
+              <CardDescription>Technical deployment details</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="pmName">Project Manager Name</Label>
+                    <Label htmlFor="pmName">Project Manager</Label>
                     <Input 
                       id="pmName"
                       value={formData.pmName}
@@ -1950,7 +1601,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       id="gatewayCredentials"
                       value={formData.gatewayCredentials}
                       onChange={(e) => handleFormChange("gatewayCredentials", e.target.value)}
-                      placeholder="Document the gateway access credentials"
+                      placeholder="Enter gateway credentials information"
                       rows={3}
                     />
                   </div>
@@ -1958,29 +1609,29 @@ const KastleVideoGuardingPage: React.FC = () => {
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="streamNames">Stream Names</Label>
+                    <Label htmlFor="streamNames">Stream Names/IDs</Label>
                     <Textarea 
                       id="streamNames"
                       value={formData.streamNames}
                       onChange={(e) => handleFormChange("streamNames", e.target.value)}
-                      placeholder="List the stream names"
+                      placeholder="Enter stream names or IDs"
                       rows={3}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="speakersWork">Speakers Functionality</Label>
+                    <Label htmlFor="speakersWork">Speaker Functionality</Label>
                     <Select 
                       value={formData.speakersWork}
                       onValueChange={(value) => handleFormChange("speakersWork", value)}
                     >
-                      <SelectTrigger id="speakersWork">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select speaker status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Partially">Partially</SelectItem>
+                        <SelectItem value="All Working">All Working</SelectItem>
+                        <SelectItem value="Partial Functionality">Partial Functionality</SelectItem>
+                        <SelectItem value="Not Working">Not Working</SelectItem>
                         <SelectItem value="N/A">N/A</SelectItem>
                       </SelectContent>
                     </Select>
@@ -1991,24 +1642,16 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Stream Images Modal */}
+      
+      {/* Image Modal for viewing stream images */}
       {selectedStream && (
-        <StreamImagesModal
-          isOpen={isImagesModalOpen}
+        <StreamImagesModal 
+          isOpen={isImagesModalOpen} 
           onClose={() => setIsImagesModalOpen(false)}
-          streamName={selectedStream.description || `Stream ${selectedStream.id}`}
-          images={selectedStream.images}
-          onDeleteImage={(imageId) => {
-            if (selectedStream) {
-              const updatedImages = selectedStream.images.filter(img => img.id !== imageId);
-              updateStream(selectedStream.id, "images", updatedImages);
-              
-              toast({
-                title: "Image Deleted",
-                description: "The image has been removed from this stream."
-              });
-            }
+          stream={selectedStream}
+          onImageDelete={(imageId) => {
+            const updatedImages = selectedStream.images.filter(img => img.id !== imageId);
+            updateStream(selectedStream.id, "images", updatedImages);
           }}
         />
       )}
