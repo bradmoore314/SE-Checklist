@@ -7,10 +7,46 @@ import {
 } from "@/components/ui/tabs";
 import {
   AlertTriangle,
-  X
+  X,
+  Save,
+  Check,
+  Plus, 
+  Trash2 as Trash, 
+  Copy,
+  ImageIcon,
+  Upload,
+  Info as InfoIcon,
+  Video as VideoIcon,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Stream, StreamImage } from "@/types";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Toggle } from "@/components/ui/toggle";
+import { 
+  ToggleGroup, 
+  ToggleGroupItem 
+} from "@/components/ui/toggle-group";
+import { useToast } from "@/hooks/use-toast";
+import StreamImagesModal from "@/components/modals/StreamImagesModal";
 
 // Price Stream data for the pricing calculator
 interface PriceStream {
@@ -222,46 +258,6 @@ interface FormData {
   customIncidentType5: string;
   customIncidentType5Selected: boolean;
 }
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Toggle } from "@/components/ui/toggle";
-import { 
-  ToggleGroup, 
-  ToggleGroupItem 
-} from "@/components/ui/toggle-group";
-import { 
-  Save,
-  Check,
-} from "lucide-react";
-import { 
-  Plus, 
-  Trash2 as Trash, 
-  Copy,
-  ImageIcon,
-  Upload,
-  Info as InfoIcon,
-  Video as VideoIcon,
-  LayoutGrid,
-  List,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import StreamImagesModal from "@/components/modals/StreamImagesModal";
 
 const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
