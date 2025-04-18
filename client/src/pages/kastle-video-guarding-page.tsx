@@ -205,6 +205,9 @@ import StreamImagesModal from "@/components/modals/StreamImagesModal";
 const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
   
+  // View mode for stream details (cards or list)
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+  
   // State for streams
   const [streams, setStreams] = useState<Stream[]>([]);
   const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
@@ -551,7 +554,39 @@ const KastleVideoGuardingPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-end mb-4">
+              <div className="flex justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex border rounded overflow-hidden">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={`h-9 ${viewMode === 'cards' ? 
+                        'bg-blue-50 text-blue-700 border-r border-blue-200' : 
+                        'text-gray-600 hover:text-blue-600 hover:bg-blue-50'}`}
+                      onClick={() => setViewMode('cards')}
+                      title="Card View"
+                    >
+                      <LayoutGrid size={18} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={`h-9 ${viewMode === 'list' ? 
+                        'bg-blue-50 text-blue-700' : 
+                        'text-gray-600 hover:text-blue-600 hover:bg-blue-50'}`}
+                      onClick={() => setViewMode('list')}
+                      title="List View"
+                    >
+                      <List size={18} />
+                    </Button>
+                  </div>
+                  
+                  {streams.length > 0 && (
+                    <div className="text-sm text-gray-500">
+                      {streams.length} {streams.length === 1 ? 'stream' : 'streams'}
+                    </div>
+                  )}
+                </div>
                 <Button 
                   onClick={() => addStream()} 
                   className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
