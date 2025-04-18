@@ -35,21 +35,34 @@ function parseSharePointSettings(settings: CrmSettings): SharePointSettings | nu
   }
 }
 
+import { createDataverseToken } from "./microsoft-graph";
+
 // Utility function to make authenticated API calls to Dataverse
 async function callDataverseApi(
   url: string, 
   method: string = 'GET', 
   body?: any, 
-  accessToken?: string
+  accessToken?: string,
+  baseUrl?: string
 ): Promise<any> {
-  if (!accessToken) {
-    // For implementation, we would use the same token provider
-    // that we use for Graph API, but modify the scope
-    throw new Error("No access token provided for Dataverse API");
+  let token = accessToken;
+  
+  // If no token provided but baseUrl is, try to get a token
+  if (!token && baseUrl) {
+    // Default to first user (1) for now
+    // In a real implementation, we would use the logged-in user
+    const dataverseToken = await createDataverseToken(1, baseUrl);
+    token = dataverseToken || undefined;
+    
+    if (!token) {
+      throw new Error("Failed to acquire Dataverse API token");
+    }
+  } else if (!token) {
+    throw new Error("No access token or baseUrl provided for Dataverse API");
   }
   
   const headers: HeadersInit = {
-    'Authorization': `Bearer ${accessToken}`,
+    'Authorization': `Bearer ${token}`,
     'Accept': 'application/json',
     'OData-MaxVersion': '4.0',
     'OData-Version': '4.0'
@@ -282,37 +295,70 @@ export class DataverseCrm implements CrmSystem {
   }
   
   async createOpportunity(projectData: Project): Promise<{ id: string; name: string }> {
-    // This would be implemented with actual Dataverse API calls
+    // Get Dataverse settings
     const settings = await this.getSettings();
     
     if (!settings) {
       throw new Error("Dataverse CRM not configured");
     }
     
-    // In a real implementation, we would get these from settings
+    // Get API configuration from settings
     const dataverseUrl = settings.base_url;
     const apiVersion = settings.api_version || "v9.2";
     
-    // Make sure we have Microsoft Graph client working
+    // Make sure Microsoft authentication is configured
     if (!isSharePointConfigured()) {
       throw new Error("Microsoft authentication not configured");
     }
     
-    // Here we would create a Dataverse entity using the Web API
-    // Example: POST to ${dataverseUrl}/api/data/${apiVersion}/opportunities
-    console.log(`Creating opportunity in Dataverse at ${dataverseUrl}: ${projectData.name}`);
-    
-    // For now, we'll simulate creating an opportunity
-    const opportunityId = `dataverse_opp_${Date.now()}`;
-    const opportunityName = projectData.name;
-    
-    // Create SharePoint folder for documents
-    await this.createSharePointFolder(projectData.id, opportunityId, opportunityName);
-    
-    return {
-      id: opportunityId,
-      name: opportunityName
-    };
+    try {
+      // Prepare the opportunity data for Dataverse
+      // Field names would match the Dataverse entity schema
+      const opportunityData = {
+        name: projectData.name,
+        description: `Project at ${projectData.site_address}`,
+        // Map other relevant fields
+        customerid_account: {
+          name: projectData.client,
+          accountid: null // In a real implementation, we would look up or create the account
+        },
+        // Other fields as needed
+      };
+      
+      // In a real implementation, we would create the opportunity in Dataverse
+      // For demonstration purposes, we'll simulate success and create a SharePoint folder
+      console.log(`Creating opportunity in Dataverse at ${dataverseUrl}: ${projectData.name}`);
+      
+      // For now, simulate the response
+      // In a real implementation, we would call Dataverse API:
+      /*
+      const response = await callDataverseApi(
+        `${dataverseUrl}/api/data/${apiVersion}/opportunities`, 
+        'POST',
+        opportunityData,
+        null,
+        dataverseUrl
+      );
+      
+      const opportunityId = response.opportunityid;
+      const opportunityName = response.name;
+      */
+      
+      // Simulated response
+      const opportunityId = `dataverse_opp_${Date.now()}`;
+      const opportunityName = projectData.name;
+      
+      // Create SharePoint folder for documents
+      await this.createSharePointFolder(projectData.id, opportunityId, opportunityName);
+      
+      return {
+        id: opportunityId,
+        name: opportunityName
+      };
+    } catch (error) {
+      console.error("Error creating opportunity in Dataverse:", error);
+      throw error;
+    }
   }
   
   async updateOpportunity(opportunityId: string, projectData: Project): Promise<void> {
@@ -322,13 +368,35 @@ export class DataverseCrm implements CrmSystem {
       throw new Error("Dataverse CRM not configured");
     }
     
-    // In a real implementation, we would get these from settings
+    // Get API configuration from settings
     const dataverseUrl = settings.base_url;
     const apiVersion = settings.api_version || "v9.2";
     
-    // Here we would update the Dataverse entity using the Web API
-    // Example: PATCH to ${dataverseUrl}/api/data/${apiVersion}/opportunities(${opportunityId})
-    console.log(`Updating opportunity ${opportunityId} in Dataverse: ${projectData.name}`);
+    try {
+      // Prepare update data for Dataverse
+      const updateData = {
+        name: projectData.name,
+        description: `Project at ${projectData.site_address}`,
+        // Additional fields as needed
+      };
+      
+      // For now, we'll just log what we would do
+      console.log(`Updating opportunity ${opportunityId} in Dataverse: ${projectData.name}`);
+      
+      // In a real implementation, we would call Dataverse API:
+      /*
+      await callDataverseApi(
+        `${dataverseUrl}/api/data/${apiVersion}/opportunities(${opportunityId})`, 
+        'PATCH',
+        updateData,
+        null,
+        dataverseUrl
+      );
+      */
+    } catch (error) {
+      console.error("Error updating opportunity in Dataverse:", error);
+      throw error;
+    }
   }
   
   async syncAttachments(projectId: number, opportunityId: string): Promise<void> {
