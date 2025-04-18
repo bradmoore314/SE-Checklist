@@ -163,6 +163,38 @@ export default function ProjectConfiguration({
       .replace("Ppi", "PPI");
   };
   
+  // Get emoji for each option
+  const getOptionEmoji = (option: string): string => {
+    const emojiMap: Record<string, string> = {
+      // Installation/Hardware options
+      replace_readers: '📱',
+      need_credentials: '🔑',
+      takeover: '♻️',
+      pull_wire: '🔌',
+      wireless_locks: '🔒',
+      conduit_drawings: '📝',
+      install_locks: '🔒',
+      
+      // Access Control options
+      photo_id: '🪪',
+      photo_badging: '📇',
+      ble: '📲',
+      test_card: '💳',
+      visitor: '👋',
+      guard_controls: '💂',
+      
+      // Site Conditions options
+      floorplan: '🗺️',
+      reports_available: '📊',
+      kastle_connect: '🌐',
+      on_site_security: '👮',
+      rush: '⏱️',
+      ppi_quote_needed: '💰'
+    };
+    
+    return emojiMap[option] || '🔹';
+  };
+  
   // Tooltip descriptions for each config option
   const tooltips: Record<string, string> = {
     // Installation/Hardware Scope
@@ -228,8 +260,8 @@ export default function ProjectConfiguration({
       <CardContent className="p-6">
         {/* Building Count */}
         <div className="mb-6">
-          <Label htmlFor="building_count" className="text-sm font-medium text-gray-700 mb-2 block">
-            Building Count
+          <Label htmlFor="building_count" className="text-sm font-medium text-gray-700 mb-2 block flex items-center">
+            <span className="mr-2">🏢</span> Building Count
           </Label>
           <select
             id="building_count"
@@ -248,108 +280,117 @@ export default function ProjectConfiguration({
         {/* Installation/Hardware Scope */}
         <div className="mb-6">
           <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
-            <span className="material-icons mr-2">build</span>
-            🔧 Installation/Hardware Scope
+            <span className="mr-2">🔧</span>
+            Installation/Hardware Scope
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {categories.installation.map((option) => (
-              <div className="flex items-center" key={option}>
-                <Toggle
-                  pressed={configOptions[option as keyof typeof configOptions]}
-                  onPressedChange={(pressed) => 
-                    handleConfigChange(option as keyof typeof configOptions, pressed)
-                  }
-                  variant="red"
-                  className="w-full justify-start text-sm"
-                >
-                  <span className="mr-2">{formatOptionName(option)}?</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">
-                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs p-3 text-sm">
-                        {tooltips[option]}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </Toggle>
-              </div>
-            ))}
+            {categories.installation.map((option) => {
+              const emoji = getOptionEmoji(option);
+              return (
+                <div className="flex items-center" key={option}>
+                  <Toggle
+                    pressed={configOptions[option as keyof typeof configOptions]}
+                    onPressedChange={(pressed) => 
+                      handleConfigChange(option as keyof typeof configOptions, pressed)
+                    }
+                    variant="red"
+                    className="w-full justify-start text-sm"
+                  >
+                    <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help">
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs p-3 text-sm">
+                          {tooltips[option]}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Toggle>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Access Control/Identity Management */}
         <div className="mb-6">
           <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
-            <span className="material-icons mr-2">fingerprint</span>
-            🔐 Access Control/Identity Management
+            <span className="mr-2">🔐</span>
+            Access Control/Identity Management
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {categories.access_control.map((option) => (
-              <div className="flex items-center" key={option}>
-                <Toggle
-                  pressed={configOptions[option as keyof typeof configOptions]}
-                  onPressedChange={(pressed) => 
-                    handleConfigChange(option as keyof typeof configOptions, pressed)
-                  }
-                  variant="blue"
-                  className="w-full justify-start text-sm"
-                >
-                  <span className="mr-2">{formatOptionName(option)}?</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">
-                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs p-3 text-sm">
-                        {tooltips[option]}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </Toggle>
-              </div>
-            ))}
+            {categories.access_control.map((option) => {
+              const emoji = getOptionEmoji(option);
+              return (
+                <div className="flex items-center" key={option}>
+                  <Toggle
+                    pressed={configOptions[option as keyof typeof configOptions]}
+                    onPressedChange={(pressed) => 
+                      handleConfigChange(option as keyof typeof configOptions, pressed)
+                    }
+                    variant="blue"
+                    className="w-full justify-start text-sm"
+                  >
+                    <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help">
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs p-3 text-sm">
+                          {tooltips[option]}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Toggle>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Site Conditions / Project Planning */}
         <div>
           <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
-            <span className="material-icons mr-2">business</span>
-            🏗️ Site Conditions / Project Planning
+            <span className="mr-2">🏗️</span>
+            Site Conditions / Project Planning
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {categories.site_conditions.map((option) => (
-              <div className="flex items-center" key={option}>
-                <Toggle
-                  pressed={configOptions[option as keyof typeof configOptions]}
-                  onPressedChange={(pressed) => 
-                    handleConfigChange(option as keyof typeof configOptions, pressed)
-                  }
-                  variant="amber"
-                  className="w-full justify-start text-sm"
-                >
-                  <span className="mr-2">{formatOptionName(option)}?</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">
-                          <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs p-3 text-sm">
-                        {tooltips[option]}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </Toggle>
-              </div>
-            ))}
+            {categories.site_conditions.map((option) => {
+              const emoji = getOptionEmoji(option);
+              return (
+                <div className="flex items-center" key={option}>
+                  <Toggle
+                    pressed={configOptions[option as keyof typeof configOptions]}
+                    onPressedChange={(pressed) => 
+                      handleConfigChange(option as keyof typeof configOptions, pressed)
+                    }
+                    variant="amber"
+                    className="w-full justify-start text-sm"
+                  >
+                    <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help">
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs p-3 text-sm">
+                          {tooltips[option]}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Toggle>
+                </div>
+              );
+            })}
           </div>
         </div>
       </CardContent>
