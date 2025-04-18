@@ -1157,10 +1157,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If equipment_id is 0, we need to create a new equipment item
       if (equipmentId === 0) {
+        // Get equipment count for auto-numbering
+        let locationName: string;
+        
         if (result.data.marker_type === 'access_point') {
+          // Get current count of access points for sequential numbering
+          const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
+          const nextNumber = accessPoints.length + 1;
+          
+          // Create label with sequential number
+          locationName = result.data.label || `Access Point ${nextNumber}`;
+          
           const newAccessPoint = await storage.createAccessPoint({
             project_id: floorplan.project_id,
-            location: result.data.label || 'New Access Point',
+            location: locationName,
             quick_config: 'N/A',
             reader_type: 'KR-RP40',
             lock_type: 'Magnetic Lock',
@@ -1168,9 +1178,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           equipmentId = newAccessPoint.id;
         } else if (result.data.marker_type === 'camera') {
+          // Get current count of cameras for sequential numbering
+          const cameras = await storage.getCamerasByProject(floorplan.project_id);
+          const nextNumber = cameras.length + 1;
+          
+          // Create label with sequential number
+          locationName = result.data.label || `Camera ${nextNumber}`;
+          
           const newCamera = await storage.createCamera({
             project_id: floorplan.project_id,
-            location: result.data.label || 'New Camera',
+            location: locationName,
             camera_type: 'Fixed Indoor Dome'
           });
           equipmentId = newCamera.id;

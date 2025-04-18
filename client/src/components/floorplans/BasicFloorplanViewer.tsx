@@ -461,17 +461,33 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     const newX = Math.round(Math.min(100, marker.position_x + 2));
     const newY = Math.round(Math.min(100, marker.position_y + 2));
     
+    // Always set equipment_id to 0 to force creation of a new equipment item
+    // This ensures that duplicating a marker also creates a new access point or camera
     const duplicateData = {
       floorplan_id: marker.floorplan_id,
       page: marker.page,
       marker_type: marker.marker_type,
-      equipment_id: marker.equipment_id,
+      equipment_id: 0, // Set to 0 to trigger creation of a new equipment item
       position_x: newX,
       position_y: newY,
-      label: marker.label
+      label: marker.label ? `${marker.label} (Copy)` : null
     };
     
     createMarkerMutation.mutate(duplicateData);
+    
+    // After duplicating, refresh the equipment list as well
+    if (selectedFloorplan) {
+      // Determine which equipment type to refresh based on marker type
+      if (marker.marker_type === 'access_point') {
+        queryClient.invalidateQueries({ 
+          queryKey: [`/api/projects/${selectedFloorplan.project_id}/access-points`] 
+        });
+      } else if (marker.marker_type === 'camera') {
+        queryClient.invalidateQueries({ 
+          queryKey: [`/api/projects/${selectedFloorplan.project_id}/cameras`] 
+        });
+      }
+    }
   };
   
   // Edit marker
@@ -530,11 +546,58 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     setMarkerType(mode === 'add_camera' ? 'camera' : 'access_point');
   };
 
+  // Cache for equipment data - avoid redundant loading
+  const [equipmentCache, setEquipmentCache] = useState<{[key: string]: any}>({});
+  
+  // Load equipment details for markers
+  const loadEquipmentDetails = async (marker: Marker) => {
+    const cacheKey = `${marker.marker_type}_${marker.equipment_id}`;
+    
+    // Return from cache if available
+    if (equipmentCache[cacheKey]) {
+      return equipmentCache[cacheKey];
+    }
+    
+    try {
+      // Fetch equipment details based on marker type
+      const endpoint = marker.marker_type === 'access_point' 
+        ? `/api/access-points/${marker.equipment_id}`
+        : `/api/cameras/${marker.equipment_id}`;
+        
+      const response = await apiRequest('GET', endpoint);
+      const data = await response.json();
+      
+      // Update cache
+      setEquipmentCache(prev => ({
+        ...prev,
+        [cacheKey]: data
+      }));
+      
+      return data;
+    } catch (error) {
+      console.error(`Error loading ${marker.marker_type} details:`, error);
+      return null;
+    }
+  };
+  
+  // Extract number from location string (e.g., "Access Point 3" -> "3")
+  const getMarkerNumber = (label: string | null) => {
+    if (!label) return "";
+    
+    // Try to extract a number from the end of the label
+    const match = label.match(/(\d+)$/);
+    return match ? match[1] : "";
+  };
+  
   // Render markers on the PDF
   const renderMarkers = () => {
     return markers.map((marker) => {
       // Get marker size from state or use default - smaller size by default (2.5rem)
       const size = markerSize[marker.id] || { width: 2.5, height: 2.5 };
+      
+      // Get equipment number from label if available or display sequential number
+      const markerLabel = marker.label || '';
+      const markerNumber = getMarkerNumber(markerLabel);
       
       return (
         <div
@@ -561,7 +624,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           onDoubleClick={() => editMarker(marker)}
           onContextMenu={(e) => handleMarkerRightClick(e, marker)}
         >
-          {marker.id}
+          {markerNumber || (marker.marker_type === 'access_point' ? 'AP' : 'C')}
         </div>
       );
     });
