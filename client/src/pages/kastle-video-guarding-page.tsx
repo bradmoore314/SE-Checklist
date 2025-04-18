@@ -1528,7 +1528,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-amber-900 mb-2">Criminal Activity</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.obviousCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
                         variant="outline"
@@ -1536,9 +1536,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.obviousCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Obvious Criminal Act
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.activeBreakIn}
                         onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
                         variant="outline"
@@ -1546,9 +1546,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.activeBreakIn ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Active Break-in
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.destructionOfProperty}
                         onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
                         variant="outline"
@@ -1556,9 +1556,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.destructionOfProperty ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Destruction of Property
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.carDrivingThroughGate}
                         onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
                         variant="outline"
@@ -1566,9 +1566,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.carDrivingThroughGate ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Car Driving Through Gate
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.carBurglaries}
                         onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
                         variant="outline"
@@ -1576,9 +1576,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.carBurglaries ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Car Burglaries
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.trespassing}
                         onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
                         variant="outline"
@@ -1586,9 +1586,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.trespassing ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Trespassing
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.carsBrokenIntoAfterFact}
                         onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
                         variant="outline"
@@ -1596,9 +1596,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.carsBrokenIntoAfterFact ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Cars Broken Into (After Fact)
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.brokenGlassWindows}
                         onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
                         variant="outline"
@@ -1606,7 +1606,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.brokenGlassWindows ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Broken Glass/Windows
-                      </ToggleButton>
+                      </Toggle>
                     </div>
                   </div>
                   
@@ -1614,7 +1614,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-amber-900 mb-2">Suspicious Activity</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.suspiciousActivity}
                         onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
                         variant="outline"
@@ -1622,9 +1622,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.suspiciousActivity ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Suspicious Activity
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.intentToCommitCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
                         variant="outline"
@@ -1632,9 +1632,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.intentToCommitCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Intent to Commit Criminal Act
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.checkingMultipleCarDoors}
                         onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
                         variant="outline"
@@ -1642,9 +1642,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.checkingMultipleCarDoors ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Checking Multiple Car Doors
-                      </ToggleButton>
+                      </Toggle>
                       
-                      <ToggleButton 
+                      <Toggle 
                         pressed={formData.dumpsterDivingOrDumping}
                         onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
                         variant="outline"
@@ -1652,7 +1652,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         className={formData.dumpsterDivingOrDumping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                       >
                         Dumpster Diving/Dumping
-                      </ToggleButton>
+                      </Toggle>
                     </div>
                   </div>
                   
