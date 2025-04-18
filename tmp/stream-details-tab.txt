@@ -1,0 +1,81 @@
+200:        <TabsContent value="stream-details">
+201-          <Card className="mb-6">
+202-            <CardHeader>
+203-              <CardTitle className="flex items-center gap-2">
+204-                <span>📹</span> Camera Video Stream Details
+205-              </CardTitle>
+206-              <CardDescription>Configure and manage your camera streams with detailed settings for monitoring and patrol groups</CardDescription>
+207-            </CardHeader>
+208-            <CardContent>
+209-              <div className="flex justify-end mb-4">
+210-                <Button onClick={() => addStream()} className="flex items-center gap-1">
+211-                  <Plus size={16} /> Add Stream
+212-                </Button>
+213-              </div>
+214-              
+215-              {streams.length > 0 ? (
+216-                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+217-                  <table className="w-full text-sm">
+218-                    <thead className="text-xs bg-gray-100">
+219-                      <tr className="border-b border-gray-300">
+220-                        <th colSpan={3} className="px-2 py-3 text-center bg-teal-100">Camera Video Stream Details</th>
+221-                        <th colSpan={1} className="px-2 py-3 text-center bg-blue-100">FOV Area Accessibility</th>
+222-                        <th colSpan={1} className="px-2 py-3 text-center bg-indigo-100">Camera Type & Environment</th>
+223-                        <th colSpan={1} className="px-2 py-3 text-center bg-purple-100">Unique Use Case Problem</th>
+224-                        <th colSpan={2} className="px-2 py-3 text-center bg-pink-100">Speaker Video Stream Association & Name</th>
+225-                        <th colSpan={3} className="px-2 py-3 text-center bg-orange-100">Event Monitoring Details</th>
+226-                        <th colSpan={3} className="px-2 py-3 text-center bg-red-100">Patrol Group Details</th>
+227-                        <th colSpan={1} className="px-2 py-3 text-center bg-gray-200">Actions</th>
+228-                      </tr>
+229-                      <tr className="border-b text-center">
+230-                        <th className="px-2 py-2 w-10">Stream #</th>
+231-                        <th className="px-2 py-2 w-60">Camera/Video Stream Location/Name</th>
+232-                        <th className="px-2 py-2 w-16">Images</th>
+233-                        <th className="px-2 py-2 w-20">Y/N</th>
+234-                        <th className="px-2 py-2 w-28">Environment</th>
+235-                        <th className="px-2 py-2 w-60">Problem Description</th>
+236-                        <th className="px-2 py-2 w-40">Association</th>
+237-                        <th className="px-2 py-2 w-20">Audio Talk-Down Y/N</th>
+238-                        <th className="px-2 py-2 w-20">Y/N</th>
+239-                        <th className="px-2 py-2 w-32">Start Time</th>
+240-                        <th className="px-2 py-2 w-32">End Time</th>
+241-                        <th className="px-2 py-2 w-20">Y/N</th>
+242-                        <th className="px-2 py-2 w-32">Start Time</th>
+243-                        <th className="px-2 py-2 w-32">End Time</th>
+244-                        <th className="px-2 py-2 w-20">Actions</th>
+245-                      </tr>
+246-                    </thead>
+247-                    <tbody>
+248-                      {streams.map((stream) => (
+249-                        <tr key={stream.id} className="border-b hover:bg-gray-50">
+250-                          <td className="px-2 py-3 text-center font-medium">{stream.id}</td>
+251-                          <td className="px-2 py-3">
+252-                            <Textarea 
+253-                              value={stream.location || ""}
+254-                              onChange={(e) => updateStream(stream.id, "location", e.target.value)}
+255-                              className="h-14"
+256-                              placeholder="Enter the location and naming of the camera video stream - see note example"
+257-                            />
+258-                          </td>
+259-                          <td className="px-2 py-3 text-center">
+260-                            <div className="flex flex-col items-center gap-1">
+261-                              <Button 
+262-                                variant="outline" 
+263-                                size="sm"
+264-                                onClick={() => {
+265-                                  setSelectedStream(stream);
+266-                                  setIsImagesModalOpen(true);
+267-                                }}
+268-                                className="flex items-center gap-1"
+269-                                title="View Images"
+270-                              >
+271-                                <ImageIcon size={14} /> {stream.images.length}
+272-                              </Button>
+273-                              <Button 
+274-                                variant="outline" 
+275-                                size="sm"
+276-                                onClick={() => handleUploadStreamImageClick(stream.id)}
+277-                                className="px-2"
+278-                                title="Upload Image"
+279-                              >
+280-                                <Upload size={14} />

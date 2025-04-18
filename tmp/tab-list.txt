@@ -1,0 +1,23 @@
+        <TabsList className="grid grid-cols-7 mb-6">
+          <TabsTrigger value="stream-details" className="bg-teal-600 data-[state=active]:bg-teal-700 text-white flex items-center justify-center gap-1">
+            <span>📹</span> Stream Details
+          </TabsTrigger>
+          <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white flex items-center justify-center gap-1">
+            <span>🔍</span> 1. Discovery - BDM
+          </TabsTrigger>
+          <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700 text-white flex items-center justify-center gap-1">
+            <span>🏢</span> 2. Site Assessment - SE
+          </TabsTrigger>
+          <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700 text-white flex items-center justify-center gap-1">
+            <span>📝</span> 3. Use Case - SOW - SME
+          </TabsTrigger>
+          <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700 text-white flex items-center justify-center gap-1">
+            <span>🎯</span> 4. VOC Protocol - AM
+          </TabsTrigger>
+          <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white flex items-center justify-center gap-1">
+            <span>🚀</span> 5. Project Deployment - PM
+          </TabsTrigger>
+          <TabsTrigger value="pricing" className="bg-pink-600 data-[state=active]:bg-pink-700 text-white flex items-center justify-center gap-1">
+            <span>💰</span> Pricing
+          </TabsTrigger>
+        </TabsList>
