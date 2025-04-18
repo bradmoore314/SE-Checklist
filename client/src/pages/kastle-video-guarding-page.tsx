@@ -561,244 +561,353 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
               
               {streams.length > 0 ? (
-                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                  <table className="w-full text-sm">
-                    <thead className="text-xs bg-gray-100">
-                      <tr className="border-b border-gray-300">
-                        <th colSpan={3} className="px-2 py-3 text-center bg-teal-600 text-white font-semibold rounded-tl-lg">Camera Video Stream Details</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-blue-600 text-white font-semibold">FOV Area Accessibility</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-indigo-600 text-white font-semibold">Camera Type & Environment</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-purple-600 text-white font-semibold">Unique Use Case Problem</th>
-                        <th colSpan={2} className="px-2 py-3 text-center bg-pink-600 text-white font-semibold">Speaker Video Stream Association & Name</th>
-                        <th colSpan={3} className="px-2 py-3 text-center bg-orange-600 text-white font-semibold">Event Monitoring Details</th>
-                        <th colSpan={3} className="px-2 py-3 text-center bg-red-600 text-white font-semibold">Patrol Group Details</th>
-                        <th colSpan={1} className="px-2 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg">Actions</th>
-                      </tr>
-                      <tr className="border-b text-center bg-gray-200 font-semibold">
-                        <th className="px-2 py-2 w-10">Stream #</th>
-                        <th className="px-2 py-2 w-60">Camera/Video Stream Location/Name</th>
-                        <th className="px-2 py-2 w-16">Images</th>
-                        <th className="px-2 py-2 w-20">Y/N</th>
-                        <th className="px-2 py-2 w-28">Environment</th>
-                        <th className="px-2 py-2 w-60">Problem Description</th>
-                        <th className="px-2 py-2 w-40">Association</th>
-                        <th className="px-2 py-2 w-20">Audio Talk-Down Y/N</th>
-                        <th className="px-2 py-2 w-20">Y/N</th>
-                        <th className="px-2 py-2 w-32">Start Time</th>
-                        <th className="px-2 py-2 w-32">End Time</th>
-                        <th className="px-2 py-2 w-20">Y/N</th>
-                        <th className="px-2 py-2 w-32">Start Time</th>
-                        <th className="px-2 py-2 w-32">End Time</th>
-                        <th className="px-2 py-2 w-20">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {streams.map((stream) => (
-                        <tr key={stream.id} className="border-b hover:bg-gray-50">
-                          <td className="px-2 py-3 text-center font-medium">{stream.id}</td>
-                          <td className="px-2 py-3">
-                            <div className="relative">
-                              <Textarea 
-                                value={stream.location || ""}
-                                onChange={(e) => updateStream(stream.id, "location", e.target.value)}
-                                className="min-h-[80px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm"
-                                placeholder="Enter the location and naming of the camera video stream - see note example"
-                              />
-                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
-                                {stream.location?.length || 0} chars
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <div className="flex flex-col items-center gap-1">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedStream(stream);
-                                  setIsImagesModalOpen(true);
-                                }}
-                                className="flex items-center gap-1"
-                                title="View Images"
-                              >
-                                <ImageIcon size={14} /> {stream.images.length}
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleUploadStreamImageClick(stream.id)}
-                                className="px-2"
-                                title="Upload Image"
-                              >
-                                <Upload size={14} />
-                              </Button>
-                            </div>
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <Select 
-                              value={stream.fovAccessibility}
-                              onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
-                            >
-                              <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                                <SelectItem value="Select">Select</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <Select 
-                              value={stream.cameraType}
-                              onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
-                            >
-                              <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Indoor">Indoor</SelectItem>
-                                <SelectItem value="Outdoor">Outdoor</SelectItem>
-                                <SelectItem value="PTZ">PTZ</SelectItem>
-                                <SelectItem value="Fixed">Fixed</SelectItem>
-                                <SelectItem value="Select">Select</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-2 py-3">
-                            <div className="relative">
-                              <Textarea 
-                                value={stream.useCaseProblem || ""}
-                                onChange={(e) => updateStream(stream.id, "useCaseProblem", e.target.value)}
-                                className="min-h-[100px] resize-y focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 bg-white/90 text-sm"
-                                placeholder="Enter any unique use case problem for this camera or scene if different from the site problem defined above."
-                              />
-                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
-                                {stream.useCaseProblem?.length || 0} chars
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-2 py-3">
-                            <div className="relative">
-                              <Textarea 
-                                value={stream.speakerAssociation || ""}
-                                onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
-                                className="min-h-[100px] resize-y focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200 bg-white/90 text-sm"
-                                placeholder="Fill in if speaker is dedicated to single camera or a group of cameras (ref numbers in column A)"
-                              />
-                              <div className="absolute bottom-1 right-1 text-xs text-gray-400">
-                                {stream.speakerAssociation?.length || 0} chars
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <Select 
-                              value={stream.audioTalkDown}
-                              onValueChange={(value) => updateStream(stream.id, "audioTalkDown", value)}
-                            >
-                              <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                                <SelectItem value="Select">Select</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <Select 
-                              value={stream.eventMonitoring}
-                              onValueChange={(value) => updateStream(stream.id, "eventMonitoring", value)}
-                            >
-                              <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                                <SelectItem value="Select">Select</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-2 py-3">
-                            <Input 
-                              type="time"
-                              value={stream.monitoringStartTime || ""}
-                              onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
-                              className="h-8"
-                              placeholder="Start Time Entry"
-                            />
-                          </td>
-                          <td className="px-2 py-3">
-                            <Input 
-                              type="time"
-                              value={stream.monitoringEndTime || ""}
-                              onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
-                              className="h-8"
-                              placeholder="End Time Entry"
-                            />
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <Select 
-                              value={stream.patrolGroups}
-                              onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
-                            >
-                              <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                                <SelectItem value="Select">Select</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-2 py-3">
-                            <Input 
-                              type="time"
-                              value={stream.patrolStartTime || ""}
-                              onChange={(e) => updateStream(stream.id, "patrolStartTime", e.target.value)}
-                              className="h-8"
-                              placeholder="Start Time Entry"
-                            />
-                          </td>
-                          <td className="px-2 py-3">
-                            <Input 
-                              type="time"
-                              value={stream.patrolEndTime || ""}
-                              onChange={(e) => updateStream(stream.id, "patrolEndTime", e.target.value)}
-                              className="h-8"
-                              placeholder="End Time Entry"
-                            />
-                          </td>
-                          <td className="px-2 py-3 text-center">
-                            <div className="flex flex-col gap-1 items-center">
+                <div>
+                  {/* Card-based Layout for Camera Stream Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                    {streams.map((stream) => (
+                      <Card key={stream.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <CardHeader className="bg-gradient-to-r from-teal-50 to-teal-100 border-b pb-3">
+                          <div className="flex justify-between items-start">
+                            <CardTitle className="text-lg text-teal-800 flex items-center gap-2">
+                              <span className="p-1 bg-teal-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm">
+                                {stream.id}
+                              </span>
+                              Camera Stream
+                            </CardTitle>
+                            <div className="flex gap-1">
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => addStream(stream)}
+                                className="text-blue-500 p-0 h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
                                 title="Duplicate Stream"
-                                className="w-9 h-9 p-0"
                               >
-                                <Copy size={16} />
+                                <Copy size={14} />
                               </Button>
                               <Button 
-                                variant="destructive" 
+                                variant="outline" 
                                 size="sm"
                                 onClick={() => removeStream(stream.id)}
-                                title="Remove Stream"
-                                className="w-9 h-9 p-0"
+                                className="text-red-500 p-0 h-7 w-7 hover:bg-red-50 hover:text-red-600"
+                                title="Delete Stream"
                               >
-                                <Trash size={16} />
+                                <Trash size={14} />
                               </Button>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                          <div className="text-sm text-teal-700 font-medium mt-1 flex items-center gap-1">
+                            <VideoIcon size={14} className="text-teal-600" /> 
+                            {stream.location ? 
+                              (stream.location.length > 40 ? 
+                                `${stream.location.substring(0, 40)}...` : 
+                                stream.location) : 
+                              "Location not specified"}
+                          </div>
+                        </CardHeader>
+                        
+                        <CardContent className="pt-4 pb-3 px-4">
+                          {/* Main Stream Details */}
+                          <div className="grid gap-3">
+                            {/* Location/Name */}
+                            <div>
+                              <Label htmlFor={`stream-${stream.id}-location`} className="text-xs font-medium text-teal-700 mb-1 flex items-center gap-1.5">
+                                <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">📍</span>
+                                Camera Location/Name
+                              </Label>
+                              <div className="relative">
+                                <Textarea 
+                                  id={`stream-${stream.id}-location`}
+                                  value={stream.location || ""}
+                                  onChange={(e) => updateStream(stream.id, "location", e.target.value)}
+                                  className="min-h-[60px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm"
+                                  placeholder="Enter the location and naming of the camera video stream"
+                                />
+                                <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                  {stream.location?.length || 0}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Image Management - Horizontal Layout */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <Label className="text-xs font-medium text-teal-700 whitespace-nowrap flex items-center gap-1.5">
+                                <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🖼️</span>
+                                Images ({stream.images.length})
+                              </Label>
+                              <div className="flex items-center gap-1.5">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedStream(stream);
+                                    setIsImagesModalOpen(true);
+                                  }}
+                                  className="h-7 text-xs flex items-center gap-1"
+                                  title="View Images"
+                                >
+                                  <ImageIcon size={12} /> View 
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => handleUploadStreamImageClick(stream.id)}
+                                  className="h-7 text-xs"
+                                  title="Upload Image"
+                                >
+                                  <Upload size={12} /> Add
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Core Properties Grid */}
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-2">
+                              <div>
+                                <Label htmlFor={`stream-${stream.id}-fov`} className="text-xs font-medium text-blue-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-blue-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔍</span>
+                                  FOV Accessibility
+                                </Label>
+                                <Select 
+                                  value={stream.fovAccessibility}
+                                  onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
+                                >
+                                  <SelectTrigger id={`stream-${stream.id}-fov`} className="h-8">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                    <SelectItem value="Select">Select</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor={`stream-${stream.id}-camera-type`} className="text-xs font-medium text-indigo-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-indigo-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">📹</span>
+                                  Camera Type
+                                </Label>
+                                <Select 
+                                  value={stream.cameraType}
+                                  onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
+                                >
+                                  <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-8">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Indoor">Indoor</SelectItem>
+                                    <SelectItem value="Outdoor">Outdoor</SelectItem>
+                                    <SelectItem value="PTZ">PTZ</SelectItem>
+                                    <SelectItem value="Fixed">Fixed</SelectItem>
+                                    <SelectItem value="Select">Select</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor={`stream-${stream.id}-monitoring`} className="text-xs font-medium text-orange-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-orange-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">👁️</span>
+                                  Event Monitoring
+                                </Label>
+                                <Select 
+                                  value={stream.eventMonitoring}
+                                  onValueChange={(value) => updateStream(stream.id, "eventMonitoring", value)}
+                                >
+                                  <SelectTrigger id={`stream-${stream.id}-monitoring`} className="h-8">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                    <SelectItem value="Select">Select</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor={`stream-${stream.id}-audio`} className="text-xs font-medium text-pink-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-pink-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔊</span>
+                                  Audio Talk Down
+                                </Label>
+                                <Select 
+                                  value={stream.audioTalkDown}
+                                  onValueChange={(value) => updateStream(stream.id, "audioTalkDown", value)}
+                                >
+                                  <SelectTrigger id={`stream-${stream.id}-audio`} className="h-8">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                    <SelectItem value="Select">Select</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            
+                            {/* Schedule Section */}
+                            <div className="grid grid-cols-2 gap-3 mt-1">
+                              <div>
+                                <Label htmlFor={`stream-${stream.id}-patrol-groups`} className="text-xs font-medium text-red-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">👮</span>
+                                  Patrol Groups
+                                </Label>
+                                <Select 
+                                  value={stream.patrolGroups}
+                                  onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
+                                >
+                                  <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-8">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                    <SelectItem value="Select">Select</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div className="flex flex-col">
+                                <Label className="text-xs font-medium text-orange-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-orange-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">⏰</span>
+                                  Monitoring Times
+                                </Label>
+                                <div className="flex gap-1 items-center">
+                                  <Input 
+                                    type="time"
+                                    value={stream.monitoringStartTime || ""}
+                                    onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
+                                    className="h-8 text-xs"
+                                  />
+                                  <span className="text-xs">to</span>
+                                  <Input 
+                                    type="time"
+                                    value={stream.monitoringEndTime || ""}
+                                    onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
+                                    className="h-8 text-xs"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Collapsible Sections */}
+                            <div className="border-t pt-2 mt-2">
+                              {/* Expandable Sections Toggle */}
+                              <div className="flex justify-between mb-1">
+                                <Label className="text-xs font-medium text-gray-700">Detailed Information</Label>
+                                <div className="flex gap-1">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 text-xs px-2 text-purple-600"
+                                    onClick={() => {
+                                      const el = document.getElementById(`stream-${stream.id}-problem-detail`);
+                                      if (el) {
+                                        const isVisible = el.style.display !== 'none';
+                                        el.style.display = isVisible ? 'none' : 'block';
+                                      }
+                                    }}
+                                  >
+                                    Problem
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 text-xs px-2 text-pink-600"
+                                    onClick={() => {
+                                      const el = document.getElementById(`stream-${stream.id}-association-detail`);
+                                      if (el) {
+                                        const isVisible = el.style.display !== 'none';
+                                        el.style.display = isVisible ? 'none' : 'block';
+                                      }
+                                    }}
+                                  >
+                                    Association
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 text-xs px-2 text-red-600"
+                                    onClick={() => {
+                                      const el = document.getElementById(`stream-${stream.id}-patrol-times`);
+                                      if (el) {
+                                        const isVisible = el.style.display !== 'none';
+                                        el.style.display = isVisible ? 'none' : 'block';
+                                      }
+                                    }}
+                                  >
+                                    Patrol
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              {/* Problem Description Section - Collapsible */}
+                              <div id={`stream-${stream.id}-problem-detail`} className="mb-3" style={{display: 'none'}}>
+                                <Label htmlFor={`stream-${stream.id}-problem`} className="text-xs font-medium text-purple-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-purple-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">⚠️</span>
+                                  Problem Description
+                                </Label>
+                                <div className="relative">
+                                  <Textarea 
+                                    id={`stream-${stream.id}-problem`}
+                                    value={stream.useCaseProblem || ""}
+                                    onChange={(e) => updateStream(stream.id, "useCaseProblem", e.target.value)}
+                                    className="min-h-[120px] resize-y focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 bg-white/90 text-sm"
+                                    placeholder="Enter any unique use case problem for this camera or scene if different from the site problem defined above."
+                                  />
+                                  <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                    {stream.useCaseProblem?.length || 0} chars
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Speaker Association Section - Collapsible */}
+                              <div id={`stream-${stream.id}-association-detail`} className="mb-3" style={{display: 'none'}}>
+                                <Label htmlFor={`stream-${stream.id}-association`} className="text-xs font-medium text-pink-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-pink-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔗</span>
+                                  Speaker Association
+                                </Label>
+                                <div className="relative">
+                                  <Textarea 
+                                    id={`stream-${stream.id}-association`}
+                                    value={stream.speakerAssociation || ""}
+                                    onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
+                                    className="min-h-[120px] resize-y focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200 bg-white/90 text-sm"
+                                    placeholder="Fill in if speaker is dedicated to single camera or a group of cameras"
+                                  />
+                                  <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                    {stream.speakerAssociation?.length || 0} chars
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Patrol Times Section - Collapsible */}
+                              <div id={`stream-${stream.id}-patrol-times`} className="mb-3" style={{display: 'none'}}>
+                                <Label className="text-xs font-medium text-red-700 mb-1 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">⏱️</span>
+                                  Patrol Times
+                                </Label>
+                                <div className="flex gap-1 items-center">
+                                  <Input 
+                                    type="time"
+                                    value={stream.patrolStartTime || ""}
+                                    onChange={(e) => updateStream(stream.id, "patrolStartTime", e.target.value)}
+                                    className="h-8"
+                                  />
+                                  <span className="text-xs text-gray-500">to</span>
+                                  <Input 
+                                    type="time"
+                                    value={stream.patrolEndTime || ""}
+                                    onChange={(e) => updateStream(stream.id, "patrolEndTime", e.target.value)}
+                                    className="h-8"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center bg-gray-50 p-8 rounded-md border border-gray-200 shadow-sm">
