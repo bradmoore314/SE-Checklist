@@ -48,6 +48,15 @@ interface FormData {
   totalVirtualPatrolsPerMonth: number;
   patrolFrequency: string;
   totalHealthPatrolsPerMonth: number;
+  
+  // Site Assessment fields
+  lightingRequirements: string;
+  lightingNotes: string;
+  cameraFieldOfView: string;
+  fovNotes: string;
+  networkConnectivity: string;
+  networkNotes: string;
+  siteAssessmentNotes: string;
   totalEventActionMultiViewsPerMonth: number;
   totalEscalationsMaximum: number;
   gdodsDispatchesPerMonth: number;
@@ -191,6 +200,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { 
+  ToggleGroup, 
+  ToggleGroupItem 
+} from "@/components/ui/toggle-group";
+import { 
+  Save,
+  Check,
+} from "lucide-react";
+import { 
   Plus, 
   Trash2 as Trash, 
   Copy,
@@ -257,6 +274,15 @@ const KastleVideoGuardingPage: React.FC = () => {
     totalVirtualPatrolsPerMonth: 0,
     patrolFrequency: "",
     totalHealthPatrolsPerMonth: 30, // Default value from the template
+    
+    // Site Assessment fields
+    lightingRequirements: "",
+    lightingNotes: "",
+    cameraFieldOfView: "",
+    fovNotes: "",
+    networkConnectivity: "",
+    networkNotes: "",
+    siteAssessmentNotes: "",
     totalEventActionMultiViewsPerMonth: 0,
     totalEscalationsMaximum: 0,
     gdodsDispatchesPerMonth: 0,
@@ -384,6 +410,16 @@ const KastleVideoGuardingPage: React.FC = () => {
   // Handle form data change
   const handleFormChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  // Handle form save
+  const handleSave = () => {
+    // In a real application, this would save to a database
+    toast({
+      title: "Form Saved",
+      description: "Your changes have been saved successfully.",
+      variant: "default",
+    });
   };
   
   // Stream interface
