@@ -15,6 +15,7 @@ import SiteWalkSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import FloorplansPage from "@/pages/floorplans-page";
+import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import QuoteReviewPage from "@/pages/quote-review-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
@@ -48,6 +49,7 @@ function Router() {
       
       {/* Floorplans */}
       <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
+      <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
       
       {/* Quote Review */}
       <ProtectedRoute path="/projects/:projectId/quote-review" component={QuoteReviewPage} />
