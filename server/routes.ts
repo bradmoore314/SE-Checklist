@@ -1280,22 +1280,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CRM Integration endpoints
   app.get("/api/integration/status", isAuthenticated, async (req: Request, res: Response) => {
     try {
-      // Check if various integrations are configured
-      const status = {
-        sharepoint: isSharePointConfigured(),
-        crm: false,
-        microsoftAuth: areAzureCredentialsAvailable()
-      };
+      // Get the status of the Microsoft Graph/Dataverse integration
+      // Check Azure AD config and CRM settings
+      const isGraphConfigured = isSharePointConfigured();
+      const isMicrosoftAuthConfigured = areAzureCredentialsAvailable();
       
-      // Check if CRM is configured
-      try {
-        const crm = getCrmSystem();
-        status.crm = await crm.isConfigured();
-      } catch (error) {
-        console.error("Error checking CRM configuration:", error);
+      // Get all CRM settings
+      const crmSystems = ["dynamics365", "dataverse"];
+      const crmStatuses = {};
+      
+      for (const crmType of crmSystems) {
+        try {
+          const crm = getCrmSystem(crmType);
+          crmStatuses[crmType] = {
+            configured: await crm.isConfigured(),
+            name: crm.name
+          };
+        } catch (e) {
+          crmStatuses[crmType] = {
+            configured: false,
+            error: e.message
+          };
+        }
       }
       
-      res.json(status);
+      res.json({
+        microsoftGraph: {
+          configured: isGraphConfigured
+        },
+        microsoftAuth: {
+          configured: isMicrosoftAuthConfigured
+        },
+        crmSystems: crmStatuses
+      });
     } catch (error) {
       console.error("Error checking integration status:", error);
       res.status(500).json({ 
