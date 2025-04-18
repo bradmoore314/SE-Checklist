@@ -2183,6 +2183,71 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
               </div>
               
+              {/* Patrol Details Section */}
+              <div className="bg-gradient-to-br from-green-50 to-teal-50 p-5 rounded-lg shadow-sm border border-green-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center gap-2">
+                  <span className="p-1 bg-green-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                  </span>
+                  Patrol & Guard Dispatch Details
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">On-Demand Guard Dispatch Detail:</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm font-medium">GDODs Dispatches Per Month:</div>
+                        <Input 
+                          type="number"
+                          value={formData.gdodsDispatchesPerMonth || ''}
+                          onChange={(e) => handleFormChange("gdodsDispatchesPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white w-24"
+                        />
+                      </div>
+                      <Textarea 
+                        value={formData.onDemandGuardDispatchDetail || ""}
+                        onChange={(e) => handleFormChange("onDemandGuardDispatchDetail", e.target.value)}
+                        placeholder="Enter details about on-demand guard dispatch requirements and procedures"
+                        className="min-h-[100px] resize-y bg-white"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">SGPP Scheduled Guard Patrol Detail:</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm font-medium">SGPP Scheduled Patrols Per Month:</div>
+                        <Input 
+                          type="number"
+                          value={formData.sgppScheduledPatrolsPerMonth || ''}
+                          onChange={(e) => handleFormChange("sgppScheduledPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white w-24"
+                        />
+                      </div>
+                      <Textarea 
+                        value={formData.sgppScheduledGuardPatrolDetail || ""}
+                        onChange={(e) => handleFormChange("sgppScheduledGuardPatrolDetail", e.target.value)}
+                        placeholder="Enter details about scheduled guard patrol requirements and procedures"
+                        className="min-h-[100px] resize-y bg-white"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">SGPP Scheduled Guard Patrols Schedule Detail:</Label>
+                    <Textarea 
+                      value={formData.sgppScheduledGuardPatrolsScheduleDetail || ""}
+                      onChange={(e) => handleFormChange("sgppScheduledGuardPatrolsScheduleDetail", e.target.value)}
+                      placeholder="Enter the specific schedule details for guard patrols (days/times)"
+                      className="min-h-[100px] resize-y bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              
               <div className="mt-6 flex justify-end">
                 <Button 
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 gap-2"
