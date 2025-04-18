@@ -60,6 +60,17 @@ interface FormData {
   numSites: number;
   technology: string;
   installType: string;
+  siteEnvironment: string;
+  timeZone: string;
+  siteName: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  opportunityType: string;
+  rspndrGdods: string;
+  numCameraStreams: number;
+  servicesRecommended: string;
+  maintenance: string;
   
   // Incident Types - Criminal Activity Group
   obviousCriminalAct: boolean;
@@ -168,6 +179,17 @@ const KastleVideoGuardingPage: React.FC = () => {
     numSites: 1,
     technology: "Kastle Video Cloud",
     installType: "New Construction",
+    siteEnvironment: "",
+    timeZone: "",
+    siteName: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    opportunityType: "",
+    rspndrGdods: "",
+    numCameraStreams: 0,
+    servicesRecommended: "",
+    maintenance: "",
     
     // Incident Types - All unchecked by default
     // Criminal Activity Group
@@ -458,7 +480,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
 
       <Tabs defaultValue="discovery" className="w-full">
-        <TabsList className="grid grid-cols-5 mb-6">
+        <TabsList className="grid grid-cols-6 mb-6">
           <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white">
             1. Discovery - BDM
           </TabsTrigger>
@@ -473,6 +495,9 @@ const KastleVideoGuardingPage: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white">
             5. Project Deployment - PM
+          </TabsTrigger>
+          <TabsTrigger value="pricing" className="bg-red-600 data-[state=active]:bg-red-700 text-white">
+            6. Pricing
           </TabsTrigger>
         </TabsList>
 
@@ -1633,6 +1658,374 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Pricing Tab Content */}
+        <TabsContent value="pricing">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Camera Stream Pricing</CardTitle>
+              <CardDescription>Enter camera stream details for monitoring and surveillance</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Camera Streams</h3>
+                  <Button onClick={() => addStream()} className="flex items-center gap-1">
+                    <Plus size={16} /> Add Stream
+                  </Button>
+                </div>
+                
+                {streams.length === 0 ? (
+                  <div className="text-center py-10 text-gray-500">
+                    <Camera className="mx-auto h-12 w-12 opacity-20 mb-2" />
+                    <p>No camera streams added yet. Click "Add Stream" to get started.</p>
+                  </div>
+                ) : (
+                  <div>
+                    {streams.map((stream) => (
+                      <div key={stream.id} className="border rounded-md p-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="space-y-2">
+                            <Label htmlFor={`quantity-${stream.id}`}>Quantity</Label>
+                            <Input
+                              id={`quantity-${stream.id}`}
+                              type="number"
+                              min="1"
+                              value={stream.quantity}
+                              onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
+                            />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor={`description-${stream.id}`}>Description</Label>
+                            <Input
+                              id={`description-${stream.id}`}
+                              value={stream.description}
+                              onChange={(e) => updateStream(stream.id, "description", e.target.value)}
+                              placeholder="Stream description"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Monitored Area</Label>
+                            <Select
+                              value={stream.monitoredArea}
+                              onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select area" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Pool">Pool</SelectItem>
+                                <SelectItem value="Garage">Garage</SelectItem>
+                                <SelectItem value="Entrance">Entrance</SelectItem>
+                                <SelectItem value="Lobby">Lobby</SelectItem>
+                                <SelectItem value="Elevator">Elevator</SelectItem>
+                                <SelectItem value="Stairwell">Stairwell</SelectItem>
+                                <SelectItem value="Common Area">Common Area</SelectItem>
+                                <SelectItem value="Exterior">Exterior</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Area Accessibility</Label>
+                            <Select
+                              value={stream.accessibility}
+                              onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select accessibility" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Secure">Secure</SelectItem>
+                                <SelectItem value="Public">Public</SelectItem>
+                                <SelectItem value="Restricted">Restricted</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`use-case-${stream.id}`}>Unique Use Case</Label>
+                            <Input
+                              id={`use-case-${stream.id}`}
+                              value={stream.useCase || ""}
+                              onChange={(e) => updateStream(stream.id, "useCase", e.target.value)}
+                              placeholder="Specific use case"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div className="space-y-2">
+                            <Label>Primary Analytic Rule</Label>
+                            <Select
+                              value={stream.analyticRule1}
+                              onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select rule" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                <SelectItem value="Loitering">Loitering</SelectItem>
+                                <SelectItem value="Line Crossing">Line Crossing</SelectItem>
+                                <SelectItem value="Area Intrusion">Area Intrusion</SelectItem>
+                                <SelectItem value="Object Removed">Object Removed</SelectItem>
+                                <SelectItem value="Object Left Behind">Object Left Behind</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`dwell-time-1-${stream.id}`}>Dwell Time (seconds)</Label>
+                            <Input
+                              id={`dwell-time-1-${stream.id}`}
+                              type="number"
+                              min="0"
+                              value={stream.dwellTime1}
+                              onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Secondary Analytic Rule</Label>
+                            <Select
+                              value={stream.analyticRule2}
+                              onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select rule" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="None">None</SelectItem>
+                                <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                <SelectItem value="Loitering">Loitering</SelectItem>
+                                <SelectItem value="Line Crossing">Line Crossing</SelectItem>
+                                <SelectItem value="Area Intrusion">Area Intrusion</SelectItem>
+                                <SelectItem value="Object Removed">Object Removed</SelectItem>
+                                <SelectItem value="Object Left Behind">Object Left Behind</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`dwell-time-2-${stream.id}`}>Dwell Time (seconds)</Label>
+                            <Input
+                              id={`dwell-time-2-${stream.id}`}
+                              type="number"
+                              min="0"
+                              value={stream.dwellTime2}
+                              onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
+                              disabled={stream.analyticRule2 === "None"}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="space-y-2">
+                            <Label>Monitoring Schedule</Label>
+                            <Select
+                              value={stream.schedule}
+                              onValueChange={(value) => updateStream(stream.id, "schedule", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select schedule" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="24/7">24/7</SelectItem>
+                                <SelectItem value="After Hours">After Hours (6pm-6am)</SelectItem>
+                                <SelectItem value="Weekends Only">Weekends Only</SelectItem>
+                                <SelectItem value="Business Hours">Business Hours (8am-6pm)</SelectItem>
+                                <SelectItem value="Custom">Custom</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`event-volume-${stream.id}`}>Estimated Event Volume/Month</Label>
+                            <Input
+                              id={`event-volume-${stream.id}`}
+                              type="number"
+                              min="0"
+                              value={stream.eventVolume}
+                              onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Patrol Type</Label>
+                            <Select
+                              value={stream.patrolType}
+                              onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select patrol type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Standard">Standard</SelectItem>
+                                <SelectItem value="Enhanced">Enhanced</SelectItem>
+                                <SelectItem value="None">None</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`patrols-per-week-${stream.id}`}>Patrols Per Week</Label>
+                            <Input
+                              id={`patrols-per-week-${stream.id}`}
+                              type="number"
+                              min="0"
+                              value={stream.patrolsPerWeek}
+                              onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
+                              disabled={stream.patrolType === "None"}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center mt-6">
+                          <div className="flex items-center space-x-2">
+                            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                              Stream {stream.id}
+                            </Badge>
+                            {stream.images && stream.images.length > 0 && (
+                              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                                {stream.images.length} Image{stream.images.length === 1 ? '' : 's'}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                if (stream.images && stream.images.length > 0) {
+                                  setSelectedStream(stream);
+                                  setIsImagesModalOpen(true);
+                                } else {
+                                  toast({
+                                    title: "No Images",
+                                    description: "This stream has no images to display.",
+                                  });
+                                }
+                              }}
+                              className="text-blue-600"
+                            >
+                              <ImageIcon size={16} className="mr-1" /> View Images
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => addStream(stream)}
+                              title="Duplicate Stream"
+                              className="text-purple-600"
+                            >
+                              <Copy size={16} />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => removeStream(stream.id)}
+                              title="Remove Stream"
+                              className="text-red-600"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex justify-end mt-6">
+                  <Button variant="outline" onClick={calculatePrice} className="flex items-center gap-1">
+                    <Calculator size={16} /> Calculate Price
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Additional Services</CardTitle>
+              <CardDescription>Add any additional services required for this project</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="voc-escalations">VOC Escalations</Label>
+                  <Input 
+                    id="voc-escalations"
+                    type="number"
+                    min="0"
+                    value={formData.vocEscalations}
+                    onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="dispatch-responses">Dispatch Responses</Label>
+                  <Input 
+                    id="dispatch-responses"
+                    type="number"
+                    min="0"
+                    value={formData.dispatchResponses}
+                    onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="gdods-patrols">GDoDS Patrols</Label>
+                  <Input 
+                    id="gdods-patrols"
+                    type="number"
+                    min="0"
+                    value={formData.gdodsPatrols}
+                    onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="sgpp-patrols">SGPP Patrols</Label>
+                  <Input 
+                    id="sgpp-patrols"
+                    type="number"
+                    min="0"
+                    value={formData.sgppPatrols}
+                    onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="forensic-investigations">Forensic Investigations</Label>
+                  <Input 
+                    id="forensic-investigations"
+                    type="number"
+                    min="0"
+                    value={formData.forensicInvestigations}
+                    onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="app-users">App Users</Label>
+                  <Input 
+                    id="app-users"
+                    type="number"
+                    min="0"
+                    value={formData.appUsers}
+                    onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="audio-devices">Audio Devices</Label>
+                  <Input 
+                    id="audio-devices"
+                    type="number"
+                    min="0"
+                    value={formData.audioDevices}
+                    onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
+                  />
                 </div>
               </div>
             </CardContent>
