@@ -50,25 +50,25 @@ export default function ProjectConfiguration({
   useEffect(() => {
     setBuildingCount(project.building_count || 1);
     setConfigOptions({
-      replace_readers: project.replace_readers || false,
-      need_credentials: project.need_credentials || false,
-      takeover: project.takeover || false,
-      pull_wire: project.pull_wire || false,
-      visitor: project.visitor || false,
-      install_locks: project.install_locks || false,
-      ble: project.ble || false,
-      ppi_quote_needed: project.ppi_quote_needed || false,
-      guard_controls: project.guard_controls || false,
-      floorplan: project.floorplan || false,
-      test_card: project.test_card || false,
-      conduit_drawings: project.conduit_drawings || false,
-      reports_available: project.reports_available || false,
-      photo_id: project.photo_id || false,
-      on_site_security: project.on_site_security || false,
-      photo_badging: project.photo_badging || false,
-      kastle_connect: project.kastle_connect || false,
-      wireless_locks: project.wireless_locks || false,
-      rush: project.rush || false
+      replace_readers: project.replace_readers === true ? true : false,
+      need_credentials: project.need_credentials === true ? true : false,
+      takeover: project.takeover === true ? true : false,
+      pull_wire: project.pull_wire === true ? true : false,
+      visitor: project.visitor === true ? true : false,
+      install_locks: project.install_locks === true ? true : false,
+      ble: project.ble === true ? true : false,
+      ppi_quote_needed: project.ppi_quote_needed === true ? true : false,
+      guard_controls: project.guard_controls === true ? true : false,
+      floorplan: project.floorplan === true ? true : false,
+      test_card: project.test_card === true ? true : false,
+      conduit_drawings: project.conduit_drawings === true ? true : false,
+      reports_available: project.reports_available === true ? true : false,
+      photo_id: project.photo_id === true ? true : false,
+      on_site_security: project.on_site_security === true ? true : false,
+      photo_badging: project.photo_badging === true ? true : false,
+      kastle_connect: project.kastle_connect === true ? true : false,
+      wireless_locks: project.wireless_locks === true ? true : false,
+      rush: project.rush === true ? true : false
     });
   }, [project]);
 
