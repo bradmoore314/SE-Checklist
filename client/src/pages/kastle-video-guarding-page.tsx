@@ -198,6 +198,8 @@ import {
   Upload,
   Info as InfoIcon,
   Video as VideoIcon,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import StreamImagesModal from "@/components/modals/StreamImagesModal";
@@ -596,8 +598,8 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
               
               {streams.length > 0 ? (
-                <div>
-                  {/* Card-based Layout for Camera Stream Details */}
+                viewMode === 'cards' ? (
+                  /* Card-based Layout for Camera Stream Details */
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                     {streams.map((stream) => (
                       <Card key={stream.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -943,7 +945,104 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </Card>
                     ))}
                   </div>
-                </div>
+                ) : (
+                  /* Table/List View for Camera Stream Details */
+                  <div className="overflow-x-auto shadow-md sm:rounded-lg mb-8">
+                    <table className="w-full text-sm">
+                      <thead className="text-xs">
+                        <tr className="border-b border-gray-300">
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold rounded-tl-lg">ID</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold">Location</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold">Images</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-blue-600 text-white font-semibold">FOV</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-indigo-600 text-white font-semibold">Type</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-pink-600 text-white font-semibold">Audio</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-orange-600 text-white font-semibold">Monitoring</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-red-600 text-white font-semibold">Patrol</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {streams.map((stream) => (
+                          <tr key={stream.id} className="bg-white border-b hover:bg-gray-50">
+                            <td className="px-3 py-3 text-center font-medium">{stream.id}</td>
+                            <td className="px-3 py-3 max-w-[200px]">
+                              <div className="line-clamp-2 text-sm">{stream.location || "Not specified"}</div>
+                            </td>
+                            <td className="px-3 py-3 text-center">
+                              <div className="flex gap-1 justify-center">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedStream(stream);
+                                    setIsImagesModalOpen(true);
+                                  }}
+                                  className="h-7 w-7 p-0"
+                                  title="View Images"
+                                >
+                                  <ImageIcon size={14} />
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => handleUploadStreamImageClick(stream.id)}
+                                  className="h-7 w-7 p-0"
+                                  title="Upload Image"
+                                >
+                                  <Upload size={14} />
+                                </Button>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-center">{stream.fovAccessibility === "Select" ? "-" : stream.fovAccessibility}</td>
+                            <td className="px-3 py-3 text-center">{stream.cameraType === "Select" ? "-" : stream.cameraType}</td>
+                            <td className="px-3 py-3 text-center">{stream.audioTalkDown === "Select" ? "-" : stream.audioTalkDown}</td>
+                            <td className="px-3 py-3 text-center">
+                              {stream.eventMonitoring === "Yes" ? (
+                                <div className="text-xs">
+                                  {stream.monitoringStartTime && stream.monitoringEndTime ? 
+                                    `${stream.monitoringStartTime} - ${stream.monitoringEndTime}` : 
+                                    "Yes (no time set)"}
+                                </div>
+                              ) : (stream.eventMonitoring === "Select" ? "-" : "No")}
+                            </td>
+                            <td className="px-3 py-3 text-center">
+                              {stream.patrolGroups === "Yes" ? (
+                                <div className="text-xs">
+                                  {stream.patrolStartTime && stream.patrolEndTime ? 
+                                    `${stream.patrolStartTime} - ${stream.patrolEndTime}` : 
+                                    "Yes (no time set)"}
+                                </div>
+                              ) : (stream.patrolGroups === "Select" ? "-" : "No")}
+                            </td>
+                            <td className="px-3 py-3">
+                              <div className="flex gap-1 justify-center">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => addStream(stream)}
+                                  title="Duplicate Stream"
+                                  className="h-7 w-7 p-0 text-blue-500 hover:text-blue-700"
+                                >
+                                  <Copy size={14} />
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => removeStream(stream.id)}
+                                  title="Remove Stream"
+                                  className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                                >
+                                  <Trash size={14} />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )
               ) : (
                 <div className="text-center bg-gray-50 p-8 rounded-md border border-gray-200 shadow-sm">
                   <VideoIcon className="w-12 h-12 text-teal-500 mx-auto mb-3" />
