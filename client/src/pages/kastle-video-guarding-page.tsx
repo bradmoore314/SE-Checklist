@@ -60,22 +60,6 @@ interface FormData {
   numSites: number;
   technology: string;
   installType: string;
-  siteEnvironment: string;
-  timeZone: string;
-  siteName: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  opportunityType: string;
-  rspndrGdods: string;
-  numCameraStreams: number;
-  servicesRecommended: string;
-  maintenance: string;
-  useCaseProblem: string;
-  suggestedIncidentResponse: string;
-  scheduleDetails: string;
-  rspndrPatrol: string;
-  siteSceneActivity: string;
   
   // Incident Types - Criminal Activity Group
   obviousCriminalAct: boolean;
@@ -184,22 +168,6 @@ const KastleVideoGuardingPage: React.FC = () => {
     numSites: 1,
     technology: "Kastle Video Cloud",
     installType: "New Construction",
-    siteEnvironment: "",
-    timeZone: "",
-    siteName: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    opportunityType: "",
-    rspndrGdods: "",
-    numCameraStreams: 0,
-    servicesRecommended: "",
-    maintenance: "",
-    useCaseProblem: "",
-    suggestedIncidentResponse: "",
-    scheduleDetails: "",
-    rspndrPatrol: "",
-    siteSceneActivity: "",
     
     // Incident Types - All unchecked by default
     // Criminal Activity Group
@@ -490,7 +458,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       <h1 className="text-3xl font-bold text-center mb-6">KVG Pricing App</h1>
 
       <Tabs defaultValue="discovery" className="w-full">
-        <TabsList className="grid grid-cols-6 mb-6">
+        <TabsList className="grid grid-cols-5 mb-6">
           <TabsTrigger value="discovery" className="bg-green-600 data-[state=active]:bg-green-700 text-white">
             1. Discovery - BDM
           </TabsTrigger>
@@ -506,9 +474,6 @@ const KastleVideoGuardingPage: React.FC = () => {
           <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white">
             5. Project Deployment - PM
           </TabsTrigger>
-          <TabsTrigger value="pricing" className="bg-red-600 data-[state=active]:bg-red-700 text-white">
-            6. Pricing
-          </TabsTrigger>
         </TabsList>
 
         {/* Discovery Tab Content */}
@@ -521,42 +486,32 @@ const KastleVideoGuardingPage: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="bdmOwner">BDM Name</Label>
+                  <Label htmlFor="bdmOwner">BDM Owner</Label>
                   <Input 
                     id="bdmOwner"
                     value={formData.bdmOwner}
                     onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="crmOpportunity">CRM Opportunity</Label>
+                  <Label htmlFor="salesEngineer">Sales Engineer</Label>
                   <Input 
-                    id="crmOpportunity"
-                    value={formData.crmOpportunity}
-                    onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
+                    id="salesEngineer"
+                    value={formData.salesEngineer}
+                    onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-xs text-gray-500">Send to KVG Team when Tab 1-3 are completed</Label>
-                  <div className="border px-3 py-2 rounded-md text-sm bg-gray-50">
-                    KVG-RVM-Quote@kastle.com
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="siteName">Site Name</Label>
+                  <Label htmlFor="kvgSme">KVG SME</Label>
                   <Input 
-                    id="siteName"
-                    value={formData.siteName}
-                    onChange={(e) => handleFormChange("siteName", e.target.value)}
+                    id="kvgSme"
+                    value={formData.kvgSme}
+                    onChange={(e) => handleFormChange("kvgSme", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
@@ -567,7 +522,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                     value={formData.customerName}
                     onChange={(e) => handleFormChange("customerName", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
@@ -578,663 +532,91 @@ const KastleVideoGuardingPage: React.FC = () => {
                     value={formData.siteAddress}
                     onChange={(e) => handleFormChange("siteAddress", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="timeZone">Time Zone</Label>
-                  <Select 
-                    value={formData.timeZone}
-                    onValueChange={(value) => handleFormChange("timeZone", value)}
-                  >
-                    <SelectTrigger id="timeZone">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EST">Eastern (EST/EDT)</SelectItem>
-                      <SelectItem value="CST">Central (CST/CDT)</SelectItem>
-                      <SelectItem value="MST">Mountain (MST/MDT)</SelectItem>
-                      <SelectItem value="PST">Pacific (PST/PDT)</SelectItem>
-                      <SelectItem value="AKST">Alaska (AKST/AKDT)</SelectItem>
-                      <SelectItem value="HST">Hawaii (HST)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
+                  <Label htmlFor="cityStateZip">City, State, Zip</Label>
                   <Input 
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => handleFormChange("city", e.target.value)}
+                    id="cityStateZip"
+                    value={formData.cityStateZip}
+                    onChange={(e) => handleFormChange("cityStateZip", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="state">State</Label>
-                  <Select 
-                    value={formData.state}
-                    onValueChange={(value) => handleFormChange("state", value)}
-                  >
-                    <SelectTrigger id="state">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="AL">Alabama</SelectItem>
-                      <SelectItem value="AK">Alaska</SelectItem>
-                      <SelectItem value="AZ">Arizona</SelectItem>
-                      <SelectItem value="AR">Arkansas</SelectItem>
-                      <SelectItem value="CA">California</SelectItem>
-                      <SelectItem value="CO">Colorado</SelectItem>
-                      <SelectItem value="CT">Connecticut</SelectItem>
-                      <SelectItem value="DE">Delaware</SelectItem>
-                      <SelectItem value="FL">Florida</SelectItem>
-                      <SelectItem value="GA">Georgia</SelectItem>
-                      <SelectItem value="HI">Hawaii</SelectItem>
-                      <SelectItem value="ID">Idaho</SelectItem>
-                      <SelectItem value="IL">Illinois</SelectItem>
-                      <SelectItem value="IN">Indiana</SelectItem>
-                      <SelectItem value="IA">Iowa</SelectItem>
-                      <SelectItem value="KS">Kansas</SelectItem>
-                      <SelectItem value="KY">Kentucky</SelectItem>
-                      <SelectItem value="LA">Louisiana</SelectItem>
-                      <SelectItem value="ME">Maine</SelectItem>
-                      <SelectItem value="MD">Maryland</SelectItem>
-                      <SelectItem value="MA">Massachusetts</SelectItem>
-                      <SelectItem value="MI">Michigan</SelectItem>
-                      <SelectItem value="MN">Minnesota</SelectItem>
-                      <SelectItem value="MS">Mississippi</SelectItem>
-                      <SelectItem value="MO">Missouri</SelectItem>
-                      <SelectItem value="MT">Montana</SelectItem>
-                      <SelectItem value="NE">Nebraska</SelectItem>
-                      <SelectItem value="NV">Nevada</SelectItem>
-                      <SelectItem value="NH">New Hampshire</SelectItem>
-                      <SelectItem value="NJ">New Jersey</SelectItem>
-                      <SelectItem value="NM">New Mexico</SelectItem>
-                      <SelectItem value="NY">New York</SelectItem>
-                      <SelectItem value="NC">North Carolina</SelectItem>
-                      <SelectItem value="ND">North Dakota</SelectItem>
-                      <SelectItem value="OH">Ohio</SelectItem>
-                      <SelectItem value="OK">Oklahoma</SelectItem>
-                      <SelectItem value="OR">Oregon</SelectItem>
-                      <SelectItem value="PA">Pennsylvania</SelectItem>
-                      <SelectItem value="RI">Rhode Island</SelectItem>
-                      <SelectItem value="SC">South Carolina</SelectItem>
-                      <SelectItem value="SD">South Dakota</SelectItem>
-                      <SelectItem value="TN">Tennessee</SelectItem>
-                      <SelectItem value="TX">Texas</SelectItem>
-                      <SelectItem value="UT">Utah</SelectItem>
-                      <SelectItem value="VT">Vermont</SelectItem>
-                      <SelectItem value="VA">Virginia</SelectItem>
-                      <SelectItem value="WA">Washington</SelectItem>
-                      <SelectItem value="WV">West Virginia</SelectItem>
-                      <SelectItem value="WI">Wisconsin</SelectItem>
-                      <SelectItem value="WY">Wyoming</SelectItem>
-                      <SelectItem value="DC">Washington D.C.</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="zipCode">Zip Code</Label>
+                  <Label htmlFor="crmOpportunity">CRM Opportunity #</Label>
                   <Input 
-                    id="zipCode"
-                    value={formData.zipCode}
-                    onChange={(e) => handleFormChange("zipCode", e.target.value)}
+                    id="crmOpportunity"
+                    value={formData.crmOpportunity}
+                    onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
                     autoComplete="off"
-                    placeholder="Fill in"
                   />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Application & Use Case(s) Discovery</CardTitle>
-              <CardDescription>Define the site environment and services needed</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="siteEnvironment">Site Environment</Label>
-                  <Select 
-                    value={formData.siteEnvironment}
-                    onValueChange={(value) => handleFormChange("siteEnvironment", value)}
-                  >
-                    <SelectTrigger id="siteEnvironment">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Office">Office</SelectItem>
-                      <SelectItem value="Multifamily">Multifamily</SelectItem>
-                      <SelectItem value="Mixed Use">Mixed Use</SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
-                      <SelectItem value="Retail">Retail</SelectItem>
-                      <SelectItem value="Medical">Medical</SelectItem>
-                      <SelectItem value="School">School</SelectItem>
-                      <SelectItem value="Financial">Financial</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="technology">Technology</Label>
+                  <Label htmlFor="quoteDate">Date Quote Generated</Label>
+                  <Input 
+                    id="quoteDate"
+                    type="date"
+                    value={formData.quoteDate}
+                    onChange={(e) => handleFormChange("quoteDate", e.target.value)}
+                    autoComplete="off"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="numSites">Number of Sites</Label>
+                  <Input 
+                    id="numSites"
+                    type="number"
+                    min="1"
+                    value={formData.numSites}
+                    onChange={(e) => handleFormChange("numSites", parseInt(e.target.value))}
+                    autoComplete="off"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="technology">Technology Required</Label>
                   <Select 
                     value={formData.technology}
                     onValueChange={(value) => handleFormChange("technology", value)}
                   >
                     <SelectTrigger id="technology">
-                      <SelectValue placeholder="Select" />
+                      <SelectValue placeholder="Select technology" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Avigilon">Avigilon</SelectItem>
-                      <SelectItem value="KVC">KVC</SelectItem>
-                      <SelectItem value="Hikvision">Hikvision</SelectItem>
-                      <SelectItem value="Axis">Axis</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="Kastle Video Cloud">Kastle Video Cloud</SelectItem>
+                      <SelectItem value="Avigilon Cameras">Avigilon Cameras</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="opportunityType">Opportunity Type</Label>
-                  <Select 
-                    value={formData.opportunityType}
-                    onValueChange={(value) => handleFormChange("opportunityType", value)}
+                  <Label htmlFor="installType">Type of Install</Label>
+                  <Select
+                    value={formData.installType}
+                    onValueChange={(value) => handleFormChange("installType", value)}
                   >
-                    <SelectTrigger id="opportunityType">
-                      <SelectValue placeholder="Select" />
+                    <SelectTrigger id="installType">
+                      <SelectValue placeholder="Select install type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="New">New</SelectItem>
-                      <SelectItem value="Renewal">Renewal</SelectItem>
-                      <SelectItem value="Expansion">Expansion</SelectItem>
-                      <SelectItem value="Re-compete">Re-compete</SelectItem>
+                      <SelectItem value="New Construction">New Construction</SelectItem>
+                      <SelectItem value="Existing Customer Add-on">Existing Customer Add-on</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="rspndrGdods">RSPNDR - GDoDS</Label>
-                  <Select 
-                    value={formData.rspndrGdods}
-                    onValueChange={(value) => handleFormChange("rspndrGdods", value)}
-                  >
-                    <SelectTrigger id="rspndrGdods">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                      <SelectItem value="Not Needed">Not Needed</SelectItem>
-                      <SelectItem value="Future">Future</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="numCameraStreams"># of KVG Cameras Video Streams</Label>
-                  <Input 
-                    id="numCameraStreams"
-                    type="number"
-                    min="0"
-                    value={formData.numCameraStreams}
-                    onChange={(e) => handleFormChange("numCameraStreams", parseInt(e.target.value))}
-                    autoComplete="off"
-                    placeholder="Fill in"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="servicesRecommended">Services Recommended</Label>
-                  <Select 
-                    value={formData.servicesRecommended}
-                    onValueChange={(value) => handleFormChange("servicesRecommended", value)}
-                  >
-                    <SelectTrigger id="servicesRecommended">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="KVG Primary">KVG Primary</SelectItem>
-                      <SelectItem value="KVG with VOC">KVG with VOC</SelectItem>
-                      <SelectItem value="KVG with RSPNDR">KVG with RSPNDR</SelectItem>
-                      <SelectItem value="KVG with VOC and RSPNDR">KVG with VOC and RSPNDR</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="maintenance">Maintenance</Label>
-                  <Select 
-                    value={formData.maintenance}
-                    onValueChange={(value) => handleFormChange("maintenance", value)}
-                  >
-                    <SelectTrigger id="maintenance">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Standard">Standard</SelectItem>
-                      <SelectItem value="Premium">Premium</SelectItem>
-                      <SelectItem value="Elite">Elite</SelectItem>
-                      <SelectItem value="None">None</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="md:col-span-3 mt-2">
-                  <Label className="block mb-2 font-medium">Incident types to be monitored</Label>
-                  <div className="text-xs text-gray-500 mb-4">Typically 3-4 max per camera stream, clarify in use case and if needed call out unique use cases per camera in the camera list below.</div>
-                </div>
-              </div>
-              
-              {/* Incident Types Section */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                {/* Column 1 - Criminal Activity Group */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-red-800">Criminal Activity</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.obviousCriminalAct}
-                        onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        OBVIOUS CRIMINAL ACT
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.activeBreakIn}
-                        onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        ACTIVE BREAK-IN
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.destructionOfProperty}
-                        onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        DESTRUCTION OF PROPERTY
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.carDrivingThroughGate}
-                        onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        CAR DRIVING THROUGH PARKING GATE
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.carBurglaries}
-                        onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        CAR BURGLARIES
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.trespassing}
-                        onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        TRESSPASSING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.carsBrokenIntoAfterFact}
-                        onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        CARS BROKEN INTO AFTER THE FACT
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.brokenGlassWindows}
-                        onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
-                      >
-                        BROKEN GLASS - WINDOWS/DOORS
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-orange-800">Suspicious Activity</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.suspiciousActivity}
-                        onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
-                      >
-                        SUSPICIOUS INDIVIDUAL(S)/ACTIVITY
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.intentToCommitCriminalAct}
-                        onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
-                      >
-                        I.E. INTENT TO COMMIT CRIMINAL ACT
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.checkingMultipleCarDoors}
-                        onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
-                      >
-                        (EX: CHECKING MULTIPLE CAR DOORS)
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.dumpsterDivingOrDumping}
-                        onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
-                      >
-                        DUMPSTER DIVING OR DUMPING
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-amber-800">Nuisance Activity</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.urinationOrOtherBodilyFunctions}
-                        onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
-                      >
-                        URINATION OR OTHER BODILY FUNCTIONS
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.presenceOfScooters}
-                        onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
-                      >
-                        PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.leavingTrash}
-                        onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
-                      >
-                        LEAVING TRASH IN THE PARKING LOTS OR PERIMETER
-                      </Toggle>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Column 2 - Emergency/Tenant/Restricted Group */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-green-800">Emergency/Medical</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.emergencyServices}
-                        onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        EMERGENCY SERVICES SEEN ON SITE
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.personInjuredOrDistress}
-                        onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        PERSON PRESUMED INJURED OR IN DISTRESS
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.obviousMedicalEmergency}
-                        onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        OBVIOUS MEDICAL EMERGENCY
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.visibleFireOrSmoke}
-                        onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
-                      >
-                        VISIBLE FIRE OR HEAVY SMOKE
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-blue-800">Tenant Activity</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.tenantsMovingOut}
-                        onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
-                      >
-                        TENANTS MOVING OUT OF THE BUILDING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.largeItemsMovedAfterHours}
-                        onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
-                      >
-                        LARGE ITEMS BEING MOVED IN/OUT AFTER HRS
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-indigo-800">Restricted Access</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.personInRestrictedArea}
-                        onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
-                      >
-                        PERSON ON SITE IN RESTRICTED AREA
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.sittingOrSleeping}
-                        onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 ml-4"
-                      >
-                        SITTING OR SLEEPING IN/ON (SPECIFIED AREA)
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.presentInProhibitedArea}
-                        onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 ml-4"
-                      >
-                        PRESENT IN PROHIBITED AREA
-                      </Toggle>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Column 3 - Loitering Group + Custom */}
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-purple-800">Loitering</h3>
-                    <div className="space-y-2">
-                      <Toggle
-                        pressed={formData.loitering}
-                        onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
-                      >
-                        LOITERING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.activeGathering}
-                        onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        ACTIVE GATHERING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.groupsLoiteringGathering}
-                        onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        GROUPS LOITERING/GATHERING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.homelessVagrant}
-                        onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        HOMELESS/VAGRANT
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.sleepingOnSiteEncampments}
-                        onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        SLEEPING ON SITE/ENCAMPMENTS
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.loiteringInStairwells}
-                        onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        LOITERING IN STAIRWELLS
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.personsSmoking}
-                        onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        PERSONS SMOKING
-                      </Toggle>
-                      
-                      <Toggle
-                        pressed={formData.vehicleLoiteringInArea}
-                        onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 ml-4"
-                      >
-                        VEHICLE LOITERING/GATHERING IN AREA
-                      </Toggle>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">Custom Incident Types</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Toggle
-                          pressed={formData.customIncidentType1}
-                          onPressedChange={(pressed) => handleFormChange("customIncidentType1", pressed)}
-                          className="data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
-                        />
-                        <Input 
-                          placeholder="Fill in if incident type not shown"
-                          className="flex-1"
-                        />
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Toggle
-                          pressed={formData.customIncidentType2}
-                          onPressedChange={(pressed) => handleFormChange("customIncidentType2", pressed)}
-                          className="data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
-                        />
-                        <Input 
-                          placeholder="Fill in if incident type not shown"
-                          className="flex-1"
-                        />
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Toggle
-                          pressed={formData.customIncidentType3}
-                          onPressedChange={(pressed) => handleFormChange("customIncidentType3", pressed)}
-                          className="data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
-                        />
-                        <Input 
-                          placeholder="Fill in if incident type not shown"
-                          className="flex-1"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Use Case Problem and Suggested Incident Response */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div className="space-y-2">
-                  <Label htmlFor="useCaseProblem">Use Case Problem</Label>
-                  <Textarea
-                    id="useCaseProblem"
-                    value={formData.useCaseProblem}
-                    onChange={(e) => handleFormChange("useCaseProblem", e.target.value)}
-                    placeholder="Fill in information around the specific issues and problems the customer is having"
-                    className="min-h-[120px]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="suggestedIncidentResponse">Suggested Incident(s) Response</Label>
-                  <Textarea
-                    id="suggestedIncidentResponse"
-                    value={formData.suggestedIncidentResponse}
-                    onChange={(e) => handleFormChange("suggestedIncidentResponse", e.target.value)}
-                    placeholder="Fill in how they currently address these issues and incidents on their property or if they have an idea of how they want us to address them"
-                    className="min-h-[120px]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="scheduleDetails">Schedules Details & Frequency of Patrols</Label>
-                  <Textarea
-                    id="scheduleDetails"
-                    value={formData.scheduleDetails}
-                    onChange={(e) => handleFormChange("scheduleDetails", e.target.value)}
-                    placeholder="What days of week and hours of day for monitoring. Typically after hours or when no one is supposed to be there."
-                    className="min-h-[120px]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="rspndrPatrol">RSPNDR SGPP - Scheduled Patrol Frequency, Days and Hours</Label>
-                  <Textarea
-                    id="rspndrPatrol"
-                    value={formData.rspndrPatrol}
-                    onChange={(e) => handleFormChange("rspndrPatrol", e.target.value)}
-                    placeholder="Fill in what type of RSPNDR Guard Services response is needed for this KVG customer"
-                    className="min-h-[120px]"
-                  />
-                </div>
-                
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="siteSceneActivity">Site and Scene Activity Notes</Label>
-                  <Textarea
-                    id="siteSceneActivity"
-                    value={formData.siteSceneActivity}
-                    onChange={(e) => handleFormChange("siteSceneActivity", e.target.value)}
-                    placeholder="Fill in any detail around the site and scene as it relates to activity, restricted areas, access level to areas that we are to monitor."
-                    className="min-h-[120px]"
-                  />
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Incident Types</CardTitle>
+              <CardDescription>Select which incident types will be monitored at this site</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -2251,374 +1633,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Pricing Tab Content */}
-        <TabsContent value="pricing">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Camera Stream Pricing</CardTitle>
-              <CardDescription>Enter camera stream details for monitoring and surveillance</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Camera Streams</h3>
-                  <Button onClick={() => addStream()} className="flex items-center gap-1">
-                    <Plus size={16} /> Add Stream
-                  </Button>
-                </div>
-                
-                {streams.length === 0 ? (
-                  <div className="text-center py-10 text-gray-500">
-                    <Camera className="mx-auto h-12 w-12 opacity-20 mb-2" />
-                    <p>No camera streams added yet. Click "Add Stream" to get started.</p>
-                  </div>
-                ) : (
-                  <div>
-                    {streams.map((stream) => (
-                      <div key={stream.id} className="border rounded-md p-4 mb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div className="space-y-2">
-                            <Label htmlFor={`quantity-${stream.id}`}>Quantity</Label>
-                            <Input
-                              id={`quantity-${stream.id}`}
-                              type="number"
-                              min="1"
-                              value={stream.quantity}
-                              onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
-                            />
-                          </div>
-                          <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor={`description-${stream.id}`}>Description</Label>
-                            <Input
-                              id={`description-${stream.id}`}
-                              value={stream.description}
-                              onChange={(e) => updateStream(stream.id, "description", e.target.value)}
-                              placeholder="Stream description"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Monitored Area</Label>
-                            <Select
-                              value={stream.monitoredArea}
-                              onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select area" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Pool">Pool</SelectItem>
-                                <SelectItem value="Garage">Garage</SelectItem>
-                                <SelectItem value="Entrance">Entrance</SelectItem>
-                                <SelectItem value="Lobby">Lobby</SelectItem>
-                                <SelectItem value="Elevator">Elevator</SelectItem>
-                                <SelectItem value="Stairwell">Stairwell</SelectItem>
-                                <SelectItem value="Common Area">Common Area</SelectItem>
-                                <SelectItem value="Exterior">Exterior</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Area Accessibility</Label>
-                            <Select
-                              value={stream.accessibility}
-                              onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select accessibility" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Secure">Secure</SelectItem>
-                                <SelectItem value="Public">Public</SelectItem>
-                                <SelectItem value="Restricted">Restricted</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`use-case-${stream.id}`}>Unique Use Case</Label>
-                            <Input
-                              id={`use-case-${stream.id}`}
-                              value={stream.useCase || ""}
-                              onChange={(e) => updateStream(stream.id, "useCase", e.target.value)}
-                              placeholder="Specific use case"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                          <div className="space-y-2">
-                            <Label>Primary Analytic Rule</Label>
-                            <Select
-                              value={stream.analyticRule1}
-                              onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select rule" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Person Detected">Person Detected</SelectItem>
-                                <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
-                                <SelectItem value="Loitering">Loitering</SelectItem>
-                                <SelectItem value="Line Crossing">Line Crossing</SelectItem>
-                                <SelectItem value="Area Intrusion">Area Intrusion</SelectItem>
-                                <SelectItem value="Object Removed">Object Removed</SelectItem>
-                                <SelectItem value="Object Left Behind">Object Left Behind</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`dwell-time-1-${stream.id}`}>Dwell Time (seconds)</Label>
-                            <Input
-                              id={`dwell-time-1-${stream.id}`}
-                              type="number"
-                              min="0"
-                              value={stream.dwellTime1}
-                              onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Secondary Analytic Rule</Label>
-                            <Select
-                              value={stream.analyticRule2}
-                              onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select rule" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="None">None</SelectItem>
-                                <SelectItem value="Person Detected">Person Detected</SelectItem>
-                                <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
-                                <SelectItem value="Loitering">Loitering</SelectItem>
-                                <SelectItem value="Line Crossing">Line Crossing</SelectItem>
-                                <SelectItem value="Area Intrusion">Area Intrusion</SelectItem>
-                                <SelectItem value="Object Removed">Object Removed</SelectItem>
-                                <SelectItem value="Object Left Behind">Object Left Behind</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`dwell-time-2-${stream.id}`}>Dwell Time (seconds)</Label>
-                            <Input
-                              id={`dwell-time-2-${stream.id}`}
-                              type="number"
-                              min="0"
-                              value={stream.dwellTime2}
-                              onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
-                              disabled={stream.analyticRule2 === "None"}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div className="space-y-2">
-                            <Label>Monitoring Schedule</Label>
-                            <Select
-                              value={stream.schedule}
-                              onValueChange={(value) => updateStream(stream.id, "schedule", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select schedule" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="24/7">24/7</SelectItem>
-                                <SelectItem value="After Hours">After Hours (6pm-6am)</SelectItem>
-                                <SelectItem value="Weekends Only">Weekends Only</SelectItem>
-                                <SelectItem value="Business Hours">Business Hours (8am-6pm)</SelectItem>
-                                <SelectItem value="Custom">Custom</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`event-volume-${stream.id}`}>Estimated Event Volume/Month</Label>
-                            <Input
-                              id={`event-volume-${stream.id}`}
-                              type="number"
-                              min="0"
-                              value={stream.eventVolume}
-                              onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Patrol Type</Label>
-                            <Select
-                              value={stream.patrolType}
-                              onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select patrol type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Standard">Standard</SelectItem>
-                                <SelectItem value="Enhanced">Enhanced</SelectItem>
-                                <SelectItem value="None">None</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`patrols-per-week-${stream.id}`}>Patrols Per Week</Label>
-                            <Input
-                              id={`patrols-per-week-${stream.id}`}
-                              type="number"
-                              min="0"
-                              value={stream.patrolsPerWeek}
-                              onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
-                              disabled={stream.patrolType === "None"}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-between items-center mt-6">
-                          <div className="flex items-center space-x-2">
-                            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                              Stream {stream.id}
-                            </Badge>
-                            {stream.images && stream.images.length > 0 && (
-                              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                                {stream.images.length} Image{stream.images.length === 1 ? '' : 's'}
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => {
-                                if (stream.images && stream.images.length > 0) {
-                                  setSelectedStream(stream);
-                                  setIsImagesModalOpen(true);
-                                } else {
-                                  toast({
-                                    title: "No Images",
-                                    description: "This stream has no images to display.",
-                                  });
-                                }
-                              }}
-                              className="text-blue-600"
-                            >
-                              <ImageIcon size={16} className="mr-1" /> View Images
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => addStream(stream)}
-                              title="Duplicate Stream"
-                              className="text-purple-600"
-                            >
-                              <Copy size={16} />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => removeStream(stream.id)}
-                              title="Remove Stream"
-                              className="text-red-600"
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
-                <div className="flex justify-end mt-6">
-                  <Button variant="outline" onClick={calculatePrice} className="flex items-center gap-1">
-                    <Calculator size={16} /> Calculate Price
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Additional Services</CardTitle>
-              <CardDescription>Add any additional services required for this project</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="voc-escalations">VOC Escalations</Label>
-                  <Input 
-                    id="voc-escalations"
-                    type="number"
-                    min="0"
-                    value={formData.vocEscalations}
-                    onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="dispatch-responses">Dispatch Responses</Label>
-                  <Input 
-                    id="dispatch-responses"
-                    type="number"
-                    min="0"
-                    value={formData.dispatchResponses}
-                    onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="gdods-patrols">GDoDS Patrols</Label>
-                  <Input 
-                    id="gdods-patrols"
-                    type="number"
-                    min="0"
-                    value={formData.gdodsPatrols}
-                    onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="sgpp-patrols">SGPP Patrols</Label>
-                  <Input 
-                    id="sgpp-patrols"
-                    type="number"
-                    min="0"
-                    value={formData.sgppPatrols}
-                    onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="forensic-investigations">Forensic Investigations</Label>
-                  <Input 
-                    id="forensic-investigations"
-                    type="number"
-                    min="0"
-                    value={formData.forensicInvestigations}
-                    onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="app-users">App Users</Label>
-                  <Input 
-                    id="app-users"
-                    type="number"
-                    min="0"
-                    value={formData.appUsers}
-                    onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="audio-devices">Audio Devices</Label>
-                  <Input 
-                    id="audio-devices"
-                    type="number"
-                    min="0"
-                    value={formData.audioDevices}
-                    onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
-                  />
                 </div>
               </div>
             </CardContent>
