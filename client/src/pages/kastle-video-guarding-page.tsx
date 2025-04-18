@@ -48,18 +48,43 @@ import StreamImagesModal from "../components/modals/StreamImagesModal";
 import { Badge } from "@/components/ui/badge";
 
 interface FormData {
-  // Discovery tab fields
+  // Discovery tab fields - General Information
   bdmOwner: string;
   salesEngineer: string;
   kvgSme: string;
   customerName: string;
   siteAddress: string;
-  cityStateZip: string;
+  city: string;
+  state: string;
+  zipCode: string;
   crmOpportunity: string;
   quoteDate: string;
-  numSites: number;
+  timeZone: string;
+  opportunityStage: string;
+  opportunityType: string;
+  siteEnvironment: string;
   technology: string;
-  installType: string;
+  numSites: number;
+  servicesRecommended: string;
+  monitoringType: string;
+  
+  // Discovery tab fields - Use Case Problem
+  useCaseProblem: string;
+  suggestedIncidentResponse: string;
+  discoveryDetails: string;
+  
+  // Discovery tab fields - Patrol Schedule
+  scheduleDetails: string;
+  dayHoursDetails: string;
+  siteActivityNotes: string;
+  
+  // Camera Video Stream Details
+  cameraStream1Name: string;
+  cameraStream1Location: string;
+  cameraStream1Type: string;
+  cameraStream1Accessibility: string;
+  cameraStream1UseCaseProblem: string;
+  cameraStream1Association: string;
   
   // Incident Types - Criminal Activity Group
   obviousCriminalAct: boolean;
@@ -162,12 +187,37 @@ const KastleVideoGuardingPage: React.FC = () => {
     kvgSme: "",
     customerName: "",
     siteAddress: "",
-    cityStateZip: "",
+    city: "",
+    state: "",
+    zipCode: "",
     crmOpportunity: "",
     quoteDate: new Date().toISOString().split('T')[0],
-    numSites: 1,
+    timeZone: "EST",
+    opportunityStage: "Quote",
+    opportunityType: "New",
+    siteEnvironment: "Outdoor",
     technology: "Kastle Video Cloud",
-    installType: "New Construction",
+    numSites: 1,
+    servicesRecommended: "KVG",
+    monitoringType: "24/7",
+    
+    // Discovery tab fields - Use Case Problem
+    useCaseProblem: "",
+    suggestedIncidentResponse: "",
+    discoveryDetails: "",
+    
+    // Discovery tab fields - Patrol Schedule
+    scheduleDetails: "",
+    dayHoursDetails: "",
+    siteActivityNotes: "",
+    
+    // Camera Video Stream Details
+    cameraStream1Name: "",
+    cameraStream1Location: "",
+    cameraStream1Type: "",
+    cameraStream1Accessibility: "",
+    cameraStream1UseCaseProblem: "",
+    cameraStream1Association: "",
     
     // Incident Types - All unchecked by default
     // Criminal Activity Group
@@ -490,100 +540,184 @@ const KastleVideoGuardingPage: React.FC = () => {
               <CardDescription>Enter the basic information about this opportunity</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="bdmOwner">BDM Owner</Label>
-                  <Input 
-                    id="bdmOwner"
-                    value={formData.bdmOwner}
-                    onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
-                    autoComplete="off"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">General Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="bdmOwner">BDM Name</Label>
+                      <Input 
+                        id="bdmOwner"
+                        value={formData.bdmOwner}
+                        onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="salesEngineer">Sales Engineer</Label>
+                      <Input 
+                        id="salesEngineer"
+                        value={formData.salesEngineer}
+                        onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="kvgSme">KVG SME</Label>
+                      <Input 
+                        id="kvgSme"
+                        value={formData.kvgSme}
+                        onChange={(e) => handleFormChange("kvgSme", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="customerName">Customer Name</Label>
+                      <Input 
+                        id="customerName"
+                        value={formData.customerName}
+                        onChange={(e) => handleFormChange("customerName", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="crmOpportunity">CRM Opportunity #</Label>
+                      <Input 
+                        id="crmOpportunity"
+                        value={formData.crmOpportunity}
+                        onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="quoteDate">Quote Date</Label>
+                      <Input 
+                        id="quoteDate"
+                        type="date"
+                        value={formData.quoteDate}
+                        onChange={(e) => handleFormChange("quoteDate", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="timeZone">Time Zone</Label>
+                      <Select 
+                        value={formData.timeZone}
+                        onValueChange={(value) => handleFormChange("timeZone", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select time zone" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="EST">Eastern</SelectItem>
+                          <SelectItem value="CST">Central</SelectItem>
+                          <SelectItem value="MST">Mountain</SelectItem>
+                          <SelectItem value="PST">Pacific</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="opportunityStage">Opportunity Stage</Label>
+                      <Select 
+                        value={formData.opportunityStage}
+                        onValueChange={(value) => handleFormChange("opportunityStage", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select stage" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Quote">Quote</SelectItem>
+                          <SelectItem value="Proposal">Proposal</SelectItem>
+                          <SelectItem value="Contract">Contract</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="salesEngineer">Sales Engineer</Label>
-                  <Input 
-                    id="salesEngineer"
-                    value={formData.salesEngineer}
-                    onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
-                    autoComplete="off"
-                  />
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Site Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="siteAddress">Site Address</Label>
+                      <Input 
+                        id="siteAddress"
+                        value={formData.siteAddress}
+                        onChange={(e) => handleFormChange("siteAddress", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input 
+                        id="city"
+                        value={formData.city}
+                        onChange={(e) => handleFormChange("city", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input 
+                        id="state"
+                        value={formData.state}
+                        onChange={(e) => handleFormChange("state", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="zipCode">Zip Code</Label>
+                      <Input 
+                        id="zipCode"
+                        value={formData.zipCode}
+                        onChange={(e) => handleFormChange("zipCode", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="numSites">Number of Sites</Label>
+                      <Input 
+                        id="numSites"
+                        type="number"
+                        min="1"
+                        value={formData.numSites}
+                        onChange={(e) => handleFormChange("numSites", parseInt(e.target.value))}
+                        autoComplete="off"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="siteEnvironment">Site Environment</Label>
+                      <Select 
+                        value={formData.siteEnvironment}
+                        onValueChange={(value) => handleFormChange("siteEnvironment", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select environment" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Outdoor">Outdoor</SelectItem>
+                          <SelectItem value="Indoor">Indoor</SelectItem>
+                          <SelectItem value="Mixed">Mixed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="kvgSme">KVG SME</Label>
-                  <Input 
-                    id="kvgSme"
-                    value={formData.kvgSme}
-                    onChange={(e) => handleFormChange("kvgSme", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="customerName">Customer Name</Label>
-                  <Input 
-                    id="customerName"
-                    value={formData.customerName}
-                    onChange={(e) => handleFormChange("customerName", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="siteAddress">Site Address</Label>
-                  <Input 
-                    id="siteAddress"
-                    value={formData.siteAddress}
-                    onChange={(e) => handleFormChange("siteAddress", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="cityStateZip">City, State, Zip</Label>
-                  <Input 
-                    id="cityStateZip"
-                    value={formData.cityStateZip}
-                    onChange={(e) => handleFormChange("cityStateZip", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="crmOpportunity">CRM Opportunity #</Label>
-                  <Input 
-                    id="crmOpportunity"
-                    value={formData.crmOpportunity}
-                    onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="quoteDate">Quote Date</Label>
-                  <Input 
-                    id="quoteDate"
-                    type="date"
-                    value={formData.quoteDate}
-                    onChange={(e) => handleFormChange("quoteDate", e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="numSites">Number of Sites</Label>
-                  <Input 
-                    id="numSites"
-                    type="number"
-                    min="1"
-                    value={formData.numSites}
-                    onChange={(e) => handleFormChange("numSites", parseInt(e.target.value))}
-                    autoComplete="off"
-                  />
-                </div>
-                
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="space-y-2">
                   <Label htmlFor="technology">Technology</Label>
                   <Select 
@@ -602,21 +736,111 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="installType">Installation Type</Label>
+                  <Label htmlFor="servicesRecommended">Services Recommended</Label>
                   <Select 
-                    value={formData.installType}
-                    onValueChange={(value) => handleFormChange("installType", value)}
+                    value={formData.servicesRecommended}
+                    onValueChange={(value) => handleFormChange("servicesRecommended", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select installation type" />
+                      <SelectValue placeholder="Select services" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="New Construction">New Construction</SelectItem>
-                      <SelectItem value="Retrofit">Retrofit</SelectItem>
-                      <SelectItem value="Replacement">Replacement</SelectItem>
-                      <SelectItem value="Expansion">Expansion</SelectItem>
+                      <SelectItem value="KVG">KVG</SelectItem>
+                      <SelectItem value="KVG+Patrols">KVG + Patrols</SelectItem>
+                      <SelectItem value="KVG+Forensic">KVG + Forensic</SelectItem>
+                      <SelectItem value="Complete">Complete Package</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="monitoringType">Monitoring Type</Label>
+                  <Select 
+                    value={formData.monitoringType}
+                    onValueChange={(value) => handleFormChange("monitoringType", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="24/7">24/7</SelectItem>
+                      <SelectItem value="After Hours">After Hours</SelectItem>
+                      <SelectItem value="Custom">Custom Schedule</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="useCaseProblem">Use Case Problem</Label>
+                  <Textarea 
+                    id="useCaseProblem"
+                    value={formData.useCaseProblem}
+                    onChange={(e) => handleFormChange("useCaseProblem", e.target.value)}
+                    placeholder="Describe the specific use case problem the customer is having"
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="suggestedIncidentResponse">Suggested Incident Response</Label>
+                  <Textarea 
+                    id="suggestedIncidentResponse"
+                    value={formData.suggestedIncidentResponse}
+                    onChange={(e) => handleFormChange("suggestedIncidentResponse", e.target.value)}
+                    placeholder="Describe how KVG should respond to incidents at this property"
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="discoveryDetails">Discovery Details</Label>
+                  <Textarea 
+                    id="discoveryDetails"
+                    value={formData.discoveryDetails}
+                    onChange={(e) => handleFormChange("discoveryDetails", e.target.value)}
+                    placeholder="Enter any additional discovery details"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-3">Schedule & Patrol Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduleDetails">Schedule Details</Label>
+                    <Textarea 
+                      id="scheduleDetails"
+                      value={formData.scheduleDetails}
+                      onChange={(e) => handleFormChange("scheduleDetails", e.target.value)}
+                      placeholder="Enter patrol schedule details"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="dayHoursDetails">Day/Hours Details</Label>
+                    <Textarea 
+                      id="dayHoursDetails"
+                      value={formData.dayHoursDetails}
+                      onChange={(e) => handleFormChange("dayHoursDetails", e.target.value)}
+                      placeholder="Specify days and hours of patrols"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="siteActivityNotes">Site Activity Notes</Label>
+                    <Textarea 
+                      id="siteActivityNotes"
+                      value={formData.siteActivityNotes}
+                      onChange={(e) => handleFormChange("siteActivityNotes", e.target.value)}
+                      placeholder="Enter notes about site activity patterns and monitoring needs"
+                      rows={3}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -977,13 +1201,100 @@ const KastleVideoGuardingPage: React.FC = () => {
         <TabsContent value="stream-details">
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Camera Stream Details</CardTitle>
-              <CardDescription>Configure camera streams for monitoring and surveillance</CardDescription>
+              <CardTitle>Camera Stream Configuration</CardTitle>
+              <CardDescription>Enter details for initial camera stream</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Camera Streams</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Name">Stream Name</Label>
+                    <Input 
+                      id="cameraStream1Name"
+                      value={formData.cameraStream1Name}
+                      onChange={(e) => handleFormChange("cameraStream1Name", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter stream name"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Location">Location</Label>
+                    <Input 
+                      id="cameraStream1Location"
+                      value={formData.cameraStream1Location}
+                      onChange={(e) => handleFormChange("cameraStream1Location", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter camera location"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Type">Camera Type</Label>
+                    <Select 
+                      value={formData.cameraStream1Type}
+                      onValueChange={(value) => handleFormChange("cameraStream1Type", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select camera type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PTZ">PTZ</SelectItem>
+                        <SelectItem value="Fixed">Fixed</SelectItem>
+                        <SelectItem value="Fisheye">Fisheye</SelectItem>
+                        <SelectItem value="Bullet">Bullet</SelectItem>
+                        <SelectItem value="Dome">Dome</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Accessibility">Area Accessibility</Label>
+                    <Select 
+                      value={formData.cameraStream1Accessibility}
+                      onValueChange={(value) => handleFormChange("cameraStream1Accessibility", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select area accessibility" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Public">Public</SelectItem>
+                        <SelectItem value="Restricted">Restricted</SelectItem>
+                        <SelectItem value="Private">Private</SelectItem>
+                        <SelectItem value="Secure">Secure</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1UseCaseProblem">Unique Use Case Problem</Label>
+                    <Textarea 
+                      id="cameraStream1UseCaseProblem"
+                      value={formData.cameraStream1UseCaseProblem}
+                      onChange={(e) => handleFormChange("cameraStream1UseCaseProblem", e.target.value)}
+                      placeholder="Enter any unique use case problem for this camera"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Association">Camera Association</Label>
+                    <Input 
+                      id="cameraStream1Association"
+                      value={formData.cameraStream1Association}
+                      onChange={(e) => handleFormChange("cameraStream1Association", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter any associated equipment or areas"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t pt-6 mt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Additional Camera Streams</h3>
                   <Button onClick={() => addStream()} className="flex items-center gap-1">
                     <Plus size={16} /> Add Stream
                   </Button>
