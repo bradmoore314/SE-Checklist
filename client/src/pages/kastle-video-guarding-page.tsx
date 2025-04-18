@@ -567,20 +567,20 @@ const KastleVideoGuardingPage: React.FC = () => {
           <TabsTrigger value="site-assessment" className="bg-blue-600 data-[state=active]:bg-blue-700 text-white">
             2. Site Assessment - SE
           </TabsTrigger>
-          <TabsTrigger value="stream-details" className="bg-teal-600 data-[state=active]:bg-teal-700 text-white">
-            3. Stream Details
-          </TabsTrigger>
-          <TabsTrigger value="pricing" className="bg-pink-600 data-[state=active]:bg-pink-700 text-white">
-            4. Pricing
-          </TabsTrigger>
           <TabsTrigger value="use-case" className="bg-purple-600 data-[state=active]:bg-purple-700 text-white">
-            5. Use Case - SOW - SME
+            3. Use Case - SOW - SME
           </TabsTrigger>
           <TabsTrigger value="voc-protocol" className="bg-orange-600 data-[state=active]:bg-orange-700 text-white">
-            6. VOC Protocol - AM
+            4. VOC Protocol - AM
           </TabsTrigger>
           <TabsTrigger value="deployment" className="bg-indigo-600 data-[state=active]:bg-indigo-700 text-white">
-            7. Project Deployment - PM
+            5. Project Deployment - PM
+          </TabsTrigger>
+          <TabsTrigger value="stream-details" className="bg-teal-600 data-[state=active]:bg-teal-700 text-white">
+            Stream Details
+          </TabsTrigger>
+          <TabsTrigger value="pricing" className="bg-pink-600 data-[state=active]:bg-pink-700 text-white">
+            Pricing
           </TabsTrigger>
         </TabsList>
 
