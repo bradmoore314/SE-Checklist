@@ -1662,7 +1662,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">Nuisance Activity</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.urinationOrOtherBodilyFunctions}
                           onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
                           variant="outline"
@@ -1670,9 +1670,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.urinationOrOtherBodilyFunctions ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Urination/Other Bodily Functions
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.presenceOfScooters}
                           onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
                           variant="outline"
@@ -1680,9 +1680,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.presenceOfScooters ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Presence of Scooters
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.leavingTrash}
                           onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
                           variant="outline"
@@ -1690,7 +1690,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.leavingTrash ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Leaving Trash
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                     
@@ -1698,7 +1698,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">Emergency/Medical</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.emergencyServices}
                           onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
                           variant="outline"
@@ -1706,9 +1706,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.emergencyServices ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Emergency Services
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.personInjuredOrDistress}
                           onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
                           variant="outline"
@@ -1716,9 +1716,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.personInjuredOrDistress ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Person Injured/In Distress
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.obviousMedicalEmergency}
                           onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
                           variant="outline"
@@ -1726,9 +1726,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.obviousMedicalEmergency ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Obvious Medical Emergency
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.visibleFireOrSmoke}
                           onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
                           variant="outline"
@@ -1736,7 +1736,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.visibleFireOrSmoke ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Visible Fire/Smoke
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                     
@@ -1744,7 +1744,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">Loitering</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.loitering}
                           onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
                           variant="outline"
@@ -1752,9 +1752,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.loitering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Loitering
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.activeGathering}
                           onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
                           variant="outline"
@@ -1762,9 +1762,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.activeGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Active Gathering
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.groupsLoiteringGathering}
                           onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
                           variant="outline"
@@ -1772,9 +1772,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.groupsLoiteringGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Groups Loitering/Gathering
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.homelessVagrant}
                           onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
                           variant="outline"
@@ -1782,7 +1782,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.homelessVagrant ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Homeless/Vagrant
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                   </div>
@@ -1793,7 +1793,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">Tenant Activity</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.tenantsMovingOut}
                           onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
                           variant="outline"
@@ -1801,9 +1801,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.tenantsMovingOut ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Tenants Moving Out
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.largeItemsMovedAfterHours}
                           onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
                           variant="outline"
@@ -1811,7 +1811,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.largeItemsMovedAfterHours ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Large Items Moved After Hours
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                     
@@ -1819,7 +1819,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">Restricted Access</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.personInRestrictedArea}
                           onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
                           variant="outline"
@@ -1827,9 +1827,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.personInRestrictedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Person in Restricted Area
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.sittingOrSleeping}
                           onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
                           variant="outline"
@@ -1837,9 +1837,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.sittingOrSleeping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Sitting or Sleeping
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.presentInProhibitedArea}
                           onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
                           variant="outline"
@@ -1847,7 +1847,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.presentInProhibitedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Present in Prohibited Area
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                     
@@ -1855,7 +1855,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-amber-900 mb-2">More Loitering Types</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.sleepingOnSiteEncampments}
                           onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
                           variant="outline"
@@ -1863,9 +1863,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.sleepingOnSiteEncampments ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Sleeping on Site/Encampments
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.loiteringInStairwells}
                           onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
                           variant="outline"
@@ -1873,9 +1873,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.loiteringInStairwells ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Loitering in Stairwells
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.personsSmoking}
                           onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
                           variant="outline"
@@ -1883,9 +1883,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.personsSmoking ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Persons Smoking
-                        </ToggleButton>
+                        </Toggle>
                         
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.vehicleLoiteringInArea}
                           onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
                           variant="outline"
@@ -1893,7 +1893,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.vehicleLoiteringInArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
                         >
                           Vehicle Loitering in Area
-                        </ToggleButton>
+                        </Toggle>
                       </div>
                     </div>
                   </div>
@@ -1903,7 +1903,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <h4 className="font-semibold text-amber-900 mb-3">Custom Incident Types</h4>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="flex items-center gap-3">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.customIncidentType1Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType1Selected", pressed)}
                           variant="outline"
@@ -1911,7 +1911,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.customIncidentType1Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
                           Custom Type 1
-                        </ToggleButton>
+                        </Toggle>
                         <Input 
                           value={formData.customIncidentType1 || ""}
                           onChange={(e) => handleFormChange("customIncidentType1", e.target.value)}
@@ -1921,7 +1921,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </div>
                       
                       <div className="flex items-center gap-3">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.customIncidentType2Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType2Selected", pressed)}
                           variant="outline"
@@ -1929,7 +1929,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.customIncidentType2Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
                           Custom Type 2
-                        </ToggleButton>
+                        </Toggle>
                         <Input 
                           value={formData.customIncidentType2 || ""}
                           onChange={(e) => handleFormChange("customIncidentType2", e.target.value)}
@@ -1939,7 +1939,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </div>
                       
                       <div className="flex items-center gap-3">
-                        <ToggleButton 
+                        <Toggle 
                           pressed={formData.customIncidentType3Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType3Selected", pressed)}
                           variant="outline"
@@ -1947,7 +1947,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className={formData.customIncidentType3Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
                         >
                           Custom Type 3
-                        </ToggleButton>
+                        </Toggle>
                         <Input 
                           value={formData.customIncidentType3 || ""}
                           onChange={(e) => handleFormChange("customIncidentType3", e.target.value)}
