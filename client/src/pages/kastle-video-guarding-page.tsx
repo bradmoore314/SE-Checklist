@@ -3667,8 +3667,9 @@ const KastleVideoGuardingPage: React.FC = () => {
         <StreamImagesModal 
           isOpen={isImagesModalOpen} 
           onClose={() => setIsImagesModalOpen(false)}
-          stream={selectedStream}
-          onImageDelete={(imageId) => {
+          streamName={selectedStream.location || `Stream ${selectedStream.id}`}
+          images={selectedStream.images}
+          onDeleteImage={(imageId: number) => {
             const updatedImages = selectedStream.images.filter(img => img.id !== imageId);
             updateStream(selectedStream.id, "images", updatedImages);
           }}
