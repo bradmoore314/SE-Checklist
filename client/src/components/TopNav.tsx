@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import ProjectSwitcher from "@/components/ProjectSwitcher";
 import kastleLogo from "@/assets/kastle-logo.png";
 
 interface TopNavProps {
@@ -58,14 +59,8 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
           className="h-10 mr-4" 
         />
         
-        <div>
-          <h1 className="text-xl font-medium text-gray-900">
-            {project ? project.name : "Welcome to Site Walk Checklist"}
-          </h1>
-          <div className="text-sm text-gray-600">
-            {project ? project.client : "Select or create a site walk to get started"}
-          </div>
-        </div>
+        {/* Project Switcher */}
+        <ProjectSwitcher />
       </div>
       
       <div className="flex items-center">
@@ -83,7 +78,7 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
         >
           <span className="material-icons">help_outline</span>
         </Button>
-        <Link href="/projects/new">
+        <Link href="/projects">
           <Button 
             className="text-white px-4 py-2 rounded-md flex items-center mr-4"
             style={{ backgroundColor: 'var(--red-accent)' }}

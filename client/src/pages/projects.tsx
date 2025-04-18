@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useProject } from "@/context/ProjectContext";
 import { Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Star, Search, Plus, Loader2, FolderOpen, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -43,16 +45,33 @@ type SiteWalkFormValues = z.infer<typeof projectSchema>;
 export default function Projects() {
   const [, setLocation] = useLocation();
   const { setCurrentSiteWalk } = useSiteWalk();
+  const { 
+    setCurrentProject, 
+    allProjects, 
+    isLoadingProjects, 
+    pinnedProjects,
+    pinProject,
+    unpinProject,
+    refreshProjects
+  } = useProject();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [showNewSiteWalkModal, setShowNewSiteWalkModal] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
-
-  // Fetch projects
-  const { data: projects = [], isLoading } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
-  });
+  
+  // Listen for custom event to open create project dialog
+  useEffect(() => {
+    const handleCreateProject = () => {
+      setShowNewSiteWalkModal(true);
+    };
+    
+    document.addEventListener("create-project", handleCreateProject);
+    
+    return () => {
+      document.removeEventListener("create-project", handleCreateProject);
+    };
+  }, []);
 
   // Initialize form with default values
   const form = useForm<SiteWalkFormValues>({
@@ -81,6 +100,7 @@ export default function Projects() {
       
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      refreshProjects();
       
       // Show success toast
       toast({
@@ -90,6 +110,7 @@ export default function Projects() {
       
       // Set as current site walk and navigate to dashboard
       setCurrentSiteWalk(newSiteWalk);
+      setCurrentProject(newSiteWalk);
       setLocation("/");
     } catch (error) {
       toast({
@@ -103,17 +124,32 @@ export default function Projects() {
   // Handle selecting a site walk
   const selectSiteWalk = (siteWalk: Project) => {
     setCurrentSiteWalk(siteWalk);
+    setCurrentProject(siteWalk);
     setLocation("/");
+  };
+  
+  // Toggle pinning/unpinning a project
+  const togglePinned = (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation();
+    
+    if (pinnedProjects.some(p => p.id === project.id)) {
+      unpinProject(project.id);
+    } else {
+      pinProject(project);
+    }
   };
 
   // Handle deleting a site walk
-  const deleteSiteWalk = async (siteWalk: Project) => {
+  const deleteSiteWalk = async (e: React.MouseEvent, siteWalk: Project) => {
+    e.stopPropagation();
+    
     if (window.confirm(`Are you sure you want to delete "${siteWalk.name}"?`)) {
       try {
         await apiRequest("DELETE", `/api/projects/${siteWalk.id}`);
         
         // Invalidate and refetch
         queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+        refreshProjects();
         
         // Show success toast
         toast({
