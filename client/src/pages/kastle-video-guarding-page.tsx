@@ -628,13 +628,13 @@ const KastleVideoGuardingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Column 1 - Criminal Activity Group */}
                 <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-red-800">Criminal Activity</h3>
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-red-800 border-b border-red-200 pb-2">Criminal Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.obviousCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Obvious Criminal Act
                       </Toggle>
@@ -642,7 +642,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.activeBreakIn}
                         onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Active Break-In
                       </Toggle>
@@ -650,7 +650,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.destructionOfProperty}
                         onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Destruction of Property
                       </Toggle>
@@ -658,7 +658,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.carDrivingThroughGate}
                         onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Car Driving Through Parking Gate
                       </Toggle>
@@ -666,7 +666,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.carBurglaries}
                         onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Car Burglaries
                       </Toggle>
@@ -674,7 +674,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.trespassing}
                         onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Trespassing
                       </Toggle>
@@ -682,7 +682,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.carsBrokenIntoAfterFact}
                         onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Cars Broken Into After the Fact
                       </Toggle>
@@ -690,20 +690,20 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.brokenGlassWindows}
                         onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-red-100 data-[state=on]:text-red-900"
+                        className="w-full justify-start bg-white hover:bg-red-50 data-[state=on]:bg-red-100 data-[state=on]:text-red-900 data-[state=on]:border-red-300"
                       >
                         Broken Glass - Windows/Doors
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-orange-800">Suspicious Activity</h3>
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-orange-800 border-b border-orange-200 pb-2">Suspicious Activity</h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.suspiciousActivity}
                         onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                        className="w-full justify-start bg-white hover:bg-orange-50 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 data-[state=on]:border-orange-300"
                       >
                         Suspicious Individual(s)/Activity
                       </Toggle>
@@ -711,7 +711,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.intentToCommitCriminalAct}
                         onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                        className="w-full justify-start bg-white hover:bg-orange-50 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 data-[state=on]:border-orange-300 ml-4"
                       >
                         Intent to Commit Criminal Act
                       </Toggle>
@@ -719,7 +719,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.checkingMultipleCarDoors}
                         onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 ml-4"
+                        className="w-full justify-start bg-white hover:bg-orange-50 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 data-[state=on]:border-orange-300 ml-4"
                       >
                         Checking Multiple Car Doors
                       </Toggle>
@@ -727,7 +727,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.dumpsterDivingOrDumping}
                         onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900"
+                        className="w-full justify-start bg-white hover:bg-orange-50 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900 data-[state=on]:border-orange-300"
                       >
                         Dumpster Diving or Dumping
                       </Toggle>
