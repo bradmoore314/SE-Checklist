@@ -1347,6 +1347,352 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
         
+        {/* Stream Details Tab Content */}
+        <TabsContent value="stream-details">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Camera Stream Details</CardTitle>
+              <CardDescription>Configure camera streams for monitoring and surveillance</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Camera Streams</h3>
+                  <Button onClick={() => addStream()} className="flex items-center gap-1">
+                    <Plus size={16} /> Add Stream
+                  </Button>
+                </div>
+                
+                {streams.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Qty</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Monitored Area</TableHead>
+                          <TableHead>Accessibility</TableHead>
+                          <TableHead>Analytic Rule 1</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Rule 2</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Schedule</TableHead>
+                          <TableHead>Event Volume</TableHead>
+                          <TableHead>Patrol Type</TableHead>
+                          <TableHead>Patrols/Week</TableHead>
+                          <TableHead>Images</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {streams.map((stream) => (
+                          <TableRow key={stream.id}>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="1"
+                                value={stream.quantity} 
+                                onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
+                                className="w-16"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                value={stream.description}
+                                onChange={(e) => updateStream(stream.id, "description", e.target.value)}
+                                className="w-full"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.monitoredArea}
+                                onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
+                              >
+                                <SelectTrigger className="w-28">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Pool">Pool</SelectItem>
+                                  <SelectItem value="Lobby">Lobby</SelectItem>
+                                  <SelectItem value="Garage">Garage</SelectItem>
+                                  <SelectItem value="Perimeter">Perimeter</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.accessibility}
+                                onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
+                              >
+                                <SelectTrigger className="w-28">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Secure">Secure</SelectItem>
+                                  <SelectItem value="Semi-Secure">Semi-Secure</SelectItem>
+                                  <SelectItem value="Open">Open</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule1}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0"
+                                value={stream.dwellTime1} 
+                                onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
+                                className="w-20"
+                                suffix="s"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule2}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0"
+                                value={stream.dwellTime2} 
+                                onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
+                                className="w-20"
+                                suffix="s"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.schedule}
+                                onValueChange={(value) => updateStream(stream.id, "schedule", value)}
+                              >
+                                <SelectTrigger className="w-20">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="24/7">24/7</SelectItem>
+                                  <SelectItem value="After Hours">After Hours</SelectItem>
+                                  <SelectItem value="Weekends">Weekends</SelectItem>
+                                  <SelectItem value="Custom">Custom</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0"
+                                value={stream.eventVolume} 
+                                onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
+                                className="w-24"
+                                suffix="/day"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.patrolType}
+                                onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
+                              >
+                                <SelectTrigger className="w-24">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="None">None</SelectItem>
+                                  <SelectItem value="Standard">Standard</SelectItem>
+                                  <SelectItem value="Premium">Premium</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0"
+                                value={stream.patrolsPerWeek} 
+                                onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
+                                className="w-20"
+                                disabled={stream.patrolType === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{stream.images.length} images</span>
+                                <Button 
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    setSelectedStream(stream);
+                                    setIsImagesModalOpen(true);
+                                  }}
+                                >
+                                  <ImageIcon size={16} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button 
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => addStream(stream)}
+                                >
+                                  <Copy size={16} />
+                                </Button>
+                                <Button 
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => removeStream(stream.id)}
+                                  className="text-destructive"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-10 border rounded-lg bg-muted/20">
+                    <p className="text-muted-foreground">No camera streams added yet.</p>
+                    <p className="text-sm text-muted-foreground mt-1">Click "Add Stream" to add your first camera stream.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Pricing Tab Content */}
+        <TabsContent value="pricing">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Pricing</CardTitle>
+              <CardDescription>Configure pricing and additional services</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Additional Services</h3>
+                  <Button variant="outline" onClick={calculatePrice} className="flex items-center gap-1">
+                    <Calculator size={16} /> Calculate Price
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vocEscalations">VOC Escalations</Label>
+                    <Input 
+                      id="vocEscalations"
+                      type="number"
+                      min="0"
+                      value={formData.vocEscalations}
+                      onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="dispatchResponses">Dispatch Responses</Label>
+                    <Input 
+                      id="dispatchResponses"
+                      type="number"
+                      min="0"
+                      value={formData.dispatchResponses}
+                      onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="gdodsPatrols">GDoDS Patrols</Label>
+                    <Input 
+                      id="gdodsPatrols"
+                      type="number"
+                      min="0"
+                      value={formData.gdodsPatrols}
+                      onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="sgppPatrols">SGPP Patrols</Label>
+                    <Input 
+                      id="sgppPatrols"
+                      type="number"
+                      min="0"
+                      value={formData.sgppPatrols}
+                      onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="forensicInvestigations">Forensic Investigations</Label>
+                    <Input 
+                      id="forensicInvestigations"
+                      type="number"
+                      min="0"
+                      value={formData.forensicInvestigations}
+                      onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="appUsers">App Users</Label>
+                    <Input 
+                      id="appUsers"
+                      type="number"
+                      min="0"
+                      value={formData.appUsers}
+                      onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="audioDevices">Audio Devices</Label>
+                    <Input 
+                      id="audioDevices"
+                      type="number"
+                      min="0"
+                      value={formData.audioDevices}
+                      onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value))}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
         {/* Site Assessment Tab Content */}
         <TabsContent value="site-assessment">
           <Card className="mb-6">
