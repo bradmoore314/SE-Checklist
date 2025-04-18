@@ -1,0 +1,31 @@
+        
+        <TabsContent value="voc-protocol">
+          <div>VOC Protocol content would go here</div>
+        </TabsContent>
+        
+        <TabsContent value="deployment">
+          <div>Deployment content would go here</div>
+        </TabsContent>
+        
+        <TabsContent value="pricing">
+          <div>Pricing content would go here</div>
+        </TabsContent>
+      </Tabs>
+      
+      {/* Image Modal for viewing stream images */}
+      {selectedStream && (
+        <StreamImagesModal 
+          isOpen={isImagesModalOpen} 
+          onClose={() => setIsImagesModalOpen(false)}
+          stream={selectedStream}
+          onImageDelete={(imageId) => {
+            const updatedImages = selectedStream.images.filter(img => img.id !== imageId);
+            updateStream(selectedStream.id, "images", updatedImages);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default KastleVideoGuardingPage;
