@@ -629,7 +629,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                 {/* Column 1 - Criminal Activity Group */}
                 <div className="space-y-4">
                   <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-md p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold mb-3 text-red-800 border-b border-red-200 pb-2">Criminal Activity</h3>
+                    <h3 className="text-lg font-semibold mb-3 text-red-800 border-b border-red-200 pb-2 flex items-center gap-2">
+                      <span>🚨 🔴 🚓</span> Criminal Activity
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.obviousCriminalAct}
@@ -698,7 +700,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </div>
                   
                   <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-md p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold mb-3 text-orange-800 border-b border-orange-200 pb-2">Suspicious Activity</h3>
+                    <h3 className="text-lg font-semibold mb-3 text-orange-800 border-b border-orange-200 pb-2 flex items-center gap-2">
+                      <span>👁️ 🔍 ⚠️</span> Suspicious Activity
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.suspiciousActivity}
@@ -737,13 +741,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                 
                 {/* Column 2 - Nuisance, Emergency, Tenant Activity */}
                 <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">Nuisance Activity</h3>
+                  <div className="bg-gradient-to-br from-gray-50 to-slate-100 border border-slate-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-slate-800 border-b border-slate-200 pb-2 flex items-center gap-2">
+                      <span>🚫 💦 🛴</span> Nuisance Activity
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.urinationOrOtherBodilyFunctions}
                         onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start bg-white hover:bg-slate-50 data-[state=on]:bg-slate-100 data-[state=on]:text-slate-900 data-[state=on]:border-slate-300"
                       >
                         Urination or Other Bodily Functions
                       </Toggle>
@@ -751,7 +757,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.presenceOfScooters}
                         onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start bg-white hover:bg-slate-50 data-[state=on]:bg-slate-100 data-[state=on]:text-slate-900 data-[state=on]:border-slate-300"
                       >
                         Presence of Scooters, Bicycles, Skateboards
                       </Toggle>
@@ -759,20 +765,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.leavingTrash}
                         onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900"
+                        className="w-full justify-start bg-white hover:bg-slate-50 data-[state=on]:bg-slate-100 data-[state=on]:text-slate-900 data-[state=on]:border-slate-300"
                       >
                         Leaving Trash in Parking Lots or Perimeter
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-blue-800">Emergency/Medical</h3>
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-2 flex items-center gap-2">
+                      <span>🚑 🔥 🚨</span> Emergency/Medical
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.emergencyServices}
                         onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start bg-white hover:bg-blue-50 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 data-[state=on]:border-blue-300"
                       >
                         Emergency Services on Site
                       </Toggle>
@@ -780,7 +788,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.personInjuredOrDistress}
                         onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start bg-white hover:bg-blue-50 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 data-[state=on]:border-blue-300"
                       >
                         Person Presumed Injured or in Distress
                       </Toggle>
@@ -788,7 +796,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.obviousMedicalEmergency}
                         onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start bg-white hover:bg-blue-50 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 data-[state=on]:border-blue-300"
                       >
                         Obvious Medical Emergency
                       </Toggle>
@@ -796,20 +804,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.visibleFireOrSmoke}
                         onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900"
+                        className="w-full justify-start bg-white hover:bg-blue-50 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 data-[state=on]:border-blue-300"
                       >
                         Visible Fire or Smoke
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-green-800">Tenant Activity</h3>
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-green-800 border-b border-green-200 pb-2 flex items-center gap-2">
+                      <span>👨‍👩‍👧 📦 🏢</span> Tenant Activity
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.tenantsMovingOut}
                         onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
+                        className="w-full justify-start bg-white hover:bg-green-50 data-[state=on]:bg-green-100 data-[state=on]:text-green-900 data-[state=on]:border-green-300"
                       >
                         Tenants Moving Out of Building
                       </Toggle>
@@ -817,7 +827,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.largeItemsMovedAfterHours}
                         onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-green-100 data-[state=on]:text-green-900"
+                        className="w-full justify-start bg-white hover:bg-green-50 data-[state=on]:bg-green-100 data-[state=on]:text-green-900 data-[state=on]:border-green-300"
                       >
                         Large Items Being Moved After Hours
                       </Toggle>
@@ -827,13 +837,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                 
                 {/* Column 3 - Restricted Access, Loitering, Custom Types */}
                 <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-purple-800">Restricted Access</h3>
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-purple-800 border-b border-purple-200 pb-2 flex items-center gap-2">
+                      <span>🚫 🚪 ⛔</span> Restricted Access
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.personInRestrictedArea}
                         onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start bg-white hover:bg-purple-50 data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 data-[state=on]:border-purple-300"
                       >
                         Person in Restricted Area
                       </Toggle>
@@ -841,7 +853,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.sittingOrSleeping}
                         onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start bg-white hover:bg-purple-50 data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 data-[state=on]:border-purple-300"
                       >
                         Sitting or Sleeping in Prohibited Area
                       </Toggle>
@@ -849,20 +861,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.presentInProhibitedArea}
                         onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900"
+                        className="w-full justify-start bg-white hover:bg-purple-50 data-[state=on]:bg-purple-100 data-[state=on]:text-purple-900 data-[state=on]:border-purple-300"
                       >
                         Present in Prohibited Area
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-amber-800">Loitering</h3>
+                  <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2 flex items-center gap-2">
+                      <span>👥 🧍 🚶</span> Loitering
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.loitering}
                         onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Loitering
                       </Toggle>
@@ -870,7 +884,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.activeGathering}
                         onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Active Gathering
                       </Toggle>
@@ -878,7 +892,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.groupsLoiteringGathering}
                         onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Groups Loitering/Gathering
                       </Toggle>
@@ -886,7 +900,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.homelessVagrant}
                         onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Homeless/Vagrant
                       </Toggle>
@@ -894,7 +908,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.sleepingOnSiteEncampments}
                         onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Sleeping on Site/Encampments
                       </Toggle>
@@ -902,7 +916,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.loiteringInStairwells}
                         onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Loitering in Stairwells
                       </Toggle>
@@ -910,7 +924,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.personsSmoking}
                         onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Persons Smoking
                       </Toggle>
@@ -918,20 +932,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.vehicleLoiteringInArea}
                         onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900"
+                        className="w-full justify-start bg-white hover:bg-amber-50 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:border-amber-300"
                       >
                         Vehicle Loitering in Area
                       </Toggle>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-indigo-800">Custom Incident Types</h3>
+                  <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-md p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 text-indigo-800 border-b border-indigo-200 pb-2 flex items-center gap-2">
+                      <span>🔍 📝 ✨</span> Custom Incident Types
+                    </h3>
                     <div className="space-y-2">
                       <Toggle
                         pressed={formData.customIncidentType1}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType1", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start bg-white hover:bg-indigo-50 data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 data-[state=on]:border-indigo-300"
                       >
                         Custom Incident Type 1
                       </Toggle>
@@ -939,7 +955,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType2}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType2", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start bg-white hover:bg-indigo-50 data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 data-[state=on]:border-indigo-300"
                       >
                         Custom Incident Type 2
                       </Toggle>
@@ -947,7 +963,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType3}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType3", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start bg-white hover:bg-indigo-50 data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 data-[state=on]:border-indigo-300"
                       >
                         Custom Incident Type 3
                       </Toggle>
@@ -955,7 +971,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType4}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType4", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start bg-white hover:bg-indigo-50 data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 data-[state=on]:border-indigo-300"
                       >
                         Custom Incident Type 4
                       </Toggle>
@@ -963,7 +979,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <Toggle
                         pressed={formData.customIncidentType5}
                         onPressedChange={(pressed) => handleFormChange("customIncidentType5", pressed)}
-                        className="w-full justify-start data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900"
+                        className="w-full justify-start bg-white hover:bg-indigo-50 data-[state=on]:bg-indigo-100 data-[state=on]:text-indigo-900 data-[state=on]:border-indigo-300"
                       >
                         Custom Incident Type 5
                       </Toggle>
