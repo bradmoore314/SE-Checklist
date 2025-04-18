@@ -254,24 +254,32 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
               <label htmlFor="progress-slider" className="text-sm font-medium text-gray-700 mb-2 block">
                 Progress: {progressValue}%
               </label>
-              <input 
-                id="progress-slider"
-                type="range" 
-                min="0" 
-                max="100" 
-                step="5"
-                value={progressValue} 
-                onChange={(e) => {
-                  const newValue = parseInt(e.target.value);
-                  setProgressValue(newValue);
-                  // Update the project with the new progress value
-                  updateSiteWalkMutation.mutate({ progress_percentage: newValue });
-                }}
-                className="w-full h-2.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                style={{ 
-                  accentColor: 'var(--red-accent)',
-                }}
-              />
+              <div className="relative pt-1 w-full">
+                <div className="overflow-hidden h-2.5 mb-1 text-xs flex rounded-lg bg-gray-200">
+                  <div 
+                    style={{ 
+                      width: `${progressValue}%`,
+                      backgroundColor: 'var(--red-accent)'
+                    }} 
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center rounded-lg transition-all duration-300"
+                  ></div>
+                </div>
+                <input 
+                  id="progress-slider"
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  step="5"
+                  value={progressValue} 
+                  onChange={(e) => {
+                    const newValue = parseInt(e.target.value);
+                    setProgressValue(newValue);
+                    // Update the project with the new progress value
+                    updateSiteWalkMutation.mutate({ progress_percentage: newValue });
+                  }}
+                  className="w-full h-2.5 absolute top-1 appearance-none cursor-pointer opacity-0"
+                />
+              </div>
             </div>
             <div className="mt-4">
               <label htmlFor="progress-notes" className="text-sm font-medium text-gray-700 mb-2 block">
