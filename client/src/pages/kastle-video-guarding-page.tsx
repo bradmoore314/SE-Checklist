@@ -1072,13 +1072,1287 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Other Tabs Content (placeholders) */}
+        {/* Discovery Tab Content */}
         <TabsContent value="discovery">
-          <div>Discovery content would go here</div>
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-blue-800">
+                <span className="p-1.5 bg-blue-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                  </svg>
+                </span>
+                KVG Customer Discovery - BDM
+              </CardTitle>
+              <CardDescription className="text-base text-blue-700">
+                Gather initial customer details and requirements for Kastle Video Guarding
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              
+              {/* Opportunity Details Section */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-blue-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-blue-800 flex items-center gap-2">
+                  <span className="p-1 bg-blue-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                  </span>
+                  Opportunity Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                  <div>
+                    <Label htmlFor="bdmOwner" className="text-sm text-blue-700">BDM Name:</Label>
+                    <Input 
+                      id="bdmOwner"
+                      value={formData.bdmOwner} 
+                      onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
+                      placeholder="Enter BDM name"
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="crmOpportunity" className="text-sm text-blue-700">CRM Opportunity:</Label>
+                    <Input 
+                      id="crmOpportunity"
+                      value={formData.crmOpportunity} 
+                      onChange={(e) => handleFormChange("crmOpportunity", e.target.value)}
+                      placeholder="Enter CRM opportunity ID"
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="opportunityStage" className="text-sm text-blue-700">Opportunity Stage:</Label>
+                    <Select 
+                      value={formData.opportunityStage} 
+                      onValueChange={(value) => handleFormChange("opportunityStage", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Engage">Engage</SelectItem>
+                        <SelectItem value="Design">Design</SelectItem>
+                        <SelectItem value="Proposal">Proposal</SelectItem>
+                        <SelectItem value="Close">Close</SelectItem>
+                        <SelectItem value="Install">Install</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                  <div>
+                    <Label htmlFor="quoteDate" className="text-sm text-blue-700">Quote Date:</Label>
+                    <Input 
+                      id="quoteDate"
+                      type="date"
+                      value={formData.quoteDate} 
+                      onChange={(e) => handleFormChange("quoteDate", e.target.value)}
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="timeZone" className="text-sm text-blue-700">Time Zone:</Label>
+                    <Select 
+                      value={formData.timeZone} 
+                      onValueChange={(value) => handleFormChange("timeZone", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EST">Eastern (EST/EDT)</SelectItem>
+                        <SelectItem value="CST">Central (CST/CDT)</SelectItem>
+                        <SelectItem value="MST">Mountain (MST/MDT)</SelectItem>
+                        <SelectItem value="PST">Pacific (PST/PDT)</SelectItem>
+                        <SelectItem value="AKST">Alaska (AKST/AKDT)</SelectItem>
+                        <SelectItem value="HST">Hawaii (HST)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="region" className="text-sm text-blue-700">Region:</Label>
+                    <Select 
+                      value={formData.region} 
+                      onValueChange={(value) => handleFormChange("region", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Northeast">Northeast</SelectItem>
+                        <SelectItem value="Southeast">Southeast</SelectItem>
+                        <SelectItem value="Midwest">Midwest</SelectItem>
+                        <SelectItem value="Southwest">Southwest</SelectItem>
+                        <SelectItem value="West">West</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Customer Details Section */}
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-lg shadow-sm border border-indigo-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-indigo-800 flex items-center gap-2">
+                  <span className="p-1 bg-indigo-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                  </span>
+                  Customer Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="customerName" className="text-sm text-indigo-700">Customer Name:</Label>
+                    <Input 
+                      id="customerName"
+                      value={formData.customerName} 
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      placeholder="Enter customer name"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <Label htmlFor="siteAddress" className="text-sm text-indigo-700">Site Address:</Label>
+                    <Input 
+                      id="siteAddress"
+                      value={formData.siteAddress} 
+                      onChange={(e) => handleFormChange("siteAddress", e.target.value)}
+                      placeholder="Enter site address"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label htmlFor="city" className="text-sm text-indigo-700">City:</Label>
+                        <Input 
+                          id="city"
+                          value={formData.city} 
+                          onChange={(e) => handleFormChange("city", e.target.value)}
+                          placeholder="City"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="state" className="text-sm text-indigo-700">State:</Label>
+                        <Select 
+                          value={formData.state} 
+                          onValueChange={(value) => handleFormChange("state", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="AL">Alabama</SelectItem>
+                            <SelectItem value="AK">Alaska</SelectItem>
+                            <SelectItem value="AZ">Arizona</SelectItem>
+                            <SelectItem value="AR">Arkansas</SelectItem>
+                            <SelectItem value="CA">California</SelectItem>
+                            <SelectItem value="CO">Colorado</SelectItem>
+                            <SelectItem value="CT">Connecticut</SelectItem>
+                            <SelectItem value="DE">Delaware</SelectItem>
+                            <SelectItem value="FL">Florida</SelectItem>
+                            <SelectItem value="GA">Georgia</SelectItem>
+                            <SelectItem value="HI">Hawaii</SelectItem>
+                            <SelectItem value="ID">Idaho</SelectItem>
+                            <SelectItem value="IL">Illinois</SelectItem>
+                            <SelectItem value="IN">Indiana</SelectItem>
+                            <SelectItem value="IA">Iowa</SelectItem>
+                            <SelectItem value="KS">Kansas</SelectItem>
+                            <SelectItem value="KY">Kentucky</SelectItem>
+                            <SelectItem value="LA">Louisiana</SelectItem>
+                            <SelectItem value="ME">Maine</SelectItem>
+                            <SelectItem value="MD">Maryland</SelectItem>
+                            <SelectItem value="MA">Massachusetts</SelectItem>
+                            <SelectItem value="MI">Michigan</SelectItem>
+                            <SelectItem value="MN">Minnesota</SelectItem>
+                            <SelectItem value="MS">Mississippi</SelectItem>
+                            <SelectItem value="MO">Missouri</SelectItem>
+                            <SelectItem value="MT">Montana</SelectItem>
+                            <SelectItem value="NE">Nebraska</SelectItem>
+                            <SelectItem value="NV">Nevada</SelectItem>
+                            <SelectItem value="NH">New Hampshire</SelectItem>
+                            <SelectItem value="NJ">New Jersey</SelectItem>
+                            <SelectItem value="NM">New Mexico</SelectItem>
+                            <SelectItem value="NY">New York</SelectItem>
+                            <SelectItem value="NC">North Carolina</SelectItem>
+                            <SelectItem value="ND">North Dakota</SelectItem>
+                            <SelectItem value="OH">Ohio</SelectItem>
+                            <SelectItem value="OK">Oklahoma</SelectItem>
+                            <SelectItem value="OR">Oregon</SelectItem>
+                            <SelectItem value="PA">Pennsylvania</SelectItem>
+                            <SelectItem value="RI">Rhode Island</SelectItem>
+                            <SelectItem value="SC">South Carolina</SelectItem>
+                            <SelectItem value="SD">South Dakota</SelectItem>
+                            <SelectItem value="TN">Tennessee</SelectItem>
+                            <SelectItem value="TX">Texas</SelectItem>
+                            <SelectItem value="UT">Utah</SelectItem>
+                            <SelectItem value="VT">Vermont</SelectItem>
+                            <SelectItem value="VA">Virginia</SelectItem>
+                            <SelectItem value="WA">Washington</SelectItem>
+                            <SelectItem value="WV">West Virginia</SelectItem>
+                            <SelectItem value="WI">Wisconsin</SelectItem>
+                            <SelectItem value="WY">Wyoming</SelectItem>
+                            <SelectItem value="DC">District of Columbia</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="zipCode" className="text-sm text-indigo-700">Zip Code:</Label>
+                        <Input 
+                          id="zipCode"
+                          value={formData.zipCode} 
+                          onChange={(e) => handleFormChange("zipCode", e.target.value)}
+                          placeholder="Zip"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="customerVertical" className="text-sm text-indigo-700">Customer Vertical:</Label>
+                    <Select 
+                      value={formData.customerVertical} 
+                      onValueChange={(value) => handleFormChange("customerVertical", value)}
+                    >
+                      <SelectTrigger className="bg-white mb-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Commercial Real Estate">Commercial Real Estate</SelectItem>
+                        <SelectItem value="Residential">Residential</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Government">Government</SelectItem>
+                        <SelectItem value="Retail">Retail</SelectItem>
+                        <SelectItem value="Financial">Financial</SelectItem>
+                        <SelectItem value="Hospitality">Hospitality</SelectItem>
+                        <SelectItem value="Industrial">Industrial</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Label htmlFor="propertyCategory" className="text-sm text-indigo-700">Property Category:</Label>
+                    <Select 
+                      value={formData.propertyCategory} 
+                      onValueChange={(value) => handleFormChange("propertyCategory", value)}
+                    >
+                      <SelectTrigger className="bg-white mb-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Office">Office</SelectItem>
+                        <SelectItem value="Multifamily">Multifamily</SelectItem>
+                        <SelectItem value="Retail">Retail</SelectItem>
+                        <SelectItem value="Industrial">Industrial</SelectItem>
+                        <SelectItem value="Mixed Use">Mixed Use</SelectItem>
+                        <SelectItem value="Hotel">Hotel</SelectItem>
+                        <SelectItem value="Medical">Medical</SelectItem>
+                        <SelectItem value="Self Storage">Self Storage</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Label htmlFor="siteEnvironment" className="text-sm text-indigo-700">Site Environment:</Label>
+                    <Select 
+                      value={formData.siteEnvironment} 
+                      onValueChange={(value) => handleFormChange("siteEnvironment", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Indoor">Indoor</SelectItem>
+                        <SelectItem value="Outdoor">Outdoor</SelectItem>
+                        <SelectItem value="Mixed">Both Indoor & Outdoor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Technology & Installation Section */}
+              <div className="bg-gradient-to-br from-teal-50 to-blue-50 p-5 rounded-lg shadow-sm border border-teal-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-teal-800 flex items-center gap-2">
+                  <span className="p-1 bg-teal-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                    </svg>
+                  </span>
+                  Technology & Installation
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <Label htmlFor="technology" className="text-sm text-teal-700">Technology:</Label>
+                    <Select 
+                      value={formData.technology} 
+                      onValueChange={(value) => handleFormChange("technology", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CCTV">CCTV</SelectItem>
+                        <SelectItem value="Analytics">Analytics</SelectItem>
+                        <SelectItem value="Thermal">Thermal</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="technologyDeployed" className="text-sm text-teal-700">Technology Deployed:</Label>
+                    <Select 
+                      value={formData.technologyDeployed} 
+                      onValueChange={(value) => handleFormChange("technologyDeployed", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="New System">New System</SelectItem>
+                        <SelectItem value="Existing System">Existing System</SelectItem>
+                        <SelectItem value="Hybrid">Hybrid (New+Existing)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="cameraType" className="text-sm text-teal-700">Camera Type:</Label>
+                    <Select 
+                      value={formData.cameraType} 
+                      onValueChange={(value) => handleFormChange("cameraType", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="IP">IP</SelectItem>
+                        <SelectItem value="Analog">Analog</SelectItem>
+                        <SelectItem value="Hybrid">Hybrid</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="installType" className="text-sm text-teal-700">Install Type:</Label>
+                    <Select 
+                      value={formData.installType} 
+                      onValueChange={(value) => handleFormChange("installType", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="New">New</SelectItem>
+                        <SelectItem value="Takeover">Takeover</SelectItem>
+                        <SelectItem value="Add-on">Add-on</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="opportunityType" className="text-sm text-teal-700">Opportunity Type:</Label>
+                    <Select 
+                      value={formData.opportunityType} 
+                      onValueChange={(value) => handleFormChange("opportunityType", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="New">New</SelectItem>
+                        <SelectItem value="Upgrade">Upgrade</SelectItem>
+                        <SelectItem value="Replacement">Replacement</SelectItem>
+                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Incident Types Section */}
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-5 rounded-lg shadow-sm border border-amber-100 mb-6">
+                <h3 className="text-lg font-semibold mb-5 text-amber-800 flex items-center gap-2">
+                  <span className="p-1 bg-amber-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                  </span>
+                  Incident Types to Monitor
+                </h3>
+                <div className="grid gap-6">
+                  {/* Criminal Activity */}
+                  <div>
+                    <h4 className="font-semibold text-amber-900 mb-2">Criminal Activity</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <ToggleButton 
+                        pressed={formData.obviousCriminalAct}
+                        onPressedChange={(pressed) => handleFormChange("obviousCriminalAct", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.obviousCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Obvious Criminal Act
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.activeBreakIn}
+                        onPressedChange={(pressed) => handleFormChange("activeBreakIn", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.activeBreakIn ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Active Break-in
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.destructionOfProperty}
+                        onPressedChange={(pressed) => handleFormChange("destructionOfProperty", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.destructionOfProperty ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Destruction of Property
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.carDrivingThroughGate}
+                        onPressedChange={(pressed) => handleFormChange("carDrivingThroughGate", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.carDrivingThroughGate ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Car Driving Through Gate
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.carBurglaries}
+                        onPressedChange={(pressed) => handleFormChange("carBurglaries", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.carBurglaries ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Car Burglaries
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.trespassing}
+                        onPressedChange={(pressed) => handleFormChange("trespassing", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.trespassing ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Trespassing
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.carsBrokenIntoAfterFact}
+                        onPressedChange={(pressed) => handleFormChange("carsBrokenIntoAfterFact", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.carsBrokenIntoAfterFact ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Cars Broken Into (After Fact)
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.brokenGlassWindows}
+                        onPressedChange={(pressed) => handleFormChange("brokenGlassWindows", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.brokenGlassWindows ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Broken Glass/Windows
+                      </ToggleButton>
+                    </div>
+                  </div>
+                  
+                  {/* Suspicious Activity */}
+                  <div>
+                    <h4 className="font-semibold text-amber-900 mb-2">Suspicious Activity</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <ToggleButton 
+                        pressed={formData.suspiciousActivity}
+                        onPressedChange={(pressed) => handleFormChange("suspiciousActivity", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.suspiciousActivity ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Suspicious Activity
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.intentToCommitCriminalAct}
+                        onPressedChange={(pressed) => handleFormChange("intentToCommitCriminalAct", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.intentToCommitCriminalAct ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Intent to Commit Criminal Act
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.checkingMultipleCarDoors}
+                        onPressedChange={(pressed) => handleFormChange("checkingMultipleCarDoors", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.checkingMultipleCarDoors ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Checking Multiple Car Doors
+                      </ToggleButton>
+                      
+                      <ToggleButton 
+                        pressed={formData.dumpsterDivingOrDumping}
+                        onPressedChange={(pressed) => handleFormChange("dumpsterDivingOrDumping", pressed)}
+                        variant="outline"
+                        size="sm"
+                        className={formData.dumpsterDivingOrDumping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                      >
+                        Dumpster Diving/Dumping
+                      </ToggleButton>
+                    </div>
+                  </div>
+                  
+                  {/* More Incident Types */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* Nuisance Activity */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Nuisance Activity</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.urinationOrOtherBodilyFunctions}
+                          onPressedChange={(pressed) => handleFormChange("urinationOrOtherBodilyFunctions", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.urinationOrOtherBodilyFunctions ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Urination/Other Bodily Functions
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.presenceOfScooters}
+                          onPressedChange={(pressed) => handleFormChange("presenceOfScooters", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.presenceOfScooters ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Presence of Scooters
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.leavingTrash}
+                          onPressedChange={(pressed) => handleFormChange("leavingTrash", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.leavingTrash ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Leaving Trash
+                        </ToggleButton>
+                      </div>
+                    </div>
+                    
+                    {/* Emergency/Medical */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Emergency/Medical</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.emergencyServices}
+                          onPressedChange={(pressed) => handleFormChange("emergencyServices", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.emergencyServices ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Emergency Services
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.personInjuredOrDistress}
+                          onPressedChange={(pressed) => handleFormChange("personInjuredOrDistress", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.personInjuredOrDistress ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Person Injured/In Distress
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.obviousMedicalEmergency}
+                          onPressedChange={(pressed) => handleFormChange("obviousMedicalEmergency", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.obviousMedicalEmergency ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Obvious Medical Emergency
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.visibleFireOrSmoke}
+                          onPressedChange={(pressed) => handleFormChange("visibleFireOrSmoke", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.visibleFireOrSmoke ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Visible Fire/Smoke
+                        </ToggleButton>
+                      </div>
+                    </div>
+                    
+                    {/* Loitering Group */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Loitering</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.loitering}
+                          onPressedChange={(pressed) => handleFormChange("loitering", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.loitering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Loitering
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.activeGathering}
+                          onPressedChange={(pressed) => handleFormChange("activeGathering", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.activeGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Active Gathering
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.groupsLoiteringGathering}
+                          onPressedChange={(pressed) => handleFormChange("groupsLoiteringGathering", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.groupsLoiteringGathering ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Groups Loitering/Gathering
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.homelessVagrant}
+                          onPressedChange={(pressed) => handleFormChange("homelessVagrant", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.homelessVagrant ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Homeless/Vagrant
+                        </ToggleButton>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Even More Incident Types */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* Tenant Activity */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Tenant Activity</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.tenantsMovingOut}
+                          onPressedChange={(pressed) => handleFormChange("tenantsMovingOut", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.tenantsMovingOut ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Tenants Moving Out
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.largeItemsMovedAfterHours}
+                          onPressedChange={(pressed) => handleFormChange("largeItemsMovedAfterHours", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.largeItemsMovedAfterHours ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Large Items Moved After Hours
+                        </ToggleButton>
+                      </div>
+                    </div>
+                    
+                    {/* Restricted Access */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Restricted Access</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.personInRestrictedArea}
+                          onPressedChange={(pressed) => handleFormChange("personInRestrictedArea", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.personInRestrictedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Person in Restricted Area
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.sittingOrSleeping}
+                          onPressedChange={(pressed) => handleFormChange("sittingOrSleeping", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.sittingOrSleeping ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Sitting or Sleeping
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.presentInProhibitedArea}
+                          onPressedChange={(pressed) => handleFormChange("presentInProhibitedArea", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.presentInProhibitedArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Present in Prohibited Area
+                        </ToggleButton>
+                      </div>
+                    </div>
+                    
+                    {/* More Loitering */}
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">More Loitering Types</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        <ToggleButton 
+                          pressed={formData.sleepingOnSiteEncampments}
+                          onPressedChange={(pressed) => handleFormChange("sleepingOnSiteEncampments", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.sleepingOnSiteEncampments ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Sleeping on Site/Encampments
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.loiteringInStairwells}
+                          onPressedChange={(pressed) => handleFormChange("loiteringInStairwells", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.loiteringInStairwells ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Loitering in Stairwells
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.personsSmoking}
+                          onPressedChange={(pressed) => handleFormChange("personsSmoking", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.personsSmoking ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Persons Smoking
+                        </ToggleButton>
+                        
+                        <ToggleButton 
+                          pressed={formData.vehicleLoiteringInArea}
+                          onPressedChange={(pressed) => handleFormChange("vehicleLoiteringInArea", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.vehicleLoiteringInArea ? "bg-amber-100 border-amber-400 text-amber-900" : ""}
+                        >
+                          Vehicle Loitering in Area
+                        </ToggleButton>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Custom Incident Types */}
+                  <div>
+                    <h4 className="font-semibold text-amber-900 mb-3">Custom Incident Types</h4>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="flex items-center gap-3">
+                        <ToggleButton 
+                          pressed={formData.customIncidentType1Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType1Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType1Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          Custom Type 1
+                        </ToggleButton>
+                        <Input 
+                          value={formData.customIncidentType1 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType1", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <ToggleButton 
+                          pressed={formData.customIncidentType2Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType2Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType2Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          Custom Type 2
+                        </ToggleButton>
+                        <Input 
+                          value={formData.customIncidentType2 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType2", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <ToggleButton 
+                          pressed={formData.customIncidentType3Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType3Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType3Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          Custom Type 3
+                        </ToggleButton>
+                        <Input 
+                          value={formData.customIncidentType3 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType3", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Use Case Problem Information */}
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 p-5 rounded-lg shadow-sm border border-red-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-red-800 flex items-center gap-2">
+                  <span className="p-1 bg-red-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                    </svg>
+                  </span>
+                  Use Case Problem Information
+                </h3>
+                <div className="relative">
+                  <Textarea 
+                    value={formData.useCaseResponse || ""}
+                    onChange={(e) => handleFormChange("useCaseResponse", e.target.value)}
+                    placeholder="Fill in information around the specific issues and problems the customer is having..."
+                    className="min-h-[120px] w-full resize-y bg-white"
+                  />
+                  <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                    {formData.useCaseResponse?.length || 0} characters
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex justify-end">
+                <Button 
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 gap-2"
+                  onClick={() => handleSave()}
+                >
+                  <Save size={16} />
+                  Save Discovery Information
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
+        {/* Site Assessment Tab Content */}
         <TabsContent value="site-assessment">
-          <div>Site Assessment content would go here</div>
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-green-800">
+                <span className="p-1.5 bg-green-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                  </svg>
+                </span>
+                KVG Site Assessment
+              </CardTitle>
+              <CardDescription className="text-base text-green-700">
+                Evaluate the site conditions for successful KVG deployment
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              
+              {/* Technical Requirements */}
+              <div className="bg-gradient-to-br from-green-50 to-teal-50 p-5 rounded-lg shadow-sm border border-green-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center gap-2">
+                  <span className="p-1 bg-green-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                    </svg>
+                  </span>
+                  Technical Requirements
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">Lighting Requirements:</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      <Select 
+                        value={formData.lightingRequirements} 
+                        onValueChange={(value) => handleFormChange("lightingRequirements", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select lighting requirements" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - Well lit area</SelectItem>
+                          <SelectItem value="Good">Good - Sufficient for most cameras</SelectItem>
+                          <SelectItem value="Fair">Fair - May need enhancement</SelectItem>
+                          <SelectItem value="Poor">Poor - Requires lighting upgrade</SelectItem>
+                          <SelectItem value="None">None - Complete darkness</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <div className="col-span-2">
+                        <Input 
+                          value={formData.lightingNotes || ""}
+                          onChange={(e) => handleFormChange("lightingNotes", e.target.value)}
+                          placeholder="Additional lighting notes or requirements"
+                          className="w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">Camera Field of View:</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      <Select 
+                        value={formData.cameraFieldOfView} 
+                        onValueChange={(value) => handleFormChange("cameraFieldOfView", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select field of view assessment" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - Optimal coverage</SelectItem>
+                          <SelectItem value="Good">Good - Minor obstructions</SelectItem>
+                          <SelectItem value="Fair">Fair - Some obstructions</SelectItem>
+                          <SelectItem value="Poor">Poor - Significant obstructions</SelectItem>
+                          <SelectItem value="Blocked">Blocked - Major rework needed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <div className="col-span-2">
+                        <Input 
+                          value={formData.fovNotes || ""}
+                          onChange={(e) => handleFormChange("fovNotes", e.target.value)}
+                          placeholder="Additional field of view notes or requirements"
+                          className="w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">Network Connectivity:</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      <Select 
+                        value={formData.networkConnectivity} 
+                        onValueChange={(value) => handleFormChange("networkConnectivity", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select network connectivity assessment" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Excellent">Excellent - High bandwidth</SelectItem>
+                          <SelectItem value="Good">Good - Stable connection</SelectItem>
+                          <SelectItem value="Fair">Fair - Occasional issues</SelectItem>
+                          <SelectItem value="Poor">Poor - Frequent disconnects</SelectItem>
+                          <SelectItem value="None">None - No connectivity</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <div className="col-span-2">
+                        <Input 
+                          value={formData.networkNotes || ""}
+                          onChange={(e) => handleFormChange("networkNotes", e.target.value)}
+                          placeholder="Additional network connectivity notes"
+                          className="w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Stream Counts & Monitoring Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Stream Counts Section */}
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-5 rounded-lg shadow-sm border border-teal-100">
+                  <h3 className="text-lg font-semibold mb-4 text-teal-800 flex items-center gap-2">
+                    <span className="p-1 bg-teal-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                      </svg>
+                    </span>
+                    Stream Counts
+                  </h3>
+                  <div className="grid gap-3">
+                    <div>
+                      <Label className="text-sm text-teal-700">Event Video Trigger Streams:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.eventVideoTriggerStreams || ''}
+                        onChange={(e) => handleFormChange("eventVideoTriggerStreams", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-teal-700">Virtual Patrol Streams:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.virtualPatrolStreams || ''}
+                        onChange={(e) => handleFormChange("virtualPatrolStreams", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-teal-700">Event Action Clip Streams:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.eventActionClipStreams || ''}
+                        onChange={(e) => handleFormChange("eventActionClipStreams", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-teal-700">Event Action Multi-View Streams:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.eventActionMultiViewStreams || ''}
+                        onChange={(e) => handleFormChange("eventActionMultiViewStreams", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-teal-700">Health Streams:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.healthStreams || ''}
+                        onChange={(e) => handleFormChange("healthStreams", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-teal-700">Audio Talk Down Speakers:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.audioTalkDownSpeakers || ''}
+                        onChange={(e) => handleFormChange("audioTalkDownSpeakers", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Monitoring Details Section */}
+                <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-5 rounded-lg shadow-sm border border-indigo-100">
+                  <h3 className="text-lg font-semibold mb-4 text-indigo-800 flex items-center gap-2">
+                    <span className="p-1 bg-indigo-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                    </span>
+                    Monitoring Details
+                  </h3>
+                  <div className="grid gap-3">
+                    <div>
+                      <Label className="text-sm text-indigo-700">Total Events Per Month:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.totalEventsPerMonth || ''}
+                        onChange={(e) => handleFormChange("totalEventsPerMonth", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-indigo-700">Total Virtual Patrols Per Month:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.totalVirtualPatrolsPerMonth || ''}
+                        onChange={(e) => handleFormChange("totalVirtualPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-indigo-700">Patrol Frequency:</Label>
+                      <Select 
+                        value={formData.patrolFrequency} 
+                        onValueChange={(value) => handleFormChange("patrolFrequency", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Daily">Daily</SelectItem>
+                          <SelectItem value="Twice Daily">Twice Daily</SelectItem>
+                          <SelectItem value="Weekly">Weekly</SelectItem>
+                          <SelectItem value="Bi-Weekly">Bi-Weekly</SelectItem>
+                          <SelectItem value="Monthly">Monthly</SelectItem>
+                          <SelectItem value="Custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-indigo-700">Total Health Patrols Per Month:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.totalHealthPatrolsPerMonth || ''}
+                        onChange={(e) => handleFormChange("totalHealthPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-indigo-700">Total Event Action Multi-Views Per Month:</Label>
+                      <Input 
+                        type="number"
+                        value={formData.totalEventActionMultiViewsPerMonth || ''}
+                        onChange={(e) => handleFormChange("totalEventActionMultiViewsPerMonth", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-indigo-700">Total Escalations (Maximum):</Label>
+                      <Input 
+                        type="number"
+                        value={formData.totalEscalationsMaximum || ''}
+                        onChange={(e) => handleFormChange("totalEscalationsMaximum", parseInt(e.target.value) || 0)}
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Patrol Details Section */}
+              <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 p-5 rounded-lg shadow-sm border border-purple-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
+                  <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                  </span>
+                  Patrol & Guard Dispatch Details
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-purple-700 mb-1.5">On-Demand Guard Dispatch Detail:</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm font-medium">GDODs Dispatches Per Month:</div>
+                        <Input 
+                          type="number"
+                          value={formData.gdodsDispatchesPerMonth || ''}
+                          onChange={(e) => handleFormChange("gdodsDispatchesPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white w-24"
+                        />
+                      </div>
+                      <Textarea 
+                        value={formData.onDemandGuardDispatchDetail || ""}
+                        onChange={(e) => handleFormChange("onDemandGuardDispatchDetail", e.target.value)}
+                        placeholder="Enter details about on-demand guard dispatch requirements and procedures"
+                        className="min-h-[100px] resize-y bg-white"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-purple-700 mb-1.5">SGPP Scheduled Guard Patrol Detail:</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm font-medium">SGPP Scheduled Patrols Per Month:</div>
+                        <Input 
+                          type="number"
+                          value={formData.sgppScheduledPatrolsPerMonth || ''}
+                          onChange={(e) => handleFormChange("sgppScheduledPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white w-24"
+                        />
+                      </div>
+                      <Textarea 
+                        value={formData.sgppScheduledGuardPatrolDetail || ""}
+                        onChange={(e) => handleFormChange("sgppScheduledGuardPatrolDetail", e.target.value)}
+                        placeholder="Enter details about scheduled guard patrol requirements and procedures"
+                        className="min-h-[100px] resize-y bg-white"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-purple-700 mb-1.5">SGPP Scheduled Guard Patrols Schedule Detail:</Label>
+                    <Textarea 
+                      value={formData.sgppScheduledGuardPatrolsScheduleDetail || ""}
+                      onChange={(e) => handleFormChange("sgppScheduledGuardPatrolsScheduleDetail", e.target.value)}
+                      placeholder="Enter the specific schedule details for guard patrols (days/times)"
+                      className="min-h-[100px] resize-y bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Notes & Plan Section */}
+              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 p-5 rounded-lg shadow-sm border border-amber-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-amber-800 flex items-center gap-2">
+                  <span className="p-1 bg-amber-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                  </span>
+                  Site Assessment Notes & Plan
+                </h3>
+                <Textarea 
+                  value={formData.siteAssessmentNotes || ""}
+                  onChange={(e) => handleFormChange("siteAssessmentNotes", e.target.value)}
+                  placeholder="Enter detailed notes about the site assessment, including any challenges, recommendations, or special requirements"
+                  className="min-h-[150px] w-full resize-y bg-white mb-4"
+                />
+                
+                <Label className="text-sm font-medium text-amber-700 block mb-2">Quote with SOW attached?</Label>
+                <div className="flex gap-2 mb-4">
+                  <ToggleGroup type="single" variant="outline" value={formData.quoteWithSowAttached} onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}>
+                    <ToggleGroupItem value="Yes" className={formData.quoteWithSowAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                    <ToggleGroupItem value="No" className={formData.quoteWithSowAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                    <ToggleGroupItem value="N/A" className={formData.quoteWithSowAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+                
+                <Label className="text-sm font-medium text-amber-700 block mb-2">Quote design attached?</Label>
+                <div className="flex gap-2">
+                  <ToggleGroup type="single" variant="outline" value={formData.quoteDesignAttached} onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}>
+                    <ToggleGroupItem value="Yes" className={formData.quoteDesignAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                    <ToggleGroupItem value="No" className={formData.quoteDesignAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                    <ToggleGroupItem value="N/A" className={formData.quoteDesignAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex justify-end">
+                <Button 
+                  className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 gap-2"
+                  onClick={() => handleSave()}
+                >
+                  <Save size={16} />
+                  Save Site Assessment
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
 <TabsContent value="use-case">
