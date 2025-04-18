@@ -39,6 +39,17 @@ export const projects = pgTable("projects", {
   scope_notes: text("scope_notes"), // New field for scope notes
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
+  // CRM Integration Fields
+  crm_opportunity_id: text("crm_opportunity_id"),
+  crm_opportunity_name: text("crm_opportunity_name"),
+  crm_account_id: text("crm_account_id"),
+  crm_account_name: text("crm_account_name"),
+  crm_last_synced: timestamp("crm_last_synced"),
+  // SharePoint Integration Fields
+  sharepoint_folder_url: text("sharepoint_folder_url"),
+  sharepoint_site_id: text("sharepoint_site_id"),
+  sharepoint_drive_id: text("sharepoint_drive_id"),
+  sharepoint_folder_id: text("sharepoint_folder_id"),
   // Configuration options
   replace_readers: boolean("replace_readers").default(false),
   need_credentials: boolean("need_credentials").default(false),
@@ -277,3 +288,46 @@ export type InsertFloorplan = z.infer<typeof insertFloorplanSchema>;
 
 export type FloorplanMarker = typeof floorplanMarkers.$inferSelect;
 export type InsertFloorplanMarker = z.infer<typeof insertFloorplanMarkerSchema>;
+
+// CRM Settings table
+export const crmSettings = pgTable("crm_settings", {
+  id: serial("id").primaryKey(),
+  crm_type: text("crm_type").notNull(), // e.g., "salesforce", "dynamics", "hubspot"
+  base_url: text("base_url").notNull(),
+  api_version: text("api_version"),
+  auth_type: text("auth_type").notNull(), // "oauth2", "api_key", etc.
+  settings: jsonb("settings").notNull(), // Store additional settings as JSON
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCrmSettingsSchema = createInsertSchema(crmSettings).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export type CrmSettings = typeof crmSettings.$inferSelect;
+export type InsertCrmSettings = z.infer<typeof insertCrmSettingsSchema>;
+
+// Equipment Images table (photos of equipment for site walks)
+export const equipmentImages = pgTable("equipment_images", {
+  id: serial("id").primaryKey(),
+  equipment_type: equipmentTypeEnum("equipment_type").notNull(),
+  equipment_id: integer("equipment_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  image_data: text("image_data").notNull(), // base64 encoded image
+  thumbnail_data: text("thumbnail_data"), // base64 encoded thumbnail
+  filename: text("filename"),
+  sharepoint_file_id: text("sharepoint_file_id"), // ID of file in SharePoint if synced
+  sharepoint_url: text("sharepoint_url"), // Direct URL to file in SharePoint
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertEquipmentImageSchema = createInsertSchema(equipmentImages).omit({
+  id: true,
+  created_at: true,
+});
+
+export type EquipmentImage = typeof equipmentImages.$inferSelect;
+export type InsertEquipmentImage = z.infer<typeof insertEquipmentImageSchema>;

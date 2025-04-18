@@ -25,6 +25,8 @@ import { setupAuth } from "./auth";
 import { generateSiteWalkAnalysis } from "./utils/gemini";
 import { areAzureCredentialsAvailable } from "./services/microsoft-auth";
 import { translateText } from "./services/gemini-translation";
+import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
+import { isSharePointConfigured } from "./services/microsoft-graph";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
