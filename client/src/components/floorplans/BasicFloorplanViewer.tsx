@@ -438,19 +438,31 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     };
   }, [draggedMarker]);
   
-  // Resize marker
+  // Resize marker with granular control (20 steps)
   const resizeMarker = (markerId: number, increase: boolean) => {
     // Get current size or set default
     const currentSize = markerSize[markerId] || { width: 6, height: 6 };
     
-    // Calculate new size (min: 4, max: 12)
-    const newWidth = Math.max(4, Math.min(12, increase ? currentSize.width + 1 : currentSize.width - 1));
-    const newHeight = Math.max(4, Math.min(12, increase ? currentSize.height + 1 : currentSize.height - 1));
+    // Use more granular sizing with 20 steps between min and max
+    // Min: 3, Max: 24
+    // Step size: (24-3)/20 = 1.05
+    const stepSize = 1.05;
     
-    // Update size in state
+    // Calculate new size
+    const newWidth = Math.max(3, Math.min(24, increase 
+      ? currentSize.width + stepSize 
+      : currentSize.width - stepSize));
+    const newHeight = Math.max(3, Math.min(24, increase 
+      ? currentSize.height + stepSize 
+      : currentSize.height - stepSize));
+    
+    // Update size in state (round to 2 decimal places for cleaner state)
     setMarkerSize({
       ...markerSize,
-      [markerId]: { width: newWidth, height: newHeight }
+      [markerId]: { 
+        width: Math.round(newWidth * 100) / 100, 
+        height: Math.round(newHeight * 100) / 100 
+      }
     });
   };
   
@@ -857,14 +869,14 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                     style={{ zIndex: 10 }}
                   />
                   
-                  {/* Layer for markers that sits on top of the PDF */}
+                  {/* Layer for markers that sits on top of the PDF - fixed to PDF content */}
                   <div 
                     className="absolute top-0 left-0 pointer-events-none"
                     style={{ 
                       width: '100%', 
-                      height: '800px', // Match the height of the PDF object
+                      height: '100%',
                       position: 'absolute',
-                      overflow: 'hidden',
+                      overflow: 'visible', // Change to visible so markers are always shown
                       pointerEvents: 'none',
                       zIndex: 20
                     }}
@@ -890,16 +902,82 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
             )}
           </div>
           
-          <div className="mt-4 text-center">
+          <div className="mt-4 flex justify-center gap-4">
             {pdfBlobUrl && (
-              <a 
-                href={pdfBlobUrl} 
-                download={`${selectedFloorplan.name}.pdf`}
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-              >
-                <Download className="h-4 w-4" />
-                Download PDF
-              </a>
+              <>
+                <a 
+                  href={pdfBlobUrl} 
+                  download={`${selectedFloorplan.name}.pdf`}
+                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Original PDF
+                </a>
+                
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    // Create a combined PDF with markers
+                    const container = document.getElementById('markers-container')?.parentElement;
+                    if (!container) return;
+                    
+                    // Tell the user we're generating the PDF
+                    toast({
+                      title: "Generating PDF",
+                      description: "Creating annotated PDF with markers...",
+                    });
+                    
+                    try {
+                      // Use html2canvas to capture the entire floorplan with markers
+                      import('html2canvas').then(html2canvasModule => {
+                        const html2canvas = html2canvasModule.default;
+                        
+                        html2canvas(container, {
+                          scale: 2, // Better resolution
+                          useCORS: true,
+                          allowTaint: true,
+                          backgroundColor: "#ffffff",
+                          logging: false,
+                        }).then(canvas => {
+                          // Convert the canvas to a PNG
+                          const imgData = canvas.toDataURL('image/png');
+                          
+                          // Create a link element to download the image
+                          const link = document.createElement('a');
+                          link.href = imgData;
+                          link.download = `${selectedFloorplan.name}_with_markers.png`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          
+                          toast({
+                            title: "Export Complete",
+                            description: "Annotated floor plan exported successfully.",
+                          });
+                        });
+                      }).catch(err => {
+                        console.error("Error loading html2canvas:", err);
+                        toast({
+                          title: "Export Failed",
+                          description: "Could not load export library. Please try again.",
+                          variant: "destructive",
+                        });
+                      });
+                    } catch (error) {
+                      console.error("Export error:", error);
+                      toast({
+                        title: "Export Failed",
+                        description: "An error occurred during the export.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  className="text-xs flex items-center gap-1"
+                >
+                  <Download className="h-3 w-3" />
+                  Export with Markers
+                </Button>
+              </>
             )}
           </div>
         </div>
