@@ -251,25 +251,22 @@ export default function ProjectConfiguration({
             <span className="material-icons mr-2">build</span>
             🔧 Installation/Hardware Scope
           </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {categories.installation.map((option) => (
               <div className="flex items-center" key={option}>
-                <Switch
-                  id={option}
-                  checked={configOptions[option as keyof typeof configOptions]}
-                  onCheckedChange={(checked) => 
-                    handleConfigChange(option as keyof typeof configOptions, checked)
+                <Toggle
+                  pressed={configOptions[option as keyof typeof configOptions]}
+                  onPressedChange={(pressed) => 
+                    handleConfigChange(option as keyof typeof configOptions, pressed)
                   }
-                  style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
-                />
-                <div className="flex items-center">
-                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                    {formatOptionName(option)}?
-                  </Label>
+                  variant="red"
+                  className="w-full justify-start text-sm"
+                >
+                  <span className="mr-2">{formatOptionName(option)}?</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="ml-1 cursor-help">
+                        <span className="cursor-help">
                           <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
                         </span>
                       </TooltipTrigger>
@@ -278,7 +275,7 @@ export default function ProjectConfiguration({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </div>
+                </Toggle>
               </div>
             ))}
           </div>
@@ -290,25 +287,22 @@ export default function ProjectConfiguration({
             <span className="material-icons mr-2">fingerprint</span>
             🔐 Access Control/Identity Management
           </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {categories.access_control.map((option) => (
               <div className="flex items-center" key={option}>
-                <Switch
-                  id={option}
-                  checked={configOptions[option as keyof typeof configOptions]}
-                  onCheckedChange={(checked) => 
-                    handleConfigChange(option as keyof typeof configOptions, checked)
+                <Toggle
+                  pressed={configOptions[option as keyof typeof configOptions]}
+                  onPressedChange={(pressed) => 
+                    handleConfigChange(option as keyof typeof configOptions, pressed)
                   }
-                  style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
-                />
-                <div className="flex items-center">
-                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                    {formatOptionName(option)}?
-                  </Label>
+                  variant="blue"
+                  className="w-full justify-start text-sm"
+                >
+                  <span className="mr-2">{formatOptionName(option)}?</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="ml-1 cursor-help">
+                        <span className="cursor-help">
                           <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
                         </span>
                       </TooltipTrigger>
@@ -317,7 +311,7 @@ export default function ProjectConfiguration({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </div>
+                </Toggle>
               </div>
             ))}
           </div>
@@ -329,25 +323,22 @@ export default function ProjectConfiguration({
             <span className="material-icons mr-2">business</span>
             🏗️ Site Conditions / Project Planning
           </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {categories.site_conditions.map((option) => (
               <div className="flex items-center" key={option}>
-                <Switch
-                  id={option}
-                  checked={configOptions[option as keyof typeof configOptions]}
-                  onCheckedChange={(checked) => 
-                    handleConfigChange(option as keyof typeof configOptions, checked)
+                <Toggle
+                  pressed={configOptions[option as keyof typeof configOptions]}
+                  onPressedChange={(pressed) => 
+                    handleConfigChange(option as keyof typeof configOptions, pressed)
                   }
-                  style={configOptions[option as keyof typeof configOptions] ? { backgroundColor: 'var(--red-accent)' } : {}}
-                />
-                <div className="flex items-center">
-                  <Label htmlFor={option} className="ml-2 text-sm text-gray-700">
-                    {formatOptionName(option)}?
-                  </Label>
+                  variant="amber"
+                  className="w-full justify-start text-sm"
+                >
+                  <span className="mr-2">{formatOptionName(option)}?</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="ml-1 cursor-help">
+                        <span className="cursor-help">
                           <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
                         </span>
                       </TooltipTrigger>
@@ -356,7 +347,7 @@ export default function ProjectConfiguration({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </div>
+                </Toggle>
               </div>
             ))}
           </div>
