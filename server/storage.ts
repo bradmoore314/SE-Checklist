@@ -34,6 +34,7 @@ export interface IStorage {
   
   // Access Points
   getAccessPoints(projectId: number): Promise<AccessPoint[]>;
+  getAccessPointsByProject(projectId: number): Promise<AccessPoint[]>; // Alias for getAccessPoints for consistent naming
   getAccessPoint(id: number): Promise<AccessPoint | undefined>;
   createAccessPoint(accessPoint: InsertAccessPoint): Promise<AccessPoint>;
   updateAccessPoint(id: number, accessPoint: Partial<InsertAccessPoint>): Promise<AccessPoint | undefined>;
@@ -41,6 +42,7 @@ export interface IStorage {
   
   // Cameras
   getCameras(projectId: number): Promise<Camera[]>;
+  getCamerasByProject(projectId: number): Promise<Camera[]>; // Alias for getCameras for consistent naming
   getCamera(id: number): Promise<Camera | undefined>;
   createCamera(camera: InsertCamera): Promise<Camera>;
   updateCamera(id: number, camera: Partial<InsertCamera>): Promise<Camera | undefined>;
@@ -333,6 +335,11 @@ export class MemStorage implements IStorage {
       (ap) => ap.project_id === projectId
     );
   }
+  
+  // Alias for getAccessPoints with consistent naming
+  async getAccessPointsByProject(projectId: number): Promise<AccessPoint[]> {
+    return this.getAccessPoints(projectId);
+  }
 
   async getAccessPoint(id: number): Promise<AccessPoint | undefined> {
     return this.accessPoints.get(id);
@@ -398,6 +405,11 @@ export class MemStorage implements IStorage {
     return Array.from(this.cameras.values()).filter(
       (camera) => camera.project_id === projectId
     );
+  }
+  
+  // Alias for getCameras with consistent naming
+  async getCamerasByProject(projectId: number): Promise<Camera[]> {
+    return this.getCameras(projectId);
   }
 
   async getCamera(id: number): Promise<Camera | undefined> {
