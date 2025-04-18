@@ -1327,8 +1327,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // SharePoint settings check for file storage capability
             if (crmType === "dynamics365" || crmType === "dataverse") {
-              if (!settings.sharepoint_site_id) missingSettings.push("sharepoint_site_id");
-              if (!settings.sharepoint_drive_id) missingSettings.push("sharepoint_drive_id");
+              const settingsObj = settings.settings as Record<string, any>;
+              if (!settingsObj.sharePointSiteId) missingSettings.push("sharePointSiteId");
+              if (!settingsObj.sharePointDriveId) missingSettings.push("sharePointDriveId");
             }
           }
           

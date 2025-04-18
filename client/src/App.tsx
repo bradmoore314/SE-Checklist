@@ -17,6 +17,7 @@ import AuthPage from "@/pages/auth-page";
 import FloorplansPage from "@/pages/floorplans-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import QuoteReviewPage from "@/pages/quote-review-page";
+import CrmSettingsPage from "@/pages/crm-settings-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
@@ -53,6 +54,7 @@ function Router() {
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />
+      <ProtectedRoute path="/crm-settings" component={CrmSettingsPage} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
