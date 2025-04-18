@@ -66,6 +66,53 @@ interface FormData {
   quoteWithSowAttached: string;
   quoteDesignAttached: string;
   
+  // VOC Protocol tab fields
+  amName: string;
+  projectId: string;
+  vocScript: string;
+  vocContactName: string;
+  typeOfInstallAccount: string;
+  
+  // Escalation Process 1 fields
+  escalationProcess1: string;
+  escalationProcess1Events: string;
+  escalationProcess1DaysOfWeek: string;
+  escalationProcess1StartTime: string;
+  escalationProcess1EndTime: string;
+  escalationProcess1Cameras: string;
+  escalationProcess1SceneObservation: string;
+  escalationProcess1Process: string;
+  escalationProcess1UseTalkDown: string;
+  escalationProcess1ContactSitePersonnel: string;
+  escalationProcess1ContactPolice: string;
+  escalationProcess1EscalateToBranch: string;
+  escalationProcess1CreateSecurityReport: string;
+  escalationProcess1RspndrDispatch: string;
+  escalationProcess1AudioResponse: string;
+  escalationProcess1AudioMessage: string;
+  
+  // Escalation Process 2 fields
+  escalationProcess2: string;
+  escalationProcess2Events: string;
+  escalationProcess2DaysOfWeek: string;
+  escalationProcess2StartTime: string;
+  escalationProcess2EndTime: string;
+  escalationProcess2SceneObservation: string;
+  escalationProcess2Process: string;
+  escalationProcess2AudioResponse: string;
+  escalationProcess2AudioMessage: string;
+  
+  // Escalation Process 3 fields
+  escalationProcess3: string;
+  escalationProcess3Events: string;
+  escalationProcess3DaysOfWeek: string;
+  escalationProcess3StartTime: string;
+  escalationProcess3EndTime: string;
+  escalationProcess3SceneObservation: string;
+  escalationProcess3Process: string;
+  escalationProcess3AudioResponse: string;
+  escalationProcess3AudioMessage: string;
+  
   // Incident Types - Criminal Activity Group
   obviousCriminalAct: boolean;
   activeBreakIn: boolean;
@@ -280,6 +327,53 @@ const KastleVideoGuardingPage: React.FC = () => {
     customIncidentType4Selected: false,
     customIncidentType5: "",
     customIncidentType5Selected: false,
+    
+    // VOC Protocol tab fields
+    amName: "",
+    projectId: "",
+    vocScript: "",
+    vocContactName: "",
+    typeOfInstallAccount: "",
+    
+    // Escalation Process 1 fields
+    escalationProcess1: "",
+    escalationProcess1Events: "",
+    escalationProcess1DaysOfWeek: "",
+    escalationProcess1StartTime: "",
+    escalationProcess1EndTime: "",
+    escalationProcess1Cameras: "",
+    escalationProcess1SceneObservation: "",
+    escalationProcess1Process: "",
+    escalationProcess1UseTalkDown: "",
+    escalationProcess1ContactSitePersonnel: "",
+    escalationProcess1ContactPolice: "",
+    escalationProcess1EscalateToBranch: "",
+    escalationProcess1CreateSecurityReport: "",
+    escalationProcess1RspndrDispatch: "",
+    escalationProcess1AudioResponse: "",
+    escalationProcess1AudioMessage: "",
+    
+    // Escalation Process 2 fields
+    escalationProcess2: "",
+    escalationProcess2Events: "",
+    escalationProcess2DaysOfWeek: "",
+    escalationProcess2StartTime: "",
+    escalationProcess2EndTime: "",
+    escalationProcess2SceneObservation: "",
+    escalationProcess2Process: "",
+    escalationProcess2AudioResponse: "",
+    escalationProcess2AudioMessage: "",
+    
+    // Escalation Process 3 fields
+    escalationProcess3: "",
+    escalationProcess3Events: "",
+    escalationProcess3DaysOfWeek: "",
+    escalationProcess3StartTime: "",
+    escalationProcess3EndTime: "",
+    escalationProcess3SceneObservation: "",
+    escalationProcess3Process: "",
+    escalationProcess3AudioResponse: "",
+    escalationProcess3AudioMessage: "",
   });
   
   // Handle form data change
@@ -1156,7 +1250,854 @@ const KastleVideoGuardingPage: React.FC = () => {
   </Card>
 </TabsContent>        
         <TabsContent value="voc-protocol">
-          <div>VOC Protocol content would go here</div>
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-orange-800">
+                <span className="p-1.5 bg-orange-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                  </svg>
+                </span>
+                VOC Protocol Configuration
+              </CardTitle>
+              <CardDescription className="text-base text-orange-700">
+                Configure escalation processes, monitoring actions, and response plans for the Virtual Operations Center
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-6">
+                {/* Project Stage Ownership Section */}
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-lg shadow-sm border border-orange-100">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-800 flex items-center gap-2">
+                    <span className="p-1 bg-orange-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                      </svg>
+                    </span>
+                    Project Stage Ownership
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="amName">AM Name:</Label>
+                      <Input 
+                        id="amName"
+                        value={formData.amName || ""} 
+                        onChange={(e) => handleFormChange("amName", e.target.value)}
+                        placeholder="Enter Account Manager name"
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="region">Region:</Label>
+                      <Select 
+                        value={formData.region} 
+                        onValueChange={(value) => handleFormChange("region", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Northeast">Northeast</SelectItem>
+                          <SelectItem value="Mid-Atlantic">Mid-Atlantic</SelectItem>
+                          <SelectItem value="Southeast">Southeast</SelectItem>
+                          <SelectItem value="Midwest">Midwest</SelectItem>
+                          <SelectItem value="Southwest">Southwest</SelectItem>
+                          <SelectItem value="Western">Western</SelectItem>
+                          <SelectItem value="International">International</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="vocScript">VOC Script:</Label>
+                      <Select 
+                        value={formData.vocScript || ""} 
+                        onValueChange={(value) => handleFormChange("vocScript", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Standard">Standard</SelectItem>
+                          <SelectItem value="Custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="kvgSmeName">KVG SME Name:</Label>
+                      <Select 
+                        value={formData.kvgSme} 
+                        onValueChange={(value) => handleFormChange("kvgSme", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="John Smith">John Smith</SelectItem>
+                          <SelectItem value="Jane Doe">Jane Doe</SelectItem>
+                          <SelectItem value="David Johnson">David Johnson</SelectItem>
+                          <SelectItem value="Sarah Wilson">Sarah Wilson</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="projectId">Project ID:</Label>
+                      <Input 
+                        id="projectId"
+                        value={formData.projectId || ""} 
+                        onChange={(e) => handleFormChange("projectId", e.target.value)}
+                        placeholder="Enter Project ID"
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="vocContactName">VOC Contact Name:</Label>
+                      <Input 
+                        id="vocContactName"
+                        value={formData.vocContactName || ""} 
+                        onChange={(e) => handleFormChange("vocContactName", e.target.value)}
+                        placeholder="Enter VOC contact name"
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* VOC Monitoring Action/Response Plan */}
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-lg shadow-sm border border-orange-100">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-800 flex items-center gap-2">
+                    <span className="p-1 bg-orange-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                      </svg>
+                    </span>
+                    VOC Monitoring Action/Response Plan
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4 bg-white/70 p-3 rounded border border-gray-200">
+                    This section identifies incident types based on the customer's use cases. Typically, incident types should align with standard VOC response actions. Complete this based on incidents tied to specific cameras or patrol groups. Non-standard incidents require KVG SME and VOC leadership review.
+                  </p>
+
+                  {/* General Requirements Section */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                    <h4 className="font-semibold text-orange-700 mb-3">General Requirements</h4>
+                    <div className="grid grid-cols-4 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="typeOfInstallAccount">Type of Install Account:</Label>
+                        <Select 
+                          value={formData.typeOfInstallAccount || ""} 
+                          onValueChange={(value) => handleFormChange("typeOfInstallAccount", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="New">New</SelectItem>
+                            <SelectItem value="Existing">Existing</SelectItem>
+                            <SelectItem value="Takeover">Takeover</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="eventVideoStreams">Event Video Streams:</Label>
+                        <Input 
+                          id="eventVideoStreams"
+                          type="number"
+                          value={formData.eventVideoTriggerStreams} 
+                          onChange={(e) => handleFormChange("eventVideoTriggerStreams", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="virtualPatrolStreams">Virtual Patrol Streams:</Label>
+                        <Input 
+                          id="virtualPatrolStreams"
+                          type="number"
+                          value={formData.virtualPatrolStreams} 
+                          onChange={(e) => handleFormChange("virtualPatrolStreams", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="eventActionClipStreams">Event Action Clip Streams:</Label>
+                        <Input 
+                          id="eventActionClipStreams"
+                          type="number"
+                          value={formData.eventActionClipStreams} 
+                          onChange={(e) => handleFormChange("eventActionClipStreams", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="eventActionMultiViewStreams">Event Action - Multi-View:</Label>
+                        <Input 
+                          id="eventActionMultiViewStreams"
+                          type="number"
+                          value={formData.eventActionMultiViewStreams} 
+                          onChange={(e) => handleFormChange("eventActionMultiViewStreams", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="healthStreams">Health Streams:</Label>
+                        <Input 
+                          id="healthStreams"
+                          type="number"
+                          value={formData.healthStreams} 
+                          onChange={(e) => handleFormChange("healthStreams", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="audioTalkDownSpeakers">Audio Talk-Down Speakers:</Label>
+                        <Input 
+                          id="audioTalkDownSpeakers"
+                          type="number"
+                          value={formData.audioTalkDownSpeakers} 
+                          onChange={(e) => handleFormChange("audioTalkDownSpeakers", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div>
+                        <Label htmlFor="totalEventsMaximum">Total Events - Maximum:</Label>
+                        <Input 
+                          id="totalEventsMaximum"
+                          type="number"
+                          value={formData.totalEventsPerMonth} 
+                          onChange={(e) => handleFormChange("totalEventsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="totalVirtualPatrolsPerMonth">Total Virtual Patrols/Mth:</Label>
+                        <Input 
+                          id="totalVirtualPatrolsPerMonth"
+                          type="number"
+                          value={formData.totalVirtualPatrolsPerMonth} 
+                          onChange={(e) => handleFormChange("totalVirtualPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="patrolFrequency">Patrol Frequency:</Label>
+                        <Input 
+                          id="patrolFrequency"
+                          value={formData.patrolFrequency} 
+                          onChange={(e) => handleFormChange("patrolFrequency", e.target.value)}
+                          placeholder="Hourly/30 Mins/Other"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="totalHealthPatrolsPerMonth">Total Health Patrols/Mth:</Label>
+                        <Input 
+                          id="totalHealthPatrolsPerMonth"
+                          type="number"
+                          value={formData.totalHealthPatrolsPerMonth} 
+                          onChange={(e) => handleFormChange("totalHealthPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="totalEventActionMultiViewsPerMonth">Total Event Action Multi-Views/Mth:</Label>
+                        <Input 
+                          id="totalEventActionMultiViewsPerMonth"
+                          type="number"
+                          value={formData.totalEventActionMultiViewsPerMonth} 
+                          onChange={(e) => handleFormChange("totalEventActionMultiViewsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="totalEscalationsMaximum">Total Escalations - Maximum:</Label>
+                        <Input 
+                          id="totalEscalationsMaximum"
+                          type="number"
+                          value={formData.totalEscalationsMaximum} 
+                          onChange={(e) => handleFormChange("totalEscalationsMaximum", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="rspndrSubscriptions">RSPNDR Subscriptions:</Label>
+                        <Select 
+                          value={formData.rspndrSubscriptions} 
+                          onValueChange={(value) => handleFormChange("rspndrSubscriptions", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="None">None</SelectItem>
+                            <SelectItem value="Basic">Basic</SelectItem>
+                            <SelectItem value="Standard">Standard</SelectItem>
+                            <SelectItem value="Premium">Premium</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="gdodsDispatchesPerMonth">GDoDS - Dispatches/Mth:</Label>
+                        <Input 
+                          id="gdodsDispatchesPerMonth"
+                          type="number"
+                          value={formData.gdodsDispatchesPerMonth} 
+                          onChange={(e) => handleFormChange("gdodsDispatchesPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="sgppScheduledPatrolsPerMonth">SGPP - Scheduled Patrols/Mth:</Label>
+                        <Input 
+                          id="sgppScheduledPatrolsPerMonth"
+                          type="number"
+                          value={formData.sgppScheduledPatrolsPerMonth} 
+                          onChange={(e) => handleFormChange("sgppScheduledPatrolsPerMonth", parseInt(e.target.value) || 0)}
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="onDemandGuardDispatchDetail">On Demand Guard Dispatches:</Label>
+                        <Textarea 
+                          id="onDemandGuardDispatchDetail"
+                          value={formData.onDemandGuardDispatchDetail} 
+                          onChange={(e) => handleFormChange("onDemandGuardDispatchDetail", e.target.value)}
+                          placeholder="Fill in what the Guard needs to do on Dispatches, expand in the SOW if needed"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="sgppScheduledGuardPatrolDetail">SGPP - Scheduled Guard Patrol Detail:</Label>
+                        <Textarea 
+                          id="sgppScheduledGuardPatrolDetail"
+                          value={formData.sgppScheduledGuardPatrolDetail} 
+                          onChange={(e) => handleFormChange("sgppScheduledGuardPatrolDetail", e.target.value)}
+                          placeholder="Fill in what the Guard needs to do on Scheduled Patrols, expand in the SOW if needed"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="sgppScheduledGuardPatrolsScheduleDetail">SGPP - Schedule Detail:</Label>
+                        <Textarea 
+                          id="sgppScheduledGuardPatrolsScheduleDetail"
+                          value={formData.sgppScheduledGuardPatrolsScheduleDetail} 
+                          onChange={(e) => handleFormChange("sgppScheduledGuardPatrolsScheduleDetail", e.target.value)}
+                          placeholder="Fill in schedule details for days, hours, frequency of patrols, expand in SOW if needed"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Escalation Process 1 */}
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200 mt-6">
+                    <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                      <span className="p-1 bg-orange-500 text-white rounded-md w-6 h-6 flex items-center justify-center text-xs shadow-sm">1</span>
+                      Escalation Process 1
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess1IncidentType">Incident Type:</Label>
+                        <Select 
+                          value={formData.escalationProcess1 || ""} 
+                          onValueChange={(value) => handleFormChange("escalationProcess1", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Criminal Activity">Criminal Activity</SelectItem>
+                            <SelectItem value="Suspicious Activity">Suspicious Activity</SelectItem>
+                            <SelectItem value="Loitering">Loitering</SelectItem>
+                            <SelectItem value="Nuisance Activity">Nuisance Activity</SelectItem>
+                            <SelectItem value="Emergency/Medical">Emergency/Medical</SelectItem>
+                            <SelectItem value="Restricted Access">Restricted Access</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess1Events">Events:</Label>
+                        <Select
+                          value={formData.escalationProcess1Events || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1Events", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value="Criminal Only">Criminal Only</SelectItem>
+                            <SelectItem value="Suspicious Only">Suspicious Only</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess1DaysOfWeek">Days of Week:</Label>
+                        <Input 
+                          id="escalationProcess1DaysOfWeek"
+                          value={formData.escalationProcess1DaysOfWeek || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess1DaysOfWeek", e.target.value)}
+                          placeholder="Fill in days or reference Use Case Design and SOW"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess1StartTime">Monitoring Start Time:</Label>
+                        <Input 
+                          id="escalationProcess1StartTime"
+                          value={formData.escalationProcess1StartTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess1StartTime", e.target.value)}
+                          placeholder="Start time"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess1EndTime">Monitoring End Time:</Label>
+                        <Input 
+                          id="escalationProcess1EndTime"
+                          value={formData.escalationProcess1EndTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess1EndTime", e.target.value)}
+                          placeholder="End time"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess1Cameras">Camera(s):</Label>
+                      <Input 
+                        id="escalationProcess1Cameras"
+                        value={formData.escalationProcess1Cameras || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess1Cameras", e.target.value)}
+                        placeholder="List cameras for this escalation process"
+                        className="bg-white"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess1SceneObservation">VOC Scene Observation:</Label>
+                      <Textarea 
+                        id="escalationProcess1SceneObservation"
+                        value={formData.escalationProcess1SceneObservation || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess1SceneObservation", e.target.value)}
+                        placeholder="Fill in detailed observation requirements for VOC"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess1Process">Escalation Process:</Label>
+                      <Textarea 
+                        id="escalationProcess1Process"
+                        value={formData.escalationProcess1Process || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess1Process", e.target.value)}
+                        placeholder="Fill in with what is required by the VOC for action to be taken"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <Label className="mb-1 block">Use Talk-Down:</Label>
+                        <Select
+                          value={formData.escalationProcess1UseTalkDown || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1UseTalkDown", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="mb-1 block">Contact Site Personnel:</Label>
+                        <Select
+                          value={formData.escalationProcess1ContactSitePersonnel || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1ContactSitePersonnel", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="mb-1 block">Contact Police/Fire:</Label>
+                        <Select
+                          value={formData.escalationProcess1ContactPolice || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1ContactPolice", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <Label className="mb-1 block">Escalate to Branch/Region:</Label>
+                        <Select
+                          value={formData.escalationProcess1EscalateToBranch || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1EscalateToBranch", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="mb-1 block">Create Security Report:</Label>
+                        <Select
+                          value={formData.escalationProcess1CreateSecurityReport || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1CreateSecurityReport", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="mb-1 block">RSPNDR GDoDS Dispatch:</Label>
+                        <Select
+                          value={formData.escalationProcess1RspndrDispatch || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1RspndrDispatch", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="escalationProcess1AudioResponse">Audio Response:</Label>
+                        <Select
+                          value={formData.escalationProcess1AudioResponse || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess1AudioResponse", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Standard">Standard</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="None">None</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess1AudioMessage">Audio Message:</Label>
+                        <Textarea 
+                          id="escalationProcess1AudioMessage"
+                          value={formData.escalationProcess1AudioMessage || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess1AudioMessage", e.target.value)}
+                          placeholder="Enter Talk-down message(s)"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Escalation Process 2 */}
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200 mt-6">
+                    <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                      <span className="p-1 bg-orange-500 text-white rounded-md w-6 h-6 flex items-center justify-center text-xs shadow-sm">2</span>
+                      Escalation Process 2
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess2IncidentType">Incident Type:</Label>
+                        <Select 
+                          value={formData.escalationProcess2 || ""} 
+                          onValueChange={(value) => handleFormChange("escalationProcess2", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Criminal Activity">Criminal Activity</SelectItem>
+                            <SelectItem value="Suspicious Activity">Suspicious Activity</SelectItem>
+                            <SelectItem value="Loitering">Loitering</SelectItem>
+                            <SelectItem value="Nuisance Activity">Nuisance Activity</SelectItem>
+                            <SelectItem value="Emergency/Medical">Emergency/Medical</SelectItem>
+                            <SelectItem value="Restricted Access">Restricted Access</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess2Events">Events:</Label>
+                        <Select
+                          value={formData.escalationProcess2Events || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess2Events", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value="Criminal Only">Criminal Only</SelectItem>
+                            <SelectItem value="Suspicious Only">Suspicious Only</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess2DaysOfWeek">Days of Week:</Label>
+                        <Input 
+                          id="escalationProcess2DaysOfWeek"
+                          value={formData.escalationProcess2DaysOfWeek || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess2DaysOfWeek", e.target.value)}
+                          placeholder="Fill in days or reference Use Case Design and SOW"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess2StartTime">Monitoring Start Time:</Label>
+                        <Input 
+                          id="escalationProcess2StartTime"
+                          value={formData.escalationProcess2StartTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess2StartTime", e.target.value)}
+                          placeholder="Start time"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess2EndTime">Monitoring End Time:</Label>
+                        <Input 
+                          id="escalationProcess2EndTime"
+                          value={formData.escalationProcess2EndTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess2EndTime", e.target.value)}
+                          placeholder="End time"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess2SceneObservation">Incident Type Description:</Label>
+                      <Textarea 
+                        id="escalationProcess2SceneObservation"
+                        value={formData.escalationProcess2SceneObservation || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess2SceneObservation", e.target.value)}
+                        placeholder="Fill in with what incident types the VOC would observe for this escalation process"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess2Process">Escalation Process:</Label>
+                      <Textarea 
+                        id="escalationProcess2Process"
+                        value={formData.escalationProcess2Process || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess2Process", e.target.value)}
+                        placeholder="Fill in with what is required by the VOC for action to be taken"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="escalationProcess2AudioResponse">Audio Response:</Label>
+                        <Select
+                          value={formData.escalationProcess2AudioResponse || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess2AudioResponse", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Standard">Standard</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="None">None</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess2AudioMessage">Audio Message:</Label>
+                        <Textarea 
+                          id="escalationProcess2AudioMessage"
+                          value={formData.escalationProcess2AudioMessage || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess2AudioMessage", e.target.value)}
+                          placeholder="Fill in Talk-down message(s)"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Escalation Process 3 */}
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200 mt-6">
+                    <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                      <span className="p-1 bg-orange-500 text-white rounded-md w-6 h-6 flex items-center justify-center text-xs shadow-sm">3</span>
+                      Escalation Process 3
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess3IncidentType">Incident Type:</Label>
+                        <Select 
+                          value={formData.escalationProcess3 || ""} 
+                          onValueChange={(value) => handleFormChange("escalationProcess3", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Criminal Activity">Criminal Activity</SelectItem>
+                            <SelectItem value="Suspicious Activity">Suspicious Activity</SelectItem>
+                            <SelectItem value="Loitering">Loitering</SelectItem>
+                            <SelectItem value="Nuisance Activity">Nuisance Activity</SelectItem>
+                            <SelectItem value="Emergency/Medical">Emergency/Medical</SelectItem>
+                            <SelectItem value="Restricted Access">Restricted Access</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess3Events">Events:</Label>
+                        <Select
+                          value={formData.escalationProcess3Events || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess3Events", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value="Criminal Only">Criminal Only</SelectItem>
+                            <SelectItem value="Suspicious Only">Suspicious Only</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <Label htmlFor="escalationProcess3DaysOfWeek">Days of Week:</Label>
+                        <Input 
+                          id="escalationProcess3DaysOfWeek"
+                          value={formData.escalationProcess3DaysOfWeek || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess3DaysOfWeek", e.target.value)}
+                          placeholder="Fill in days or reference Use Case Design and SOW"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess3StartTime">Monitoring Start Time:</Label>
+                        <Input 
+                          id="escalationProcess3StartTime"
+                          value={formData.escalationProcess3StartTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess3StartTime", e.target.value)}
+                          placeholder="Start time"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess3EndTime">Monitoring End Time:</Label>
+                        <Input 
+                          id="escalationProcess3EndTime"
+                          value={formData.escalationProcess3EndTime || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess3EndTime", e.target.value)}
+                          placeholder="End time"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess3SceneObservation">Incident Type Description:</Label>
+                      <Textarea 
+                        id="escalationProcess3SceneObservation"
+                        value={formData.escalationProcess3SceneObservation || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess3SceneObservation", e.target.value)}
+                        placeholder="Fill in with what incident types the VOC would observe for this escalation process"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="escalationProcess3Process">Escalation Process:</Label>
+                      <Textarea 
+                        id="escalationProcess3Process"
+                        value={formData.escalationProcess3Process || ""} 
+                        onChange={(e) => handleFormChange("escalationProcess3Process", e.target.value)}
+                        placeholder="Fill in with what is required by the VOC for action to be taken"
+                        className="bg-white min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="escalationProcess3AudioResponse">Audio Response:</Label>
+                        <Select
+                          value={formData.escalationProcess3AudioResponse || ""}
+                          onValueChange={(value) => handleFormChange("escalationProcess3AudioResponse", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Standard">Standard</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="None">None</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="escalationProcess3AudioMessage">Audio Message:</Label>
+                        <Textarea 
+                          id="escalationProcess3AudioMessage"
+                          value={formData.escalationProcess3AudioMessage || ""} 
+                          onChange={(e) => handleFormChange("escalationProcess3AudioMessage", e.target.value)}
+                          placeholder="Fill in Talk-down message(s)"
+                          className="bg-white min-h-[80px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
         <TabsContent value="deployment">

@@ -1,0 +1,306 @@
+KVG VOC Protocol Configuration Form													
+													
+													
+													
+	Owner: 				Opportunity Stage:			Legend					
+	Account Manager				Commit			Notes or Text Descriptions	Don't Overwrite	Don't Overwrite	Don't Overwrite		
+								Fill text in box	Type text	Type text	Type text		
+								Drop-down	Select	Select	Select		
+								Auto-fill Text	Don't Overwrite	Don't Overwrite	Don't Overwrite		
+	Description:												
+	This form is to be completed following Project creation and at the time of install. The Account Managers are responsible to complete this to ensure the customer needs and expectations are met and align with what the Kastle VOC team is capable of providing via the KVG services. If there are custom or non standard use cases or incident responses that the VOC needs to provide, it requires a review with the KVG SME and the VOC leadership team before a customer quote is finalized. Please attached the form to the Project, so it can be shared and tracked during and after deployment with various teams.												
+													
+	Reviewer(s):												
+	RVG SME / BDM / VOC Lead will review prior to the quote signing as part of the approval process. If there are any uncommon uses of the analytics or Monitoring protocols, the AM will work with the appropriates teams for consideration, timelines and approvals.												
+													
+Location													
+													
+	CRM Opportunity					Attach to Opportunity			Time Zone				
+	fill in					Select			Select				
+													
+	Site Name:					Customer:							
+	fill in					fill in							
+													
+	Site Address:												
+	fill in												
+													
+	City:			State: 		Zip Code:							
+	fill in			Select		fill in							
+													
+Project Stage Ownership													
+													
+	AM Name:					Region: 			VOC Script				
+	fill in					Select			Select				
+													
+	KVG SME Name: 					Project ID							
+	Select					fill in							
+													
+	VOC Contact Name												
+	fill in text box												
+													
+VOC Monitoring Action/Response Plan													
+													
+	Description:												
+	This is used to identify all the incident types based on the customers Use Case Problems called out in 4. Use Case Design - SOW - SME. Typically the Incident Type should align with a standard VOC Response Action that can be supported via KVG services. You may complete this based on Incident types tied to specific cameras or patrol groups to the selection of cameras. In the event it does not align with a current VOC Incident Type and Response Action, it needs to be reviewed and approved before it is delivered/committed to the customer. See tab 4 for the information on what is needed for the VOC team as it relates to Use Case, Response, Video Stream Naming, Event Analytics, Patrol Groups, schedules and suggested dwell times. 												
+													
+General Requirements													
+													
+	Type of Install Account		Event Video Streams	Virtual Patrol Streams	Event Action Clip Streams	Event Action - Multi-View Streams	Health Streams	Audio Talk-Down Speakers					
+	Select		fill in	fill in	fill in	fill in	fill in	fill in					
+													
+	Total Events - Maximum		Total Virtual Patrols/Mth	Patrol Frequency (Hourly/30 Mins/Other)	Total Health Patrols/Mth	Total Event Action Multi-Views/Mth	Total Dispatch/Escalations - Maximum	RSPNDR Subscriptions	GDoDS -  Dispatches/Mth	SGPP - Scheduled Patrols/Mth			
+	fill in		fill in	fill in	30	fill in	fill in	Select	fill in	fill in			
+													
+	On Demand Guard Dispatches				SGPP - Scheduled Guard Patrol Detail			SGPP - Scheduled Guard Patrols - Schedule Detail					
+	fill in what the Guard needs to do on the Dispatches, expand in the SOW if needed				fill in what the Guard needs to do on Scheduled Patrols, expand in the SOW if needed			fill in schedule details for the days of week/month, hours of day, frequency of patrols, expand in the SOW if needed					
+													
+													
+													
+													
+	Incident types to be monitored:	Typically 3-4 max per camera stream, clarify in use case and if needed call out unique use cases per camera in the camera list below.											
+													
+	OBVIOUS CRIMINAL ACT	Yes		URINATION OR OTHER BODILY FUNCTIONS 		Select		LOITERING	0	Yes			
+	ACTIVE BREAK-IN 	Select		PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS		Select		   ACTIVE GATHERING	0	Select			
+	DESTRUCTION OF PROPERTY	Select		EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)		Select		   GROUPS LOITERING/GATHERING	0	Select			
+	CAR DRIVING THROUGH (DAMAGE) PARKING GATE	Select		PERSON PRESUMED INJURED OR IN DISTRESS		Select		   HOMELESS/VAGRANT	0	Select			
+	CAR BURGLARIES	Select		LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER		Select		   SLEEPING ON SITE/ENCAMPMENTS	0	Select			
+	TRESSPASSING	Select		TENANTS MOVING OUT OF THE BUILDING		Select		   LOITERING IN STAIRWELLS	0	Select			
+	CARS BROKEN INTO AFTER THE FACT	Select		 LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS		Select		   PERSONS SMOKING	0	Select			
+	BROKEN GLASS - WINDOWS/DOORS (After)	Select		OBVIOUS MEDICAL EMERGENCY 		Select		   VEHICLE LOITERING/GATHERING IN AREA	0	Select			
+	SUSPICIOUS INDIVIDUAL(S)/ACTIVITY	Yes		VISIBLE FIRE OR HEAVY SMOKE		Select		fill in if incident type not shown	0	Select			
+	   I.E. INTENT TO COMMIT CRIMINAL ACT 	Select		PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.		Select		fill in if incident type not shown	0	Select			
+	   (EX: CHECKING MULTIPLE CAR DOORS)	Select		    SITTING OR SLEEPING IN/ON (SPECIFIED AREA)		Select		fill in if incident type not shown	0	Select			
+	DUMPSTER DIVING OR DUMPING	Select		    PRESENT IN PROHIBITED AREA		Select		fill in if incident type not shown	0	Select			
+	fill in if incident type not shown	Select		fill in if incident type not shown		Select		fill in if incident type not shown	0	Select			
+													
+	Use Case Commitment: 												
+	fill in or modify from Discovery tab												
+													
+	Use Case Response:												
+	fill in or modify from Discovery tab, add in any needs for RSPNDR Guard Dispatch on Demand Services												
+													
+	SOW Detailed Outline:												
+	"fill in from price quoting worksheet				"												
+													
+	Schedule Details												
+	fill in from tab on or detail complex schedules based on different days or camera groups												
+													
+Escalation Process 1													
+													
+	Incident Type Monitored:												
+													
+	OBVIOUS CRIMINAL ACT		Select	URINATION OR OTHER BODILY FUNCTIONS 			Select	LOITERING		Select			
+	ACTIVE BREAK-IN 		Select	PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS			Select	   ACTIVE GATHERING		Select			
+	DESTRUCTION OF PROPERTY		Select	EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)			Select	   GROUPS LOITERING/GATHERING		Select			
+	CAR DRIVING THROUGH (DAMAGE) PARKING GATE		Select	PERSON PRESUMED INJURED OR IN DISTRESS			Select	   HOMELESS/VAGRANT		Select			
+	CAR BURGLARIES		Select	LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER			Select	   SLEEPING ON SITE/ENCAMPMENTS		Select			
+	TRESSPASSING		Select	TENANTS MOVING OUT OF THE BUILDING			Select	   LOITERING IN STAIRWELLS		Select			
+	CARS BROKEN INTO AFTER THE FACT		Select	 LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS			Select	   PERSONS SMOKING		Select			
+	BROKEN GLASS - WINDOWS/DOORS (After)		Select	OBVIOUS MEDICAL EMERGENCY 			Select	   VEHICLE LOITERING/GATHERING IN AREA		Select			
+	SUSPICIOUS INDIVIDUAL(S)/ACTIVITY		Select	VISIBLE FIRE OR HEAVY SMOKE			Select	fill in if incident type not shown		Select			
+	   I.E. INTENT TO COMMIT CRIMINAL ACT 		Select	PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.			Select	fill in if incident type not shown		Select			
+	   (EX: CHECKING MULTIPLE CAR DOORS)		Select	    SITTING OR SLEEPING IN/ON (SPECIFIED AREA)			Select	fill in if incident type not shown		Select			
+	DUMPSTER DIVING OR DUMPING		Select	    PRESENT IN PROHIBITED AREA			Select	fill in if incident type not shown		Select			
+	fill in if incident type not shown		Select	fill in if incident type not shown			Select	fill in if incident type not shown		Select			
+													
+	Incident Type:			Events		Days of Week			Monitoring Hours:				
+	Select			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	Camera(s):			Patrols		Days of Week			Monitoring Hours:				
+	fill in			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	VOC Scene Observation:												
+	fill in												
+													
+													
+	Escalation Process:												
+	Fill in with what is required by the VOC for action to be taken												
+													
+													
+	Use Talk-Down 		Select		Contact site personnel or security		Select		Contact Police or Fire depending on incident type	Select			
+													
+	Escalate to branch/region		Select		Create a security report with pics to deliver next day		Select		RSPNDR GDoDS - Dispatch on Demand	Select			
+													
+	Audio Response:			Audio Message:									
+	Select			Enter Talk-down message(s)									
+													
+	Dispatch:			Dispatch Resource:									
+	Select			Who will be dispatched?									
+													
+Escalation Process 2													
+													
+	Incident Type Monitored:												
+													
+	OBVIOUS CRIMINAL ACT		Select	URINATION OR OTHER BODILY FUNCTIONS 			Select	LOITERING		Select			
+	ACTIVE BREAK-IN 		Select	PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS			Select	   ACTIVE GATHERING		Select			
+	DESTRUCTION OF PROPERTY		Select	EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)			Select	   GROUPS LOITERING/GATHERING		Select			
+	CAR DRIVING THROUGH (DAMAGE) PARKING GATE		Select	PERSON PRESUMED INJURED OR IN DISTRESS			Select	   HOMELESS/VAGRANT		Select			
+	CAR BURGLARIES		Select	LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER			Select	   SLEEPING ON SITE/ENCAMPMENTS		Select			
+	TRESSPASSING		Select	TENANTS MOVING OUT OF THE BUILDING			Select	   LOITERING IN STAIRWELLS		Select			
+	CARS BROKEN INTO AFTER THE FACT		Select	 LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS			Select	   PERSONS SMOKING		Select			
+	BROKEN GLASS - WINDOWS/DOORS (After)		Select	OBVIOUS MEDICAL EMERGENCY 			Select	   VEHICLE LOITERING/GATHERING IN AREA		Select			
+	SUSPICIOUS INDIVIDUAL(S)/ACTIVITY		Select	VISIBLE FIRE OR HEAVY SMOKE			Select	fill in if incident type not shown		Select			
+	   I.E. INTENT TO COMMIT CRIMINAL ACT 		Select	PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.			Select	fill in if incident type not shown		Select			
+	   (EX: CHECKING MULTIPLE CAR DOORS)		Select	    SITTING OR SLEEPING IN/ON (SPECIFIED AREA)			Select	fill in if incident type not shown		Select			
+	DUMPSTER DIVING OR DUMPING		Select	    PRESENT IN PROHIBITED AREA			Select	fill in if incident type not shown		Select			
+	fill in if incident type not shown		Select	fill in if incident type not shown			Select	fill in if incident type not shown		Select			
+													
+	Incident Type:			Events		Days of Week			Monitoring Hours:				
+	Select			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	Camera(s):			Patrols		Days of Week			Monitoring Hours:				
+	fill in			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	Incident Type Description:												
+	Fill in with what incident types the VOC would observe for this escalation process												
+													
+													
+	Escalation Process:												
+	Fill in with what is required by the VOC for action to be taken												
+													
+													
+	Use Talk-Down 		Select		Contact site personnel or security		Select		Contact Police or Fire depending on incident type	Select			
+													
+	Escalate to branch/region		Select		Create a security report with pics to deliver next day		Select		RSPNDR GDoDS - Dispatch on Demand	Select			
+													
+													
+	Audio Response:			Audio Message:									
+	Select			Fill in Talk-down message(s)									
+													
+	Dispatch:			Dispatch Resource:									
+	Select			Fill in who will be dispatched?									
+													
+Escalation Process 3													
+													
+	Incident Type Monitored:												
+													
+	OBVIOUS CRIMINAL ACT		Select	URINATION OR OTHER BODILY FUNCTIONS 			Select	LOITERING		Select			
+	ACTIVE BREAK-IN 		Select	PRESENCE OF SCOOTERS, BICYLES, AND SKATEBOARDS			Select	   ACTIVE GATHERING		Select			
+	DESTRUCTION OF PROPERTY		Select	EMERGENCY SERVICES SEEN ON SITE (FIRE/ AMBULANCE/ POLICE)			Select	   GROUPS LOITERING/GATHERING		Select			
+	CAR DRIVING THROUGH (DAMAGE) PARKING GATE		Select	PERSON PRESUMED INJURED OR IN DISTRESS			Select	   HOMELESS/VAGRANT		Select			
+	CAR BURGLARIES		Select	LEAVING TRASH IN THE PARKING LOTS, BACK DOOR OR BUILDING PERIMETER			Select	   SLEEPING ON SITE/ENCAMPMENTS		Select			
+	TRESSPASSING		Select	TENANTS MOVING OUT OF THE BUILDING			Select	   LOITERING IN STAIRWELLS		Select			
+	CARS BROKEN INTO AFTER THE FACT		Select	 LARGE ITEMS (TV, FURNITURE, BOXES) BEING MOVED IN/OUT AFTER HRS			Select	   PERSONS SMOKING		Select			
+	BROKEN GLASS - WINDOWS/DOORS (After)		Select	OBVIOUS MEDICAL EMERGENCY 			Select	   VEHICLE LOITERING/GATHERING IN AREA		Select			
+	SUSPICIOUS INDIVIDUAL(S)/ACTIVITY		Select	VISIBLE FIRE OR HEAVY SMOKE			Select	fill in if incident type not shown		Select			
+	   I.E. INTENT TO COMMIT CRIMINAL ACT 		Select	PERSON ON SITE IN RESTRICTED AREA - POOL/GYM/GARAGE RAMP etc.			Select	fill in if incident type not shown		Select			
+	   (EX: CHECKING MULTIPLE CAR DOORS)		Select	    SITTING OR SLEEPING IN/ON (SPECIFIED AREA)			Select	fill in if incident type not shown		Select			
+	DUMPSTER DIVING OR DUMPING		Select	    PRESENT IN PROHIBITED AREA			Select	fill in if incident type not shown		Select			
+	fill in if incident type not shown		Select	fill in if incident type not shown			Select	fill in if incident type not shown		Select			
+													
+	Incident Type:			Events		Days of Week			Monitoring Hours:				
+	Select			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	Camera(s):			Patrols		Days of Week			Monitoring Hours:				
+	fill in			Select		fill in or reference Use Case Design and SOW			fill in Start Time	to	fill in End Time		
+													
+	Incident Type Description:												
+	Fill in with what incident types the VOC would observe for this escalation process												
+													
+													
+	Escalation Process:												
+	Fill in with what is required by the VOC for action to be taken												
+													
+													
+	Use Talk-Down 		Select		Contact site personnel or security		Select		Contact Police or Fire depending on incident type	Select			
+													
+	Escalate to branch/region		Select		Create a security report with pics to deliver next day		Select		RSPNDR GDoDS - Dispatch on Demand	Select			
+													
+	Audio Response:			Audio Message:									
+	Select			Fill in Talk-down message(s)									
+													
+	Dispatch:			Dispatch Resource:									
+	Select			Fill in who will be dispatched?									
+													
+Contact List /Call List													
+													
+	Site Name	fill in			Customer Name	fill in							
+	Address	fill in			City	fill in		State	Select		Zip	fill in	
+													
+	Site Telephone Number												
+	Alternative Telephone Number							Time Zone	Select				
+	Fax Number												
+	Police Telephone Number												
+	Fire Telephone Number												
+													
+													
+	Description:												
+													
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select				Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+													
+													
+Contact Name:					Phone:				PIN Code				
+													
+Job Title/Role:	Select	fill in if a different title			Incident/Escalation Responsibility:				Email:				
+													
+Call List Tier:	Select				Special Instructions				Call Hours:				
+													
+Holiday Schedules													
+													
+General Instructions													
+													
+													
+HOLIDAY	SPECIAL INSTRUCTIONS							Contact Name	Email		Phone		
+New Year's Day													
+Memorial Day													
+Independence Day													
+Labor Day													
+Thanksgiving Day													
+After Thanksgiving Day													
+Christmas Eve													
+Christmas Day													
+Additional Holiday 1													
+Additional Holiday 2													
+Additional Holiday 3													
+Additional Holiday 4													
+Additional Holiday 5													
+Additional Holiday 6													
+													
