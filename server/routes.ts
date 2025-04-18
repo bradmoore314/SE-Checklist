@@ -23,10 +23,9 @@ import {
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { generateSiteWalkAnalysis } from "./utils/gemini";
-import { areAzureCredentialsAvailable } from "./services/microsoft-auth";
 import { translateText } from "./services/gemini-translation";
 import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
-import { isSharePointConfigured } from "./services/microsoft-graph";
+import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -1280,45 +1279,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CRM Integration endpoints
   app.get("/api/integration/status", isAuthenticated, async (req: Request, res: Response) => {
     try {
-      // Get the status of the Microsoft Graph/Dataverse integration
-      // Check Azure AD config and CRM settings
-      const isGraphConfigured = isSharePointConfigured();
-      const isMicrosoftAuthConfigured = areAzureCredentialsAvailable();
+      // Check Microsoft authentication configuration
+      const missingAuthCredentials: string[] = [];
       
-      // Get all CRM settings
+      if (!process.env.AZURE_CLIENT_ID) missingAuthCredentials.push("AZURE_CLIENT_ID");
+      if (!process.env.AZURE_CLIENT_SECRET) missingAuthCredentials.push("AZURE_CLIENT_SECRET");
+      if (!process.env.AZURE_TENANT_ID) missingAuthCredentials.push("AZURE_TENANT_ID");
+      
+      const isMicrosoftAuthConfigured = areAzureCredentialsAvailable();
+      const isGraphConfigured = isSharePointConfigured();
+      
+      // Check Microsoft Graph capability
+      const graphCapability = {
+        configured: isGraphConfigured,
+        status: isGraphConfigured ? "available" : "unavailable",
+        missingCredentials: missingAuthCredentials.length > 0 ? missingAuthCredentials : undefined
+      };
+      
+      // Check if refresh token is available for Microsoft authentication
+      const hasRefreshToken = !!process.env.MS_REFRESH_TOKEN;
+      
+      // Get all CRM systems and check their configuration status
       const crmSystems = ["dynamics365", "dataverse"];
-      const crmStatuses: Record<string, { configured: boolean; name?: string; error?: string }> = {};
+      const crmStatuses: Record<string, { 
+        configured: boolean; 
+        name: string; 
+        error?: string;
+        status: string;
+        missingSettings?: string[];
+        authIssue?: boolean;
+      }> = {};
       
       for (const crmType of crmSystems) {
         try {
           const crm = getCrmSystem(crmType);
+          const settings = await crm.getSettings();
+          const isConfigured = await crm.isConfigured();
+          
+          const missingSettings: string[] = [];
+          
+          // Check for missing CRM-specific settings
+          if (!settings) {
+            missingSettings.push("CRM settings not found");
+          } else {
+            if (!settings.base_url) missingSettings.push("base_url");
+            if (!settings.api_version) missingSettings.push("api_version");
+            
+            // SharePoint settings check for file storage capability
+            if (crmType === "dynamics365" || crmType === "dataverse") {
+              if (!settings.sharepoint_site_id) missingSettings.push("sharepoint_site_id");
+              if (!settings.sharepoint_drive_id) missingSettings.push("sharepoint_drive_id");
+            }
+          }
+          
           crmStatuses[crmType] = {
-            configured: await crm.isConfigured(),
-            name: crm.name
+            configured: isConfigured,
+            name: crm.name,
+            status: isConfigured ? "ready" : "not configured",
+            missingSettings: missingSettings.length > 0 ? missingSettings : undefined,
+            authIssue: !isMicrosoftAuthConfigured || !hasRefreshToken
           };
         } catch (e) {
+          let errorMessage = "Unknown error occurred";
           if (e instanceof Error) {
-            crmStatuses[crmType] = {
-              configured: false,
-              error: e.message
-            };
-          } else {
-            crmStatuses[crmType] = {
-              configured: false,
-              error: "Unknown error occurred"
-            };
+            errorMessage = e.message;
           }
+          
+          crmStatuses[crmType] = {
+            configured: false,
+            name: crmType,
+            error: errorMessage,
+            status: "error",
+            authIssue: !isMicrosoftAuthConfigured || !hasRefreshToken
+          };
         }
       }
       
+      // Respond with comprehensive status information
       res.json({
-        microsoftGraph: {
-          configured: isGraphConfigured
-        },
         microsoftAuth: {
-          configured: isMicrosoftAuthConfigured
+          configured: isMicrosoftAuthConfigured,
+          status: isMicrosoftAuthConfigured ? "configured" : "missing credentials",
+          missingCredentials: missingAuthCredentials.length > 0 ? missingAuthCredentials : undefined,
+          hasRefreshToken: hasRefreshToken
         },
-        crmSystems: crmStatuses
+        microsoftGraph: graphCapability,
+        crmSystems: crmStatuses,
+        requiredSecrets: missingAuthCredentials.length > 0 ? missingAuthCredentials : undefined
       });
     } catch (error) {
       console.error("Error checking integration status:", error);
