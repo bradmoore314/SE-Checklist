@@ -373,10 +373,35 @@ const KastleVideoGuardingPage: React.FC = () => {
       ? { ...streamToClone, id: nextStreamId }
       : {
           id: nextStreamId,
+          // Camera Video Stream Details
+          location: "",
+          fovAccessibility: "Select",
+          cameraAccessibility: "Select",
+          cameraType: "Select",
+          environment: "Select",
+          
+          // Unique Use Case Problem
+          useCaseProblem: "",
+          
+          // Speaker Video Stream Association
+          speakerAssociation: "",
+          audioTalkDown: "Select",
+          
+          // Event Monitoring Details
+          eventMonitoring: "Select",
+          monitoringStartTime: "",
+          monitoringEndTime: "",
+          
+          // Patrol Group Details
+          patrolGroups: "Select",
+          patrolStartTime: "",
+          patrolEndTime: "",
+          
+          // Legacy fields maintained for compatibility
           quantity: 1,
           description: "",
-          monitoredArea: "Pool",
-          accessibility: "Secure",
+          monitoredArea: "",
+          accessibility: "",
           useCase: "",
           analyticRule1: "Person Detected",
           dwellTime1: 30,
