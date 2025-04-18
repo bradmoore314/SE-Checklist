@@ -167,7 +167,7 @@ export default function Projects() {
   };
 
   // Filter projects based on search term and active tab
-  const filteredProjects = projects.filter((project) => {
+  const filteredProjects = allProjects.filter((project: Project) => {
     const matchesSearch = 
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (project.client && project.client.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -176,6 +176,11 @@ export default function Projects() {
     // If tab is "all", return all projects that match search
     if (activeTab === "all") {
       return matchesSearch;
+    }
+    
+    // For "pinned" tab, show only pinned projects
+    if (activeTab === "pinned") {
+      return matchesSearch && pinnedProjects.some(p => p.id === project.id);
     }
     
     // For "active" tab, show projects with active status (here we're just simulating)
@@ -191,6 +196,9 @@ export default function Projects() {
     
     return matchesSearch;
   });
+  
+  // Check if a project is pinned
+  const isPinned = (projectId: number) => pinnedProjects.some(p => p.id === projectId);
 
   return (
     <div>
@@ -200,7 +208,7 @@ export default function Projects() {
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
           onClick={() => setShowNewSiteWalkModal(true)}
         >
-          <span className="material-icons mr-1">add</span>
+          <Plus className="h-4 w-4 mr-1" />
           New Site Walk
         </Button>
       </div>
@@ -213,6 +221,7 @@ export default function Projects() {
         >
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="pinned">Pinned</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
@@ -226,30 +235,30 @@ export default function Projects() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="material-icons absolute left-3 top-2 text-neutral-400">search</span>
+          <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoadingProjects ? (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="material-icons text-4xl animate-spin text-primary mb-4">
-              sync
-            </div>
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4 mx-auto" />
             <p className="text-neutral-600">Loading site walks...</p>
           </div>
         </div>
       ) : filteredProjects.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
-            <div className="material-icons text-6xl text-neutral-300 mb-4">
-              folder_open
+            <div className="flex justify-center mb-4">
+              <FolderOpen className="h-16 w-16 text-muted-foreground/30" />
             </div>
             <h3 className="text-lg font-medium mb-2">No Site Walks Found</h3>
             <p className="text-neutral-500 mb-4">
               {searchTerm
                 ? "No site walks match your search criteria."
-                : "You haven't created any site walks yet."}
+                : activeTab !== "all"
+                  ? `You don't have any site walks in the "${activeTab}" category.`
+                  : "You haven't created any site walks yet."}
             </p>
             {searchTerm && (
               <Button
@@ -264,7 +273,7 @@ export default function Projects() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
+          {filteredProjects.map((project: Project) => (
             <Card
               key={project.id}
               className="hover:shadow-md transition-shadow cursor-pointer"
@@ -276,10 +285,21 @@ export default function Projects() {
                     {project.name}
                   </h3>
                   <div className="flex space-x-2">
-                    <button
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
+                      onClick={(e) => togglePinned(e, project)}
+                      title={isPinned(project.id) ? "Unpin project" : "Pin project"}
+                    >
+                      <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="relative group"
                       title="AI Review"
-                      onClick={(e) => {
+                      onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         setLocation(`/projects/${project.id}/quote-review`);
                       }}
@@ -288,17 +308,16 @@ export default function Projects() {
                       <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
                         <span className="material-icons text-sm">auto_awesome</span>
                       </div>
-                    </button>
-                    <button
-                      className="text-neutral-400 hover:text-red-500"
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-red-500"
                       title="Delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteSiteWalk(project);
-                      }}
+                      onClick={(e) => deleteSiteWalk(e, project)}
                     >
-                      <span className="material-icons">delete</span>
-                    </button>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
                 
