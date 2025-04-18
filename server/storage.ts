@@ -9,11 +9,7 @@ import {
   Floorplan, InsertFloorplan,
   FloorplanMarker, InsertFloorplanMarker,
   CrmSettings, InsertCrmSettings,
-  EquipmentImage, InsertEquipmentImage,
-  KastleVideoGuarding, InsertKastleVideoGuarding,
-  KvgStream, InsertKvgStream,
-  KvgStreamImage, InsertKvgStreamImage,
-  KvgPriceStream, InsertKvgPriceStream
+  EquipmentImage, InsertEquipmentImage
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -35,33 +31,6 @@ export interface IStorage {
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<boolean>;
-  
-  // Kastle Video Guarding
-  getKvg(id: number): Promise<KastleVideoGuarding | undefined>;
-  getKvgByProject(projectId: number): Promise<KastleVideoGuarding | undefined>;
-  createKvg(kvg: InsertKastleVideoGuarding): Promise<KastleVideoGuarding>;
-  updateKvg(id: number, kvg: Partial<InsertKastleVideoGuarding>): Promise<KastleVideoGuarding | undefined>;
-  deleteKvg(id: number): Promise<boolean>;
-  
-  // KVG Streams
-  getKvgStreams(kvgId: number): Promise<KvgStream[]>;
-  getKvgStream(id: number): Promise<KvgStream | undefined>;
-  createKvgStream(stream: InsertKvgStream): Promise<KvgStream>;
-  updateKvgStream(id: number, stream: Partial<InsertKvgStream>): Promise<KvgStream | undefined>;
-  deleteKvgStream(id: number): Promise<boolean>;
-  
-  // KVG Stream Images
-  getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]>;
-  getKvgStreamImage(id: number): Promise<KvgStreamImage | undefined>;
-  createKvgStreamImage(image: InsertKvgStreamImage): Promise<KvgStreamImage>;
-  deleteKvgStreamImage(id: number): Promise<boolean>;
-  
-  // KVG Price Streams
-  getKvgPriceStreams(kvgId: number): Promise<KvgPriceStream[]>;
-  getKvgPriceStream(id: number): Promise<KvgPriceStream | undefined>;
-  createKvgPriceStream(priceStream: InsertKvgPriceStream): Promise<KvgPriceStream>;
-  updateKvgPriceStream(id: number, priceStream: Partial<InsertKvgPriceStream>): Promise<KvgPriceStream | undefined>;
-  deleteKvgPriceStream(id: number): Promise<boolean>;
   
   // Access Points
   getAccessPoints(projectId: number): Promise<AccessPoint[]>;
@@ -142,12 +111,6 @@ export class MemStorage implements IStorage {
   private crmSettings: Map<number, CrmSettings>;
   private equipmentImages: Map<number, EquipmentImage>;
   
-  // KVG related storage
-  private kvg: Map<number, KastleVideoGuarding>;
-  private kvgStreams: Map<number, KvgStream>;
-  private kvgStreamImages: Map<number, KvgStreamImage>;
-  private kvgPriceStreams: Map<number, KvgPriceStream>;
-  
   private currentUserId: number;
   private currentProjectId: number;
   private currentAccessPointId: number;
@@ -159,10 +122,6 @@ export class MemStorage implements IStorage {
   private currentFloorplanMarkerId: number;
   private currentCrmSettingsId: number;
   private currentEquipmentImageId: number;
-  private currentKvgId: number;
-  private currentKvgStreamId: number;
-  private currentKvgStreamImageId: number;
-  private currentKvgPriceStreamId: number;
 
   constructor() {
     // Initialize session store
@@ -182,12 +141,6 @@ export class MemStorage implements IStorage {
     this.crmSettings = new Map();
     this.equipmentImages = new Map();
     
-    // Initialize KVG maps
-    this.kvg = new Map();
-    this.kvgStreams = new Map();
-    this.kvgStreamImages = new Map();
-    this.kvgPriceStreams = new Map();
-    
     this.currentUserId = 1;
     this.currentProjectId = 1;
     this.currentAccessPointId = 1;
@@ -199,10 +152,6 @@ export class MemStorage implements IStorage {
     this.currentFloorplanMarkerId = 1;
     this.currentCrmSettingsId = 1;
     this.currentEquipmentImageId = 1;
-    this.currentKvgId = 1;
-    this.currentKvgStreamId = 1;
-    this.currentKvgStreamImageId = 1;
-    this.currentKvgPriceStreamId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -859,326 +808,6 @@ export class MemStorage implements IStorage {
 
   async deleteEquipmentImage(id: number): Promise<boolean> {
     return this.equipmentImages.delete(id);
-  }
-  
-  // Kastle Video Guarding methods
-  async getKvg(id: number): Promise<KastleVideoGuarding | undefined> {
-    return this.kvg.get(id);
-  }
-  
-  async getKvgByProject(projectId: number): Promise<KastleVideoGuarding | undefined> {
-    return Array.from(this.kvg.values()).find(
-      (k) => k.project_id === projectId
-    );
-  }
-  
-  async createKvg(insertKvg: InsertKastleVideoGuarding): Promise<KastleVideoGuarding> {
-    const id = this.currentKvgId++;
-    const now = new Date();
-    
-    // Ensure all fields are properly initialized with null instead of undefined
-    const kvgData: KastleVideoGuarding = {
-      id,
-      project_id: insertKvg.project_id,
-      
-      // Discovery tab fields
-      bdm_owner: insertKvg.bdm_owner ?? null,
-      sales_engineer: insertKvg.sales_engineer ?? null,
-      kvg_sme: insertKvg.kvg_sme ?? null,
-      customer_name: insertKvg.customer_name ?? null,
-      site_address: insertKvg.site_address ?? null,
-      city: insertKvg.city ?? null,
-      state: insertKvg.state ?? null,
-      zip_code: insertKvg.zip_code ?? null,
-      crm_opportunity: insertKvg.crm_opportunity ?? null,
-      quote_date: insertKvg.quote_date ?? null,
-      time_zone: insertKvg.time_zone ?? null,
-      opportunity_stage: insertKvg.opportunity_stage ?? null,
-      opportunity_type: insertKvg.opportunity_type ?? null,
-      site_environment: insertKvg.site_environment ?? null,
-      region: insertKvg.region ?? null,
-      customer_vertical: insertKvg.customer_vertical ?? null,
-      property_category: insertKvg.property_category ?? null,
-      
-      // Patrol details
-      gdods_dispatches_per_month: insertKvg.gdods_dispatches_per_month ?? null,
-      on_demand_guard_dispatch_detail: insertKvg.on_demand_guard_dispatch_detail ?? null,
-      sgpp_scheduled_patrols_per_month: insertKvg.sgpp_scheduled_patrols_per_month ?? null,
-      sgpp_scheduled_guard_patrol_detail: insertKvg.sgpp_scheduled_guard_patrol_detail ?? null,
-      sgpp_scheduled_guard_patrols_schedule_detail: insertKvg.sgpp_scheduled_guard_patrols_schedule_detail ?? null,
-      
-      // Technology fields
-      technology: insertKvg.technology ?? null,
-      technology_deployed: insertKvg.technology_deployed ?? null,
-      camera_type: insertKvg.camera_type ?? null,
-      rspndr_gdods: insertKvg.rspndr_gdods ?? null,
-      rspndr_subscriptions: insertKvg.rspndr_subscriptions ?? null,
-      install_type: insertKvg.install_type ?? null,
-      
-      // Stream counts
-      event_video_trigger_streams: insertKvg.event_video_trigger_streams ?? null,
-      virtual_patrol_streams: insertKvg.virtual_patrol_streams ?? null,
-      event_action_clip_streams: insertKvg.event_action_clip_streams ?? null,
-      event_action_multi_view_streams: insertKvg.event_action_multi_view_streams ?? null,
-      health_streams: insertKvg.health_streams ?? null,
-      audio_talk_down_speakers: insertKvg.audio_talk_down_speakers ?? null,
-      
-      // Monitoring details
-      total_events_per_month: insertKvg.total_events_per_month ?? null,
-      total_virtual_patrols_per_month: insertKvg.total_virtual_patrols_per_month ?? null,
-      patrol_frequency: insertKvg.patrol_frequency ?? null,
-      total_health_patrols_per_month: insertKvg.total_health_patrols_per_month ?? null,
-      
-      // Site Assessment fields
-      lighting_requirements: insertKvg.lighting_requirements ?? null,
-      lighting_notes: insertKvg.lighting_notes ?? null,
-      camera_field_of_view: insertKvg.camera_field_of_view ?? null,
-      fov_notes: insertKvg.fov_notes ?? null,
-      network_connectivity: insertKvg.network_connectivity ?? null,
-      network_notes: insertKvg.network_notes ?? null,
-      site_assessment_notes: insertKvg.site_assessment_notes ?? null,
-      
-      // Use Case tab fields
-      use_case_commitment: insertKvg.use_case_commitment ?? null,
-      use_case_response: insertKvg.use_case_response ?? null,
-      sow_detailed_outline: insertKvg.sow_detailed_outline ?? null,
-      schedule_details: insertKvg.schedule_details ?? null,
-      quote_with_sow_attached: insertKvg.quote_with_sow_attached ?? null,
-      quote_design_attached: insertKvg.quote_design_attached ?? null,
-      
-      // VOC Protocol tab fields
-      am_name: insertKvg.am_name ?? null,
-      project_id_value: insertKvg.project_id_value ?? null,
-      voc_script: insertKvg.voc_script ?? null,
-      voc_contact_name: insertKvg.voc_contact_name ?? null,
-      type_of_install_account: insertKvg.type_of_install_account ?? null,
-      
-      // Project Deployment fields
-      pm_name: insertKvg.pm_name ?? null,
-      deployment_date: insertKvg.deployment_date ?? null,
-      opportunity_number: insertKvg.opportunity_number ?? null,
-      project_manager: insertKvg.project_manager ?? null,
-      site_supervisor: insertKvg.site_supervisor ?? null,
-      technician: insertKvg.technician ?? null,
-      project_scope_description: insertKvg.project_scope_description ?? null,
-      deployment_requirements: insertKvg.deployment_requirements ?? null,
-      installation_requirements: insertKvg.installation_requirements ?? null,
-      parts_list_credentials: insertKvg.parts_list_credentials ?? null,
-      gateway_ip_address: insertKvg.gateway_ip_address ?? null,
-      gateway_port: insertKvg.gateway_port ?? null,
-      gateway_username: insertKvg.gateway_username ?? null,
-      gateway_password: insertKvg.gateway_password ?? null,
-      stream_names_ids: insertKvg.stream_names_ids ?? null,
-      stream_health_verification: insertKvg.stream_health_verification ?? null,
-      speaker_verification: insertKvg.speaker_verification ?? null,
-      
-      // Pricing tab fields
-      customer_type: insertKvg.customer_type ?? null,
-      
-      // Additional services
-      voc_escalations: insertKvg.voc_escalations ?? null,
-      dispatch_responses: insertKvg.dispatch_responses ?? null,
-      gdods_patrols: insertKvg.gdods_patrols ?? null,
-      sgpp_patrols: insertKvg.sgpp_patrols ?? null,
-      forensic_investigations: insertKvg.forensic_investigations ?? null,
-      app_users: insertKvg.app_users ?? null,
-      audio_devices: insertKvg.audio_devices ?? null,
-      
-      // Incident types (stored as JSON)
-      incident_types: insertKvg.incident_types ?? null,
-      
-      // Custom incident types
-      custom_incident_type1: insertKvg.custom_incident_type1 ?? null,
-      custom_incident_type1_selected: insertKvg.custom_incident_type1_selected ?? null,
-      custom_incident_type2: insertKvg.custom_incident_type2 ?? null,
-      custom_incident_type2_selected: insertKvg.custom_incident_type2_selected ?? null,
-      custom_incident_type3: insertKvg.custom_incident_type3 ?? null,
-      custom_incident_type3_selected: insertKvg.custom_incident_type3_selected ?? null,
-      custom_incident_type4: insertKvg.custom_incident_type4 ?? null,
-      custom_incident_type4_selected: insertKvg.custom_incident_type4_selected ?? null,
-      custom_incident_type5: insertKvg.custom_incident_type5 ?? null,
-      custom_incident_type5_selected: insertKvg.custom_incident_type5_selected ?? null,
-      
-      // Timestamps
-      created_at: now,
-      updated_at: now
-    };
-    
-    this.kvg.set(id, kvgData);
-    return kvgData;
-  }
-  
-  async updateKvg(id: number, updateKvg: Partial<InsertKastleVideoGuarding>): Promise<KastleVideoGuarding | undefined> {
-    const kvgData = this.kvg.get(id);
-    if (!kvgData) {
-      return undefined;
-    }
-    
-    const updatedKvg: KastleVideoGuarding = {
-      ...kvgData,
-      ...updateKvg,
-      updated_at: new Date()
-    };
-    
-    this.kvg.set(id, updatedKvg);
-    return updatedKvg;
-  }
-  
-  async deleteKvg(id: number): Promise<boolean> {
-    return this.kvg.delete(id);
-  }
-  
-  // KVG Stream methods
-  async getKvgStreams(kvgId: number): Promise<KvgStream[]> {
-    return Array.from(this.kvgStreams.values()).filter(
-      (s) => s.kvg_id === kvgId
-    );
-  }
-  
-  async getKvgStream(id: number): Promise<KvgStream | undefined> {
-    return this.kvgStreams.get(id);
-  }
-  
-  async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
-    const id = this.currentKvgStreamId++;
-    const now = new Date();
-    
-    // Ensure all fields are properly initialized with null instead of undefined
-    const stream: KvgStream = {
-      id,
-      kvg_id: insertStream.kvg_id,
-      project_id: insertStream.project_id,
-      location: insertStream.location ?? null,
-      fov_accessibility: insertStream.fov_accessibility ?? null,
-      camera_accessibility: insertStream.camera_accessibility ?? null,
-      camera_type: insertStream.camera_type ?? null,
-      environment: insertStream.environment ?? null,
-      use_case_problem: insertStream.use_case_problem ?? null,
-      speaker_association: insertStream.speaker_association ?? null,
-      audio_talk_down: insertStream.audio_talk_down ?? null,
-      event_monitoring: insertStream.event_monitoring ?? null,
-      monitoring_start_time: insertStream.monitoring_start_time ?? null,
-      monitoring_end_time: insertStream.monitoring_end_time ?? null,
-      monitoring_days: insertStream.monitoring_days ?? null,
-      patrol_frequency: insertStream.patrol_frequency ?? null,
-      patrol_quantity: insertStream.patrol_quantity ?? null,
-      patrol_days: insertStream.patrol_days ?? null,
-      has_ai_detection: insertStream.has_ai_detection ?? false,
-      ai_features: insertStream.ai_features ?? null,
-      event_volume: insertStream.event_volume ?? null,
-      notes: insertStream.notes ?? null,
-      created_at: now,
-      updated_at: now
-    };
-    
-    this.kvgStreams.set(id, stream);
-    return stream;
-  }
-  
-  async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
-    const stream = this.kvgStreams.get(id);
-    if (!stream) {
-      return undefined;
-    }
-    
-    const updatedStream: KvgStream = {
-      ...stream,
-      ...updateStream,
-      updated_at: new Date()
-    };
-    
-    this.kvgStreams.set(id, updatedStream);
-    return updatedStream;
-  }
-  
-  async deleteKvgStream(id: number): Promise<boolean> {
-    return this.kvgStreams.delete(id);
-  }
-  
-  // KVG Stream Images methods
-  async getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]> {
-    return Array.from(this.kvgStreamImages.values()).filter(
-      (i) => i.stream_id === streamId
-    );
-  }
-  
-  async getKvgStreamImage(id: number): Promise<KvgStreamImage | undefined> {
-    return this.kvgStreamImages.get(id);
-  }
-  
-  async createKvgStreamImage(insertImage: InsertKvgStreamImage): Promise<KvgStreamImage> {
-    const id = this.currentKvgStreamImageId++;
-    const now = new Date();
-    
-    // Ensure all fields are properly initialized with null instead of undefined
-    const image: KvgStreamImage = {
-      id,
-      stream_id: insertImage.stream_id,
-      kvg_id: insertImage.kvg_id,
-      project_id: insertImage.project_id,
-      image_data: insertImage.image_data,
-      thumbnail_data: insertImage.thumbnail_data ?? null,
-      filename: insertImage.filename ?? null,
-      created_at: now
-    };
-    
-    this.kvgStreamImages.set(id, image);
-    return image;
-  }
-  
-  async deleteKvgStreamImage(id: number): Promise<boolean> {
-    return this.kvgStreamImages.delete(id);
-  }
-  
-  // KVG Price Streams methods
-  async getKvgPriceStreams(kvgId: number): Promise<KvgPriceStream[]> {
-    return Array.from(this.kvgPriceStreams.values()).filter(
-      (p) => p.kvg_id === kvgId
-    );
-  }
-  
-  async getKvgPriceStream(id: number): Promise<KvgPriceStream | undefined> {
-    return this.kvgPriceStreams.get(id);
-  }
-  
-  async createKvgPriceStream(insertPriceStream: InsertKvgPriceStream): Promise<KvgPriceStream> {
-    const id = this.currentKvgPriceStreamId++;
-    const now = new Date();
-    
-    // Ensure all fields are properly initialized
-    const priceStream: KvgPriceStream = {
-      id,
-      kvg_id: insertPriceStream.kvg_id,
-      project_id: insertPriceStream.project_id,
-      quantity: insertPriceStream.quantity,
-      event_volume: insertPriceStream.event_volume,
-      patrols_per_week: insertPriceStream.patrols_per_week,
-      created_at: now,
-      updated_at: now
-    };
-    
-    this.kvgPriceStreams.set(id, priceStream);
-    return priceStream;
-  }
-  
-  async updateKvgPriceStream(id: number, updatePriceStream: Partial<InsertKvgPriceStream>): Promise<KvgPriceStream | undefined> {
-    const priceStream = this.kvgPriceStreams.get(id);
-    if (!priceStream) {
-      return undefined;
-    }
-    
-    const updatedPriceStream: KvgPriceStream = {
-      ...priceStream,
-      ...updatePriceStream,
-      updated_at: new Date()
-    };
-    
-    this.kvgPriceStreams.set(id, updatedPriceStream);
-    return updatedPriceStream;
-  }
-  
-  async deleteKvgPriceStream(id: number): Promise<boolean> {
-    return this.kvgPriceStreams.delete(id);
   }
 }
 
