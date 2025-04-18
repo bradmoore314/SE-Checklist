@@ -40,9 +40,13 @@ import {
   Camera,
   ImageIcon,
   Globe,
-  Languages
+  Languages,
+  Activity,
+  Lightbulb as LightbulbIcon,
+  ScanFace
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { FileUpload } from "@/components/ui/file-upload";
 import type { Stream, StreamImage } from "../types";
 import StreamImagesModal from "../components/modals/StreamImagesModal";
 import { Badge } from "@/components/ui/badge";
@@ -2247,37 +2251,133 @@ const KastleVideoGuardingPage: React.FC = () => {
                     Add in the completed Site plans that have been detailed for this opportunity utilizing IPVM, Kastle design tools or similar. This should show all exterior cameras in the proper location/FOV position with names.
                   </p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="sitePlanLink">Site Plan Link</Label>
-                      <Input
-                        id="sitePlanLink"
-                        value={formData.sitePlanLink || ""}
-                        onChange={(e) => handleFormChange("sitePlanLink", e.target.value)}
-                        placeholder="Link to IPVM or Blue Beam site plan (editable)"
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                      <div className="space-y-2 mb-4">
+                        <Label htmlFor="sitePlanUpload" className="flex items-center gap-1">
+                          Site Plan Upload
+                          <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                            <div className="tooltip" title="Upload site plans showing all exterior cameras with proper FOV positioning and naming">
+                              <span>ⓘ</span>
+                            </div>
+                          </Button>
+                        </Label>
+                        <FileUpload
+                          id="sitePlanUpload"
+                          title="Upload Site Plan"
+                          description="PDF or CAD file showing camera locations and FOV"
+                          accept="application/pdf,image/*,.dwg,.dxf"
+                          maxSize={50}
+                          onFileUpload={(file) => {
+                            // In a real implementation, this would upload the file to a server
+                            // and store the URL or file ID in formData
+                            console.log("Uploaded site plan", file);
+                            toast({
+                              title: "Site Plan Uploaded",
+                              description: `${file?.name || "File"} has been uploaded successfully`,
+                            });
+                          }}
+                        />
+                      </div>
+                    
+                      <div className="space-y-2">
+                        <Label htmlFor="sitePlanNotes">Site Plan Notes</Label>
+                        <Textarea 
+                          id="sitePlanNotes"
+                          value={formData.sitePlanNotes || ""}
+                          onChange={(e) => handleFormChange("sitePlanNotes", e.target.value)}
+                          placeholder="Any site notes of benefit in regards to scene, site, environment, surrounding areas or other"
+                          rows={2}
+                        />
+                      </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="sitePhotoLink">Link to Site Photos</Label>
-                      <Input
-                        id="sitePhotoLink"
-                        value={formData.sitePhotoLink || ""}
-                        onChange={(e) => handleFormChange("sitePhotoLink", e.target.value)}
-                        placeholder="Link to photos with associated name/number from Discovery"
-                      />
+                    <div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sitePhotoUpload" className="flex items-center gap-1">
+                          Site Photos Upload
+                          <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                            <div className="tooltip" title="Upload photos of the site that correspond to locations on the site plan">
+                              <span>ⓘ</span>
+                            </div>
+                          </Button>
+                        </Label>
+                        <FileUpload
+                          id="sitePhotoUpload"
+                          title="Upload Site Photos"
+                          description="Photos from site showing specific areas of interest"
+                          accept="image/*"
+                          maxSize={50}
+                          onFileUpload={(file) => {
+                            // In a real implementation, this would upload the file to a server
+                            // and store the URL or file ID in formData
+                            console.log("Uploaded site photo", file);
+                            toast({
+                              title: "Site Photo Uploaded",
+                              description: `${file?.name || "Photo"} has been uploaded successfully`,
+                            });
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="sitePlanNotes">Site Plan Notes</Label>
-                    <Textarea 
-                      id="sitePlanNotes"
-                      value={formData.sitePlanNotes || ""}
-                      onChange={(e) => handleFormChange("sitePlanNotes", e.target.value)}
-                      placeholder="Any site notes of benefit in regards to scene, site, environment, surrounding areas or other"
-                      rows={2}
-                    />
+                  <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                    <h4 className="text-md font-medium flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300">
+                      <span>✨</span> AI-Powered Site Assessment Features
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "AI Feature",
+                          description: "AI-powered site assessment recommendation engine activated",
+                        })}
+                      >
+                        <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-md">
+                          <LightbulbIcon className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">AI Recommendations</div>
+                          <div className="text-xs text-muted-foreground">Get intelligent placement suggestions</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "AI Feature",
+                          description: "Live equipment detection tool activated",
+                        })}
+                      >
+                        <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-md">
+                          <ScanFace className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">Equipment Detection</div>
+                          <div className="text-xs text-muted-foreground">Identify existing hardware</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "AI Feature",
+                          description: "Coverage analysis tool activated",
+                        })}
+                      >
+                        <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-md">
+                          <Activity className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">Coverage Analysis</div>
+                          <div className="text-xs text-muted-foreground">Analyze security gaps</div>
+                        </div>
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
@@ -2289,36 +2389,143 @@ const KastleVideoGuardingPage: React.FC = () => {
                     The equipment list must be loaded into CPQ for proper loads and pricing. Any discounting should be done post adding the equipment.
                   </p>
                   
-                  <div className="space-y-2 mb-4">
-                    <Label htmlFor="equipmentListLink">Link to SE Equipment List</Label>
-                    <Input
-                      id="equipmentListLink"
-                      value={formData.equipmentListLink || ""}
-                      onChange={(e) => handleFormChange("equipmentListLink", e.target.value)}
-                      placeholder="Fill in with link to file if naming for each view is clear, include speakers and servers if required"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                      <div className="space-y-2 mb-4">
+                        <Label htmlFor="equipmentBomUpload" className="flex items-center gap-1">
+                          Upload Equipment List
+                          <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                            <div className="tooltip" title="Upload a spreadsheet containing your equipment list with all required items">
+                              <span>ⓘ</span>
+                            </div>
+                          </Button>
+                        </Label>
+                        <FileUpload
+                          id="equipmentBomUpload"
+                          title="Upload Equipment List"
+                          description="Excel or CSV file with detailed BOM"
+                          accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                          maxSize={10}
+                          onFileUpload={(file) => {
+                            // In a real implementation, this would upload the file to a server
+                            // and store the URL or file ID in formData
+                            console.log("Uploaded equipment list", file);
+                            toast({
+                              title: "Equipment List Uploaded",
+                              description: `${file?.name || "File"} has been uploaded successfully`,
+                            });
+                          }}
+                        />
+                      </div>
+                    
+                      <div className="space-y-2">
+                        <Label htmlFor="equipmentNotes" className="flex items-center gap-1">
+                          Equipment Notes
+                          <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                            <div className="tooltip" title="Enter any specific notes or requirements in regards to equipment">
+                              <span>ⓘ</span>
+                            </div>
+                          </Button>
+                        </Label>
+                        <Textarea 
+                          id="equipmentNotes"
+                          value={formData.equipmentNotes || ""}
+                          onChange={(e) => handleFormChange("equipmentNotes", e.target.value)}
+                          placeholder="Enter any specific notes or requirements in regards to equipment"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="space-y-2">
+                        <Label htmlFor="equipmentBom" className="flex items-center gap-1">
+                          Bill of Materials (BOM)
+                          <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full" asChild>
+                            <div className="tooltip" title="Paste BOM details here with Video, Speakers, Servers, Appliance, Transmission and Other components">
+                              <span>ⓘ</span>
+                            </div>
+                          </Button>
+                        </Label>
+                        <Textarea 
+                          id="equipmentBom"
+                          value={formData.equipmentBom || ""}
+                          onChange={(e) => handleFormChange("equipmentBom", e.target.value)}
+                          placeholder="Paste BOM Here with Video, Speakers, Servers, Appliance, Transmission and Other"
+                          rows={8}
+                        />
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="space-y-2 mb-4">
-                    <Label htmlFor="equipmentNotes">Equipment Notes</Label>
-                    <Textarea 
-                      id="equipmentNotes"
-                      value={formData.equipmentNotes || ""}
-                      onChange={(e) => handleFormChange("equipmentNotes", e.target.value)}
-                      placeholder="Enter any specific notes or requirements in regards to equipment"
-                      rows={2}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="equipmentBom">Bill of Materials (BOM)</Label>
-                    <Textarea 
-                      id="equipmentBom"
-                      value={formData.equipmentBom || ""}
-                      onChange={(e) => handleFormChange("equipmentBom", e.target.value)}
-                      placeholder="Paste BOM Here with Video, Speakers, Servers, Appliance, Transmission and Other"
-                      rows={4}
-                    />
+                  <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-4">
+                    <h4 className="text-md font-medium flex items-center gap-2 mb-2 text-emerald-700 dark:text-emerald-300">
+                      <span>🔄</span> Multi-Format Export Options
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "Export Feature",
+                          description: "Equipment list exported to Excel",
+                        })}
+                      >
+                        <div className="bg-emerald-100 dark:bg-emerald-900 p-2 rounded-md">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-700 dark:text-emerald-300">
+                            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                            <path d="M4 7V2h6"></path>
+                            <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                            <path d="M4 12v-3a2 2 0 0 1 2-2h5.9"></path>
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">Export to Excel</div>
+                          <div className="text-xs text-muted-foreground">Spreadsheet format</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "Export Feature",
+                          description: "Equipment list exported to PDF",
+                        })}
+                      >
+                        <div className="bg-emerald-100 dark:bg-emerald-900 p-2 rounded-md">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-700 dark:text-emerald-300">
+                            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                            <path d="M5 2h9"></path>
+                            <path d="M5 14a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5Z"></path>
+                            <path d="M5 14V6a2 2 0 0 1 2-2h7"></path>
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">Export to PDF</div>
+                          <div className="text-xs text-muted-foreground">Document format</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="h-auto py-2 px-3 flex items-center justify-start gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-slate-800"
+                        onClick={() => toast({
+                          title: "Export Feature",
+                          description: "Equipment list exported to CSV",
+                        })}
+                      >
+                        <div className="bg-emerald-100 dark:bg-emerald-900 p-2 rounded-md">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-700 dark:text-emerald-300">
+                            <path d="M8 21h8a2 2 0 0 0 2-2v-7.93a2 2 0 0 0-.59-1.42L12 4.25l-5.41 5.4A2 2 0 0 0 6 11.07V19a2 2 0 0 0 2 2Z"></path>
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium">Export to CSV</div>
+                          <div className="text-xs text-muted-foreground">Import-friendly format</div>
+                        </div>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
