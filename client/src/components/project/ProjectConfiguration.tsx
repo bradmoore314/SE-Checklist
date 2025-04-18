@@ -1,5 +1,4 @@
 import { Project } from "@shared/schema";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
@@ -8,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
 
 interface SiteWalkConfigurationProps {
   project: Project;
