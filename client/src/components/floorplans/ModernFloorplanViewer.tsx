@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { 
   Loader2, Download, MoveHorizontal, MousePointer, Camera, 
   Layers, Eye, EyeOff, ZoomIn, ZoomOut, Lock, Unlock, TextCursor, 
-  Square, Circle, Minus
+  Square, Circle, Minus, Ruler
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -444,7 +444,14 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
 
   // Handle drawing tools
   const handleDrawingStart = (e: React.MouseEvent) => {
-    if (!pdfContainerRef.current || !isDrawingMode() || !isLayerVisible('annotations')) return;
+    if (!pdfContainerRef.current || !isDrawingMode()) return;
+    
+    // Check if layer is visible based on tool
+    const layerCheck = viewerMode === 'measure' 
+      ? isLayerVisible('measurements') 
+      : isLayerVisible('annotations');
+      
+    if (!layerCheck) return;
     
     const rect = pdfContainerRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -456,15 +463,39 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
       setTextInput('');
       // Open a text input dialog or focus a textarea
     } else {
-      // For shapes, create initial annotation
+      // Determine the annotation type based on the current tool
+      let annotationType: Annotation['type'];
+      
+      if (viewerMode === 'measure') {
+        annotationType = 'measurement';
+      } else if (viewerMode === 'draw_line') {
+        annotationType = 'line';
+      } else if (viewerMode === 'draw_rectangle') {
+        annotationType = 'rectangle';
+      } else {
+        annotationType = 'circle';
+      }
+      
+      // Set appropriate styles based on annotation type
+      const annotationColor = viewerMode === 'measure' ? '#2563eb' : strokeColor;
+      const annotationWidth = viewerMode === 'measure' ? 2 : strokeWidth;
+      const annotationFill = viewerMode === 'measure' ? undefined : 
+                             (viewerMode === 'draw_line' ? undefined : fillColor);
+      
+      // Create the new annotation
       const newAnnotation: Annotation = {
         id: `annotation-${Date.now()}`,
-        type: viewerMode === 'draw_line' ? 'line' : viewerMode === 'draw_rectangle' ? 'rectangle' : 'circle',
+        type: annotationType,
         points: [{ x, y }],
-        strokeColor,
-        strokeWidth,
-        fillColor: viewerMode === 'draw_line' ? undefined : fillColor
+        strokeColor: annotationColor,
+        strokeWidth: annotationWidth,
+        fillColor: annotationFill
       };
+      
+      // For measurements, add additional properties
+      if (viewerMode === 'measure') {
+        newAnnotation.measurementUnit = 'px';
+      }
       
       setCurrentAnnotation(newAnnotation);
       setIsDrawing(true);
@@ -479,11 +510,32 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
     // Update the annotation based on type
-    if (currentAnnotation.type === 'line') {
+    if (currentAnnotation.type === 'line' || currentAnnotation.type === 'measurement') {
       setCurrentAnnotation({
         ...currentAnnotation,
         points: [currentAnnotation.points[0], { x, y }]
       });
+      
+      // For measurements, calculate and update the measurement value
+      if (currentAnnotation.type === 'measurement') {
+        const startPoint = currentAnnotation.points[0];
+        const distanceX = x - startPoint.x;
+        const distanceY = y - startPoint.y;
+        const pixelDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        
+        // Calculate the real-world distance based on the current scale
+        // This is a simplified calculation that can be refined with a proper scale factor
+        // For now, we'll just use the pixel distance with 2 decimal places
+        const realDistance = parseFloat(pixelDistance.toFixed(2));
+        
+        if (currentAnnotation) {
+          setCurrentAnnotation({
+            ...currentAnnotation,
+            points: [currentAnnotation.points[0], { x, y }],
+            measurementValue: realDistance
+          });
+        }
+      }
     } else if (currentAnnotation.type === 'rectangle' || currentAnnotation.type === 'circle') {
       setCurrentAnnotation({
         ...currentAnnotation,
@@ -1533,6 +1585,7 @@ const ModernFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMa
                       title="Measure Distance"
                       disabled={!isLayerVisible('measurements') || isLayerLocked('measurements')}
                     >
+                      <Ruler className="h-3 w-3 mr-1" />
                       Measure
                     </Button>
                   </div>
