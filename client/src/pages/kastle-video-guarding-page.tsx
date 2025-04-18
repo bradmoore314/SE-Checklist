@@ -34,7 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { 
   Plus, 
-  Trash2, 
+  Trash2 as Trash, 
   Copy,
   Calculator,
   Camera,
@@ -43,6 +43,8 @@ import {
   Languages,
   Activity,
   Lightbulb as LightbulbIcon,
+  Info as InfoIcon,
+  Video as VideoIcon,
   ScanFace
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";

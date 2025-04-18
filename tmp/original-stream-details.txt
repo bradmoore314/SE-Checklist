@@ -1,0 +1,376 @@
+        <TabsContent value="stream-details">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>📹</span> Camera Stream Configuration
+              </CardTitle>
+              <CardDescription>Enter details for initial camera stream</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Name">Stream Name</Label>
+                    <Input 
+                      id="cameraStream1Name"
+                      value={formData.cameraStream1Name}
+                      onChange={(e) => handleFormChange("cameraStream1Name", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter stream name"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Location">Location</Label>
+                    <Input 
+                      id="cameraStream1Location"
+                      value={formData.cameraStream1Location}
+                      onChange={(e) => handleFormChange("cameraStream1Location", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter camera location"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Type">Camera Type</Label>
+                    <Select 
+                      value={formData.cameraStream1Type}
+                      onValueChange={(value) => handleFormChange("cameraStream1Type", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select camera type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PTZ">PTZ</SelectItem>
+                        <SelectItem value="Fixed">Fixed</SelectItem>
+                        <SelectItem value="Fisheye">Fisheye</SelectItem>
+                        <SelectItem value="Bullet">Bullet</SelectItem>
+                        <SelectItem value="Dome">Dome</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Accessibility">Area Accessibility</Label>
+                    <Select 
+                      value={formData.cameraStream1Accessibility}
+                      onValueChange={(value) => handleFormChange("cameraStream1Accessibility", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select area accessibility" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Public">Public</SelectItem>
+                        <SelectItem value="Restricted">Restricted</SelectItem>
+                        <SelectItem value="Private">Private</SelectItem>
+                        <SelectItem value="Secure">Secure</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1UseCaseProblem">Unique Use Case Problem</Label>
+                    <Textarea 
+                      id="cameraStream1UseCaseProblem"
+                      value={formData.cameraStream1UseCaseProblem}
+                      onChange={(e) => handleFormChange("cameraStream1UseCaseProblem", e.target.value)}
+                      placeholder="Enter any unique use case problem for this camera"
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cameraStream1Association">Camera Association</Label>
+                    <Input 
+                      id="cameraStream1Association"
+                      value={formData.cameraStream1Association}
+                      onChange={(e) => handleFormChange("cameraStream1Association", e.target.value)}
+                      autoComplete="off"
+                      placeholder="Enter any associated equipment or areas"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t pt-6 mt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <span>📝</span> Additional Camera Streams
+                  </h3>
+                  <Button onClick={() => addStream()} className="flex items-center gap-1">
+                    <Plus size={16} /> Add Stream
+                  </Button>
+                </div>
+                
+                {streams.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Qty</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Monitored Area</TableHead>
+                          <TableHead>Accessibility</TableHead>
+                          <TableHead>Analytic Rule 1</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Rule 2</TableHead>
+                          <TableHead>Dwell Time</TableHead>
+                          <TableHead>Schedule</TableHead>
+                          <TableHead>Event Volume</TableHead>
+                          <TableHead>Patrol Type</TableHead>
+                          <TableHead>Patrols/Week</TableHead>
+                          <TableHead>Images</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {streams.map((stream) => (
+                          <TableRow key={stream.id}>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="1" 
+                                value={stream.quantity}
+                                onChange={(e) => updateStream(stream.id, "quantity", parseInt(e.target.value))}
+                                className="w-16"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                value={stream.description}
+                                onChange={(e) => updateStream(stream.id, "description", e.target.value)}
+                                placeholder="Stream description"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.monitoredArea}
+                                onValueChange={(value) => updateStream(stream.id, "monitoredArea", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select area" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Pool">Pool</SelectItem>
+                                  <SelectItem value="Parking Lot">Parking Lot</SelectItem>
+                                  <SelectItem value="Entrance">Entrance</SelectItem>
+                                  <SelectItem value="Lobby">Lobby</SelectItem>
+                                  <SelectItem value="Garage">Garage</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.accessibility}
+                                onValueChange={(value) => updateStream(stream.id, "accessibility", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select accessibility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Secure">Secure</SelectItem>
+                                  <SelectItem value="Open">Open</SelectItem>
+                                  <SelectItem value="Restricted">Restricted</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule1}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule1", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select rule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.dwellTime1}
+                                onChange={(e) => updateStream(stream.id, "dwellTime1", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.analyticRule1 === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.analyticRule2}
+                                onValueChange={(value) => updateStream(stream.id, "analyticRule2", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select rule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Person Detected">Person Detected</SelectItem>
+                                  <SelectItem value="Vehicle Detected">Vehicle Detected</SelectItem>
+                                  <SelectItem value="Motion Detected">Motion Detected</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.dwellTime2}
+                                onChange={(e) => updateStream(stream.id, "dwellTime2", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.analyticRule2 === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.schedule}
+                                onValueChange={(value) => updateStream(stream.id, "schedule", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select schedule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="24/7">24/7</SelectItem>
+                                  <SelectItem value="Business Hours">Business Hours</SelectItem>
+                                  <SelectItem value="After Hours">After Hours</SelectItem>
+                                  <SelectItem value="Custom">Custom</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                max="1000"
+                                value={stream.eventVolume}
+                                onChange={(e) => updateStream(stream.id, "eventVolume", parseInt(e.target.value))}
+                                className="w-16"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Select 
+                                value={stream.patrolType}
+                                onValueChange={(value) => updateStream(stream.id, "patrolType", value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Standard">Standard</SelectItem>
+                                  <SelectItem value="Premium">Premium</SelectItem>
+                                  <SelectItem value="None">None</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Input 
+                                type="number" 
+                                min="0" 
+                                value={stream.patrolsPerWeek}
+                                onChange={(e) => updateStream(stream.id, "patrolsPerWeek", parseInt(e.target.value))}
+                                className="w-16"
+                                disabled={stream.patrolType === "None"}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{stream.images.length} images</span>
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    title="Upload Image"
+                                    onClick={() => {
+                                      // Create file input element
+                                      const input = document.createElement('input');
+                                      input.type = 'file';
+                                      input.accept = 'image/*';
+                                      input.onchange = (e) => {
+                                        const file = (e.target as HTMLInputElement).files?.[0];
+                                        if (file) {
+                                          const reader = new FileReader();
+                                          reader.onload = (event) => {
+                                            const imageData = event.target?.result as string;
+                                            // Remove data URL prefix for consistent storage
+                                            const base64Data = imageData.split(',')[1];
+                                            
+                                            // Create new image object
+                                            const newImage: StreamImage = {
+                                              id: Date.now(),
+                                              imageData: base64Data,
+                                              filename: file.name
+                                            };
+                                            
+                                            // Update stream with new image
+                                            const updatedImages = [...stream.images, newImage];
+                                            updateStream(stream.id, "images", updatedImages);
+                                            
+                                            toast({
+                                              title: "Image Added",
+                                              description: `Image "${file.name}" added to stream`
+                                            });
+                                          };
+                                          reader.readAsDataURL(file);
+                                        }
+                                      };
+                                      input.click();
+                                    }}
+                                  >
+                                    <Camera size={16} />
+                                  </Button>
+                                  {stream.images.length > 0 && (
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      title="View Images"
+                                      onClick={() => {
+                                        setSelectedStream(stream);
+                                        setIsImagesModalOpen(true);
+                                      }}
+                                    >
+                                      <ImageIcon size={16} />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => addStream(stream)}
+                                  title="Duplicate Stream"
+                                >
+                                  <Copy size={16} />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => removeStream(stream.id)}
+                                  className="text-red-500 hover:text-red-700"
+                                  title="Remove Stream"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border rounded-md border-dashed">
+                    <p className="text-muted-foreground">No streams added yet. Add a stream to get started.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
