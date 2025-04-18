@@ -1277,6 +1277,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CRM Integration endpoints
+  app.get("/api/integration/status", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Check if various integrations are configured
+      const status = {
+        sharepoint: isSharePointConfigured(),
+        crm: false,
+        microsoftAuth: areAzureCredentialsAvailable()
+      };
+      
+      // Check if CRM is configured
+      try {
+        const crm = getCrmSystem();
+        status.crm = await crm.isConfigured();
+      } catch (error) {
+        console.error("Error checking CRM configuration:", error);
+      }
+      
+      res.json(status);
+    } catch (error) {
+      console.error("Error checking integration status:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error checking integration status" 
+      });
+    }
+  });
+
+  // Link a project to CRM
+  app.post("/api/projects/:projectId/crm-link", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      const { crmType = "dynamics365" } = req.body;
+      
+      // Get CRM System
+      const crm = getCrmSystem(crmType);
+      
+      // Check if configured
+      if (!await crm.isConfigured()) {
+        return res.status(400).json({ 
+          message: `CRM system ${crmType} is not configured` 
+        });
+      }
+      
+      // Link to CRM
+      await linkProjectToCrm(projectId, crmType);
+      
+      // Get updated project
+      const project = await storage.getProject(projectId);
+      
+      res.json({
+        success: true,
+        message: "Project linked to CRM successfully",
+        project
+      });
+    } catch (error) {
+      console.error("Error linking project to CRM:", error);
+      res.status(500).json({ 
+        success: false,
+        error: error instanceof Error ? error.message : "An unknown error occurred" 
+      });
+    }
+  });
+  
+  // CRM Settings endpoints
+  app.get("/api/crm-settings", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Get all CRM settings from database
+      const crmSettingsList = await storage.getCrmSettings();
+      res.json(crmSettingsList);
+    } catch (error) {
+      console.error("Error fetching CRM settings:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error fetching CRM settings" 
+      });
+    }
+  });
+  
+  app.post("/api/crm-settings", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Validate the request body
+      const insertCrmSettingsSchema = z.object({
+        crm_type: z.string(),
+        base_url: z.string().url(),
+        api_version: z.string().optional(),
+        auth_type: z.string(),
+        settings: z.record(z.unknown())
+      });
+      
+      const result = insertCrmSettingsSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid CRM settings", 
+          errors: result.error.errors 
+        });
+      }
+      
+      // Create CRM settings
+      const crmSettings = await storage.createCrmSettings(result.data);
+      
+      res.status(201).json(crmSettings);
+    } catch (error) {
+      console.error("Error creating CRM settings:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error creating CRM settings" 
+      });
+    }
+  });
+  
+  app.put("/api/crm-settings/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const settingsId = parseInt(req.params.id);
+      if (isNaN(settingsId)) {
+        return res.status(400).json({ message: "Invalid settings ID" });
+      }
+      
+      // Validate the request body
+      const updateCrmSettingsSchema = z.object({
+        crm_type: z.string().optional(),
+        base_url: z.string().url().optional(),
+        api_version: z.string().optional(),
+        auth_type: z.string().optional(),
+        settings: z.record(z.unknown()).optional()
+      });
+      
+      const result = updateCrmSettingsSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid CRM settings", 
+          errors: result.error.errors 
+        });
+      }
+      
+      // Update CRM settings
+      const crmSettings = await storage.updateCrmSettings(settingsId, result.data);
+      
+      if (!crmSettings) {
+        return res.status(404).json({ message: "CRM settings not found" });
+      }
+      
+      res.json(crmSettings);
+    } catch (error) {
+      console.error("Error updating CRM settings:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error updating CRM settings" 
+      });
+    }
+  });
+  
+  app.delete("/api/crm-settings/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const settingsId = parseInt(req.params.id);
+      if (isNaN(settingsId)) {
+        return res.status(400).json({ message: "Invalid settings ID" });
+      }
+      
+      const success = await storage.deleteCrmSettings(settingsId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "CRM settings not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting CRM settings:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Unknown error deleting CRM settings" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

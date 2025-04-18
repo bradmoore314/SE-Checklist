@@ -7,7 +7,9 @@ import {
   Intercom, InsertIntercom,
   Image, InsertImage,
   Floorplan, InsertFloorplan,
-  FloorplanMarker, InsertFloorplanMarker
+  FloorplanMarker, InsertFloorplanMarker,
+  CrmSettings, InsertCrmSettings,
+  EquipmentImage, InsertEquipmentImage
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -76,6 +78,21 @@ export interface IStorage {
   createFloorplanMarker(marker: InsertFloorplanMarker): Promise<FloorplanMarker>;
   updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
   deleteFloorplanMarker(id: number): Promise<boolean>;
+  
+  // CRM Settings
+  getCrmSettings(): Promise<CrmSettings[]>;
+  getCrmSetting(id: number): Promise<CrmSettings | undefined>;
+  getCrmSettingByType(type: string): Promise<CrmSettings | undefined>;
+  createCrmSettings(settings: InsertCrmSettings): Promise<CrmSettings>;
+  updateCrmSettings(id: number, settings: Partial<InsertCrmSettings>): Promise<CrmSettings | undefined>;
+  deleteCrmSettings(id: number): Promise<boolean>;
+  
+  // Equipment Images (with SharePoint integration)
+  getEquipmentImages(projectId: number, equipmentType: string, equipmentId?: number): Promise<EquipmentImage[]>;
+  getEquipmentImage(id: number): Promise<EquipmentImage | undefined>;
+  createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage>;
+  updateEquipmentImage(id: number, image: Partial<InsertEquipmentImage>): Promise<EquipmentImage | undefined>;
+  deleteEquipmentImage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -89,6 +106,8 @@ export class MemStorage implements IStorage {
   private images: Map<number, Image>;
   private floorplans: Map<number, Floorplan>;
   private floorplanMarkers: Map<number, FloorplanMarker>;
+  private crmSettings: Map<number, CrmSettings>;
+  private equipmentImages: Map<number, EquipmentImage>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -99,6 +118,8 @@ export class MemStorage implements IStorage {
   private currentImageId: number;
   private currentFloorplanId: number;
   private currentFloorplanMarkerId: number;
+  private currentCrmSettingsId: number;
+  private currentEquipmentImageId: number;
 
   constructor() {
     // Initialize session store
@@ -115,6 +136,8 @@ export class MemStorage implements IStorage {
     this.images = new Map();
     this.floorplans = new Map();
     this.floorplanMarkers = new Map();
+    this.crmSettings = new Map();
+    this.equipmentImages = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -125,6 +148,8 @@ export class MemStorage implements IStorage {
     this.currentImageId = 1;
     this.currentFloorplanId = 1;
     this.currentFloorplanMarkerId = 1;
+    this.currentCrmSettingsId = 1;
+    this.currentEquipmentImageId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -245,6 +270,18 @@ export class MemStorage implements IStorage {
       scope_notes: insertProject.scope_notes ?? null,
       created_at: now,
       updated_at: now,
+      // CRM Integration Fields
+      crm_opportunity_id: insertProject.crm_opportunity_id ?? null,
+      crm_opportunity_name: insertProject.crm_opportunity_name ?? null,
+      crm_account_id: insertProject.crm_account_id ?? null,
+      crm_account_name: insertProject.crm_account_name ?? null,
+      crm_last_synced: insertProject.crm_last_synced ?? null,
+      // SharePoint Integration Fields
+      sharepoint_folder_url: insertProject.sharepoint_folder_url ?? null,
+      sharepoint_site_id: insertProject.sharepoint_site_id ?? null,
+      sharepoint_drive_id: insertProject.sharepoint_drive_id ?? null,
+      sharepoint_folder_id: insertProject.sharepoint_folder_id ?? null,
+      // Configuration options
       replace_readers: insertProject.replace_readers ?? false,
       need_credentials: insertProject.need_credentials ?? false,
       takeover: insertProject.takeover ?? false,
@@ -644,6 +681,121 @@ export class MemStorage implements IStorage {
 
   async deleteFloorplanMarker(id: number): Promise<boolean> {
     return this.floorplanMarkers.delete(id);
+  }
+
+  // CRM Settings
+  async getCrmSettings(): Promise<CrmSettings[]> {
+    return Array.from(this.crmSettings.values());
+  }
+
+  async getCrmSetting(id: number): Promise<CrmSettings | undefined> {
+    return this.crmSettings.get(id);
+  }
+
+  async getCrmSettingByType(type: string): Promise<CrmSettings | undefined> {
+    return Array.from(this.crmSettings.values()).find(
+      (setting) => setting.crm_type === type
+    );
+  }
+
+  async createCrmSettings(insertSettings: InsertCrmSettings): Promise<CrmSettings> {
+    const id = this.currentCrmSettingsId++;
+    const now = new Date();
+    
+    const settings: CrmSettings = {
+      id,
+      crm_type: insertSettings.crm_type,
+      base_url: insertSettings.base_url,
+      api_version: insertSettings.api_version ?? null,
+      auth_type: insertSettings.auth_type,
+      settings: insertSettings.settings,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.crmSettings.set(id, settings);
+    return settings;
+  }
+
+  async updateCrmSettings(id: number, updateSettings: Partial<InsertCrmSettings>): Promise<CrmSettings | undefined> {
+    const settings = this.crmSettings.get(id);
+    if (!settings) {
+      return undefined;
+    }
+    
+    const updatedSettings: CrmSettings = {
+      ...settings,
+      ...updateSettings,
+      updated_at: new Date()
+    };
+    
+    this.crmSettings.set(id, updatedSettings);
+    return updatedSettings;
+  }
+
+  async deleteCrmSettings(id: number): Promise<boolean> {
+    return this.crmSettings.delete(id);
+  }
+  
+  // Equipment Images (with SharePoint integration)
+  async getEquipmentImages(projectId: number, equipmentType: string, equipmentId?: number): Promise<EquipmentImage[]> {
+    let images = Array.from(this.equipmentImages.values()).filter(
+      (image) => image.project_id === projectId
+    );
+    
+    if (equipmentType) {
+      images = images.filter(image => image.equipment_type === equipmentType);
+    }
+    
+    if (equipmentId) {
+      images = images.filter(image => image.equipment_id === equipmentId);
+    }
+    
+    return images;
+  }
+
+  async getEquipmentImage(id: number): Promise<EquipmentImage | undefined> {
+    return this.equipmentImages.get(id);
+  }
+
+  async createEquipmentImage(insertImage: InsertEquipmentImage): Promise<EquipmentImage> {
+    const id = this.currentEquipmentImageId++;
+    const now = new Date();
+    
+    const image: EquipmentImage = {
+      id,
+      equipment_type: insertImage.equipment_type,
+      equipment_id: insertImage.equipment_id,
+      project_id: insertImage.project_id,
+      image_data: insertImage.image_data,
+      thumbnail_data: insertImage.thumbnail_data ?? null,
+      filename: insertImage.filename ?? null,
+      sharepoint_file_id: insertImage.sharepoint_file_id ?? null,
+      sharepoint_url: insertImage.sharepoint_url ?? null,
+      created_at: now
+    };
+    
+    this.equipmentImages.set(id, image);
+    return image;
+  }
+
+  async updateEquipmentImage(id: number, updateImage: Partial<InsertEquipmentImage>): Promise<EquipmentImage | undefined> {
+    const image = this.equipmentImages.get(id);
+    if (!image) {
+      return undefined;
+    }
+    
+    const updatedImage: EquipmentImage = {
+      ...image,
+      ...updateImage
+    };
+    
+    this.equipmentImages.set(id, updatedImage);
+    return updatedImage;
+  }
+
+  async deleteEquipmentImage(id: number): Promise<boolean> {
+    return this.equipmentImages.delete(id);
   }
 }
 
