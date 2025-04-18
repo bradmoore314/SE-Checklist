@@ -32,6 +32,33 @@ export interface IStorage {
   updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<boolean>;
   
+  // Kastle Video Guarding
+  getKvg(id: number): Promise<KastleVideoGuarding | undefined>;
+  getKvgByProject(projectId: number): Promise<KastleVideoGuarding | undefined>;
+  createKvg(kvg: InsertKastleVideoGuarding): Promise<KastleVideoGuarding>;
+  updateKvg(id: number, kvg: Partial<InsertKastleVideoGuarding>): Promise<KastleVideoGuarding | undefined>;
+  deleteKvg(id: number): Promise<boolean>;
+  
+  // KVG Streams
+  getKvgStreams(kvgId: number): Promise<KvgStream[]>;
+  getKvgStream(id: number): Promise<KvgStream | undefined>;
+  createKvgStream(stream: InsertKvgStream): Promise<KvgStream>;
+  updateKvgStream(id: number, stream: Partial<InsertKvgStream>): Promise<KvgStream | undefined>;
+  deleteKvgStream(id: number): Promise<boolean>;
+  
+  // KVG Stream Images
+  getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]>;
+  getKvgStreamImage(id: number): Promise<KvgStreamImage | undefined>;
+  createKvgStreamImage(image: InsertKvgStreamImage): Promise<KvgStreamImage>;
+  deleteKvgStreamImage(id: number): Promise<boolean>;
+  
+  // KVG Price Streams
+  getKvgPriceStreams(kvgId: number): Promise<KvgPriceStream[]>;
+  getKvgPriceStream(id: number): Promise<KvgPriceStream | undefined>;
+  createKvgPriceStream(priceStream: InsertKvgPriceStream): Promise<KvgPriceStream>;
+  updateKvgPriceStream(id: number, priceStream: Partial<InsertKvgPriceStream>): Promise<KvgPriceStream | undefined>;
+  deleteKvgPriceStream(id: number): Promise<boolean>;
+  
   // Access Points
   getAccessPoints(projectId: number): Promise<AccessPoint[]>;
   getAccessPointsByProject(projectId: number): Promise<AccessPoint[]>; // Alias for getAccessPoints for consistent naming
@@ -111,6 +138,12 @@ export class MemStorage implements IStorage {
   private crmSettings: Map<number, CrmSettings>;
   private equipmentImages: Map<number, EquipmentImage>;
   
+  // KVG related storage
+  private kvg: Map<number, KastleVideoGuarding>;
+  private kvgStreams: Map<number, KvgStream>;
+  private kvgStreamImages: Map<number, KvgStreamImage>;
+  private kvgPriceStreams: Map<number, KvgPriceStream>;
+  
   private currentUserId: number;
   private currentProjectId: number;
   private currentAccessPointId: number;
@@ -122,6 +155,10 @@ export class MemStorage implements IStorage {
   private currentFloorplanMarkerId: number;
   private currentCrmSettingsId: number;
   private currentEquipmentImageId: number;
+  private currentKvgId: number;
+  private currentKvgStreamId: number;
+  private currentKvgStreamImageId: number;
+  private currentKvgPriceStreamId: number;
 
   constructor() {
     // Initialize session store

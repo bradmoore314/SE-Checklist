@@ -331,3 +331,218 @@ export const insertEquipmentImageSchema = createInsertSchema(equipmentImages).om
 
 export type EquipmentImage = typeof equipmentImages.$inferSelect;
 export type InsertEquipmentImage = z.infer<typeof insertEquipmentImageSchema>;
+
+// Kastle Video Guarding
+export const kvg = pgTable("kvg", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull(),
+  
+  // Discovery tab fields
+  bdm_owner: text("bdm_owner"),
+  sales_engineer: text("sales_engineer"),
+  kvg_sme: text("kvg_sme"),
+  customer_name: text("customer_name"),
+  site_address: text("site_address"),
+  city: text("city"),
+  state: text("state"),
+  zip_code: text("zip_code"),
+  crm_opportunity: text("crm_opportunity"),
+  quote_date: text("quote_date"),
+  time_zone: text("time_zone"),
+  opportunity_stage: text("opportunity_stage"),
+  opportunity_type: text("opportunity_type"),
+  site_environment: text("site_environment"),
+  region: text("region"),
+  customer_vertical: text("customer_vertical"),
+  property_category: text("property_category"),
+  
+  // Patrol details
+  gdods_dispatches_per_month: integer("gdods_dispatches_per_month"),
+  on_demand_guard_dispatch_detail: text("on_demand_guard_dispatch_detail"),
+  sgpp_scheduled_patrols_per_month: integer("sgpp_scheduled_patrols_per_month"),
+  sgpp_scheduled_guard_patrol_detail: text("sgpp_scheduled_guard_patrol_detail"),
+  sgpp_scheduled_guard_patrols_schedule_detail: text("sgpp_scheduled_guard_patrols_schedule_detail"),
+  
+  // Technology fields
+  technology: text("technology"),
+  technology_deployed: text("technology_deployed"),
+  camera_type: text("camera_type"),
+  rspndr_gdods: text("rspndr_gdods"),
+  rspndr_subscriptions: text("rspndr_subscriptions"),
+  install_type: text("install_type"),
+  
+  // Stream counts
+  event_video_trigger_streams: integer("event_video_trigger_streams"),
+  virtual_patrol_streams: integer("virtual_patrol_streams"),
+  event_action_clip_streams: integer("event_action_clip_streams"),
+  event_action_multi_view_streams: integer("event_action_multi_view_streams"),
+  health_streams: integer("health_streams"),
+  audio_talk_down_speakers: integer("audio_talk_down_speakers"),
+  
+  // Monitoring details
+  total_events_per_month: integer("total_events_per_month"),
+  total_virtual_patrols_per_month: integer("total_virtual_patrols_per_month"),
+  patrol_frequency: text("patrol_frequency"),
+  total_health_patrols_per_month: integer("total_health_patrols_per_month"),
+  
+  // Site Assessment fields
+  lighting_requirements: text("lighting_requirements"),
+  lighting_notes: text("lighting_notes"),
+  camera_field_of_view: text("camera_field_of_view"),
+  fov_notes: text("fov_notes"),
+  network_connectivity: text("network_connectivity"),
+  network_notes: text("network_notes"),
+  site_assessment_notes: text("site_assessment_notes"),
+  
+  // Use Case tab fields
+  use_case_commitment: text("use_case_commitment"),
+  use_case_response: text("use_case_response"),
+  sow_detailed_outline: text("sow_detailed_outline"),
+  schedule_details: text("schedule_details"),
+  quote_with_sow_attached: text("quote_with_sow_attached"),
+  quote_design_attached: text("quote_design_attached"),
+  
+  // VOC Protocol tab fields
+  am_name: text("am_name"),
+  project_id_value: text("project_id_value"),
+  voc_script: text("voc_script"),
+  voc_contact_name: text("voc_contact_name"),
+  type_of_install_account: text("type_of_install_account"),
+  
+  // Project Deployment fields
+  pm_name: text("pm_name"),
+  deployment_date: text("deployment_date"),
+  opportunity_number: text("opportunity_number"),
+  project_manager: text("project_manager"),
+  site_supervisor: text("site_supervisor"),
+  technician: text("technician"),
+  project_scope_description: text("project_scope_description"),
+  deployment_requirements: text("deployment_requirements"),
+  installation_requirements: text("installation_requirements"),
+  parts_list_credentials: text("parts_list_credentials"),
+  gateway_ip_address: text("gateway_ip_address"),
+  gateway_port: text("gateway_port"),
+  gateway_username: text("gateway_username"),
+  gateway_password: text("gateway_password"),
+  stream_names_ids: text("stream_names_ids"),
+  stream_health_verification: text("stream_health_verification"),
+  speaker_verification: text("speaker_verification"),
+  
+  // Pricing tab fields
+  customer_type: text("customer_type"),
+  
+  // Additional services
+  voc_escalations: integer("voc_escalations"),
+  dispatch_responses: integer("dispatch_responses"),
+  gdods_patrols: integer("gdods_patrols"),
+  sgpp_patrols: integer("sgpp_patrols"),
+  forensic_investigations: integer("forensic_investigations"),
+  app_users: integer("app_users"),
+  audio_devices: integer("audio_devices"),
+  
+  // Incident types (stored as JSON)
+  incident_types: jsonb("incident_types"),
+  
+  // Custom incident types
+  custom_incident_type1: text("custom_incident_type1"),
+  custom_incident_type1_selected: boolean("custom_incident_type1_selected"),
+  custom_incident_type2: text("custom_incident_type2"),
+  custom_incident_type2_selected: boolean("custom_incident_type2_selected"),
+  custom_incident_type3: text("custom_incident_type3"),
+  custom_incident_type3_selected: boolean("custom_incident_type3_selected"),
+  custom_incident_type4: text("custom_incident_type4"),
+  custom_incident_type4_selected: boolean("custom_incident_type4_selected"),
+  custom_incident_type5: text("custom_incident_type5"),
+  custom_incident_type5_selected: boolean("custom_incident_type5_selected"),
+  
+  // Timestamps
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertKvgSchema = createInsertSchema(kvg).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+// KVG Stream details
+export const kvgStreams = pgTable("kvg_streams", {
+  id: serial("id").primaryKey(),
+  kvg_id: integer("kvg_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  location: text("location"),
+  fov_accessibility: text("fov_accessibility"),
+  camera_accessibility: text("camera_accessibility"),
+  camera_type: text("camera_type"),
+  environment: text("environment"),
+  use_case_problem: text("use_case_problem"),
+  speaker_association: text("speaker_association"),
+  audio_talk_down: text("audio_talk_down"),
+  event_monitoring: text("event_monitoring"),
+  monitoring_start_time: text("monitoring_start_time"),
+  monitoring_end_time: text("monitoring_end_time"),
+  monitoring_days: jsonb("monitoring_days"), // Array of selected days
+  patrol_frequency: text("patrol_frequency"),
+  patrol_quantity: integer("patrol_quantity"),
+  patrol_days: jsonb("patrol_days"), // Array of selected days
+  has_ai_detection: boolean("has_ai_detection").default(false),
+  ai_features: jsonb("ai_features"), // Array of AI features
+  event_volume: integer("event_volume"),
+  notes: text("notes"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertKvgStreamSchema = createInsertSchema(kvgStreams).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+// KVG Stream Images
+export const kvgStreamImages = pgTable("kvg_stream_images", {
+  id: serial("id").primaryKey(),
+  stream_id: integer("stream_id").notNull(),
+  kvg_id: integer("kvg_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  image_data: text("image_data").notNull(), // base64 encoded image
+  thumbnail_data: text("thumbnail_data"), // base64 encoded thumbnail
+  filename: text("filename"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertKvgStreamImageSchema = createInsertSchema(kvgStreamImages).omit({
+  id: true,
+  created_at: true,
+});
+
+// Price Streams table for pricing calculator
+export const kvgPriceStreams = pgTable("kvg_price_streams", {
+  id: serial("id").primaryKey(),
+  kvg_id: integer("kvg_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  quantity: integer("quantity").notNull(),
+  event_volume: integer("event_volume").notNull(),
+  patrols_per_week: integer("patrols_per_week").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertKvgPriceStreamSchema = createInsertSchema(kvgPriceStreams).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export type KastleVideoGuarding = typeof kvg.$inferSelect;
+export type InsertKastleVideoGuarding = z.infer<typeof insertKvgSchema>;
+
+export type KvgStream = typeof kvgStreams.$inferSelect;
+export type InsertKvgStream = z.infer<typeof insertKvgStreamSchema>;
+
+export type KvgStreamImage = typeof kvgStreamImages.$inferSelect;
+export type InsertKvgStreamImage = z.infer<typeof insertKvgStreamImageSchema>;
+
+export type KvgPriceStream = typeof kvgPriceStreams.$inferSelect;
+export type InsertKvgPriceStream = z.infer<typeof insertKvgPriceStreamSchema>;
