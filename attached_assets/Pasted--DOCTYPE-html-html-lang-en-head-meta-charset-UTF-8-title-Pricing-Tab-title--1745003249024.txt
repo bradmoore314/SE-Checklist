@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pricing Tab</title>
+</head>
+<body>
+  <h1>Simple KVG Pricing Calculator</h1>
+  <button onclick="runPricingCalculation()">Run Pricing Calculation</button>
+  <pre id="output"></pre>
+
+  <script>
+    // Example input for reuse in any form:
+    const exampleInputs = {
+      isNewCustomer: true, // true = New Construction, false = Existing Customer
+      streams: [
+        {
+          quantity: 3,
+          eventVolume: 400,
+          patrolsPerWeek: 2
+        },
+        {
+          quantity: 2,
+          eventVolume: 250,
+          patrolsPerWeek: 0
+        }
+      ],
+      additionalServices: {
+        vocEscalations: 1,
+        dispatchResponses: 0,
+        gdodsPatrols: 2,
+        sgppPatrols: 4,
+        forensicInvestigations: 1,
+        appUsers: 10,
+        audioDevices: 0
+      }
+    };
+
+    function calculateEventFee(totalEvents) {
+      const tiers = [
+        { max: 500, price: 625 }, { max: 750, price: 935 }, { max: 1000, price: 1250 },
+        { max: 1250, price: 1560 }, { max: 1500, price: 1875 }, { max: 1750, price: 2190 },
+        { max: 2000, price: 2400 }, { max: 2250, price: 2700 }, { max: 2500, price: 3000 },
+        { max: 2750, price: 3300 }, { max: 3000, price: 3600 }
+      ];
+      const tier = tiers.find(t => totalEvents <= t.max) || tiers[tiers.length - 1];
+      return totalEvents > 0 ? tier.price : 0;
+    }
+
+    function calculateQuote(inputs) {
+      const { isNewCustomer, streams, additionalServices } = inputs;
+
+      // 1. Event Fee
+      const totalEvents = streams.reduce((sum, s) => sum + (s.eventVolume * s.quantity), 0);
+      const totalCameras = streams.reduce((sum, s) => sum + s.quantity, 0);
+      const eventFee = calculateEventFee(totalEvents);
+
+      // 2. Patrol Fee
+      let totalPatrolsPerMonth = 0;
+      let patrolHours = 0;
+      streams.forEach(s => {
+        if (s.patrolsPerWeek > 0) {
+          const patrolsPerMonth = s.patrolsPerWeek * 4.33 * s.quantity;
+          totalPatrolsPerMonth += patrolsPerMonth;
+          patrolHours += patrolsPerMonth * (5 / 60); // each patrol = 5 min
+        }
+      });
+      const patrolFee = patrolHours * 85;
+
+      // 3. Additional Services Fee
+      const additionalFees =
+        additionalServices.vocEscalations * 10 +
+        additionalServices.dispatchResponses * 0 +
+        additionalServices.gdodsPatrols * 425 +
+        additionalServices.sgppPatrols * 60 +
+        additionalServices.forensicInvestigations * 60 +
+        additionalServices.appUsers * 5 +
+        additionalServices.audioDevices * 0;
+
+      // 4. Total Calculation
+      let totalFee = eventFee + patrolFee + additionalFees;
+      const minFee = isNewCustomer ? 250 : 200;
+      totalFee = Math.max(totalFee, minFee);
+
+      // Output
+      return {
+        totalFee,
+        totalEvents,
+        totalCameras,
+        patrolsPerMonth: Math.round(totalPatrolsPerMonth),
+        isNewCustomer,
+        approvalNeeded: !isNewCustomer && totalFee < 200
+      };
+    }
+
+    function runPricingCalculation() {
+      const result = calculateQuote(exampleInputs);
+      const output = `
+Total Monthly Fee: $${result.totalFee.toFixed(2)}
+Total Events: ${result.totalEvents}
+Total Cameras: ${result.totalCameras}
+Monthly Patrols: ${result.patrolsPerMonth}
+Customer Type: ${result.isNewCustomer ? 'New Construction' : 'Existing Customer'}
+${result.approvalNeeded ? '⚠️ Approval Required (Fee < $200)' : ''}
+      `;
+      document.getElementById('output').textContent = output.trim();
+    }
+  </script>
+</body>
+</html>

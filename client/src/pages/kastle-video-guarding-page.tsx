@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Tabs,
   TabsContent,
@@ -7,8 +7,25 @@ import {
 } from "@/components/ui/tabs";
 import { Stream, StreamImage } from "@/types";
 
+// Price Stream data for the pricing calculator
+interface PriceStream {
+  quantity: number;
+  eventVolume: number;
+  patrolsPerWeek: number;
+}
+
 // FormData interface for all form fields
 interface FormData {
+  // Pricing tab fields
+  customerType: string;
+  streams: PriceStream[];
+  vocEscalations: number;
+  dispatchResponses: number;
+  gdodsPatrols: number;
+  sgppPatrols: number;
+  forensicInvestigations: number;
+  appUsers: number;
+  audioDevices: number;
   // Discovery tab fields
   bdmOwner: string;
   salesEngineer: string;
@@ -254,6 +271,23 @@ const KastleVideoGuardingPage: React.FC = () => {
   
   // Form data for all tabs
   const [formData, setFormData] = useState<FormData>({
+    // Pricing tab fields
+    customerType: "new",
+    streams: [
+      {
+        quantity: 2,
+        eventVolume: 250,
+        patrolsPerWeek: 1
+      }
+    ],
+    vocEscalations: 1,
+    dispatchResponses: 0,
+    gdodsPatrols: 0,
+    sgppPatrols: 0,
+    forensicInvestigations: 0,
+    appUsers: 3,
+    audioDevices: 0,
+    
     // Discovery tab fields
     bdmOwner: "",
     salesEngineer: "",
@@ -3971,7 +4005,285 @@ const KastleVideoGuardingPage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="pricing">
-          <div>Pricing content would go here</div>
+          <Card className="border shadow-sm">
+            <CardHeader className="border-b px-6 py-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-800">KVG Pricing Calculator</h3>
+                <Badge variant="outline" className="text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                  <span className="mr-1">✨</span> Automated Pricing
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Customer Type */}
+                <div>
+                  <h4 className="text-md font-medium mb-4 flex items-center text-gray-700">
+                    <span className="mr-2">👤</span> Customer Information
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex flex-col space-y-2">
+                      <Label htmlFor="customer_type" className="text-sm">Customer Type</Label>
+                      <select
+                        id="customer_type"
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={formData.customerType || "new"}
+                        onChange={(e) => handleFormChange("customerType", e.target.value)}
+                      >
+                        <option value="new">New Construction</option>
+                        <option value="existing">Existing Customer</option>
+                      </select>
+                      <p className="text-xs text-muted-foreground">
+                        {formData.customerType === "existing" ? 
+                          "Minimum fee of $200 applies for existing customers" : 
+                          "Minimum fee of $250 applies for new construction"}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Additional Services */}
+                  <h4 className="text-md font-medium mt-6 mb-4 flex items-center text-gray-700">
+                    <span className="mr-2">🔖</span> Additional Services
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="voc_escalations" className="text-sm flex items-center">
+                        <span className="mr-1">📞</span> VOC Escalations
+                      </Label>
+                      <Input
+                        id="voc_escalations"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.vocEscalations}
+                        onChange={(e) => handleFormChange("vocEscalations", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">$10 per escalation</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dispatch_responses" className="text-sm flex items-center">
+                        <span className="mr-1">🚨</span> Dispatch Responses
+                      </Label>
+                      <Input
+                        id="dispatch_responses"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.dispatchResponses}
+                        onChange={(e) => handleFormChange("dispatchResponses", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">No additional cost</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="gdods_patrols" className="text-sm flex items-center">
+                        <span className="mr-1">🚶</span> GDODs Patrols
+                      </Label>
+                      <Input
+                        id="gdods_patrols"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.gdodsPatrols}
+                        onChange={(e) => handleFormChange("gdodsPatrols", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">$425 per patrol</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="sgpp_patrols" className="text-sm flex items-center">
+                        <span className="mr-1">🔍</span> SGPP Patrols
+                      </Label>
+                      <Input
+                        id="sgpp_patrols"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.sgppPatrols}
+                        onChange={(e) => handleFormChange("sgppPatrols", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">$60 per patrol</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="forensic_investigations" className="text-sm flex items-center">
+                        <span className="mr-1">🔎</span> Forensic Investigations
+                      </Label>
+                      <Input
+                        id="forensic_investigations"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.forensicInvestigations}
+                        onChange={(e) => handleFormChange("forensicInvestigations", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">$60 per investigation</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="app_users" className="text-sm flex items-center">
+                        <span className="mr-1">📱</span> App Users
+                      </Label>
+                      <Input
+                        id="app_users"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.appUsers}
+                        onChange={(e) => handleFormChange("appUsers", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">$5 per user</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="audio_devices" className="text-sm flex items-center">
+                        <span className="mr-1">🔊</span> Audio Devices
+                      </Label>
+                      <Input
+                        id="audio_devices"
+                        type="number"
+                        min="0"
+                        className="w-full"
+                        value={formData.audioDevices}
+                        onChange={(e) => handleFormChange("audioDevices", parseInt(e.target.value) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">No additional cost</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stream Information */}
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-md font-medium flex items-center text-gray-700">
+                      <span className="mr-2">📹</span> Stream Details
+                    </h4>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleAddStream}
+                      className="flex items-center"
+                    >
+                      <span className="mr-1">➕</span> Add Stream
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    {formData.streams.map((stream, index) => (
+                      <div key={index} className="p-4 border rounded-md relative">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleRemoveStream(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                        
+                        <h5 className="font-medium mb-4">Stream {index + 1}</h5>
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_quantity_${index}`} className="text-sm">Number of Cameras</Label>
+                            <Input
+                              id={`stream_quantity_${index}`}
+                              type="number"
+                              min="1"
+                              className="w-full"
+                              value={stream.quantity}
+                              onChange={(e) => handleStreamChange(index, "quantity", parseInt(e.target.value) || 1)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_event_volume_${index}`} className="text-sm">Monthly Event Volume</Label>
+                            <Input
+                              id={`stream_event_volume_${index}`}
+                              type="number"
+                              min="0"
+                              className="w-full"
+                              value={stream.eventVolume}
+                              onChange={(e) => handleStreamChange(index, "eventVolume", parseInt(e.target.value) || 0)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_patrols_${index}`} className="text-sm">Patrols Per Week</Label>
+                            <Input
+                              id={`stream_patrols_${index}`}
+                              type="number"
+                              min="0"
+                              className="w-full"
+                              value={stream.patrolsPerWeek}
+                              onChange={(e) => handleStreamChange(index, "patrolsPerWeek", parseInt(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Pricing Calculation Results */}
+              <div className="mt-10">
+                <div className="rounded-md overflow-hidden border">
+                  <div className="bg-gray-100 p-4 border-b">
+                    <h4 className="text-lg font-medium">Pricing Summary</h4>
+                  </div>
+                  <div className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="flex flex-col space-y-1 items-center p-4 rounded-lg bg-blue-50 border border-blue-100">
+                        <span className="text-blue-500 mb-1">💰</span>
+                        <span className="text-2xl font-bold">${pricingResults.totalFee.toFixed(2)}</span>
+                        <span className="text-sm text-gray-600">Monthly Fee</span>
+                      </div>
+                      <div className="flex flex-col space-y-1 items-center p-4 rounded-lg bg-green-50 border border-green-100">
+                        <span className="text-green-500 mb-1">📊</span>
+                        <span className="text-2xl font-bold">{pricingResults.totalEvents}</span>
+                        <span className="text-sm text-gray-600">Total Events</span>
+                      </div>
+                      <div className="flex flex-col space-y-1 items-center p-4 rounded-lg bg-purple-50 border border-purple-100">
+                        <span className="text-purple-500 mb-1">🚶</span>
+                        <span className="text-2xl font-bold">{pricingResults.patrolsPerMonth}</span>
+                        <span className="text-sm text-gray-600">Monthly Patrols</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h5 className="font-medium">Fee Breakdown</h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b">
+                          <span>Events Fee (Tier: {pricingResults.eventTier})</span>
+                          <span className="font-medium">${pricingResults.eventFee.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b">
+                          <span>Patrol Fee ({pricingResults.patrolHours.toFixed(1)} hours @ $85/hr)</span>
+                          <span className="font-medium">${pricingResults.patrolFee.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b">
+                          <span>Additional Services</span>
+                          <span className="font-medium">${pricingResults.additionalFees.toFixed(2)}</span>
+                        </div>
+                        {pricingResults.minimumFeeApplied && (
+                          <div className="flex justify-between py-2 border-b text-amber-600">
+                            <span>Minimum Fee Applied</span>
+                            <span className="font-medium">${pricingResults.minimumFee.toFixed(2)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {pricingResults.approvalNeeded && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
+                        <div className="flex items-start">
+                          <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 mt-0.5" />
+                          <div>
+                            <h5 className="font-medium text-amber-700">Approval Required</h5>
+                            <p className="text-sm text-amber-600">
+                              This quote is below the $200 minimum for existing customers and requires management approval.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
       
