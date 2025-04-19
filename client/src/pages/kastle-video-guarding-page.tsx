@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useProject } from "@/context/ProjectContext";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   AlertTriangle,
   X,
@@ -261,6 +264,7 @@ interface FormData {
 
 const KastleVideoGuardingPage: React.FC = () => {
   const { toast } = useToast();
+  const { currentProject } = useProject();
   
   // View mode for stream details (cards or list)
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
@@ -599,9 +603,200 @@ const KastleVideoGuardingPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
   
-  // Handle form save
+  // React Query hooks for KVG data persistence
+  const { data: formDataFromDb, isLoading: isLoadingFormData } = useQuery({
+    queryKey: ['/api/projects', currentProject?.id, 'kvg-form-data'],
+    queryFn: async () => {
+      if (!currentProject?.id) return null;
+      const res = await fetch(`/api/projects/${currentProject.id}/kvg-form-data`);
+      if (!res.ok) throw new Error('Failed to fetch KVG form data');
+      return res.json();
+    },
+    enabled: !!currentProject?.id,
+  });
+
+  const { data: streamsFromDb, isLoading: isLoadingStreams } = useQuery({
+    queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'],
+    queryFn: async () => {
+      if (!currentProject?.id) return [];
+      const res = await fetch(`/api/projects/${currentProject.id}/kvg-streams`);
+      if (!res.ok) throw new Error('Failed to fetch KVG streams');
+      return res.json();
+    },
+    enabled: !!currentProject?.id,
+  });
+
+  // Form data mutation for saving
+  const formDataMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (!currentProject?.id) throw new Error('No project selected');
+      
+      // Check if form data already exists
+      if (formDataFromDb?.id) {
+        const res = await apiRequest(
+          'PUT', 
+          `/api/kvg-form-data/${formDataFromDb.id}`, 
+          { ...data, project_id: currentProject.id }
+        );
+        return res.json();
+      } else {
+        const res = await apiRequest(
+          'POST', 
+          '/api/kvg-form-data', 
+          { ...data, project_id: currentProject.id }
+        );
+        return res.json();
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-form-data'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Saving Form Data",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Stream mutation for adding
+  const addStreamMutation = useMutation({
+    mutationFn: async (stream: any) => {
+      if (!currentProject?.id) throw new Error('No project selected');
+      const res = await apiRequest(
+        'POST', 
+        '/api/kvg-streams', 
+        { ...stream, project_id: currentProject.id }
+      );
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Adding Stream",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Stream mutation for updating
+  const updateStreamMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await apiRequest('PUT', `/api/kvg-streams/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Updating Stream",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Stream mutation for deleting
+  const deleteStreamMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/kvg-streams/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Deleting Stream",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Stream images mutation for adding
+  const addStreamImageMutation = useMutation({
+    mutationFn: async ({ streamId, imageData, filename }: { streamId: number; imageData: string; filename: string }) => {
+      const res = await apiRequest('POST', '/api/stream-images', {
+        stream_id: streamId,
+        image_data: imageData,
+        filename
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Adding Stream Image",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Stream images mutation for deleting
+  const deleteStreamImageMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/stream-images/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', currentProject?.id, 'kvg-streams'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error Deleting Stream Image",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Load data from database when component mounts
+  useEffect(() => {
+    if (formDataFromDb && !isLoadingFormData) {
+      setFormData(prev => ({
+        ...prev,
+        ...formDataFromDb
+      }));
+    }
+  }, [formDataFromDb, isLoadingFormData]);
+
+  useEffect(() => {
+    if (streamsFromDb && !isLoadingStreams) {
+      setStreams(streamsFromDb);
+    }
+  }, [streamsFromDb, isLoadingStreams]);
+
+  // Auto-save form data when it changes
+  useEffect(() => {
+    if (!currentProject?.id) return;
+    
+    const saveTimeout = setTimeout(() => {
+      formDataMutation.mutate(formData);
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(saveTimeout);
+  }, [formData, currentProject?.id]);
+
+  // Handle form save button click
   const handleSave = () => {
-    // In a real application, this would save to a database
+    if (!currentProject?.id) {
+      toast({
+        title: "Error",
+        description: "Please select a project before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    formDataMutation.mutate(formData);
+    
     toast({
       title: "Form Saved",
       description: "Your changes have been saved successfully.",
@@ -611,10 +806,13 @@ const KastleVideoGuardingPage: React.FC = () => {
   
   // Stream functions
   const addStream = (streamToClone?: Stream) => {
+    // Create a temporary ID for immediate UI feedback
+    const tempId = -1 * (Date.now());  // Negative ID to distinguish from DB IDs
+    
     const newStream: Stream = streamToClone 
-      ? { ...streamToClone, id: streams.length + 1, images: [] } 
+      ? { ...streamToClone, id: tempId, images: [] } 
       : {
-          id: streams.length + 1,
+          id: tempId,
           location: "",
           fovAccessibility: "Select",
           cameraAccessibility: "Select",
@@ -647,7 +845,23 @@ const KastleVideoGuardingPage: React.FC = () => {
           images: []
         };
     
+    // Update UI immediately
     setStreams([...streams, newStream]);
+    
+    // Then persist to database
+    if (currentProject?.id) {
+      // Create a copy without the ID for database insertion
+      const { id, ...streamWithoutId } = newStream;
+      const streamForDb = { ...streamWithoutId, project_id: currentProject.id };
+      
+      addStreamMutation.mutate(streamForDb, {
+        onSuccess: (newDbStream) => {
+          // Replace the temporary stream with the one from the database (with proper ID)
+          setStreams(prev => prev.map(s => s.id === tempId ? newDbStream : s));
+        }
+      });
+    }
+    
     toast({
       title: streamToClone ? "Stream Duplicated" : "Stream Added",
       description: streamToClone 
@@ -658,14 +872,35 @@ const KastleVideoGuardingPage: React.FC = () => {
 
   // Function to update a stream
   const updateStream = (id: number, field: keyof Stream, value: any) => {
-    setStreams(streams.map(stream => 
+    // Update locally first for immediate UI feedback
+    const updatedStreams = streams.map(stream => 
       stream.id === id ? { ...stream, [field]: value } : stream
-    ));
+    );
+    setStreams(updatedStreams);
+    
+    // Then persist to database
+    const streamToUpdate = updatedStreams.find(s => s.id === id);
+    if (streamToUpdate && currentProject?.id) {
+      updateStreamMutation.mutate({ 
+        id, 
+        data: { 
+          ...streamToUpdate,
+          project_id: currentProject.id
+        } 
+      });
+    }
   };
 
   // Function to remove a stream
   const removeStream = (id: number) => {
+    // Remove locally first for immediate UI feedback
     setStreams(streams.filter(stream => stream.id !== id));
+    
+    // Then remove from database
+    if (id > 0) { // Only delete from DB if it's an existing record
+      deleteStreamMutation.mutate(id);
+    }
+    
     toast({
       title: "Stream Removed",
       description: "The stream has been removed successfully.",
@@ -674,6 +909,16 @@ const KastleVideoGuardingPage: React.FC = () => {
 
   // Handle stream image upload click
   const handleUploadStreamImageClick = (streamId: number) => {
+    // Only allow upload for streams that exist in the database (positive IDs)
+    if (streamId <= 0) {
+      toast({
+        title: "Error",
+        description: "Please save the stream before adding images.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Create a file input element
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -693,14 +938,17 @@ const KastleVideoGuardingPage: React.FC = () => {
         reader.onload = (e) => {
           if (!e.target || typeof e.target.result !== "string") return;
           
-          // Create a new stream image
+          // Create a temporary image for immediate UI feedback
+          const tempId = -1 * (Date.now() + i);
+          const imageData = e.target.result;
+          
+          // Update the UI immediately
           const newImage: StreamImage = {
-            id: Date.now() + i,
-            imageData: e.target.result,
+            id: tempId,
+            imageData,
             filename: file.name
           };
           
-          // Update the stream with the new image
           setStreams(prevStreams => 
             prevStreams.map(stream => 
               stream.id === streamId 
@@ -708,14 +956,37 @@ const KastleVideoGuardingPage: React.FC = () => {
                 : stream
             )
           );
+          
+          // Then persist to database
+          addStreamImageMutation.mutate({
+            streamId,
+            imageData,
+            filename: file.name
+          }, {
+            onSuccess: (savedImage) => {
+              // Replace the temporary image with the one from the database
+              setStreams(prevStreams => 
+                prevStreams.map(stream => {
+                  if (stream.id !== streamId) return stream;
+                  
+                  return {
+                    ...stream,
+                    images: stream.images.map(img => 
+                      img.id === tempId ? savedImage : img
+                    )
+                  };
+                })
+              );
+            }
+          });
         };
         
         reader.readAsDataURL(file);
       }
       
       toast({
-        title: "Images Uploaded",
-        description: `${files.length} image(s) uploaded successfully.`,
+        title: "Images Uploading",
+        description: `${files.length} image(s) being uploaded...`,
       });
     });
     
