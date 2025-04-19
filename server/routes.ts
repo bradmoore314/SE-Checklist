@@ -12,13 +12,19 @@ import {
   insertImageSchema,
   insertFloorplanSchema,
   insertFloorplanMarkerSchema,
+  insertKvgFormDataSchema,
+  insertKvgStreamSchema,
+  insertStreamImageSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
   InsertImage,
   InsertFloorplan,
-  InsertFloorplanMarker
+  InsertFloorplanMarker,
+  InsertKvgFormData,
+  InsertKvgStream,
+  InsertStreamImage
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
