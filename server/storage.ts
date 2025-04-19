@@ -9,7 +9,10 @@ import {
   Floorplan, InsertFloorplan,
   FloorplanMarker, InsertFloorplanMarker,
   CrmSettings, InsertCrmSettings,
-  EquipmentImage, InsertEquipmentImage
+  EquipmentImage, InsertEquipmentImage,
+  KvgFormData, InsertKvgFormData,
+  KvgStream, InsertKvgStream,
+  StreamImage, InsertStreamImage
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -95,6 +98,23 @@ export interface IStorage {
   createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage>;
   updateEquipmentImage(id: number, image: Partial<InsertEquipmentImage>): Promise<EquipmentImage | undefined>;
   deleteEquipmentImage(id: number): Promise<boolean>;
+  
+  // KVG Form Data
+  getKvgFormData(projectId: number): Promise<KvgFormData | undefined>;
+  createKvgFormData(formData: InsertKvgFormData): Promise<KvgFormData>;
+  updateKvgFormData(id: number, formData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined>;
+  
+  // KVG Streams
+  getKvgStreams(projectId: number): Promise<KvgStream[]>;
+  getKvgStream(id: number): Promise<KvgStream | undefined>;
+  createKvgStream(stream: InsertKvgStream): Promise<KvgStream>;
+  updateKvgStream(id: number, stream: Partial<InsertKvgStream>): Promise<KvgStream | undefined>;
+  deleteKvgStream(id: number): Promise<boolean>;
+  
+  // Stream Images
+  getStreamImages(streamId: number): Promise<StreamImage[]>;
+  createStreamImage(image: InsertStreamImage): Promise<StreamImage>;
+  deleteStreamImage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -110,6 +130,9 @@ export class MemStorage implements IStorage {
   private floorplanMarkers: Map<number, FloorplanMarker>;
   private crmSettings: Map<number, CrmSettings>;
   private equipmentImages: Map<number, EquipmentImage>;
+  private kvgFormData: Map<number, KvgFormData>;
+  private kvgStreams: Map<number, KvgStream>;
+  private streamImages: Map<number, StreamImage>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -122,6 +145,9 @@ export class MemStorage implements IStorage {
   private currentFloorplanMarkerId: number;
   private currentCrmSettingsId: number;
   private currentEquipmentImageId: number;
+  private currentKvgFormDataId: number;
+  private currentKvgStreamId: number;
+  private currentStreamImageId: number;
 
   constructor() {
     // Initialize session store
@@ -140,6 +166,9 @@ export class MemStorage implements IStorage {
     this.floorplanMarkers = new Map();
     this.crmSettings = new Map();
     this.equipmentImages = new Map();
+    this.kvgFormData = new Map();
+    this.kvgStreams = new Map();
+    this.streamImages = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -152,6 +181,9 @@ export class MemStorage implements IStorage {
     this.currentFloorplanMarkerId = 1;
     this.currentCrmSettingsId = 1;
     this.currentEquipmentImageId = 1;
+    this.currentKvgFormDataId = 1;
+    this.currentKvgStreamId = 1;
+    this.currentStreamImageId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -479,8 +511,8 @@ export class MemStorage implements IStorage {
       project_id: insertElevator.project_id,
       location: insertElevator.location,
       elevator_type: insertElevator.elevator_type,
-      floor_count: insertElevator.floor_count ?? null,
-      bank_name: insertElevator.bank_name ?? null,
+      controller_type: insertElevator.controller_type ?? null,
+      interface_type: insertElevator.interface_type ?? null,
       notes: insertElevator.notes ?? null,
       created_at: now,
       updated_at: now
@@ -531,6 +563,8 @@ export class MemStorage implements IStorage {
       project_id: insertIntercom.project_id,
       location: insertIntercom.location,
       intercom_type: insertIntercom.intercom_type,
+      mounting_type: insertIntercom.mounting_type ?? null,
+      communication_type: insertIntercom.communication_type ?? null,
       notes: insertIntercom.notes ?? null,
       created_at: now,
       updated_at: now
@@ -559,17 +593,17 @@ export class MemStorage implements IStorage {
   async deleteIntercom(id: number): Promise<boolean> {
     return this.intercoms.delete(id);
   }
-  
-  // Image management
+
+  // Images
   async saveImage(insertImage: InsertImage): Promise<Image> {
     const id = this.currentImageId++;
     const now = new Date();
     
+    // Ensure we have consistent null values for optional fields
     const image: Image = {
       id,
       equipment_type: insertImage.equipment_type,
       equipment_id: insertImage.equipment_id,
-      project_id: insertImage.project_id,
       image_data: insertImage.image_data,
       filename: insertImage.filename ?? null,
       created_at: now
@@ -578,19 +612,17 @@ export class MemStorage implements IStorage {
     this.images.set(id, image);
     return image;
   }
-  
+
   async getImages(equipmentType: string, equipmentId: number): Promise<Image[]> {
     return Array.from(this.images.values()).filter(
-      (image) => 
-        image.equipment_type === equipmentType && 
-        image.equipment_id === equipmentId
+      (image) => image.equipment_type === equipmentType && image.equipment_id === equipmentId
     );
   }
-  
+
   async deleteImage(id: number): Promise<boolean> {
     return this.images.delete(id);
   }
-  
+
   // Floorplans
   async getFloorplans(projectId: number): Promise<Floorplan[]> {
     return Array.from(this.floorplans.values()).filter(
@@ -606,12 +638,14 @@ export class MemStorage implements IStorage {
     const id = this.currentFloorplanId++;
     const now = new Date();
     
+    // Ensure we have consistent null values for optional fields
     const floorplan: Floorplan = {
       id,
       project_id: insertFloorplan.project_id,
       name: insertFloorplan.name,
-      pdf_data: insertFloorplan.pdf_data,
-      page_count: insertFloorplan.page_count ?? 1,
+      floor_number: insertFloorplan.floor_number ?? null,
+      image_data: insertFloorplan.image_data,
+      original_filename: insertFloorplan.original_filename ?? null,
       created_at: now,
       updated_at: now
     };
@@ -637,14 +671,9 @@ export class MemStorage implements IStorage {
   }
 
   async deleteFloorplan(id: number): Promise<boolean> {
-    // Also delete all markers associated with this floorplan
-    Array.from(this.floorplanMarkers.entries())
-      .filter(([_, marker]) => marker.floorplan_id === id)
-      .forEach(([markerId, _]) => this.floorplanMarkers.delete(markerId));
-    
     return this.floorplans.delete(id);
   }
-  
+
   // Floorplan Markers
   async getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]> {
     return Array.from(this.floorplanMarkers.values()).filter(
@@ -660,16 +689,18 @@ export class MemStorage implements IStorage {
     const id = this.currentFloorplanMarkerId++;
     const now = new Date();
     
+    // Ensure we have consistent null values for optional fields
     const marker: FloorplanMarker = {
       id,
       floorplan_id: insertMarker.floorplan_id,
-      page: insertMarker.page ?? 1,
-      marker_type: insertMarker.marker_type,
       equipment_id: insertMarker.equipment_id,
+      equipment_type: insertMarker.equipment_type,
+      marker_type: insertMarker.marker_type,
       position_x: insertMarker.position_x,
       position_y: insertMarker.position_y,
-      label: insertMarker.label ?? null,
-      created_at: now
+      notes: insertMarker.notes ?? null,
+      created_at: now,
+      updated_at: now
     };
     
     this.floorplanMarkers.set(id, marker);
@@ -684,7 +715,8 @@ export class MemStorage implements IStorage {
     
     const updatedMarker: FloorplanMarker = { 
       ...marker, 
-      ...updateMarker
+      ...updateMarker, 
+      updated_at: new Date() 
     };
     
     this.floorplanMarkers.set(id, updatedMarker);
@@ -714,13 +746,18 @@ export class MemStorage implements IStorage {
     const id = this.currentCrmSettingsId++;
     const now = new Date();
     
+    // Ensure we have consistent null values for optional fields
     const settings: CrmSettings = {
       id,
       crm_type: insertSettings.crm_type,
-      base_url: insertSettings.base_url,
-      api_version: insertSettings.api_version ?? null,
-      auth_type: insertSettings.auth_type,
-      settings: insertSettings.settings,
+      api_url: insertSettings.api_url,
+      api_key: insertSettings.api_key ?? null,
+      client_id: insertSettings.client_id ?? null,
+      client_secret: insertSettings.client_secret ?? null,
+      tenant_id: insertSettings.tenant_id ?? null,
+      is_active: insertSettings.is_active ?? true,
+      settings_json: insertSettings.settings_json ?? null,
+      last_sync: insertSettings.last_sync ?? null,
       created_at: now,
       updated_at: now
     };
@@ -748,22 +785,19 @@ export class MemStorage implements IStorage {
   async deleteCrmSettings(id: number): Promise<boolean> {
     return this.crmSettings.delete(id);
   }
-  
+
   // Equipment Images (with SharePoint integration)
   async getEquipmentImages(projectId: number, equipmentType: string, equipmentId?: number): Promise<EquipmentImage[]> {
-    let images = Array.from(this.equipmentImages.values()).filter(
-      (image) => image.project_id === projectId
+    return Array.from(this.equipmentImages.values()).filter(
+      (image) => {
+        const matchesProject = image.project_id === projectId;
+        const matchesType = image.equipment_type === equipmentType;
+        if (equipmentId !== undefined) {
+          return matchesProject && matchesType && image.equipment_id === equipmentId;
+        }
+        return matchesProject && matchesType;
+      }
     );
-    
-    if (equipmentType) {
-      images = images.filter(image => image.equipment_type === equipmentType);
-    }
-    
-    if (equipmentId) {
-      images = images.filter(image => image.equipment_id === equipmentId);
-    }
-    
-    return images;
   }
 
   async getEquipmentImage(id: number): Promise<EquipmentImage | undefined> {
@@ -774,17 +808,19 @@ export class MemStorage implements IStorage {
     const id = this.currentEquipmentImageId++;
     const now = new Date();
     
+    // Ensure we have consistent null values for optional fields
     const image: EquipmentImage = {
       id,
-      equipment_type: insertImage.equipment_type,
-      equipment_id: insertImage.equipment_id,
       project_id: insertImage.project_id,
+      equipment_type: insertImage.equipment_type,
+      equipment_id: insertImage.equipment_id ?? null,
       image_data: insertImage.image_data,
       thumbnail_data: insertImage.thumbnail_data ?? null,
       filename: insertImage.filename ?? null,
       sharepoint_file_id: insertImage.sharepoint_file_id ?? null,
       sharepoint_url: insertImage.sharepoint_url ?? null,
-      created_at: now
+      created_at: now,
+      updated_at: now
     };
     
     this.equipmentImages.set(id, image);
@@ -799,7 +835,8 @@ export class MemStorage implements IStorage {
     
     const updatedImage: EquipmentImage = {
       ...image,
-      ...updateImage
+      ...updateImage,
+      updated_at: new Date()
     };
     
     this.equipmentImages.set(id, updatedImage);
@@ -808,6 +845,279 @@ export class MemStorage implements IStorage {
 
   async deleteEquipmentImage(id: number): Promise<boolean> {
     return this.equipmentImages.delete(id);
+  }
+  
+  // KVG Form Data
+  async getKvgFormData(projectId: number): Promise<KvgFormData | undefined> {
+    return Array.from(this.kvgFormData.values()).find(
+      (formData) => formData.project_id === projectId
+    );
+  }
+
+  async createKvgFormData(insertFormData: InsertKvgFormData): Promise<KvgFormData> {
+    const id = this.currentKvgFormDataId++;
+    const now = new Date();
+    
+    const formData: KvgFormData = {
+      id,
+      project_id: insertFormData.project_id,
+      
+      // Pricing tab fields
+      customer_type: insertFormData.customer_type ?? null,
+      voc_escalations: insertFormData.voc_escalations ?? 0,
+      dispatch_responses: insertFormData.dispatch_responses ?? 0,
+      gdods_patrols: insertFormData.gdods_patrols ?? 0,
+      sgpp_patrols: insertFormData.sgpp_patrols ?? 0,
+      forensic_investigations: insertFormData.forensic_investigations ?? 0,
+      app_users: insertFormData.app_users ?? 0,
+      audio_devices: insertFormData.audio_devices ?? 0,
+      
+      // Discovery tab fields
+      bdm_owner: insertFormData.bdm_owner ?? null,
+      sales_engineer: insertFormData.sales_engineer ?? null,
+      kvg_sme: insertFormData.kvg_sme ?? null,
+      customer_name: insertFormData.customer_name ?? null,
+      site_address: insertFormData.site_address ?? null,
+      city: insertFormData.city ?? null,
+      state: insertFormData.state ?? null,
+      zip_code: insertFormData.zip_code ?? null,
+      crm_opportunity: insertFormData.crm_opportunity ?? null,
+      quote_date: insertFormData.quote_date ?? null,
+      time_zone: insertFormData.time_zone ?? null,
+      opportunity_stage: insertFormData.opportunity_stage ?? null,
+      opportunity_type: insertFormData.opportunity_type ?? null,
+      site_environment: insertFormData.site_environment ?? null,
+      region: insertFormData.region ?? null,
+      customer_vertical: insertFormData.customer_vertical ?? null,
+      property_category: insertFormData.property_category ?? null,
+      
+      // Project Deployment - PM tab fields
+      pm_name: insertFormData.pm_name ?? null,
+      deployment_date: insertFormData.deployment_date ?? null,
+      opportunity_number: insertFormData.opportunity_number ?? null,
+      project_manager: insertFormData.project_manager ?? null,
+      site_supervisor: insertFormData.site_supervisor ?? null,
+      technician: insertFormData.technician ?? null,
+      project_scope_description: insertFormData.project_scope_description ?? null,
+      deployment_requirements: insertFormData.deployment_requirements ?? null,
+      installation_requirements: insertFormData.installation_requirements ?? null,
+      parts_list_credentials: insertFormData.parts_list_credentials ?? null,
+      gateway_ip_address: insertFormData.gateway_ip_address ?? null,
+      gateway_port: insertFormData.gateway_port ?? null,
+      gateway_username: insertFormData.gateway_username ?? null,
+      gateway_password: insertFormData.gateway_password ?? null,
+      stream_names_ids: insertFormData.stream_names_ids ?? null,
+      stream_health_verification: insertFormData.stream_health_verification ?? null,
+      speaker_verification: insertFormData.speaker_verification ?? null,
+      
+      // Technology fields
+      technology: insertFormData.technology ?? null,
+      technology_deployed: insertFormData.technology_deployed ?? null,
+      camera_type: insertFormData.camera_type ?? null,
+      rspndr_gdods: insertFormData.rspndr_gdods ?? null,
+      rspndr_subscriptions: insertFormData.rspndr_subscriptions ?? null,
+      install_type: insertFormData.install_type ?? null,
+      
+      // Stream counts
+      event_video_trigger_streams: insertFormData.event_video_trigger_streams ?? 0,
+      virtual_patrol_streams: insertFormData.virtual_patrol_streams ?? 0,
+      event_action_clip_streams: insertFormData.event_action_clip_streams ?? 0,
+      event_action_multi_view_streams: insertFormData.event_action_multi_view_streams ?? 0,
+      health_streams: insertFormData.health_streams ?? 0,
+      audio_talk_down_speakers: insertFormData.audio_talk_down_speakers ?? 0,
+      
+      // Monitoring details
+      total_events_per_month: insertFormData.total_events_per_month ?? 0,
+      total_virtual_patrols_per_month: insertFormData.total_virtual_patrols_per_month ?? 0,
+      patrol_frequency: insertFormData.patrol_frequency ?? null,
+      total_health_patrols_per_month: insertFormData.total_health_patrols_per_month ?? 30,
+      
+      // Site Assessment fields
+      lighting_requirements: insertFormData.lighting_requirements ?? null,
+      lighting_notes: insertFormData.lighting_notes ?? null,
+      camera_field_of_view: insertFormData.camera_field_of_view ?? null,
+      fov_notes: insertFormData.fov_notes ?? null,
+      network_connectivity: insertFormData.network_connectivity ?? null,
+      network_notes: insertFormData.network_notes ?? null,
+      site_assessment_notes: insertFormData.site_assessment_notes ?? null,
+      total_event_action_multi_views_per_month: insertFormData.total_event_action_multi_views_per_month ?? 0,
+      total_escalations_maximum: insertFormData.total_escalations_maximum ?? 0,
+      gdods_dispatches_per_month: insertFormData.gdods_dispatches_per_month ?? 0,
+      sgpp_scheduled_patrols_per_month: insertFormData.sgpp_scheduled_patrols_per_month ?? 0,
+      
+      // Patrol details
+      on_demand_guard_dispatch_detail: insertFormData.on_demand_guard_dispatch_detail ?? null,
+      sgpp_scheduled_guard_patrol_detail: insertFormData.sgpp_scheduled_guard_patrol_detail ?? null,
+      sgpp_scheduled_guard_patrols_schedule_detail: insertFormData.sgpp_scheduled_guard_patrols_schedule_detail ?? null,
+      
+      // Use Case tab fields
+      use_case_commitment: insertFormData.use_case_commitment ?? null,
+      use_case_response: insertFormData.use_case_response ?? null,
+      sow_detailed_outline: insertFormData.sow_detailed_outline ?? null,
+      schedule_details: insertFormData.schedule_details ?? null,
+      quote_with_sow_attached: insertFormData.quote_with_sow_attached ?? null,
+      quote_design_attached: insertFormData.quote_design_attached ?? null,
+      
+      // VOC Protocol tab fields
+      am_name: insertFormData.am_name ?? null,
+      project_id_value: insertFormData.project_id_value ?? null,
+      voc_script: insertFormData.voc_script ?? null,
+      voc_contact_name: insertFormData.voc_contact_name ?? null,
+      type_of_install_account: insertFormData.type_of_install_account ?? null,
+      
+      // Escalation Process 1 fields
+      escalation_process1: insertFormData.escalation_process1 ?? null,
+      escalation_process1_events: insertFormData.escalation_process1_events ?? null,
+      escalation_process1_days_of_week: insertFormData.escalation_process1_days_of_week ?? null,
+      escalation_process1_start_time: insertFormData.escalation_process1_start_time ?? null,
+      escalation_process1_end_time: insertFormData.escalation_process1_end_time ?? null,
+      escalation_process1_cameras: insertFormData.escalation_process1_cameras ?? null,
+      escalation_process1_scene_observation: insertFormData.escalation_process1_scene_observation ?? null,
+      escalation_process1_process: insertFormData.escalation_process1_process ?? null,
+      escalation_process1_use_talk_down: insertFormData.escalation_process1_use_talk_down ?? null,
+      escalation_process1_contact_site_personnel: insertFormData.escalation_process1_contact_site_personnel ?? null,
+      escalation_process1_contact_police: insertFormData.escalation_process1_contact_police ?? null,
+      escalation_process1_escalate_to_branch: insertFormData.escalation_process1_escalate_to_branch ?? null,
+      escalation_process1_create_security_report: insertFormData.escalation_process1_create_security_report ?? null,
+      escalation_process1_rspndr_dispatch: insertFormData.escalation_process1_rspndr_dispatch ?? null,
+      escalation_process1_audio_response: insertFormData.escalation_process1_audio_response ?? null,
+      escalation_process1_audio_message: insertFormData.escalation_process1_audio_message ?? null,
+      
+      // Escalation Process 2 fields
+      escalation_process2: insertFormData.escalation_process2 ?? null,
+      escalation_process2_events: insertFormData.escalation_process2_events ?? null,
+      escalation_process2_days_of_week: insertFormData.escalation_process2_days_of_week ?? null,
+      escalation_process2_start_time: insertFormData.escalation_process2_start_time ?? null,
+      escalation_process2_end_time: insertFormData.escalation_process2_end_time ?? null,
+      escalation_process2_scene_observation: insertFormData.escalation_process2_scene_observation ?? null,
+      escalation_process2_process: insertFormData.escalation_process2_process ?? null,
+      escalation_process2_audio_response: insertFormData.escalation_process2_audio_response ?? null,
+      escalation_process2_audio_message: insertFormData.escalation_process2_audio_message ?? null,
+      
+      // Escalation Process 3 fields
+      escalation_process3: insertFormData.escalation_process3 ?? null,
+      escalation_process3_events: insertFormData.escalation_process3_events ?? null,
+      escalation_process3_days_of_week: insertFormData.escalation_process3_days_of_week ?? null,
+      escalation_process3_start_time: insertFormData.escalation_process3_start_time ?? null,
+      escalation_process3_end_time: insertFormData.escalation_process3_end_time ?? null,
+      escalation_process3_scene_observation: insertFormData.escalation_process3_scene_observation ?? null,
+      escalation_process3_process: insertFormData.escalation_process3_process ?? null,
+      escalation_process3_audio_response: insertFormData.escalation_process3_audio_response ?? null,
+      escalation_process3_audio_message: insertFormData.escalation_process3_audio_message ?? null,
+      
+      // Incident Types and Price Streams data as JSON
+      incident_types: insertFormData.incident_types ?? null,
+      price_streams: insertFormData.price_streams ?? null,
+      
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.kvgFormData.set(id, formData);
+    return formData;
+  }
+
+  async updateKvgFormData(id: number, updateFormData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined> {
+    const formData = this.kvgFormData.get(id);
+    if (!formData) {
+      return undefined;
+    }
+    
+    const updatedFormData: KvgFormData = { 
+      ...formData, 
+      ...updateFormData, 
+      updated_at: new Date() 
+    };
+    
+    this.kvgFormData.set(id, updatedFormData);
+    return updatedFormData;
+  }
+  
+  // KVG Streams
+  async getKvgStreams(projectId: number): Promise<KvgStream[]> {
+    return Array.from(this.kvgStreams.values()).filter(
+      (stream) => stream.project_id === projectId
+    );
+  }
+
+  async getKvgStream(id: number): Promise<KvgStream | undefined> {
+    return this.kvgStreams.get(id);
+  }
+
+  async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
+    const id = this.currentKvgStreamId++;
+    const now = new Date();
+    
+    const stream: KvgStream = {
+      id,
+      project_id: insertStream.project_id ?? null,
+      location: insertStream.location ?? null,
+      fov_accessibility: insertStream.fov_accessibility ?? null,
+      camera_accessibility: insertStream.camera_accessibility ?? null,
+      camera_type: insertStream.camera_type ?? null,
+      environment: insertStream.environment ?? null,
+      use_case_problem: insertStream.use_case_problem ?? null,
+      speaker_association: insertStream.speaker_association ?? null,
+      audio_talk_down: insertStream.audio_talk_down ?? null,
+      event_monitoring: insertStream.event_monitoring ?? null,
+      monitoring_start_time: insertStream.monitoring_start_time ?? null,
+      monitoring_end_time: insertStream.monitoring_end_time ?? null,
+      monitoring_days: insertStream.monitoring_days ?? null,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.kvgStreams.set(id, stream);
+    return stream;
+  }
+
+  async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
+    const stream = this.kvgStreams.get(id);
+    if (!stream) {
+      return undefined;
+    }
+    
+    const updatedStream: KvgStream = { 
+      ...stream, 
+      ...updateStream, 
+      updated_at: new Date() 
+    };
+    
+    this.kvgStreams.set(id, updatedStream);
+    return updatedStream;
+  }
+
+  async deleteKvgStream(id: number): Promise<boolean> {
+    return this.kvgStreams.delete(id);
+  }
+  
+  // Stream Images
+  async getStreamImages(streamId: number): Promise<StreamImage[]> {
+    return Array.from(this.streamImages.values()).filter(
+      (image) => image.stream_id === streamId
+    );
+  }
+
+  async createStreamImage(insertImage: InsertStreamImage): Promise<StreamImage> {
+    const id = this.currentStreamImageId++;
+    const now = new Date();
+    
+    const image: StreamImage = {
+      id,
+      stream_id: insertImage.stream_id,
+      project_id: insertImage.project_id ?? null,
+      image_data: insertImage.image_data,
+      thumbnail_data: insertImage.thumbnail_data ?? null,
+      filename: insertImage.filename ?? null,
+      created_at: now
+    };
+    
+    this.streamImages.set(id, image);
+    return image;
+  }
+
+  async deleteStreamImage(id: number): Promise<boolean> {
+    return this.streamImages.delete(id);
   }
 }
 

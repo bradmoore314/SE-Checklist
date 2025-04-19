@@ -331,3 +331,218 @@ export const insertEquipmentImageSchema = createInsertSchema(equipmentImages).om
 
 export type EquipmentImage = typeof equipmentImages.$inferSelect;
 export type InsertEquipmentImage = z.infer<typeof insertEquipmentImageSchema>;
+
+// Kastle Video Guarding Stream Images model
+export const streamImages = pgTable("stream_images", {
+  id: serial("id").primaryKey(),
+  stream_id: integer("stream_id").notNull(),
+  project_id: integer("project_id"),
+  image_data: text("image_data").notNull(), // base64 encoded image
+  thumbnail_data: text("thumbnail_data"), // base64 encoded thumbnail
+  filename: text("filename"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertStreamImageSchema = createInsertSchema(streamImages).omit({
+  id: true,
+  created_at: true,
+});
+
+// Kastle Video Guarding Streams model
+export const kvgStreams = pgTable("kvg_streams", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id"),
+  location: text("location"),
+  fov_accessibility: text("fov_accessibility"),
+  camera_accessibility: text("camera_accessibility"),
+  camera_type: text("camera_type"),
+  environment: text("environment"),
+  use_case_problem: text("use_case_problem"),
+  speaker_association: text("speaker_association"),
+  audio_talk_down: text("audio_talk_down"),
+  event_monitoring: text("event_monitoring"),
+  monitoring_start_time: text("monitoring_start_time"),
+  monitoring_end_time: text("monitoring_end_time"),
+  monitoring_days: text("monitoring_days"), // Stored as comma-separated days
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertKvgStreamSchema = createInsertSchema(kvgStreams).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+// Kastle Video Guarding Form Data model
+export const kvgFormData = pgTable("kvg_form_data", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull(),
+  
+  // Pricing tab fields
+  customer_type: text("customer_type"),
+  voc_escalations: integer("voc_escalations").default(0),
+  dispatch_responses: integer("dispatch_responses").default(0),
+  gdods_patrols: integer("gdods_patrols").default(0),
+  sgpp_patrols: integer("sgpp_patrols").default(0),
+  forensic_investigations: integer("forensic_investigations").default(0),
+  app_users: integer("app_users").default(0),
+  audio_devices: integer("audio_devices").default(0),
+  
+  // Discovery tab fields
+  bdm_owner: text("bdm_owner"),
+  sales_engineer: text("sales_engineer"),
+  kvg_sme: text("kvg_sme"),
+  customer_name: text("customer_name"),
+  site_address: text("site_address"),
+  city: text("city"),
+  state: text("state"),
+  zip_code: text("zip_code"),
+  crm_opportunity: text("crm_opportunity"),
+  quote_date: text("quote_date"),
+  time_zone: text("time_zone"),
+  opportunity_stage: text("opportunity_stage"),
+  opportunity_type: text("opportunity_type"),
+  site_environment: text("site_environment"),
+  region: text("region"),
+  customer_vertical: text("customer_vertical"),
+  property_category: text("property_category"),
+  
+  // Project Deployment - PM tab fields
+  pm_name: text("pm_name"),
+  deployment_date: text("deployment_date"),
+  opportunity_number: text("opportunity_number"),
+  project_manager: text("project_manager"),
+  site_supervisor: text("site_supervisor"),
+  technician: text("technician"),
+  project_scope_description: text("project_scope_description"),
+  deployment_requirements: text("deployment_requirements"),
+  installation_requirements: text("installation_requirements"),
+  parts_list_credentials: text("parts_list_credentials"),
+  gateway_ip_address: text("gateway_ip_address"),
+  gateway_port: text("gateway_port"),
+  gateway_username: text("gateway_username"),
+  gateway_password: text("gateway_password"),
+  stream_names_ids: text("stream_names_ids"),
+  stream_health_verification: text("stream_health_verification"),
+  speaker_verification: text("speaker_verification"),
+  
+  // Technology fields
+  technology: text("technology"),
+  technology_deployed: text("technology_deployed"),
+  camera_type: text("camera_type"),
+  rspndr_gdods: text("rspndr_gdods"),
+  rspndr_subscriptions: text("rspndr_subscriptions"),
+  install_type: text("install_type"),
+  
+  // Stream counts
+  event_video_trigger_streams: integer("event_video_trigger_streams").default(0),
+  virtual_patrol_streams: integer("virtual_patrol_streams").default(0),
+  event_action_clip_streams: integer("event_action_clip_streams").default(0),
+  event_action_multi_view_streams: integer("event_action_multi_view_streams").default(0),
+  health_streams: integer("health_streams").default(0),
+  audio_talk_down_speakers: integer("audio_talk_down_speakers").default(0),
+  
+  // Monitoring details
+  total_events_per_month: integer("total_events_per_month").default(0),
+  total_virtual_patrols_per_month: integer("total_virtual_patrols_per_month").default(0),
+  patrol_frequency: text("patrol_frequency"),
+  total_health_patrols_per_month: integer("total_health_patrols_per_month").default(30),
+  
+  // Site Assessment fields
+  lighting_requirements: text("lighting_requirements"),
+  lighting_notes: text("lighting_notes"),
+  camera_field_of_view: text("camera_field_of_view"),
+  fov_notes: text("fov_notes"),
+  network_connectivity: text("network_connectivity"),
+  network_notes: text("network_notes"),
+  site_assessment_notes: text("site_assessment_notes"),
+  total_event_action_multi_views_per_month: integer("total_event_action_multi_views_per_month").default(0),
+  total_escalations_maximum: integer("total_escalations_maximum").default(0),
+  gdods_dispatches_per_month: integer("gdods_dispatches_per_month").default(0),
+  sgpp_scheduled_patrols_per_month: integer("sgpp_scheduled_patrols_per_month").default(0),
+  
+  // Patrol details
+  on_demand_guard_dispatch_detail: text("on_demand_guard_dispatch_detail"),
+  sgpp_scheduled_guard_patrol_detail: text("sgpp_scheduled_guard_patrol_detail"),
+  sgpp_scheduled_guard_patrols_schedule_detail: text("sgpp_scheduled_guard_patrols_schedule_detail"),
+  
+  // Use Case tab fields
+  use_case_commitment: text("use_case_commitment"),
+  use_case_response: text("use_case_response"),
+  sow_detailed_outline: text("sow_detailed_outline"),
+  schedule_details: text("schedule_details"),
+  quote_with_sow_attached: text("quote_with_sow_attached"),
+  quote_design_attached: text("quote_design_attached"),
+  
+  // VOC Protocol tab fields
+  am_name: text("am_name"),
+  project_id_value: text("project_id_value"),
+  voc_script: text("voc_script"),
+  voc_contact_name: text("voc_contact_name"),
+  type_of_install_account: text("type_of_install_account"),
+  
+  // Escalation Process 1 fields
+  escalation_process1: text("escalation_process1"),
+  escalation_process1_events: text("escalation_process1_events"),
+  escalation_process1_days_of_week: text("escalation_process1_days_of_week"),
+  escalation_process1_start_time: text("escalation_process1_start_time"),
+  escalation_process1_end_time: text("escalation_process1_end_time"),
+  escalation_process1_cameras: text("escalation_process1_cameras"),
+  escalation_process1_scene_observation: text("escalation_process1_scene_observation"),
+  escalation_process1_process: text("escalation_process1_process"),
+  escalation_process1_use_talk_down: text("escalation_process1_use_talk_down"),
+  escalation_process1_contact_site_personnel: text("escalation_process1_contact_site_personnel"),
+  escalation_process1_contact_police: text("escalation_process1_contact_police"),
+  escalation_process1_escalate_to_branch: text("escalation_process1_escalate_to_branch"),
+  escalation_process1_create_security_report: text("escalation_process1_create_security_report"),
+  escalation_process1_rspndr_dispatch: text("escalation_process1_rspndr_dispatch"),
+  escalation_process1_audio_response: text("escalation_process1_audio_response"),
+  escalation_process1_audio_message: text("escalation_process1_audio_message"),
+  
+  // Escalation Process 2 fields
+  escalation_process2: text("escalation_process2"),
+  escalation_process2_events: text("escalation_process2_events"),
+  escalation_process2_days_of_week: text("escalation_process2_days_of_week"),
+  escalation_process2_start_time: text("escalation_process2_start_time"),
+  escalation_process2_end_time: text("escalation_process2_end_time"),
+  escalation_process2_scene_observation: text("escalation_process2_scene_observation"),
+  escalation_process2_process: text("escalation_process2_process"),
+  escalation_process2_audio_response: text("escalation_process2_audio_response"),
+  escalation_process2_audio_message: text("escalation_process2_audio_message"),
+  
+  // Escalation Process 3 fields
+  escalation_process3: text("escalation_process3"),
+  escalation_process3_events: text("escalation_process3_events"),
+  escalation_process3_days_of_week: text("escalation_process3_days_of_week"),
+  escalation_process3_start_time: text("escalation_process3_start_time"),
+  escalation_process3_end_time: text("escalation_process3_end_time"),
+  escalation_process3_scene_observation: text("escalation_process3_scene_observation"),
+  escalation_process3_process: text("escalation_process3_process"),
+  escalation_process3_audio_response: text("escalation_process3_audio_response"),
+  escalation_process3_audio_message: text("escalation_process3_audio_message"),
+  
+  // Incident Types - stored as JSON to allow for flexible structure
+  incident_types: jsonb("incident_types"),
+  
+  // Price Streams data - stored as JSON array
+  price_streams: jsonb("price_streams"),
+  
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const insertKvgFormDataSchema = createInsertSchema(kvgFormData).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export type StreamImage = typeof streamImages.$inferSelect;
+export type InsertStreamImage = z.infer<typeof insertStreamImageSchema>;
+
+export type KvgStream = typeof kvgStreams.$inferSelect;
+export type InsertKvgStream = z.infer<typeof insertKvgStreamSchema>;
+
+export type KvgFormData = typeof kvgFormData.$inferSelect;
+export type InsertKvgFormData = z.infer<typeof insertKvgFormDataSchema>;
