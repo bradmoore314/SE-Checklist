@@ -170,19 +170,38 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <div>
           <Link href={currentSiteWalk ? `/projects/${currentSiteWalk.id}/floorplans` : `/floorplans`}>
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-              location.includes("/floorplans") 
+              location.includes("/floorplans") && !location.includes("/floorplans-old") && !location.includes("/modern-floorplans")
                 ? "border-r-4 nav-item active" 
                 : "nav-item hover:bg-gray-100"
             } cursor-pointer`}
-               style={location.includes("/floorplans") ? { 
+               style={location.includes("/floorplans") && !location.includes("/floorplans-old") && !location.includes("/modern-floorplans") ? { 
                  backgroundColor: 'var(--red-accent)', 
                  borderColor: 'var(--red-accent)' 
                } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans") ? "text-white" : "text-gray-600"}`}>map</span>
-              {!collapsed && <span className={location.includes("/floorplans") ? "text-white" : "text-gray-800 font-medium"}>Floorplans</span>}
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans") && !location.includes("/floorplans-old") && !location.includes("/modern-floorplans") ? "text-white" : "text-gray-600"}`}>map</span>
+              {!collapsed && <span className={location.includes("/floorplans") && !location.includes("/floorplans-old") && !location.includes("/modern-floorplans") ? "text-white" : "text-gray-800 font-medium"}>Floorplans</span>}
             </div>
           </Link>
         </div>
+        
+        {currentSiteWalk && (
+          <div>
+            <Link href={`/projects/${currentSiteWalk.id}/floorplans-old`}>
+              <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
+                location.includes("/floorplans-old") 
+                  ? "border-r-4 nav-item active" 
+                  : "nav-item hover:bg-gray-100"
+              } cursor-pointer`}
+                 style={location.includes("/floorplans-old") ? { 
+                   backgroundColor: 'var(--red-accent)', 
+                   borderColor: 'var(--red-accent)' 
+                 } : {}}>
+                <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans-old") ? "text-white" : "text-gray-600"}`}>layers</span>
+                {!collapsed && <span className={location.includes("/floorplans-old") ? "text-white" : "text-gray-800 font-medium"}>Legacy Floorplans</span>}
+              </div>
+            </Link>
+          </div>
+        )}
 
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 mt-4 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>
           {collapsed ? "" : "REPORTS"}
