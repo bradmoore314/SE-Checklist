@@ -30,6 +30,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+interface LookupData {
+  elevatorTypes?: string[];
+}
+
 interface AddElevatorModalProps {
   isOpen?: boolean;
   open?: boolean;
@@ -66,9 +70,14 @@ export default function AddElevatorModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch lookup data for dropdowns
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
     queryKey: ["/api/lookup"],
   });
+  
+  // Helper function to safely access lookup data
+  const getLookupOptions = (key: keyof LookupData) => {
+    return lookupData && lookupData[key] ? lookupData[key] || [] : [];
+  };
 
   // Initialize form with default values
   const form = useForm<ElevatorFormValues>({
