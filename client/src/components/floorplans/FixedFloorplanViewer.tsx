@@ -128,7 +128,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // State for floorplan data and selection
   const [selectedFloorplanId, setSelectedFloorplanId] = useState<number | null>(null);
-  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  // We no longer need to store the blob URL - using data URL directly
   const [pdfScale, setPdfScale] = useState<number>(1);
   
   // State for upload dialog
@@ -222,57 +222,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     enabled: !!selectedFloorplan
   });
   
-  // Create PDF blob URL when floorplan is selected
+  // We no longer need to create a blob URL since we're using the base64 data directly
+  // This helps avoid CORS issues with blob URLs
   useEffect(() => {
     if (selectedFloorplan) {
-      // Clean up any existing blob URL
-      if (pdfBlobUrl) {
-        URL.revokeObjectURL(pdfBlobUrl);
-      }
-      
-      try {
-        // Convert base64 to blob and create object URL
-        const byteCharacters = atob(selectedFloorplan.pdf_data);
-        const byteArrays = [];
-        
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-          const slice = byteCharacters.slice(offset, offset + 512);
-          
-          const byteNumbers = new Array(slice.length);
-          for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-          }
-          
-          const byteArray = new Uint8Array(byteNumbers);
-          byteArrays.push(byteArray);
-        }
-        
-        const blob = new Blob(byteArrays, { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        
-        setPdfBlobUrl(url);
-      } catch (err) {
-        console.error('Error creating PDF blob URL:', err);
-        toast({
-          title: "Error",
-          description: "Failed to load the PDF floorplan",
-          variant: "destructive",
-        });
-      }
-    } else {
-      // Clear URL if no floorplan is selected
-      if (pdfBlobUrl) {
-        URL.revokeObjectURL(pdfBlobUrl);
-        setPdfBlobUrl(null);
-      }
+      console.log('Selected floorplan changed:', selectedFloorplan.name);
     }
-    
-    // Clean up on unmount
-    return () => {
-      if (pdfBlobUrl) {
-        URL.revokeObjectURL(pdfBlobUrl);
-      }
-    };
   }, [selectedFloorplan]);
   
   // Mutation for uploading a floorplan
@@ -1192,9 +1147,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                   height: '100%', // Fill the container height
                   minHeight: '800px' // Ensure minimum height
                 }}>
-                {/* PDF Iframe */}
-                <iframe
-                  src={pdfBlobUrl}
+                {/* PDF Object display using data URL instead of blob URL to avoid CORS issues */}
+                <object
+                  data={`data:application/pdf;base64,${selectedFloorplan?.pdf_data}`}
                   className="w-full h-full border-0"
                   style={{ 
                     minHeight: '800px',
@@ -1205,10 +1160,16 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                     display: 'block', // Ensure proper display
                     backgroundColor: 'white' // Add background color for better visibility
                   }}
-                  title="Floorplan PDF"
-                  sandbox="allow-forms allow-scripts allow-same-origin"
-                  seamless
-                />
+                  type="application/pdf"
+                >
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p>Your browser does not support PDFs. 
+                       <a href={`data:application/pdf;base64,${selectedFloorplan?.pdf_data}`} download="floorplan.pdf">
+                         Download the PDF
+                       </a>
+                    </p>
+                  </div>
+                </object>
                 
                 {/* Overlay div to catch clicks when in adding mode */}
                 {isAddingMarker && (
