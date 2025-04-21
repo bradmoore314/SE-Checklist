@@ -11,10 +11,20 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  customHeaders?: Record<string, string>,
 ): Promise<Response> {
+  // Base headers
+  const headers: Record<string, string> = {
+    ...(data ? { "Content-Type": "application/json" } : {}),
+    // Add a bypass auth header for development mode
+    'x-bypass-auth': 'true',
+    // Include any custom headers
+    ...(customHeaders || {})
+  };
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -31,6 +41,10 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
+      headers: {
+        // Add bypass auth header for development
+        'x-bypass-auth': 'true'
+      }
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {

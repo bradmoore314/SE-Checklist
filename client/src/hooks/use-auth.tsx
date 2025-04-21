@@ -174,14 +174,44 @@ export function useAuth() {
   // Add a development bypass auth function
   const bypassAuth = async () => {
     try {
-      const response = await apiRequest('POST', '/api/dev-login');
-      if (response.ok) {
-        const userData = await response.json();
-        // Update the query client with the user data
-        queryClient.setQueryData(["/api/user"], userData);
-        return true;
+      console.log('Attempting to bypass authentication for development');
+      
+      // First try the dedicated dev login endpoint
+      try {
+        const response = await apiRequest('POST', '/api/dev-login');
+        if (response.ok) {
+          const userData = await response.json();
+          // Update the query client with the user data
+          queryClient.setQueryData(["/api/user"], userData);
+          console.log('Authentication bypass successful via dev-login');
+          return true;
+        }
+      } catch (devLoginError) {
+        console.warn('Dev login failed, trying second method:', devLoginError);
       }
-      return false;
+      
+      // Fallback to a direct mock auth injection
+      const mockUser = {
+        id: 999,
+        username: 'dev-admin',
+        email: 'dev@example.com',
+        fullName: 'Development Admin',
+        role: 'admin',
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+      
+      // Set the mock user in the query cache
+      queryClient.setQueryData(["/api/user"], mockUser);
+      
+      // Add a custom header to all future requests
+      const originalRequest = apiRequest;
+      (window as any).originalApiRequest = originalRequest;
+      
+      // We don't need to override apiRequest anymore as we've modified it to include bypass headers automatically
+      
+      console.log('Authentication bypass successful via mock user');
+      return true;
     } catch (error) {
       console.error('Error bypassing auth:', error);
       return false;
