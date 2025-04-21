@@ -1362,12 +1362,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid marker ID" });
     }
 
-    const success = await storage.deleteFloorplanMarker(markerId);
-    if (!success) {
-      return res.status(404).json({ message: "Marker not found" });
-    }
+    try {
+      const success = await storage.deleteFloorplanMarker(markerId);
+      if (!success) {
+        return res.status(404).json({ message: "Marker not found" });
+      }
 
-    res.status(204).end();
+      // Return a JSON response instead of no content for better client handling
+      return res.status(200).json({ 
+        success: true, 
+        message: "Marker deleted successfully",
+        id: markerId
+      });
+    } catch (error) {
+      console.error("Error deleting marker:", error);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Error deleting marker", 
+        error: (error as Error).message 
+      });
+    }
   });
 
   // API endpoint to check if Microsoft authentication is configured

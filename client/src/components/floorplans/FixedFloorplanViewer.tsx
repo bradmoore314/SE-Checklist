@@ -1252,11 +1252,36 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               Duplicate
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => {
-                              // Edit note label
-                              toast({
-                                title: "Info",
-                                description: "Edit functionality coming soon",
-                              });
+                              // For now, just show a dialog to edit the marker label
+                              const newLabel = prompt("Enter new note text:", marker.label || "");
+                              if (newLabel !== null) {
+                                // Update the marker with the new label
+                                apiRequest('PUT', `/api/floorplan-markers/${marker.id}`, {
+                                  label: newLabel,
+                                  // Include required fields
+                                  floorplan_id: marker.floorplan_id,
+                                  page: marker.page,
+                                  marker_type: marker.marker_type,
+                                  equipment_id: marker.equipment_id,
+                                  position_x: marker.position_x,
+                                  position_y: marker.position_y
+                                }).then(() => {
+                                  // Refresh markers list
+                                  queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+                                  
+                                  toast({
+                                    title: "Success",
+                                    description: "Note updated successfully",
+                                  });
+                                }).catch(error => {
+                                  console.error('Error updating marker:', error);
+                                  toast({
+                                    title: "Error",
+                                    description: "Failed to update note",
+                                    variant: "destructive",
+                                  });
+                                });
+                              }
                             }}>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
@@ -1322,11 +1347,15 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               Duplicate
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => {
-                              // Edit marker logic
+                              // For regular markers (access point, camera, etc.), 
+                              // we would normally open the equipment editor, but for now just show which marker we're editing
                               toast({
-                                title: "Info",
-                                description: "Edit functionality coming soon",
+                                title: "Edit Equipment",
+                                description: `Equipment Type: ${marker.marker_type}, ID: ${marker.equipment_id}`,
                               });
+                              
+                              // In the future, we'll implement proper equipment editing capability
+                              // by opening the appropriate modal for the marker type
                             }}>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
