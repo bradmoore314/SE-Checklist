@@ -1,0 +1,394 @@
+queryClient.ts:32 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384Understand this errorAI
+queryClient.ts:32 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384Understand this errorAI
+queryClient.ts:32 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/auth/microsoft/status 401 (Unauthorized)
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384Understand this errorAI
+queryClient.ts:32 Fetch failed loading: GET "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects".
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384
+queryClient.ts:32 Fetch failed loading: GET "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/auth/microsoft/status".
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384
+queryClient.ts:32 Fetch failed loading: GET "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user".
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=577435ca:840
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+fetch @ @tanstack_react-query.js?v=577435ca:926
+executeFetch_fn @ @tanstack_react-query.js?v=577435ca:2211
+onSubscribe @ @tanstack_react-query.js?v=577435ca:1898
+subscribe @ @tanstack_react-query.js?v=577435ca:24
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3022
+subscribeToStore @ chunk-WERSD76P.js?v=577435ca:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19432
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=577435ca:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18718
+workLoop @ chunk-WERSD76P.js?v=577435ca:197
+flushWork @ chunk-WERSD76P.js?v=577435ca:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=577435ca:384
+queryClient.ts:15 Fetch finished loading: POST "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/login".
+apiRequest @ queryClient.ts:15
+mutationFn @ use-auth.tsx:80
+fn @ @tanstack_react-query.js?v=577435ca:1189
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+execute @ @tanstack_react-query.js?v=577435ca:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=577435ca:2630
+onLogin @ auth-page.tsx:74
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449
+@radix-ui_react-dialog.js?v=577435ca:342 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=577435ca:342
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19416
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:18627Understand this warningAI
+queryClient.ts:15 Fetch finished loading: POST "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects".
+apiRequest @ queryClient.ts:15
+onSubmit @ projects.tsx:92
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449
+10Fetch finished loading: GET "<URL>".
+queryClient.ts:15 Fetch finished loading: POST "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/floorplans".
+apiRequest @ queryClient.ts:15
+mutationFn @ FixedFloorplanViewer.tsx:263
+fn @ @tanstack_react-query.js?v=577435ca:1189
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+execute @ @tanstack_react-query.js?v=577435ca:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=577435ca:2630
+reader.onload @ FixedFloorplanViewer.tsx:518
+FileReader
+handleUploadFloorplan @ FixedFloorplanViewer.tsx:542
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449
+FixedFloorplanViewer.tsx:579 Click position: {x: 80, y: 15}
+FixedFloorplanViewer.tsx:797 Creating marker: {floorplan_id: 1, page: 1, marker_type: 'access_point', equipment_id: 0, position_x: 80, …}
+@radix-ui_react-dialog.js?v=577435ca:342 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=577435ca:342
+commitHookEffectListMount @ chunk-WERSD76P.js?v=577435ca:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=577435ca:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=577435ca:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=577435ca:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=577435ca:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=577435ca:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=577435ca:19447
+commitRootImpl @ chunk-WERSD76P.js?v=577435ca:19416
+commitRoot @ chunk-WERSD76P.js?v=577435ca:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=577435ca:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=577435ca:9119
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:18627Understand this warningAI
+queryClient.ts:15 Fetch finished loading: POST "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points".
+apiRequest @ queryClient.ts:15
+onSubmit @ AddAccessPointModal.tsx:131
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449
+FixedFloorplanViewer.tsx:1371 Creating access_point marker with equipment ID: {id: 1, project_id: 2, location: 'asdfasdf', quick_config: 'Takeover Prop Monitoring Single Mag Interior Kastle', reader_type: 'KR-100', …}
+FixedFloorplanViewer.tsx:337 Creating marker with data: {floorplan_id: 1, page: 1, marker_type: 'access_point', equipment_id: {…}, position_x: 80, …}
+queryClient.ts:15 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/floorplan-markers 400 (Bad Request)
+apiRequest @ queryClient.ts:15
+mutationFn @ FixedFloorplanViewer.tsx:370
+fn @ @tanstack_react-query.js?v=577435ca:1189
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+execute @ @tanstack_react-query.js?v=577435ca:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=577435ca:2630
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3295
+onSave @ FixedFloorplanViewer.tsx:1373
+onSubmit @ AddAccessPointModal.tsx:133
+await in onSubmit
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449Understand this errorAI
+FixedFloorplanViewer.tsx:397 Error creating marker: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"number","received":"object","path":["equipment_id"],"message":"Expected number, received object"}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async Object.mutationFn (FixedFloorplanViewer.tsx:370:26)
+mutationFn @ FixedFloorplanViewer.tsx:397
+await in mutationFn
+fn @ @tanstack_react-query.js?v=577435ca:1189
+run @ @tanstack_react-query.js?v=577435ca:494
+start @ @tanstack_react-query.js?v=577435ca:536
+execute @ @tanstack_react-query.js?v=577435ca:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=577435ca:2630
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3295
+onSave @ FixedFloorplanViewer.tsx:1373
+onSubmit @ AddAccessPointModal.tsx:133
+await in onSubmit
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449Understand this errorAI
+FixedFloorplanViewer.tsx:424 Marker creation error: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"number","received":"object","path":["equipment_id"],"message":"Expected number, received object"}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async Object.mutationFn (FixedFloorplanViewer.tsx:370:26)
+onError @ FixedFloorplanViewer.tsx:424
+execute @ @tanstack_react-query.js?v=577435ca:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=577435ca:2630
+(anonymous) @ @tanstack_react-query.js?v=577435ca:3295
+onSave @ FixedFloorplanViewer.tsx:1373
+onSubmit @ AddAccessPointModal.tsx:133
+await in onSubmit
+(anonymous) @ chunk-RBMNEPGM.js?v=577435ca:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=577435ca:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=577435ca:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=577435ca:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=577435ca:3736
+executeDispatch @ chunk-WERSD76P.js?v=577435ca:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=577435ca:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=577435ca:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=577435ca:7051
+(anonymous) @ chunk-WERSD76P.js?v=577435ca:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=577435ca:18913
+batchedUpdates @ chunk-WERSD76P.js?v=577435ca:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=577435ca:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=577435ca:5478
+dispatchEvent @ chunk-WERSD76P.js?v=577435ca:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=577435ca:5449Understand this errorAI
+queryClient.ts:15 Fetch failed loading: POST "https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/floorplan-markers".

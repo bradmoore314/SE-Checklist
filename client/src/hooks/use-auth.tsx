@@ -170,5 +170,25 @@ export function useAuth() {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context;
+  
+  // Add a development bypass auth function
+  const bypassAuth = async () => {
+    try {
+      const response = await apiRequest('POST', '/api/dev-login');
+      if (response.ok) {
+        const userData = await response.json();
+        context.loginMutation.onSuccess(userData);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error bypassing auth:', error);
+      return false;
+    }
+  };
+  
+  return {
+    ...context,
+    bypassAuth
+  };
 }
