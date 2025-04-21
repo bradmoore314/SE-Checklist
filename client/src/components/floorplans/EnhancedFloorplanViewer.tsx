@@ -459,15 +459,27 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
   const handlePdfContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isAddingMarker || !containerRef.current) return;
 
+    // Prevent event bubbling
+    e.stopPropagation();
+    
     const container = containerRef.current;
     const rect = container.getBoundingClientRect();
     
-    // Calculate position as percentage of container
-    // Round to integer as the server expects integer values
-    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+    // Get iframe content dimensions for more accurate positioning
+    const iframeContainer = container.querySelector('div') as HTMLElement;
+    const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
     
-    setNewMarkerPosition({ x, y });
+    // Calculate position as percentage of visible content area
+    // Round to integer as the server expects integer values
+    const x = Math.round(((e.clientX - iframeRect.left) / iframeRect.width) * 100);
+    const y = Math.round(((e.clientY - iframeRect.top) / iframeRect.height) * 100);
+    
+    // Ensure the coordinates are within bounds (0-100%)
+    const boundedX = Math.max(0, Math.min(100, x));
+    const boundedY = Math.max(0, Math.min(100, y));
+    
+    console.log('Click position:', { x: boundedX, y: boundedY });
+    setNewMarkerPosition({ x: boundedX, y: boundedY });
     
     // Always open the marker type selection dialog first
     setMarkerDialogOpen(true);
@@ -555,12 +567,19 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       const container = containerRef.current;
       if (!container) return;
       
+      // Get container rect
       const rect = container.getBoundingClientRect();
       
-      // Calculate the new position as percentage
+      // Get iframe container for more accurate positioning
+      const iframeContainer = container.querySelector('#pdf-container') as HTMLElement;
+      const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
+      
+      // Calculate the new position as percentage of the iframe/PDF area
       // Round to integer as the server expects integer values
-      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - iframeRect.left) / iframeRect.width) * 100)));
+      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - iframeRect.top) / iframeRect.height) * 100)));
+      
+      console.log('Drag position:', { x, y });
       
       // Initialize last position with the first mouse move event
       if (!isInitialized) {
@@ -582,9 +601,13 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       const container = containerRef.current;
       const rect = container.getBoundingClientRect();
       
-      // Calculate position as percentage
-      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+      // Get iframe container for more accurate positioning
+      const iframeContainer = container.querySelector('#pdf-container') as HTMLElement;
+      const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
+      
+      // Calculate position as percentage of the iframe/PDF area
+      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - iframeRect.left) / iframeRect.width) * 100)));
+      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - iframeRect.top) / iframeRect.height) * 100)));
       
       // Check if there was actual movement before updating in the backend
       if (Math.abs(x - lastPosition.x) > 0 || Math.abs(y - lastPosition.y) > 0) {
@@ -864,7 +887,7 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
             }}
           >
             {pdfBlobUrl ? (
-              <div className="relative">
+              <div className="relative" id="pdf-container">
                 <iframe
                   src={pdfBlobUrl}
                   className="w-full"
@@ -877,7 +900,7 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
                 {/* Overlay div to catch clicks when in marker adding mode */}
                 {isAddingMarker && (
                   <div 
-                    className="absolute inset-0" 
+                    className="absolute inset-0 z-10 cursor-crosshair" 
                     style={{ backgroundColor: 'transparent' }}
                   />
                 )}
