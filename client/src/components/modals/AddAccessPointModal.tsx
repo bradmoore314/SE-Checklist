@@ -435,7 +435,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.interiorPerimeterOptions.map((option: string) => (
+                          getLookupOptions("interiorPerimeterOptions").map((option: string) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
@@ -613,7 +613,7 @@ export default function AddAccessPointModal({
                           {isLoadingLookups ? (
                             <SelectItem value="loading">Loading...</SelectItem>
                           ) : (
-                            lookupData?.noisyPropOptions.map((option: string) => (
+                            getLookupOptions("noisyPropOptions").map((option: string) => (
                               <SelectItem key={option} value={option}>
                                 {option}
                               </SelectItem>
@@ -648,7 +648,7 @@ export default function AddAccessPointModal({
                           {isLoadingLookups ? (
                             <SelectItem value="loading">Loading...</SelectItem>
                           ) : (
-                            lookupData?.crashbarsOptions.map((option: string) => (
+                            getLookupOptions("crashbarsOptions").map((option: string) => (
                               <SelectItem key={option} value={option}>
                                 {option}
                               </SelectItem>
@@ -683,7 +683,7 @@ export default function AddAccessPointModal({
                           {isLoadingLookups ? (
                             <SelectItem value="loading">Loading...</SelectItem>
                           ) : (
-                            lookupData?.realLockTypeOptions.map((option: string) => (
+                            getLookupOptions("realLockTypeOptions").map((option: string) => (
                               <SelectItem key={option} value={option}>
                                 {option}
                               </SelectItem>

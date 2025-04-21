@@ -30,6 +30,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+interface LookupData {
+  cameraTypes?: string[];
+  mountingTypes?: string[];
+  resolutions?: string[];
+}
+
 interface AddCameraModalProps {
   isOpen?: boolean;
   open?: boolean;
@@ -65,9 +71,14 @@ export default function AddCameraModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch lookup data for dropdowns
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
     queryKey: ["/api/lookup"],
   });
+  
+  // Helper function to safely access lookup data
+  const getLookupOptions = (key: keyof LookupData) => {
+    return lookupData && lookupData[key] ? lookupData[key] || [] : [];
+  };
 
   // Initialize form with default values
   const form = useForm<CameraFormValues>({
@@ -148,7 +159,7 @@ export default function AddCameraModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.cameraTypes.map((type: string) => (
+                          getLookupOptions("cameraTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -182,7 +193,7 @@ export default function AddCameraModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.mountingTypes.map((type: string) => (
+                          getLookupOptions("mountingTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -216,7 +227,7 @@ export default function AddCameraModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.resolutions.map((resolution: string) => (
+                          getLookupOptions("resolutions").map((resolution: string) => (
                             <SelectItem key={resolution} value={resolution}>
                               {resolution}
                             </SelectItem>
