@@ -16,6 +16,7 @@ import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import FloorplansPage from "@/pages/floorplans-page";
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
+import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import QuoteReviewPage from "@/pages/quote-review-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
@@ -50,6 +51,7 @@ function Router() {
       {/* Floorplans */}
       <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
+      <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
       
       {/* Quote Review */}
       <ProtectedRoute path="/projects/:projectId/quote-review" component={QuoteReviewPage} />

@@ -170,7 +170,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <div>
           {currentSiteWalk ? (
             // If we have a current site walk, use its ID
-            <Link href={`/projects/${currentSiteWalk.id}/floorplans`}>
+            <Link href={`/projects/${currentSiteWalk.id}/enhanced-floorplans`}>
               <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
                 location.includes("/floorplans") 
                   ? "border-r-4 nav-item active" 
