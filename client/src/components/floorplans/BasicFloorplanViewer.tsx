@@ -201,64 +201,72 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     },
   });
   
-  // Set default floorplan if available
+  // Set default floorplan if available - with better dependency tracking to avoid infinite loops
   useEffect(() => {
+    // Only set if we have floorplans but none selected
     if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
       setSelectedFloorplan(floorplans[0]);
     }
-  }, [floorplans, selectedFloorplan]);
+  }, [floorplans.length > 0, selectedFloorplan === null]);
 
   // Update markers when floorplanMarkers changes
   useEffect(() => {
     if (floorplanMarkers) {
       setMarkers(floorplanMarkers);
     }
-  }, [floorplanMarkers]);
+  }, [JSON.stringify(floorplanMarkers)]);
 
   // Convert base64 to blob URL for PDF display
   useEffect(() => {
-    if (selectedFloorplan) {
-      try {
-        // Clean up previous blob URL
-        if (pdfBlobUrl) {
-          URL.revokeObjectURL(pdfBlobUrl);
-        }
+    // Skip if no floorplan or no pdf_data
+    if (!selectedFloorplan || !selectedFloorplan.pdf_data) {
+      setPdfBlobUrl(null);
+      return;
+    }
+    
+    // Reference selected floorplan id to prevent rerendering on each state update
+    const floorplanId = selectedFloorplan.id;
+    
+    try {
+      // Clean up previous blob URL
+      if (pdfBlobUrl) {
+        URL.revokeObjectURL(pdfBlobUrl);
+      }
 
-        // Convert base64 to blob directly without using fetch
-        try {
-          // Decode the base64 string
-          const byteCharacters = atob(selectedFloorplan.pdf_data);
-          const byteNumbers = new Array(byteCharacters.length);
-          
-          // Convert to byte array
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          
-          // Create object URL from blob
-          const url = URL.createObjectURL(blob);
-          setPdfBlobUrl(url);
-        } catch (err) {
-          console.error('Error converting PDF data:', err);
-          setPdfBlobUrl(null);
-          toast({
-            title: "Error",
-            description: "Failed to load PDF data",
-            variant: "destructive",
-          });
+      // Convert base64 to blob directly without using fetch
+      try {
+        // Decode the base64 string
+        const byteCharacters = atob(selectedFloorplan.pdf_data);
+        const byteNumbers = new Array(byteCharacters.length);
+        
+        // Convert to byte array
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
+        
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        
+        // Create object URL from blob
+        const url = URL.createObjectURL(blob);
+        setPdfBlobUrl(url);
       } catch (err) {
-        console.error('Error creating blob URL:', err);
+        console.error('Error converting PDF data:', err);
         setPdfBlobUrl(null);
         toast({
           title: "Error",
-          description: "Failed to process PDF data",
+          description: "Failed to load PDF data",
           variant: "destructive",
         });
       }
+    } catch (err) {
+      console.error('Error creating blob URL:', err);
+      setPdfBlobUrl(null);
+      toast({
+        title: "Error",
+        description: "Failed to process PDF data",
+        variant: "destructive",
+      });
     }
     
     // Cleanup function
@@ -267,7 +275,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
         URL.revokeObjectURL(pdfBlobUrl);
       }
     };
-  }, [selectedFloorplan]);
+  }, [selectedFloorplan?.id]);
 
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
