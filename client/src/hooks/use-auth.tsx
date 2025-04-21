@@ -177,7 +177,8 @@ export function useAuth() {
       const response = await apiRequest('POST', '/api/dev-login');
       if (response.ok) {
         const userData = await response.json();
-        context.loginMutation.onSuccess(userData);
+        // Update the query client with the user data
+        queryClient.setQueryData(["/api/user"], userData);
         return true;
       }
       return false;

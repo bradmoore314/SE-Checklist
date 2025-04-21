@@ -14,6 +14,8 @@ import Intercoms from "@/pages/intercoms";
 import SiteWalkSummary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
+import DebugLoginPage from "@/pages/debug-login-page";
+import DebugFloorplanTest from "@/pages/debug-floorplan-test";
 import FloorplansPage from "@/pages/floorplans-page";
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
@@ -31,6 +33,8 @@ function Router() {
     <Switch>
       {/* Public routes */}
       <Route path="/auth" component={AuthPage} />
+      <Route path="/debug-login" component={DebugLoginPage} />
+      <Route path="/debug-floorplan" component={DebugFloorplanTest} />
       
       {/* Protected routes */}
       <ProtectedRoute path="/" component={Dashboard} />
