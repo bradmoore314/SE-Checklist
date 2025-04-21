@@ -463,20 +463,24 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
     e.stopPropagation();
     
     const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
     
-    // Get iframe content dimensions for more accurate positioning
-    const iframeContainer = container.querySelector('div') as HTMLElement;
-    const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
+    // Get PDF container for more accurate positioning
+    // Specifically targeting the PDF container with ID to ensure we're getting the right element
+    const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
+    if (!pdfContainer) {
+      console.error('PDF container not found. Using parent container rect instead.');
+      return;
+    }
     
-    // Calculate position as percentage of visible content area
-    // Round to integer as the server expects integer values
-    const x = Math.round(((e.clientX - iframeRect.left) / iframeRect.width) * 100);
-    const y = Math.round(((e.clientY - iframeRect.top) / iframeRect.height) * 100);
+    const pdfRect = pdfContainer.getBoundingClientRect();
     
-    // Ensure the coordinates are within bounds (0-100%)
-    const boundedX = Math.max(0, Math.min(100, x));
-    const boundedY = Math.max(0, Math.min(100, y));
+    // Calculate position as percentage of the PDF container
+    const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
+    const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
+    
+    // Ensure the coordinates are within bounds (0-100%) and round to integers
+    const boundedX = Math.round(Math.max(0, Math.min(100, x)));
+    const boundedY = Math.round(Math.max(0, Math.min(100, y)));
     
     console.log('Click position:', { x: boundedX, y: boundedY });
     setNewMarkerPosition({ x: boundedX, y: boundedY });
@@ -567,31 +571,36 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       const container = containerRef.current;
       if (!container) return;
       
-      // Get container rect
-      const rect = container.getBoundingClientRect();
+      // Get the PDF container for accurate positioning
+      const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
+      if (!pdfContainer) {
+        console.error('PDF container not found during drag');
+        return;
+      }
       
-      // Get iframe container for more accurate positioning
-      const iframeContainer = container.querySelector('#pdf-container') as HTMLElement;
-      const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
+      const pdfRect = pdfContainer.getBoundingClientRect();
       
-      // Calculate the new position as percentage of the iframe/PDF area
-      // Round to integer as the server expects integer values
-      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - iframeRect.left) / iframeRect.width) * 100)));
-      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - iframeRect.top) / iframeRect.height) * 100)));
+      // Calculate position as percentage of the PDF container
+      const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
+      const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
       
-      console.log('Drag position:', { x, y });
+      // Ensure coordinates are within bounds (0-100%) and round to integers
+      const boundedX = Math.round(Math.max(0, Math.min(100, x)));
+      const boundedY = Math.round(Math.max(0, Math.min(100, y)));
+      
+      console.log('Drag position:', { x: boundedX, y: boundedY });
       
       // Initialize last position with the first mouse move event
       if (!isInitialized) {
-        lastPosition = { x, y };
+        lastPosition = { x: boundedX, y: boundedY };
         isInitialized = true;
       }
       
       // Update marker position in UI immediately for smooth movement
       const markerElement = document.getElementById(`marker-${draggedMarker}`);
       if (markerElement) {
-        markerElement.style.left = `${x}%`;
-        markerElement.style.top = `${y}%`;
+        markerElement.style.left = `${boundedX}%`;
+        markerElement.style.top = `${boundedY}%`;
       }
     };
     
@@ -599,20 +608,31 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       if (!draggedMarker || !containerRef.current) return;
       
       const container = containerRef.current;
-      const rect = container.getBoundingClientRect();
       
-      // Get iframe container for more accurate positioning
-      const iframeContainer = container.querySelector('#pdf-container') as HTMLElement;
-      const iframeRect = iframeContainer ? iframeContainer.getBoundingClientRect() : rect;
+      // Get the PDF container for accurate positioning
+      const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
+      if (!pdfContainer) {
+        console.error('PDF container not found during drag end');
+        setDraggedMarker(null);
+        return;
+      }
       
-      // Calculate position as percentage of the iframe/PDF area
-      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - iframeRect.left) / iframeRect.width) * 100)));
-      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - iframeRect.top) / iframeRect.height) * 100)));
+      const pdfRect = pdfContainer.getBoundingClientRect();
+      
+      // Calculate position as percentage of the PDF container
+      const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
+      const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
+      
+      // Ensure coordinates are within bounds (0-100%) and round to integers
+      const boundedX = Math.round(Math.max(0, Math.min(100, x)));
+      const boundedY = Math.round(Math.max(0, Math.min(100, y)));
+      
+      console.log('Drop position:', { x: boundedX, y: boundedY });
       
       // Check if there was actual movement before updating in the backend
-      if (Math.abs(x - lastPosition.x) > 0 || Math.abs(y - lastPosition.y) > 0) {
+      if (Math.abs(boundedX - lastPosition.x) > 0 || Math.abs(boundedY - lastPosition.y) > 0) {
         // Update marker position in backend
-        updateMarkerPosition(draggedMarker, x, y);
+        updateMarkerPosition(draggedMarker, boundedX, boundedY);
       }
       
       // Reset dragged marker
