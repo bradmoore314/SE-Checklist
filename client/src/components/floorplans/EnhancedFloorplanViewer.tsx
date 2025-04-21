@@ -52,6 +52,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// Import the equipment-specific modals
+import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
+import AddCameraModal from '@/components/modals/AddCameraModal';
+import AddElevatorModal from '@/components/modals/AddElevatorModal';
+import AddIntercomModal from '@/components/modals/AddIntercomModal';
+
 // Type definition for floorplan
 interface Floorplan {
   id: number;
