@@ -382,7 +382,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/cameras", isAuthenticated, async (req: Request, res: Response) => {
     try {
-      const result = insertCameraSchema.safeParse(req.body);
+      // Extract image data first if present
+      const { image_data, ...cameraData } = req.body;
+      
+      const result = insertCameraSchema.safeParse(cameraData);
       if (!result.success) {
         return res.status(400).json({ 
           message: "Invalid camera data", 
@@ -396,7 +399,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
 
+      // Create the camera first
       const camera = await storage.createCamera(result.data);
+      
+      // If image data was provided, save it as well
+      if (image_data) {
+        try {
+          const imageInsert: InsertImage = {
+            equipment_type: 'camera',
+            equipment_id: camera.id,
+            project_id: result.data.project_id,
+            image_data: image_data,
+            filename: `camera_${camera.id}_image.jpg`
+          };
+          
+          await storage.saveImage(imageInsert);
+          console.log(`Saved image for camera ID: ${camera.id}`);
+        } catch (imageError) {
+          console.error('Failed to save camera image:', imageError);
+          // Continue even if image saving fails
+        }
+      }
+      
       res.status(201).json(camera);
     } catch (error) {
       res.status(500).json({ 
