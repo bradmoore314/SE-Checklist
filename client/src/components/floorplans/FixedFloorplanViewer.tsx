@@ -146,7 +146,21 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     size: { width: number, height: number };
     mousePos: { x: number, y: number };
   } | null>(null);
+  
+  // Default marker sizes
+  const defaultMarkerSizes = {
+    'access_point': 36,
+    'camera': 36,
+    'elevator': 36,
+    'intercom': 36,
+    'note': { width: 150, height: 40 }
+  };
+  
+  // State for marker sizes (specifically for resizable notes)
   const [markerSize, setMarkerSize] = useState<Record<number, { width: number, height: number }>>({});
+  
+  // State for equipment marker scale - this affects all numbered markers (access points, cameras, etc.)
+  const [equipmentMarkerScale, setEquipmentMarkerScale] = useState<number>(1.0);
   
   // State for equipment modal
   const [showAddEquipmentModal, setShowAddEquipmentModal] = useState<boolean>(false);
@@ -1016,13 +1030,16 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
             onClick={handlePdfContainerClick}
             style={{ 
               cursor: isAddingMarker ? 'crosshair' : 'default',
-              transform: `scale(${pdfScale})`,
-              transformOrigin: 'top left',
-              transition: 'transform 0.2s ease-out'
+              position: 'relative' // Ensure proper positioning context
             }}
           >
             {pdfBlobUrl ? (
-              <div className="relative" id="pdf-container">
+              <div className="relative" id="pdf-container" style={{
+                  transform: `scale(${pdfScale})`,
+                  transformOrigin: 'top left',
+                  transition: 'transform 0.2s ease-out',
+                  width: 'fit-content' // Ensure container fits the PDF size
+                }}>
                 {/* PDF Iframe */}
                 <iframe
                   src={pdfBlobUrl}
@@ -1043,7 +1060,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                 )}
                 
                 {/* Markers Layer - Positioned absolutely over the PDF */}
-                <div className="absolute inset-0 z-20">
+                <div className="absolute inset-0 z-20" style={{ 
+                  // This ensures markers scale with the PDF
+                  // We apply the inverse scale to markers so they appear at correct size
+                  transformOrigin: 'top left'
+                }}>
                   {/* Render markers inside the PDF container */}
                   {!isLoadingMarkers && (markers as FloorplanMarker[]).map((marker, index) => (
                     marker.marker_type === 'note' ? (
@@ -1132,8 +1153,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         style={{
                           left: `${marker.position_x}%`,
                           top: `${marker.position_y}%`,
-                          width: '36px',
-                          height: '36px',
+                          width: `${defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] * equipmentMarkerScale}px`,
+                          height: `${defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] * equipmentMarkerScale}px`,
                           backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
                           color: 'white',
                           transform: 'translate(-50%, -50%)',
@@ -1143,7 +1164,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                           border: '2px solid white',
                           pointerEvents: isAddingMarker ? 'none' : 'auto',
                           touchAction: 'none',
-                          fontSize: '14px',
+                          fontSize: `${14 * Math.min(1.0, equipmentMarkerScale)}px`,
                           fontWeight: 'bold'
                         }}
                         onMouseDown={(e) => handleDragStart(e, marker.id)}
