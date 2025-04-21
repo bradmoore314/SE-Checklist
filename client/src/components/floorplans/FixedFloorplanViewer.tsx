@@ -342,6 +342,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         throw new Error('position_y is required');
       }
       
+      // Additional validation for specific marker types
+      if (data.marker_type === 'note' && data.equipment_id !== -1) {
+        console.warn('Notes should have equipment_id set to -1, fixing...');
+        data.equipment_id = -1;
+      }
+      
       const response = await apiRequest('POST', '/api/floorplan-markers', data);
       
       if (!response.ok) {
