@@ -75,6 +75,10 @@ export default function AddCameraModal({
   onOpenChange,
 }: AddCameraModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+  const [isTakingPicture, setIsTakingPicture] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Fetch lookup data for dropdowns
   const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
@@ -100,11 +104,92 @@ export default function AddCameraModal({
     },
   });
 
+  // Function to start camera
+  const startCamera = async () => {
+    setIsTakingPicture(true);
+    try {
+      if (videoRef.current) {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "environment" } 
+        });
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      setIsTakingPicture(false);
+    }
+  };
+
+  // Function to take picture
+  const takePicture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Draw the video frame on the canvas
+      const context = canvas.getContext('2d');
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to base64 data URL
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        setImage(dataUrl);
+        
+        // Stop all video tracks
+        const stream = video.srcObject as MediaStream;
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+        
+        setIsTakingPicture(false);
+      }
+    }
+  };
+
+  // Function to cancel camera
+  const cancelCamera = () => {
+    if (videoRef.current) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    }
+    setIsTakingPicture(false);
+  };
+
+  // Function to handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImage(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Function to remove the current image
+  const removeImage = () => {
+    setImage(null);
+  };
+
   // Handle form submission
   const onSubmit = async (values: CameraFormValues) => {
     try {
       setIsSubmitting(true);
-      const response = await apiRequest("POST", "/api/cameras", values);
+      
+      // Add image data to the values if available
+      const dataToSubmit = {
+        ...values,
+        image_data: image,
+      };
+      
+      const response = await apiRequest("POST", "/api/cameras", dataToSubmit);
       const camera = await response.json();
       // Extract just the ID from the created camera before passing it back
       onSave(camera.id);
@@ -287,6 +372,97 @@ export default function AddCameraModal({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4">
+              <FormLabel className="text-sm font-medium text-neutral-700">
+                Camera Image
+              </FormLabel>
+              <FormDescription>
+                Take a picture or upload an image of the camera location
+              </FormDescription>
+              
+              {isTakingPicture ? (
+                <div className="space-y-4">
+                  <div className="relative border rounded-lg overflow-hidden">
+                    <video 
+                      ref={videoRef} 
+                      autoPlay 
+                      playsInline
+                      className="w-full h-auto"
+                      onLoadedMetadata={() => videoRef.current?.play()}
+                    />
+                  </div>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={cancelCamera}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={takePicture}
+                    >
+                      <Camera className="mr-2 h-4 w-4" />
+                      Take Picture
+                    </Button>
+                  </div>
+                  <canvas ref={canvasRef} className="hidden" />
+                </div>
+              ) : image ? (
+                <div className="space-y-2">
+                  <Card className="relative overflow-hidden">
+                    <CardContent className="p-2">
+                      <div className="relative">
+                        <img 
+                          src={image} 
+                          alt="Camera" 
+                          className="w-full h-auto rounded" 
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                          onClick={removeImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={startCamera}
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Take Picture
+                  </Button>
+                  <div className="relative">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      id="camera-image"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload Image
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <DialogFooter className="border-t border-neutral-200 pt-4">
               <Button
