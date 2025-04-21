@@ -575,8 +575,6 @@ export class MemStorage implements IStorage {
       project_id: insertIntercom.project_id,
       location: insertIntercom.location,
       intercom_type: insertIntercom.intercom_type,
-      mounting_type: insertIntercom.mounting_type ?? null,
-      communication_type: insertIntercom.communication_type ?? null,
       notes: insertIntercom.notes ?? null,
       created_at: now,
       updated_at: now

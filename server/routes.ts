@@ -1225,7 +1225,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             project_id: floorplan.project_id,
             location: locationName,
             intercom_type: 'Audio/Video',
-            mounting: 'Surface',
             notes: 'Added from floorplan'
           });
           equipmentId = newIntercom.id;
