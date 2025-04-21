@@ -18,6 +18,7 @@ import {
   FileUp,
   Download,
   ZoomIn,
+  Copy,
   ZoomOut,
   Minimize,
   Info,
