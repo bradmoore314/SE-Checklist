@@ -289,34 +289,21 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
   
   // Create blob URL for PDF display
   useEffect(() => {
-    if (selectedFloorplan) {
+    if (selectedFloorplan && selectedFloorplan.pdf_data) {
       try {
         // Clean up previous blob URL
         if (pdfBlobUrl) {
           URL.revokeObjectURL(pdfBlobUrl);
         }
 
-        try {
-          // Convert base64 string to binary
-          const byteCharacters = atob(selectedFloorplan.pdf_data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          
-          // Create blob from binary data
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
-          setPdfBlobUrl(url);
-        } catch (err) {
-          console.error('Error processing PDF data:', err);
-          setPdfBlobUrl(null);
-          toast({
-            title: "Error",
-            description: "Failed to load PDF data",
-            variant: "destructive",
-          });
+        // Check if the pdf_data is already a data URL
+        if (selectedFloorplan.pdf_data.startsWith('data:application/pdf;base64,')) {
+          // Extract the base64 part
+          const base64Data = selectedFloorplan.pdf_data.split(',')[1];
+          processPdfBase64(base64Data);
+        } else {
+          // Assume it's just a base64 string without the data URL prefix
+          processPdfBase64(selectedFloorplan.pdf_data);
         }
       } catch (err) {
         console.error('Error creating blob URL:', err);
@@ -336,6 +323,32 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       }
     };
   }, [selectedFloorplan]);
+  
+  // Helper function to process base64 PDF data
+  const processPdfBase64 = (base64Data: string) => {
+    try {
+      // Convert base64 string to binary
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      
+      // Create blob from binary data
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      setPdfBlobUrl(url);
+    } catch (err) {
+      console.error('Error processing PDF data:', err);
+      setPdfBlobUrl(null);
+      toast({
+        title: "Error",
+        description: "Failed to decode PDF data. Make sure it's a valid PDF file.",
+        variant: "destructive",
+      });
+    }
+  };
   
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

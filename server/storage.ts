@@ -53,6 +53,7 @@ export interface IStorage {
   
   // Elevators
   getElevators(projectId: number): Promise<Elevator[]>;
+  getElevatorsByProject(projectId: number): Promise<Elevator[]>; // Alias for getElevators
   getElevator(id: number): Promise<Elevator | undefined>;
   createElevator(elevator: InsertElevator): Promise<Elevator>;
   updateElevator(id: number, elevator: Partial<InsertElevator>): Promise<Elevator | undefined>;
@@ -60,6 +61,7 @@ export interface IStorage {
   
   // Intercoms
   getIntercoms(projectId: number): Promise<Intercom[]>;
+  getIntercomsByProject(projectId: number): Promise<Intercom[]>; // Alias for getIntercoms
   getIntercom(id: number): Promise<Intercom | undefined>;
   createIntercom(intercom: InsertIntercom): Promise<Intercom>;
   updateIntercom(id: number, intercom: Partial<InsertIntercom>): Promise<Intercom | undefined>;
@@ -496,6 +498,11 @@ export class MemStorage implements IStorage {
       (elevator) => elevator.project_id === projectId
     );
   }
+  
+  // Alias for getElevators with consistent naming
+  async getElevatorsByProject(projectId: number): Promise<Elevator[]> {
+    return this.getElevators(projectId);
+  }
 
   async getElevator(id: number): Promise<Elevator | undefined> {
     return this.elevators.get(id);
@@ -547,6 +554,11 @@ export class MemStorage implements IStorage {
     return Array.from(this.intercoms.values()).filter(
       (intercom) => intercom.project_id === projectId
     );
+  }
+  
+  // Alias for getIntercoms with consistent naming
+  async getIntercomsByProject(projectId: number): Promise<Intercom[]> {
+    return this.getIntercoms(projectId);
   }
 
   async getIntercom(id: number): Promise<Intercom | undefined> {
