@@ -913,75 +913,150 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
             )}
             
             {/* Markers */}
-            {!isLoadingMarkers && markers.map((marker: FloorplanMarker) => (
-              <div
-                id={`marker-${marker.id}`}
-                key={marker.id}
-                className="absolute rounded-full flex items-center justify-center cursor-move active:cursor-grabbing hover:scale-105"
-                style={{
-                  left: `${marker.position_x}%`,
-                  top: `${marker.position_y}%`,
-                  width: `${markerSize[marker.id]?.width || 32}px`,
-                  height: `${markerSize[marker.id]?.height || 32}px`,
-                  backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
-                  color: 'white',
-                  transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                  zIndex: (draggedMarker === marker.id || resizingMarker === marker.id) ? 1000 : 100,
-                  transition: (draggedMarker === marker.id || resizingMarker === marker.id) ? 'none' : 'all 0.2s ease-out',
-                  border: '2px solid white',
-                  pointerEvents: isAddingMarker ? 'none' : 'auto',
-                  touchAction: 'none',
-                  position: 'relative' // Needed for the resize handle
-                }}
-                onMouseDown={(e) => handleDragStart(e, marker.id)}
-              >
-                {/* Resize handle in bottom-right corner */}
-                <div 
-                  className="absolute bottom-0 right-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full cursor-se-resize transform translate-x-1/4 translate-y-1/4 opacity-70 hover:opacity-100 z-20"
-                  onMouseDown={(e) => handleResizeStart(e, marker.id)}
-                  title="Resize marker"
-                ></div>
-                <MarkerIcon type={marker.marker_type} />
-                
-                {/* Context Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="absolute top-0 right-0 -mt-1 -mr-1 bg-white rounded-full p-0.5 shadow-sm">
-                    <MoreVertical size={12} className="text-gray-600" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => deleteMarkerMutation.mutate(marker.id)}>
-                      <Trash className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => {
-                      // Duplicate marker logic
-                      createMarkerMutation.mutate({
-                        floorplan_id: marker.floorplan_id,
-                        page: marker.page,
-                        marker_type: marker.marker_type,
-                        equipment_id: 0, // Create a new equipment
-                        position_x: Math.min(100, marker.position_x + 2),
-                        position_y: Math.min(100, marker.position_y + 2),
-                        label: marker.label ? `${marker.label} (Copy)` : null
-                      });
-                    }}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicate
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => {
-                      // Edit marker logic (placeholder)
-                      toast({
-                        title: "Info",
-                        description: "Edit functionality coming soon",
-                      });
-                    }}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+            {!isLoadingMarkers && markers.map((marker: FloorplanMarker, index: number) => (
+              marker.marker_type === 'note' ? (
+                // Note marker as text with yellow background and red border
+                <div
+                  id={`marker-${marker.id}`}
+                  key={marker.id}
+                  className="absolute cursor-move active:cursor-grabbing"
+                  style={{
+                    left: `${marker.position_x}%`,
+                    top: `${marker.position_y}%`,
+                    width: `${markerSize[marker.id]?.width || 150}px`,
+                    minHeight: `${markerSize[marker.id]?.height || 40}px`,
+                    backgroundColor: '#FFFF00', // Yellow background
+                    color: '#FF0000', // Red text
+                    border: '2px solid #FF0000', // Red border
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    transform: 'translate(-50%, -50%)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    zIndex: (draggedMarker === marker.id || resizingMarker === marker.id) ? 1000 : 100,
+                    transition: (draggedMarker === marker.id || resizingMarker === marker.id) ? 'none' : 'all 0.2s ease-out',
+                    pointerEvents: isAddingMarker ? 'none' : 'auto',
+                    touchAction: 'none',
+                    position: 'relative', // Needed for the resize handle
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold'
+                  }}
+                  onMouseDown={(e) => handleDragStart(e, marker.id)}
+                >
+                  {marker.label || 'Note'}
+                  
+                  {/* Resize handle for notes */}
+                  <div 
+                    className="absolute bottom-0 right-0 w-6 h-6 bg-white border-2 border-red-500 cursor-se-resize transform translate-x-1/4 translate-y-1/4 z-20 flex items-center justify-center"
+                    onMouseDown={(e) => handleResizeStart(e, marker.id)}
+                    title="Resize note"
+                  >
+                    <ArrowUpDown className="h-4 w-4 text-red-500" />
+                  </div>
+                  
+                  {/* Context Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="absolute top-0 right-0 -mt-2 -mr-2 bg-white rounded-full p-1 shadow-sm">
+                      <MoreVertical size={12} className="text-gray-600" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => deleteMarkerMutation.mutate(marker.id)}>
+                        <Trash className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        createMarkerMutation.mutate({
+                          floorplan_id: marker.floorplan_id,
+                          page: marker.page,
+                          marker_type: marker.marker_type,
+                          equipment_id: -1, // Notes don't have associated equipment
+                          position_x: Math.min(100, marker.position_x + 2),
+                          position_y: Math.min(100, marker.position_y + 2),
+                          label: marker.label ? `${marker.label} (Copy)` : null
+                        });
+                      }}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        // Edit note label
+                        setMarkerDialogOpen(true);
+                      }}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                // Regular equipment markers as numbered circles
+                <div
+                  id={`marker-${marker.id}`}
+                  key={marker.id}
+                  className="absolute rounded-full flex items-center justify-center cursor-move active:cursor-grabbing hover:scale-105"
+                  style={{
+                    left: `${marker.position_x}%`,
+                    top: `${marker.position_y}%`,
+                    width: '36px',
+                    height: '36px',
+                    backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
+                    color: 'white',
+                    transform: 'translate(-50%, -50%)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    zIndex: (draggedMarker === marker.id || resizingMarker === marker.id) ? 1000 : 100,
+                    transition: (draggedMarker === marker.id || resizingMarker === marker.id) ? 'none' : 'all 0.2s ease-out',
+                    border: '2px solid white',
+                    pointerEvents: isAddingMarker ? 'none' : 'auto',
+                    touchAction: 'none',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    position: 'absolute' // Use absolute to ensure proper positioning
+                  }}
+                  onMouseDown={(e) => handleDragStart(e, marker.id)}
+                >
+                  {/* Numbered marker */}
+                  {index + 1}
+                  
+                  {/* Context Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="absolute top-0 right-0 -mt-1 -mr-1 bg-white rounded-full p-0.5 shadow-sm">
+                      <MoreVertical size={12} className="text-gray-600" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => deleteMarkerMutation.mutate(marker.id)}>
+                        <Trash className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        // Duplicate marker logic
+                        createMarkerMutation.mutate({
+                          floorplan_id: marker.floorplan_id,
+                          page: marker.page,
+                          marker_type: marker.marker_type,
+                          equipment_id: marker.equipment_id,
+                          position_x: Math.min(100, marker.position_x + 2),
+                          position_y: Math.min(100, marker.position_y + 2),
+                          label: marker.label ? `${marker.label} (Copy)` : null
+                        });
+                      }}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        // Edit marker logic (placeholder)
+                        toast({
+                          title: "Info",
+                          description: "Edit functionality coming soon",
+                        });
+                      }}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )
             ))}
           </div>
         </div>
