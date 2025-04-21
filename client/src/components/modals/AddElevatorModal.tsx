@@ -31,10 +31,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 interface AddElevatorModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
+  open?: boolean;
   projectId: number;
   onSave: (elevator: any) => void;
-  onClose: () => void;
+  onClose?: () => void;
+  onCancel?: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Create schema based on shared schema but with validation
@@ -53,9 +56,12 @@ type ElevatorFormValues = z.infer<typeof elevatorSchema>;
 
 export default function AddElevatorModal({
   isOpen,
+  open,
   projectId,
   onSave,
   onClose,
+  onCancel,
+  onOpenChange,
 }: AddElevatorModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 

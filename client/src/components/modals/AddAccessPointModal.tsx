@@ -705,7 +705,7 @@ export default function AddAccessPointModal({
               <Button
                 type="button"
                 variant="outline"
-                onClick={onClose}
+                onClick={onCancel || onClose || (() => onOpenChange?.(false))}
                 className="mr-2"
               >
                 Cancel
@@ -715,7 +715,12 @@ export default function AddAccessPointModal({
                 disabled={isSubmitting}
                 className="bg-primary hover:bg-primary-dark text-white"
               >
-                {isSubmitting ? "Saving..." : "Save Access Point"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : "Save Access Point"}
               </Button>
             </DialogFooter>
           </form>
