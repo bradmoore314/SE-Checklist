@@ -30,11 +30,18 @@ app.use(session({
 // Initialize Passport.js
 setupAuth(app);
 
-// Authentication skip middleware for public paths
+// Authentication skip middleware for paths
 const skipForPublicPaths = (req: Request, res: Response, next: NextFunction) => {
-  // DEVELOPMENT MODE: Always bypass authentication in development
-  // Create a mock admin user for the request if not authenticated
-  if (!req.isAuthenticated()) {
+  // Skip auth for login, register, and some public endpoints
+  if (req.path === '/api/login' || 
+      req.path === '/api/register' ||
+      req.path === '/api/lookup' ||
+      req.path.startsWith('/assets/')) {
+    return next();
+  }
+  
+  // In development mode, bypass authentication and create a mock user
+  if (process.env.NODE_ENV !== 'production' && !req.isAuthenticated()) {
     console.log('⚠️ Main auth middleware: Authentication bypassed for development');
     
     // Create a mock admin user for the request
@@ -47,23 +54,30 @@ const skipForPublicPaths = (req: Request, res: Response, next: NextFunction) => 
       created_at: new Date(),
       updated_at: new Date()
     } as Express.User;
-  }
-  
-  // Always proceed to the next middleware
-  return next();
-  
-  // PRODUCTION CODE (disabled during development)
-  /*
-  // Skip auth for login, register, and some public endpoints
-  if (req.path === '/api/login' || 
-      req.path === '/api/register' ||
-      req.path === '/api/lookup' ||
-      req.path.startsWith('/assets/')) {
+    
     return next();
   }
   
-  // For protected routes, check if authenticated with passport
-  if (!req.isAuthenticated()) {
+  // For production, check if authenticated with passport
+  if (process.env.NODE_ENV === 'production' && !req.isAuthenticated()) {
+    // Special case - if we're in production but this is the first deployment,
+    // create a temporary bypass to allow initial setup
+    if (process.env.ALLOW_INITIAL_SETUP === 'true') {
+      console.log('⚠️ Production auth bypass enabled for initial setup');
+      
+      req.user = {
+        id: 999,
+        username: 'setup-admin',
+        email: 'admin@example.com',
+        fullName: 'Setup Admin',
+        role: 'admin',
+        created_at: new Date(),
+        updated_at: new Date()
+      } as Express.User;
+      
+      return next();
+    }
+    
     return res.status(401).json({ 
       success: false, 
       message: 'Authentication required' 
@@ -71,7 +85,6 @@ const skipForPublicPaths = (req: Request, res: Response, next: NextFunction) => 
   }
   
   return next();
-  */
 };
 
 // Apply authentication middleware to protect API routes
