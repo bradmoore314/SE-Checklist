@@ -1165,14 +1165,22 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       
       {/* Floorplan Display Area */}
       {selectedFloorplan ? (
-        <div className="border rounded-lg overflow-auto relative" style={{ height: 'calc(100vh - 250px)' }}>
+        <div className="border rounded-lg overflow-auto relative" style={{ 
+          height: 'calc(100vh - 250px)',
+          minHeight: '800px', // Ensure minimum height
+          width: '100%' // Full width
+        }}>
           <div
             ref={containerRef}
-            className="relative floorplan-container"
+            className="relative floorplan-container h-full w-full"
             onClick={handlePdfContainerClick}
             style={{ 
               cursor: isAddingMarker ? 'crosshair' : 'default',
-              position: 'relative' // Ensure proper positioning context
+              position: 'relative', // Ensure proper positioning context
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '800px'
             }}
           >
             {pdfBlobUrl ? (
@@ -1180,17 +1188,26 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                   transform: `scale(${pdfScale})`,
                   transformOrigin: 'top left',
                   transition: 'transform 0.2s ease-out',
-                  width: 'fit-content' // Ensure container fits the PDF size
+                  width: '100%', // Fill the container width
+                  height: '100%', // Fill the container height
+                  minHeight: '800px' // Ensure minimum height
                 }}>
                 {/* PDF Iframe */}
                 <iframe
                   src={pdfBlobUrl}
-                  className="w-full"
+                  className="w-full h-full border-0"
                   style={{ 
-                    height: '800px',
-                    pointerEvents: isAddingMarker ? 'none' : 'auto' 
+                    minHeight: '800px',
+                    height: '100%',
+                    width: '100%',
+                    maxWidth: '100%',
+                    pointerEvents: isAddingMarker ? 'none' : 'auto',
+                    display: 'block', // Ensure proper display
+                    backgroundColor: 'white' // Add background color for better visibility
                   }}
                   title="Floorplan PDF"
+                  sandbox="allow-forms allow-scripts allow-same-origin"
+                  seamless
                 />
                 
                 {/* Overlay div to catch clicks when in adding mode */}
