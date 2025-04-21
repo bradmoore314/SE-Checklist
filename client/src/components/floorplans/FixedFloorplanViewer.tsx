@@ -323,13 +323,42 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       position_y: number,
       label: string | null
     }) => {
-      const response = await apiRequest('POST', '/api/floorplan-markers', data);
-      if (!response.ok) {
-        throw new Error('Failed to create marker');
+      console.log('Creating marker with data:', data);
+      
+      // Validate required fields before API call
+      if (data.floorplan_id === undefined || data.floorplan_id === null) {
+        throw new Error('floorplan_id is required');
       }
+      if (data.marker_type === undefined || data.marker_type === null) {
+        throw new Error('marker_type is required');
+      }
+      if (data.equipment_id === undefined || data.equipment_id === null) {
+        throw new Error('equipment_id is required');
+      }
+      if (data.position_x === undefined || data.position_x === null) {
+        throw new Error('position_x is required');
+      }
+      if (data.position_y === undefined || data.position_y === null) {
+        throw new Error('position_y is required');
+      }
+      
+      const response = await apiRequest('POST', '/api/floorplan-markers', data);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('Marker creation API error:', { 
+          status: response.status, 
+          data: errorData,
+          sentData: data
+        });
+        throw new Error(`API Error (${response.status}): ${errorData?.message || response.statusText}`);
+      }
+      
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Marker created successfully:', data);
+      
       // Reset marker adding state
       setIsAddingMarker(false);
       setMarkerDialogOpen(false);
@@ -350,6 +379,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       });
     },
     onError: (error) => {
+      console.error('Marker creation error:', error);
+      
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : 'Failed to add marker',
@@ -720,6 +751,16 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   // Create a new marker
   const handleAddMarker = () => {
     if (!selectedFloorplanId || !newMarkerPosition) return;
+    
+    console.log("Creating marker:", {
+      floorplan_id: selectedFloorplanId,
+      page: 1,
+      marker_type: markerType,
+      equipment_id: markerType === 'note' ? -1 : 0, // Notes use -1, temporary 0 for others until actual equipment is created
+      position_x: newMarkerPosition.x,
+      position_y: newMarkerPosition.y,
+      label: markerLabel || 'Note'
+    });
     
     // If it's a note, add it directly
     if (markerType === 'note') {
@@ -1284,7 +1325,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         onClose={() => setShowAddEquipmentModal(false)}
         projectId={projectId}
         onSave={(equipmentId) => {
-          if (selectedFloorplanId && newMarkerPosition) {
+          if (selectedFloorplanId && newMarkerPosition && equipmentId) {
+            console.log('Creating access_point marker with equipment ID:', equipmentId);
             // Create a marker for the newly created equipment
             createMarkerMutation.mutate({
               floorplan_id: selectedFloorplanId,
@@ -1294,6 +1336,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_x: newMarkerPosition.x,
               position_y: newMarkerPosition.y,
               label: null
+            });
+          } else {
+            console.error('Missing data for marker creation:', { 
+              selectedFloorplanId, 
+              newMarkerPosition, 
+              equipmentId 
             });
           }
           setShowAddEquipmentModal(false);
@@ -1305,7 +1353,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         onClose={() => setShowAddEquipmentModal(false)}
         projectId={projectId}
         onSave={(equipmentId) => {
-          if (selectedFloorplanId && newMarkerPosition) {
+          if (selectedFloorplanId && newMarkerPosition && equipmentId) {
+            console.log('Creating camera marker with equipment ID:', equipmentId);
             // Create a marker for the newly created equipment
             createMarkerMutation.mutate({
               floorplan_id: selectedFloorplanId,
@@ -1315,6 +1364,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_x: newMarkerPosition.x,
               position_y: newMarkerPosition.y,
               label: null
+            });
+          } else {
+            console.error('Missing data for marker creation:', { 
+              selectedFloorplanId, 
+              newMarkerPosition, 
+              equipmentId 
             });
           }
           setShowAddEquipmentModal(false);
@@ -1326,7 +1381,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         onClose={() => setShowAddEquipmentModal(false)}
         projectId={projectId}
         onSave={(equipmentId) => {
-          if (selectedFloorplanId && newMarkerPosition) {
+          if (selectedFloorplanId && newMarkerPosition && equipmentId) {
+            console.log('Creating elevator marker with equipment ID:', equipmentId);
             // Create a marker for the newly created equipment
             createMarkerMutation.mutate({
               floorplan_id: selectedFloorplanId,
@@ -1336,6 +1392,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_x: newMarkerPosition.x,
               position_y: newMarkerPosition.y,
               label: null
+            });
+          } else {
+            console.error('Missing data for marker creation:', { 
+              selectedFloorplanId, 
+              newMarkerPosition, 
+              equipmentId 
             });
           }
           setShowAddEquipmentModal(false);
@@ -1347,7 +1409,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         onClose={() => setShowAddEquipmentModal(false)}
         projectId={projectId}
         onSave={(equipmentId) => {
-          if (selectedFloorplanId && newMarkerPosition) {
+          if (selectedFloorplanId && newMarkerPosition && equipmentId) {
+            console.log('Creating intercom marker with equipment ID:', equipmentId);
             // Create a marker for the newly created equipment
             createMarkerMutation.mutate({
               floorplan_id: selectedFloorplanId,
@@ -1357,6 +1420,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_x: newMarkerPosition.x,
               position_y: newMarkerPosition.y,
               label: null
+            });
+          } else {
+            console.error('Missing data for marker creation:', { 
+              selectedFloorplanId, 
+              newMarkerPosition, 
+              equipmentId 
             });
           }
           setShowAddEquipmentModal(false);
