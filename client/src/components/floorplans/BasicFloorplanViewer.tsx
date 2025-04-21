@@ -339,7 +339,10 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     e.stopPropagation();
   };
   
-  // Handle marker drag
+  // Keep track of marker's current position during drag
+  const [dragPosition, setDragPosition] = useState<{ x: number, y: number } | null>(null);
+  
+  // Handle marker drag (optimized for smooth UI movement - API call only on end)
   const handleDrag = (e: React.MouseEvent) => {
     if (!draggedMarker || !containerRef.current) return;
     
@@ -358,44 +361,67 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     const markerToUpdate = markers.find(m => m.id === draggedMarker);
     
     if (markerToUpdate) {
-      // Update marker position directly
-      apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, {
-        position_x: x,
-        position_y: y,
-        // Add these required fields
-        floorplan_id: markerToUpdate.floorplan_id,
-        page: markerToUpdate.page,
-        marker_type: markerToUpdate.marker_type,
-        equipment_id: markerToUpdate.equipment_id,
-        label: markerToUpdate.label
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to update marker position');
+      // Update the position in local state
+      setDragPosition({ x, y });
+      
+      // Make a shallow copy of the markers array
+      const updatedMarkers = markers.map(m => {
+        if (m.id === draggedMarker) {
+          // Create a new object with updated position
+          return { ...m, position_x: x, position_y: y };
         }
-        return response.json();
-      })
-      .then(() => {
-        // Refresh markers
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      })
-      .catch(err => {
-        console.error('Error updating marker position:', err);
-        toast({
-          title: "Error",
-          description: "Failed to update marker position",
-          variant: "destructive",
-        });
+        return m;
       });
+      
+      // Update local state with the new positions for immediate visual feedback
+      setMarkers(updatedMarkers);
+      
+      // Only update the position in the database when the drag is complete (on mouseup)
+      // See the handleDragEnd function
     }
-    
-    // Reset dragged marker
-    setDraggedMarker(null);
   };
   
-  // Cancel drag operation
+  // Save marker position when drag ends
   const handleDragEnd = () => {
+    if (draggedMarker && dragPosition) {
+      // Find marker
+      const markerToUpdate = markers.find(m => m.id === draggedMarker);
+      
+      if (markerToUpdate) {
+        // Update marker position in database
+        apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, {
+          position_x: dragPosition.x,
+          position_y: dragPosition.y,
+          // Add these required fields
+          floorplan_id: markerToUpdate.floorplan_id,
+          page: markerToUpdate.page,
+          marker_type: markerToUpdate.marker_type,
+          equipment_id: markerToUpdate.equipment_id,
+          label: markerToUpdate.label
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to update marker position');
+          }
+          return response.json();
+        })
+        .catch(err => {
+          console.error('Error updating marker position:', err);
+          toast({
+            title: "Error",
+            description: "Failed to update marker position",
+            variant: "destructive",
+          });
+          
+          // Refresh markers to get back to the correct positions
+          queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+        });
+      }
+    }
+    
+    // Reset states
     setDraggedMarker(null);
+    setDragPosition(null);
   };
   
   // Setup event listeners for drag operations
@@ -423,7 +449,10 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     
     const handleMouseUp = (e: MouseEvent) => {
       if (draggedMarker) {
+        // First update the drag position one last time
         handleDrag(e as unknown as React.MouseEvent);
+        // Then finalize the drag operation and save to database
+        handleDragEnd();
       }
     };
     
@@ -601,15 +630,44 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     return match ? match[1] : "";
   };
   
-  // Render markers on the PDF
+  // Render markers on the PDF with sequential numbering
   const renderMarkers = () => {
+    // Sort and group markers by type for sequential numbering
+    const accessPoints = markers
+      .filter(m => m.marker_type === 'access_point')
+      .sort((a, b) => a.id - b.id);
+      
+    const cameras = markers
+      .filter(m => m.marker_type === 'camera')
+      .sort((a, b) => a.id - b.id);
+    
+    // Create a mapping of marker IDs to their sequential numbers
+    const markerSequence: Record<number, number> = {};
+    
+    // Assign sequential numbers to access points
+    accessPoints.forEach((marker, index) => {
+      markerSequence[marker.id] = index + 1;
+    });
+    
+    // Assign sequential numbers to cameras
+    cameras.forEach((marker, index) => {
+      markerSequence[marker.id] = index + 1;
+    });
+    
     return markers.map((marker) => {
-      // Get marker size from state or use default - smaller size by default (2.5rem)
+      // Get marker size from state or use default
       const size = markerSize[marker.id] || { width: 2.5, height: 2.5 };
       
-      // Get equipment number from label if available or display sequential number
+      // Get equipment number from label if available or use sequential number
       const markerLabel = marker.label || '';
-      const markerNumber = getMarkerNumber(markerLabel);
+      const labelNumber = getMarkerNumber(markerLabel);
+      
+      // Use the sequence number if we have one, otherwise fallback to label number
+      const sequenceNumber = markerSequence[marker.id] || '';
+      const displayNumber = labelNumber || sequenceNumber;
+      
+      // Prefix based on type
+      const prefix = marker.marker_type === 'access_point' ? 'AP' : 'C';
       
       return (
         <div
@@ -627,7 +685,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
             transform: 'translate(-50%, -50%)',
             transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease'
           }}
-          title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
+          title={marker.label || `${marker.marker_type === 'access_point' ? 'Access Point' : 'Camera'} #${sequenceNumber}`}
           onMouseDown={(e) => {
             if (e.button === 0) { // Left click
               handleDragStart(e, marker.id);
@@ -636,7 +694,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           onDoubleClick={() => editMarker(marker)}
           onContextMenu={(e) => handleMarkerRightClick(e, marker)}
         >
-          {markerNumber || (marker.marker_type === 'access_point' ? 'AP' : 'C')}
+          {displayNumber ? `${prefix}${displayNumber}` : prefix}
         </div>
       );
     });
