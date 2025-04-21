@@ -77,7 +77,8 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Document, Page, pdfjs } from 'react-pdf';
-// We'll set up the worker in the useEffect
+// Import our local worker wrapper
+import '@/lib/pdf-worker';
 
 // Import the equipment-specific modals
 import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
@@ -298,11 +299,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     enabled: !!selectedFloorplan
   });
   
-  // Initialize the PDF.js worker
-  useEffect(() => {
-    // Set worker source using a CDN
-    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-  }, []);
+  // The worker is already initialized via the import above
+  // No need for additional worker configuration
   
   // Handle floorplan changes
   useEffect(() => {
