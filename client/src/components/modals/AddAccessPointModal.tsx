@@ -34,7 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface AddAccessPointModalProps {
   isOpen: boolean;
   projectId: number;
-  onSave: () => void;
+  onSave: (accessPoint: any) => void;
   onClose: () => void;
 }
 
@@ -128,8 +128,9 @@ export default function AddAccessPointModal({
   const onSubmit = async (values: AccessPointFormValues) => {
     try {
       setIsSubmitting(true);
-      await apiRequest("POST", "/api/access-points", values);
-      onSave();
+      const response = await apiRequest("POST", "/api/access-points", values);
+      const accessPoint = await response.json();
+      onSave(accessPoint);
     } catch (error) {
       console.error("Failed to create access point:", error);
     } finally {
