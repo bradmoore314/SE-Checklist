@@ -507,293 +507,253 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       reader.onerror = () => {
         toast({
           title: "File Read Error",
-          description: "Failed to read the PDF file",
+          description: "Failed to read the selected file",
           variant: "destructive",
         });
       };
       
       reader.readAsDataURL(pdfFile);
-    } catch (err) {
-      console.error('Upload preparation error:', err);
+    } catch (error) {
+      console.error('Upload error:', error);
       toast({
-        title: "Error",
-        description: `Failed to prepare the file for upload: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        title: "Upload Error",
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
         variant: "destructive",
       });
     }
   };
   
-  // Handle PDF container click for marker placement
+  // Handle clicking on the PDF container to add a marker
   const handlePdfContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isAddingMarker || !containerRef.current) return;
-
-    // Prevent event bubbling
-    e.stopPropagation();
+    if (!isAddingMarker || !selectedFloorplanId) return;
     
     const container = containerRef.current;
+    if (!container) return;
     
-    // Get the PDF container for accurate positioning
-    const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
-    if (!pdfContainer) {
-      console.error('PDF container not found during click');
-      return;
-    }
+    const pdfContainer = container.querySelector('.pdf-container-with-markers') as HTMLElement;
+    if (!pdfContainer) return;
     
-    const pdfRect = pdfContainer.getBoundingClientRect();
+    // Get the PDF container bounds
+    const rect = pdfContainer.getBoundingClientRect();
     
-    // Calculate position as percentage of the PDF container
-    const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
-    const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
+    // Calculate the relative position (percentage) within the container
+    const relX = ((e.clientX - rect.left) / rect.width) * 100;
+    const relY = ((e.clientY - rect.top) / rect.height) * 100;
     
-    // Ensure coordinates are within bounds (0-100%) and round to integers
-    const boundedX = Math.round(Math.max(0, Math.min(100, x)));
-    const boundedY = Math.round(Math.max(0, Math.min(100, y)));
+    // Store the marker position
+    setNewMarkerPosition({ x: relX, y: relY });
     
-    console.log('Click position:', { x: boundedX, y: boundedY });
-    setNewMarkerPosition({ x: boundedX, y: boundedY });
-    
-    // Always open the marker type selection dialog first
-    setMarkerDialogOpen(true);
-  };
-  
-  // Handle marker drag
-  const handleDragStart = (e: React.MouseEvent, markerId: number) => {
-    if (isAddingMarker) return; // Don't allow dragging when in adding mode
-    setDraggedMarker(markerId);
-    e.stopPropagation();
-  };
-  
-  // Handle marker position update after drag
-  const updateMarkerPosition = (markerId: number, x: number, y: number) => {
-    const markerToUpdate = (markers as FloorplanMarker[]).find(m => m.id === markerId);
-    
-    if (markerToUpdate) {
-      apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
-        position_x: x,
-        position_y: y,
-        // Add these required fields
-        floorplan_id: markerToUpdate.floorplan_id,
-        page: markerToUpdate.page,
-        marker_type: markerToUpdate.marker_type,
-        equipment_id: markerToUpdate.equipment_id,
-        label: markerToUpdate.label
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to update marker position');
-        }
-        return response.json();
-      })
-      .then(() => {
-        // Refresh markers
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      })
-      .catch(err => {
-        console.error('Error updating marker position:', err);
-        toast({
-          title: "Error",
-          description: "Failed to update marker position",
-          variant: "destructive",
-        });
-      });
-    }
-  };
-  
-  // Handle marker resize start
-  const handleResizeStart = (e: React.MouseEvent, markerId: number) => {
-    if (isAddingMarker) return; // Don't allow resizing when in adding mode
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    setResizingMarker(markerId);
-    
-    // Get the current marker size
-    const currentSize = markerSize[markerId] || { width: 32, height: 32 };
-    
-    // Store the initial mouse position and size
-    setInitialResizeData({
-      size: currentSize,
-      mousePos: { x: e.clientX, y: e.clientY }
-    });
-  };
-  
-  // Update marker size in state
-  const updateMarkerSize = (markerId: number, width: number, height: number) => {
-    setMarkerSize(prev => ({
-      ...prev,
-      [markerId]: { width, height }
-    }));
-  };
-  
-  // Setup event listeners for drag operations with debounce for better performance
-  useEffect(() => {
-    if (!draggedMarker) return;
-    
-    // Keep track of the last position to prevent excessive updates
-    let lastPosition = { x: 0, y: 0 };
-    let isInitialized = false;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const container = containerRef.current;
-      if (!container) return;
-      
-      // Get the PDF container for accurate positioning
-      const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
-      if (!pdfContainer) {
-        console.error('PDF container not found during drag');
-        return;
-      }
-      
-      const pdfRect = pdfContainer.getBoundingClientRect();
-      
-      // Calculate position as percentage of the PDF container
-      const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
-      const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
-      
-      // Ensure coordinates are within bounds (0-100%) and round to integers
-      const boundedX = Math.round(Math.max(0, Math.min(100, x)));
-      const boundedY = Math.round(Math.max(0, Math.min(100, y)));
-      
-      console.log('Drag position:', { x: boundedX, y: boundedY });
-      
-      // Initialize last position with the first mouse move event
-      if (!isInitialized) {
-        lastPosition = { x: boundedX, y: boundedY };
-        isInitialized = true;
-      }
-      
-      // Update marker position in UI immediately for smooth movement
-      const markerElement = document.getElementById(`marker-${draggedMarker}`);
-      if (markerElement) {
-        markerElement.style.left = `${boundedX}%`;
-        markerElement.style.top = `${boundedY}%`;
-      }
-    };
-    
-    const handleMouseUp = (e: MouseEvent) => {
-      if (!draggedMarker || !containerRef.current) return;
-      
-      const container = containerRef.current;
-      
-      // Get the PDF container for accurate positioning
-      const pdfContainer = container.querySelector('#pdf-container') as HTMLElement;
-      if (!pdfContainer) {
-        console.error('PDF container not found during drag end');
-        setDraggedMarker(null);
-        return;
-      }
-      
-      const pdfRect = pdfContainer.getBoundingClientRect();
-      
-      // Calculate position as percentage of the PDF container
-      const x = ((e.clientX - pdfRect.left) / pdfRect.width) * 100;
-      const y = ((e.clientY - pdfRect.top) / pdfRect.height) * 100;
-      
-      // Ensure coordinates are within bounds (0-100%) and round to integers
-      const boundedX = Math.round(Math.max(0, Math.min(100, x)));
-      const boundedY = Math.round(Math.max(0, Math.min(100, y)));
-      
-      console.log('Drop position:', { x: boundedX, y: boundedY });
-      
-      // Check if there was actual movement before updating in the backend
-      if (Math.abs(boundedX - lastPosition.x) > 0 || Math.abs(boundedY - lastPosition.y) > 0) {
-        // Update marker position in backend
-        updateMarkerPosition(draggedMarker, boundedX, boundedY);
-      }
-      
-      // Reset dragged marker
-      setDraggedMarker(null);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [draggedMarker]);
-  
-  // Setup event listeners for resize operations
-  useEffect(() => {
-    if (!resizingMarker || !initialResizeData) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      // Get change in mouse position from the initial position
-      const deltaX = e.clientX - initialResizeData.mousePos.x;
-      const deltaY = e.clientY - initialResizeData.mousePos.y;
-      
-      // Calculate new size with minimum of 20px
-      const newWidth = Math.max(20, initialResizeData.size.width + deltaX);
-      const newHeight = Math.max(20, initialResizeData.size.height + deltaY);
-      
-      // Update the marker size in the UI for immediate feedback
-      const markerElement = document.getElementById(`marker-${resizingMarker}`);
-      if (markerElement) {
-        markerElement.style.width = `${newWidth}px`;
-        markerElement.style.height = `${newHeight}px`;
-      }
-    };
-    
-    const handleMouseUp = (e: MouseEvent) => {
-      if (!resizingMarker || !initialResizeData) return;
-      
-      // Calculate final size
-      const deltaX = e.clientX - initialResizeData.mousePos.x;
-      const deltaY = e.clientY - initialResizeData.mousePos.y;
-      
-      const newWidth = Math.max(20, initialResizeData.size.width + deltaX);
-      const newHeight = Math.max(20, initialResizeData.size.height + deltaY);
-      
-      // Update the marker size in state
-      updateMarkerSize(resizingMarker, newWidth, newHeight);
-      
-      // Reset resizing state
-      setResizingMarker(null);
-      setInitialResizeData(null);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingMarker, initialResizeData]);
-  
-  // Create a new marker
-  const handleAddMarker = () => {
-    if (!selectedFloorplanId || !newMarkerPosition) return;
-    
-    console.log("Creating marker:", {
-      floorplan_id: selectedFloorplanId,
-      page: 1,
-      marker_type: markerType,
-      equipment_id: markerType === 'note' ? -1 : 0, // Notes use -1, temporary 0 for others until actual equipment is created
-      position_x: newMarkerPosition.x,
-      position_y: newMarkerPosition.y,
-      label: markerLabel || 'Note'
-    });
-    
-    // If it's a note, add it directly
+    // Open marker type selection dialog
     if (markerType === 'note') {
+      // For notes, there's no equipment to add, so create the marker directly
       createMarkerMutation.mutate({
         floorplan_id: selectedFloorplanId,
         page: 1, // Default to first page
-        marker_type: markerType,
+        marker_type: 'note',
+        equipment_id: -1, // Notes don't have associated equipment
+        position_x: relX,
+        position_y: relY,
+        label: markerLabel || 'Note'
+      });
+    } else {
+      // For equipment markers, first choose the type in the dialog
+      setMarkerDialogOpen(true);
+    }
+  };
+  
+  // Handle adding a marker after type selection
+  const handleAddMarker = () => {
+    if (!selectedFloorplanId || !newMarkerPosition) {
+      console.error('Missing data for marker creation');
+      return;
+    }
+    
+    setMarkerDialogOpen(false);
+    
+    if (markerType === 'note') {
+      // For notes, directly create the marker
+      createMarkerMutation.mutate({
+        floorplan_id: selectedFloorplanId,
+        page: 1,
+        marker_type: 'note',
         equipment_id: -1, // Notes don't have associated equipment
         position_x: newMarkerPosition.x,
         position_y: newMarkerPosition.y,
         label: markerLabel || 'Note'
       });
     } else {
-      // For equipment markers, first close the marker dialog
-      setMarkerDialogOpen(false);
-      // Then open the equipment creation dialog
+      // For equipment, we need to open the appropriate modal to create the equipment first
       setSelectedEquipmentType(markerType);
       setShowAddEquipmentModal(true);
+      // The marker will be created after the equipment is saved in the modal's onSave callback
+    }
+  };
+  
+  // Mouse event handlers for marker dragging
+  const handleDragStart = (e: React.MouseEvent, markerId: number) => {
+    if (isAddingMarker) return; // Don't allow dragging while in adding mode
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setDraggedMarker(markerId);
+    
+    // Setup event listeners for drag tracking
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    // Track the marker being dragged
+    const marker = (markers as FloorplanMarker[]).find(m => m.id === markerId);
+    if (!marker) return;
+    
+    function handleMouseMove(e: MouseEvent) {
+      if (!containerRef.current || !markerId) return;
+      
+      const pdfContainer = containerRef.current.querySelector('.pdf-container-with-markers') as HTMLElement;
+      if (!pdfContainer) return;
+      
+      // Get the PDF container bounds
+      const rect = pdfContainer.getBoundingClientRect();
+      
+      // Calculate the relative position (percentage) within the container
+      const relX = ((e.clientX - rect.left) / rect.width) * 100;
+      const relY = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      // Update the marker position (live preview)
+      const markerElement = document.getElementById(`marker-${markerId}`);
+      if (markerElement) {
+        markerElement.style.left = `${relX}%`;
+        markerElement.style.top = `${relY}%`;
+      }
+    }
+    
+    function handleMouseUp(e: MouseEvent) {
+      if (!containerRef.current || !markerId) return;
+      
+      const pdfContainer = containerRef.current.querySelector('.pdf-container-with-markers') as HTMLElement;
+      if (!pdfContainer) return;
+      
+      // Remove the event listeners
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      
+      // Get the PDF container bounds
+      const rect = pdfContainer.getBoundingClientRect();
+      
+      // Calculate the final position
+      const relX = ((e.clientX - rect.left) / rect.width) * 100;
+      const relY = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      // Ensure position is within bounds
+      const clampedX = Math.max(0, Math.min(100, relX));
+      const clampedY = Math.max(0, Math.min(100, relY));
+      
+      // Find the marker to update
+      const markerToUpdate = (markers as FloorplanMarker[]).find(m => m.id === markerId);
+      if (markerToUpdate) {
+        // Update marker position in database
+        apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
+          ...markerToUpdate,
+          position_x: clampedX,
+          position_y: clampedY
+        }).then(() => {
+          // Refresh markers list
+          queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+          
+          // Notify parent component
+          if (onMarkersUpdated) {
+            onMarkersUpdated();
+          }
+        }).catch(error => {
+          console.error('Error updating marker position:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update marker position",
+            variant: "destructive",
+          });
+        });
+      }
+      
+      // Reset drag state
+      setDraggedMarker(null);
+    }
+  };
+  
+  // Mouse event handlers for note resizing
+  const handleResizeStart = (e: React.MouseEvent, markerId: number) => {
+    if (isAddingMarker) return; // Don't allow resizing while in adding mode
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setResizingMarker(markerId);
+    
+    // Get the current marker element
+    const markerElement = document.getElementById(`marker-${markerId}`);
+    if (!markerElement) return;
+    
+    // Get the current size
+    const width = markerElement.offsetWidth;
+    const height = markerElement.offsetHeight;
+    
+    // Store initial data for the resize operation
+    setInitialResizeData({
+      size: { width, height },
+      mousePos: { x: e.clientX, y: e.clientY }
+    });
+    
+    // Setup event listeners for resize tracking
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    function handleMouseMove(e: MouseEvent) {
+      if (!initialResizeData || !markerId) return;
+      
+      // Calculate the delta from the initial position
+      const deltaX = e.clientX - initialResizeData.mousePos.x;
+      const deltaY = e.clientY - initialResizeData.mousePos.y;
+      
+      // Calculate new dimensions
+      const newWidth = Math.max(100, initialResizeData.size.width + deltaX);
+      const newHeight = Math.max(40, initialResizeData.size.height + deltaY);
+      
+      // Update the marker size (live preview)
+      const markerElement = document.getElementById(`marker-${markerId}`);
+      if (markerElement) {
+        markerElement.style.width = `${newWidth}px`;
+        markerElement.style.minHeight = `${newHeight}px`;
+      }
+      
+      // Store the new size
+      setMarkerSize(prev => ({
+        ...prev,
+        [markerId]: { width: newWidth, height: newHeight }
+      }));
+    }
+    
+    function handleMouseUp(e: MouseEvent) {
+      // Remove event listeners
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      
+      // Store the final size
+      if (initialResizeData && markerId) {
+        const deltaX = e.clientX - initialResizeData.mousePos.x;
+        const deltaY = e.clientY - initialResizeData.mousePos.y;
+        
+        const newWidth = Math.max(100, initialResizeData.size.width + deltaX);
+        const newHeight = Math.max(40, initialResizeData.size.height + deltaY);
+        
+        // Update the state
+        setMarkerSize(prev => ({
+          ...prev,
+          [markerId]: { width: newWidth, height: newHeight }
+        }));
+      }
+      
+      // Reset resize state
+      setResizingMarker(null);
+      setInitialResizeData(null);
     }
   };
   
@@ -1223,8 +1183,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                   transformOrigin: 'top left'
                 }}>
                   {/* Render markers inside the PDF container */}
-                  {!isLoadingMarkers && (markers as FloorplanMarker[]).map((marker, index) => (
-                    marker.marker_type === 'note' ? (
+                  {!isLoadingMarkers && (markers as FloorplanMarker[]).map((marker) => {
+                    // Calculate marker number based on type (starting from 1 for each type)
+                    const sameTypeMarkers = (markers as FloorplanMarker[])
+                      .filter(m => m.marker_type === marker.marker_type)
+                      .sort((a, b) => a.id - b.id);
+                    const markerTypeNumber = sameTypeMarkers.findIndex(m => m.id === marker.id) + 1;
+                    
+                    return marker.marker_type === 'note' ? (
                       // Note marker as text with yellow background and red border
                       <div
                         id={`marker-${marker.id}`}
@@ -1356,8 +1322,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         }}
                         onMouseDown={(e) => handleDragStart(e, marker.id)}
                       >
-                        {/* Numbered marker */}
-                        {index + 1}
+                        {/* Numbered marker - Type-specific numbering */}
+                        {markerTypeNumber}
                         
                         {/* Context Menu */}
                         <DropdownMenu>
@@ -1401,8 +1367,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    )
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (
@@ -1619,12 +1585,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_y: newMarkerPosition.y,
               label: null
             });
-          } else {
-            console.error('Missing data for marker creation:', { 
-              selectedFloorplanId, 
-              newMarkerPosition, 
-              equipmentId 
-            });
           }
           setShowAddEquipmentModal(false);
         }}
@@ -1647,12 +1607,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_y: newMarkerPosition.y,
               label: null
             });
-          } else {
-            console.error('Missing data for marker creation:', { 
-              selectedFloorplanId, 
-              newMarkerPosition, 
-              equipmentId 
-            });
           }
           setShowAddEquipmentModal(false);
         }}
@@ -1674,12 +1628,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               position_x: newMarkerPosition.x,
               position_y: newMarkerPosition.y,
               label: null
-            });
-          } else {
-            console.error('Missing data for marker creation:', { 
-              selectedFloorplanId, 
-              newMarkerPosition, 
-              equipmentId 
             });
           }
           setShowAddEquipmentModal(false);
