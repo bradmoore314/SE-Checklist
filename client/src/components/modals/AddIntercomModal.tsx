@@ -31,10 +31,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 interface AddIntercomModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
+  open?: boolean;
   projectId: number;
   onSave: (intercom: any) => void;
-  onClose: () => void;
+  onClose?: () => void;
+  onCancel?: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Create schema based on shared schema but with validation
@@ -49,9 +52,12 @@ type IntercomFormValues = z.infer<typeof intercomSchema>;
 
 export default function AddIntercomModal({
   isOpen,
+  open,
   projectId,
   onSave,
   onClose,
+  onCancel,
+  onOpenChange,
 }: AddIntercomModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -88,7 +94,7 @@ export default function AddIntercomModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open || isOpen} onOpenChange={onOpenChange || onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">
@@ -174,7 +180,7 @@ export default function AddIntercomModal({
               <Button
                 type="button"
                 variant="outline"
-                onClick={onClose}
+                onClick={onCancel || onClose || (() => onOpenChange?.(false))}
                 className="mr-2"
               >
                 Cancel
