@@ -820,96 +820,38 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: "Generating PDF with markers...",
       });
       
+      console.log("Starting export process");
+      
       // Store original scale
       const originalScale = pdfScale;
       
       // Set to scale 1 for consistent export
       setPdfScale(1.0);
       
-      // Wait for scale change to take effect
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for scale change to take effect - give it more time
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Find both PDF embed and markers container
+      // Find the PDF container
       const pdfContainer = containerRef.current.querySelector('#pdf-container') as HTMLElement;
       if (!pdfContainer) {
         throw new Error('PDF container not found');
       }
       
-      // First, we need to get the PDF element - it could be an embed or iframe or object tag
-      // Try different possible PDF elements with more specific query - look directly for our data-pdf-element attribute
-      console.log("Looking for PDF element with data-pdf-element attribute...");
-      let pdfEmbed = pdfContainer.querySelector('[data-pdf-element="true"]') as HTMLElement;
+      console.log("PDF container found, dimensions:", pdfContainer.offsetWidth, "x", pdfContainer.offsetHeight);
       
-      if (!pdfEmbed) {
-        // If that fails, try the more generic selectors as fallback
-        console.log("First attempt failed, trying generic selectors...");
-        const fallbackEmbed = pdfContainer.querySelector('object, embed, iframe') as HTMLElement;
-        
-        if (!fallbackEmbed) {
-          console.error('PDF container DOM:', pdfContainer.innerHTML);
-          throw new Error('PDF element not found - check console for details');
-        }
-        
-        console.log("Found PDF element via fallback selector:", fallbackEmbed.tagName);
-        pdfEmbed = fallbackEmbed; // Use the fallback embed instead
-      } else {
-        console.log("Found PDF element via data-pdf-element attribute:", pdfEmbed.tagName);
-      }
+      // New simplified approach: Just capture what's already on screen
+      console.log("Directly capturing the visible PDF container with markers");
       
-      // Now let's create a proper container that has both PDF and markers
-      // Instead of trying to capture the existing one which has scale transforms
-      const combinedContainer = document.createElement('div');
-      combinedContainer.style.position = 'absolute';
-      combinedContainer.style.left = '-9999px';
-      combinedContainer.style.top = '-9999px';
-      combinedContainer.style.width = pdfContainer.offsetWidth + 'px';
-      combinedContainer.style.height = pdfContainer.offsetHeight + 'px';
-      combinedContainer.style.backgroundColor = 'white';
-      document.body.appendChild(combinedContainer);
-      
-      // 1. First render the PDF - use base64 data directly from the selectedFloorplan
-      const pdfClone = document.createElement('embed');
-      // Get the data URL from the object's data attribute or use selectedFloorplan directly
-      let pdfDataUrl = '';
-      if (pdfEmbed.hasAttribute('data')) {
-        pdfDataUrl = pdfEmbed.getAttribute('data') || '';
-      } else {
-        pdfDataUrl = `data:application/pdf;base64,${selectedFloorplan?.pdf_data}`;
-      }
-      
-      pdfClone.setAttribute('src', pdfDataUrl);
-      pdfClone.setAttribute('type', 'application/pdf');
-      pdfClone.style.width = '100%';
-      pdfClone.style.height = '100%';
-      pdfClone.style.position = 'absolute';
-      pdfClone.style.top = '0';
-      pdfClone.style.left = '0';
-      combinedContainer.appendChild(pdfClone);
-      
-      // 2. Then clone all markers and add them on top
-      const markersContainer = pdfContainer.querySelector('.markers-container');
-      if (markersContainer) {
-        const markersClone = markersContainer.cloneNode(true) as HTMLElement;
-        // Remove transform scale that would cause issues
-        markersClone.style.transform = '';
-        combinedContainer.appendChild(markersClone);
-      }
-      
-      // Give more time for the embed to render - 1.5 seconds should be enough
-      console.log('Waiting for PDF to render in the offscreen container...');
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Use html2canvas to capture the container with both PDF and markers
-      const canvas = await html2canvas(combinedContainer, {
+      // Capture the visible area directly
+      const canvas = await html2canvas(pdfContainer, {
         scale: 2, // Higher quality
-        logging: false,
+        logging: true, // Enable logging for debugging
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FFFFFF'
       });
       
-      // Clean up the temporary container
-      document.body.removeChild(combinedContainer);
+      console.log("Canvas captured, dimensions:", canvas.width, "x", canvas.height);
       
       // Get the canvas data
       const imageData = canvas.toDataURL('image/png');
@@ -941,7 +883,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${selectedFloorplan.name}_with_markers.pdf`;
+      link.download = `${selectedFloorplan?.name || 'floorplan'}_with_markers.pdf`;
       
       // Click the link to download
       document.body.appendChild(link);
