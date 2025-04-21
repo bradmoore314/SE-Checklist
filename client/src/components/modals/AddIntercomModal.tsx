@@ -30,6 +30,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+interface LookupData {
+  intercomTypes?: string[];
+}
+
 interface AddIntercomModalProps {
   isOpen?: boolean;
   open?: boolean;
@@ -62,9 +66,14 @@ export default function AddIntercomModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch lookup data for dropdowns
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
     queryKey: ["/api/lookup"],
   });
+  
+  // Helper function to safely access lookup data
+  const getLookupOptions = (key: keyof LookupData) => {
+    return lookupData && lookupData[key] ? lookupData[key] || [] : [];
+  };
 
   // Initialize form with default values
   const form = useForm<IntercomFormValues>({
@@ -142,7 +151,7 @@ export default function AddIntercomModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.intercomTypes.map((type: string) => (
+                          getLookupOptions("intercomTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
