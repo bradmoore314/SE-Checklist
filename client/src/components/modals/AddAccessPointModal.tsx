@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,6 +30,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Trash, Upload, Camera, Image, X, Loader2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 
 interface AddAccessPointModalProps {
   isOpen: boolean;
