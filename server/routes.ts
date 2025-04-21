@@ -1197,6 +1197,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
             camera_type: 'Fixed Indoor Dome'
           });
           equipmentId = newCamera.id;
+        } else if (result.data.marker_type === 'elevator') {
+          // Get current count of elevators for sequential numbering
+          const elevators = await storage.getElevatorsByProject(floorplan.project_id);
+          const nextNumber = elevators.length + 1;
+          
+          // Create label with sequential number
+          locationName = result.data.label || `Elevator ${nextNumber}`;
+          
+          const newElevator = await storage.createElevator({
+            project_id: floorplan.project_id,
+            location: locationName,
+            elevator_type: 'Destination Dispatch',
+            floor_count: 1,
+            notes: 'Added from floorplan'
+          });
+          equipmentId = newElevator.id;
+        } else if (result.data.marker_type === 'intercom') {
+          // Get current count of intercoms for sequential numbering
+          const intercoms = await storage.getIntercomsByProject(floorplan.project_id);
+          const nextNumber = intercoms.length + 1;
+          
+          // Create label with sequential number
+          locationName = result.data.label || `Intercom ${nextNumber}`;
+          
+          const newIntercom = await storage.createIntercom({
+            project_id: floorplan.project_id,
+            location: locationName,
+            intercom_type: 'Audio/Video',
+            mounting: 'Surface',
+            notes: 'Added from floorplan'
+          });
+          equipmentId = newIntercom.id;
+        } else if (result.data.marker_type === 'note') {
+          // Notes don't have associated equipment, just use -1 as a placeholder ID
+          equipmentId = -1;
         }
       }
 
