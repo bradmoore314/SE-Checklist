@@ -562,8 +562,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   };
   
   // Handle PDF document loaded event
-  const handleDocumentLoadSuccess = () => {
-    console.log('PDF document loaded successfully');
+  const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log(`PDF document loaded successfully with ${numPages} pages`);
+    
+    // Update the page count in our local state if needed
+    if (selectedFloorplan && selectedFloorplan.page_count !== numPages) {
+      console.log(`Updating page count from ${selectedFloorplan.page_count} to ${numPages}`);
+    }
   };
   
   // Handle marker placement on PDF
@@ -1309,19 +1314,42 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                       position: 'relative'
                     }}
                   >
-                    {selectedFloorplan.pdf_data && (
+                    {selectedFloorplan?.pdf_data ? (
                       <Document
                         file={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`}
                         onLoadSuccess={handleDocumentLoadSuccess}
-                        loading={<Loader2 className="h-8 w-8 animate-spin" />}
-                        error={<div>Error loading PDF</div>}
+                        loading={
+                          <div className="flex flex-col items-center justify-center p-8">
+                            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                            <p className="text-sm text-muted-foreground">Loading PDF...</p>
+                          </div>
+                        }
+                        error={
+                          <div className="flex flex-col items-center justify-center p-8 text-red-500 border border-red-200 rounded-md">
+                            <p className="font-semibold mb-2">Error loading PDF</p>
+                            <p className="text-sm">The PDF file could not be loaded. Try uploading again.</p>
+                          </div>
+                        }
+                        noData={
+                          <div className="flex flex-col items-center justify-center p-8 text-amber-500 border border-amber-200 rounded-md">
+                            <p className="font-semibold mb-2">No PDF Data</p>
+                            <p className="text-sm">The floorplan may be corrupted. Try uploading again.</p>
+                          </div>
+                        }
                       >
                         <Page 
                           pageNumber={1} 
                           renderTextLayer={false}
                           renderAnnotationLayer={false}
+                          scale={pdfScale}
+                          canvasBackground="transparent"
                         />
                       </Document>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-8 border border-dashed border-slate-200 rounded-md">
+                        <p className="text-slate-500 mb-2">No Floorplan Selected</p>
+                        <p className="text-sm text-slate-400">Please select or upload a floorplan</p>
+                      </div>
                     )}
                     
                     {/* Render markers */}
