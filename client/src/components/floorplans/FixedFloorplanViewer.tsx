@@ -847,6 +847,106 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const zoomOut = () => setPdfScale(prev => Math.max(prev - 0.1, 0.5));
   const resetZoom = () => setPdfScale(1);
   
+  // Function to export floorplan with markers as PDF
+  const exportFloorplanWithMarkers = async () => {
+    if (!selectedFloorplan || !containerRef.current) {
+      toast({
+        title: "Error",
+        description: "No floorplan selected or container not available",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      // Show processing toast
+      toast({
+        title: "Processing",
+        description: "Generating PDF with markers...",
+      });
+      
+      // Reset zoom to 100% for consistent export
+      const originalScale = pdfScale;
+      setPdfScale(1.0);
+      
+      // Wait for the state update to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Find the container with markers
+      const pdfContainer = containerRef.current.querySelector('#pdf-container');
+      if (!pdfContainer) {
+        throw new Error('PDF container not found');
+      }
+      
+      // Use html2canvas to capture the container with markers
+      const canvas = await html2canvas(pdfContainer as HTMLElement, {
+        scale: 2, // Higher quality
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#FFFFFF',
+      });
+      
+      // Get the canvas data
+      const imageData = canvas.toDataURL('image/png');
+      
+      // Create a new PDF document
+      const pdfDoc = await PDFDocument.create();
+      
+      // Embed the image in the PDF
+      const pngImage = await pdfDoc.embedPng(imageData);
+      
+      // Add a page with the same dimensions as the image
+      const page = pdfDoc.addPage([pngImage.width, pngImage.height]);
+      
+      // Draw the image on the page
+      page.drawImage(pngImage, {
+        x: 0,
+        y: 0,
+        width: pngImage.width,
+        height: pngImage.height,
+      });
+      
+      // Save the PDF
+      const pdfBytes = await pdfDoc.save();
+      
+      // Create a blob from the PDF bytes
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      
+      // Create a download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${selectedFloorplan.name}_with_markers.pdf`;
+      
+      // Click the link to download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up URL
+      URL.revokeObjectURL(url);
+      
+      // Reset to original scale
+      setPdfScale(originalScale);
+      
+      toast({
+        title: "Success",
+        description: "Floorplan with markers exported successfully",
+      });
+    } catch (error) {
+      console.error('Error exporting floorplan with markers:', error);
+      toast({
+        title: "Export Failed",
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+        variant: "destructive",
+      });
+      
+      // Reset zoom
+      setPdfScale(1.0);
+    }
+  };
+  
   // Loading state
   if (isLoadingFloorplans) {
     return (
@@ -1015,7 +1115,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
           <Button
             variant="outline"
             size="sm"
-            onClick={() => exportFloorplanWithMarkers()}
+            onClick={exportFloorplanWithMarkers}
             disabled={!selectedFloorplanId || isLoadingMarkers || (markers as FloorplanMarker[]).length === 0}
           >
             <FileDown className="h-4 w-4 mr-1" />
@@ -1195,8 +1295,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         style={{
                           left: `${marker.position_x}%`,
                           top: `${marker.position_y}%`,
-                          width: `${defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] * equipmentMarkerScale}px`,
-                          height: `${defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] * equipmentMarkerScale}px`,
+                          width: `${typeof defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] === 'number' 
+                              ? (defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] as number) * equipmentMarkerScale 
+                              : 36 * equipmentMarkerScale}px`,
+                          height: `${typeof defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] === 'number' 
+                              ? (defaultMarkerSizes[marker.marker_type as keyof typeof defaultMarkerSizes] as number) * equipmentMarkerScale 
+                              : 36 * equipmentMarkerScale}px`,
                           backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
                           color: 'white',
                           transform: 'translate(-50%, -50%)',
