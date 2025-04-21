@@ -168,22 +168,20 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <div>
-          {currentSiteWalk && (
-            <Link href={`/projects/${currentSiteWalk.id}/floorplans`}>
-              <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-                location.includes("/floorplans") 
-                  ? "border-r-4 nav-item active" 
-                  : "nav-item hover:bg-gray-100"
-              } cursor-pointer`}
-                 style={location.includes("/floorplans") ? { 
-                   backgroundColor: 'var(--red-accent)', 
-                   borderColor: 'var(--red-accent)' 
-                 } : {}}>
-                <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans") ? "text-white" : "text-gray-600"}`}>map</span>
-                {!collapsed && <span className={location.includes("/floorplans") ? "text-white" : "text-gray-800 font-medium"}>Floorplans</span>}
-              </div>
-            </Link>
-          )}
+          <Link href={currentSiteWalk ? `/projects/${currentSiteWalk.id}/floorplans` : `/floorplans`}>
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
+              location.includes("/floorplans") 
+                ? "border-r-4 nav-item active" 
+                : "nav-item hover:bg-gray-100"
+            } cursor-pointer`}
+               style={location.includes("/floorplans") ? { 
+                 backgroundColor: 'var(--red-accent)', 
+                 borderColor: 'var(--red-accent)' 
+               } : {}}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans") ? "text-white" : "text-gray-600"}`}>map</span>
+              {!collapsed && <span className={location.includes("/floorplans") ? "text-white" : "text-gray-800 font-medium"}>Floorplans</span>}
+            </div>
+          </Link>
         </div>
 
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 mt-4 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>

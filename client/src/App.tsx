@@ -48,6 +48,7 @@ function Router() {
       <ProtectedRoute path="/project-summary" component={SiteWalkSummary} />
       
       {/* Floorplans */}
+      <ProtectedRoute path="/floorplans" component={() => import("@/pages/floorplans").then(mod => mod.default)} />
       <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
       
