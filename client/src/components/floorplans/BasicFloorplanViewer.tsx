@@ -342,43 +342,11 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   // Keep track of marker's current position during drag
   const [dragPosition, setDragPosition] = useState<{ x: number, y: number } | null>(null);
   
-  // Handle marker drag (optimized for smooth UI movement - API call only on end)
+  // This function has been optimized and moved into the mousemove handler in the useEffect
+  // We keep a stub here in case it's called elsewhere
   const handleDrag = (e: React.MouseEvent) => {
-    if (!draggedMarker || !containerRef.current) return;
-    
-    // Prevent default browser behavior
-    e.preventDefault();
-    
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    
-    // Calculate the new position as percentage
-    // Round to integer as the server expects integer values
-    const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-    const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
-    
-    // Find marker
-    const markerToUpdate = markers.find(m => m.id === draggedMarker);
-    
-    if (markerToUpdate) {
-      // Update the position in local state
-      setDragPosition({ x, y });
-      
-      // Make a shallow copy of the markers array
-      const updatedMarkers = markers.map(m => {
-        if (m.id === draggedMarker) {
-          // Create a new object with updated position
-          return { ...m, position_x: x, position_y: y };
-        }
-        return m;
-      });
-      
-      // Update local state with the new positions for immediate visual feedback
-      setMarkers(updatedMarkers);
-      
-      // Only update the position in the database when the drag is complete (on mouseup)
-      // See the handleDragEnd function
-    }
+    // The actual drag logic is now handled in the mousemove event inside useEffect
+    // This prevents redundant state updates and improves performance
   };
   
   // Save marker position when drag ends
@@ -424,48 +392,85 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     setDragPosition(null);
   };
   
-  // Setup event listeners for drag operations
+  // Setup event listeners for drag operations with performance optimizations
   useEffect(() => {
+    if (!draggedMarker) return;
+    
+    let animationFrameId: number | null = null;
+    let lastX = 0;
+    let lastY = 0;
+    
     const handleMouseMove = (e: MouseEvent) => {
-      if (draggedMarker) {
-        const container = containerRef.current;
-        if (!container) return;
-        
-        const rect = container.getBoundingClientRect();
-        
-        // Calculate the new position as percentage
-        // Round to integer as the server expects integer values
-        const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-        const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
-        
-        // Update marker position in UI immediately for smooth movement
-        const markerElement = document.getElementById(`marker-${draggedMarker}`);
-        if (markerElement) {
-          markerElement.style.left = `${x}%`;
-          markerElement.style.top = `${y}%`;
-        }
+      if (!draggedMarker || !containerRef.current) return;
+      
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      
+      // Calculate the new position as percentage
+      // Round to integer as the server expects integer values
+      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+      
+      // Store the latest position
+      lastX = x;
+      lastY = y;
+      
+      // Use requestAnimationFrame for smoother updates (throttles updates to screen refresh rate)
+      if (animationFrameId === null) {
+        animationFrameId = window.requestAnimationFrame(() => {
+          // Update marker position in UI immediately for smooth movement
+          const markerElement = document.getElementById(`marker-${draggedMarker}`);
+          if (markerElement) {
+            markerElement.style.left = `${lastX}%`;
+            markerElement.style.top = `${lastY}%`;
+          }
+          
+          // Also update the dragPosition state for when we save
+          setDragPosition({ x: lastX, y: lastY });
+          
+          // Reset the animation frame ID
+          animationFrameId = null;
+        });
       }
     };
     
     const handleMouseUp = (e: MouseEvent) => {
       if (draggedMarker) {
-        // First update the drag position one last time
-        handleDrag(e as unknown as React.MouseEvent);
+        // Cancel any pending animation frame
+        if (animationFrameId !== null) {
+          window.cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        
+        // First ensure the drag position is updated with the final position
+        const container = containerRef.current;
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          const finalX = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+          const finalY = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+          setDragPosition({ x: finalX, y: finalY });
+        }
+        
         // Then finalize the drag operation and save to database
         handleDragEnd();
       }
     };
     
-    if (draggedMarker) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
+    // Add event listeners when a marker is being dragged
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mouseup', handleMouseUp);
     
+    // Clean up event listeners
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      
+      // Cancel any pending animation frame
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
     };
-  }, [draggedMarker]);
+  }, [draggedMarker, containerRef]);
   
   // Resize marker with granular control (20 steps)
   const resizeMarker = (markerId: number, increase: boolean) => {
