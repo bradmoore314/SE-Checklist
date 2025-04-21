@@ -191,25 +191,31 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           URL.revokeObjectURL(pdfBlobUrl);
         }
 
-        // Create data URL directly from the base64
-        const dataUrl = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
-        
-        // For better browser compatibility, we'll still create a blob
-        fetch(dataUrl)
-          .then(res => res.blob())
-          .then(blob => {
-            const url = URL.createObjectURL(blob);
-            setPdfBlobUrl(url);
-          })
-          .catch(err => {
-            console.error('Error fetching PDF data:', err);
-            setPdfBlobUrl(null);
-            toast({
-              title: "Error",
-              description: "Failed to load PDF data",
-              variant: "destructive",
-            });
+        try {
+          // Create data URL directly from the base64
+          const dataUrl = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
+          
+          // Convert base64 string to binary
+          const byteCharacters = atob(selectedFloorplan.pdf_data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          
+          // Create blob from binary data
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          setPdfBlobUrl(url);
+        } catch (err) {
+          console.error('Error processing PDF data:', err);
+          setPdfBlobUrl(null);
+          toast({
+            title: "Error",
+            description: "Failed to load PDF data",
+            variant: "destructive",
           });
+        }
       } catch (err) {
         console.error('Error creating blob URL:', err);
         setPdfBlobUrl(null);

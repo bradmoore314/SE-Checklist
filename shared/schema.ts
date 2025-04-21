@@ -259,7 +259,10 @@ export const insertFloorplanSchema = createInsertSchema(floorplans).omit({
 // Marker types
 export const markerTypeEnum = pgEnum('marker_type', [
   'access_point',
-  'camera'
+  'camera',
+  'elevator',
+  'intercom',
+  'note'
 ]);
 
 // Floorplan markers for mapping equipment to positions on the PDF

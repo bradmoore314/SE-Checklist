@@ -8,13 +8,9 @@ import {
   X, 
   MapPin, 
   Video, 
-  ArrowUpDown, // Instead of Elevator which doesn't exist
+  ArrowUpDown, 
   Phone, 
   StickyNote,
-  Maximize, 
-  Minimize, 
-  ChevronsLeft, 
-  ChevronsRight,
   ZoomIn,
   ZoomOut,
   Trash,
@@ -56,6 +52,30 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// Type definition for floorplan
+interface Floorplan {
+  id: number;
+  project_id: number;
+  name: string;
+  pdf_data: string;
+  page_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Type definition for marker
+interface FloorplanMarker {
+  id: number;
+  floorplan_id: number;
+  page: number;
+  marker_type: 'access_point' | 'camera' | 'elevator' | 'intercom' | 'note';
+  equipment_id: number;
+  position_x: number;
+  position_y: number;
+  label: string | null;
+  created_at: string;
+}
+
 // Marker colors by type
 const markerColors = {
   access_point: '#FF4D4F', // Red
@@ -73,7 +93,7 @@ const MarkerIcon = ({ type }: { type: string }) => {
     case 'camera':
       return <Video size={16} />;
     case 'elevator':
-      return <Elevator size={16} />;
+      return <ArrowUpDown size={16} />;
     case 'intercom':
       return <Phone size={16} />;
     case 'note':
@@ -83,12 +103,12 @@ const MarkerIcon = ({ type }: { type: string }) => {
   }
 };
 
-interface ModernFloorplanViewerProps {
+interface EnhancedFloorplanViewerProps {
   projectId: number;
   onMarkersUpdated?: () => void;
 }
 
-const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanViewerProps) => {
+const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorplanViewerProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,7 +135,7 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
     data: floorplans = [], 
     isLoading: isLoadingFloorplans,
     refetch: refetchFloorplans 
-  } = useQuery({
+  } = useQuery<Floorplan[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
@@ -125,14 +145,14 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
   });
   
   // Get the selected floorplan
-  const selectedFloorplan = floorplans.find(f => f.id === selectedFloorplanId) || null;
+  const selectedFloorplan = floorplans.find((f: Floorplan) => f.id === selectedFloorplanId) || null;
   
   // Fetch markers for the selected floorplan
   const { 
     data: markers = [], 
     isLoading: isLoadingMarkers,
     refetch: refetchMarkers
-  } = useQuery({
+  } = useQuery<FloorplanMarker[]>({
     queryKey: ['/api/floorplans', selectedFloorplanId, 'markers'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/floorplans/${selectedFloorplanId}/markers`);
@@ -429,7 +449,7 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
   
   // Handle marker position update after drag
   const updateMarkerPosition = (markerId: number, x: number, y: number) => {
-    const markerToUpdate = markers.find(m => m.id === markerId);
+    const markerToUpdate = markers.find((m: FloorplanMarker) => m.id === markerId);
     
     if (markerToUpdate) {
       apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
@@ -555,7 +575,7 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
               <SelectValue placeholder="Select a floorplan" />
             </SelectTrigger>
             <SelectContent>
-              {floorplans.map((floorplan) => (
+              {floorplans.map((floorplan: Floorplan) => (
                 <SelectItem key={floorplan.id} value={floorplan.id.toString()}>
                   {floorplan.name}
                 </SelectItem>
@@ -739,7 +759,7 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
             )}
             
             {/* Markers */}
-            {!isLoadingMarkers && markers.map((marker) => (
+            {!isLoadingMarkers && markers.map((marker: FloorplanMarker) => (
               <div
                 id={`marker-${marker.id}`}
                 key={marker.id}
@@ -829,23 +849,23 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: markerColors.access_point }}></div>
-              <span className="text-sm">Access Points ({markers.filter(m => m.marker_type === 'access_point').length})</span>
+              <span className="text-sm">Access Points ({markers.filter((m: FloorplanMarker) => m.marker_type === 'access_point').length})</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: markerColors.camera }}></div>
-              <span className="text-sm">Cameras ({markers.filter(m => m.marker_type === 'camera').length})</span>
+              <span className="text-sm">Cameras ({markers.filter((m: FloorplanMarker) => m.marker_type === 'camera').length})</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: markerColors.elevator }}></div>
-              <span className="text-sm">Elevators ({markers.filter(m => m.marker_type === 'elevator').length})</span>
+              <span className="text-sm">Elevators ({markers.filter((m: FloorplanMarker) => m.marker_type === 'elevator').length})</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: markerColors.intercom }}></div>
-              <span className="text-sm">Intercoms ({markers.filter(m => m.marker_type === 'intercom').length})</span>
+              <span className="text-sm">Intercoms ({markers.filter((m: FloorplanMarker) => m.marker_type === 'intercom').length})</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: markerColors.note }}></div>
-              <span className="text-sm">Notes ({markers.filter(m => m.marker_type === 'note').length})</span>
+              <span className="text-sm">Notes ({markers.filter((m: FloorplanMarker) => m.marker_type === 'note').length})</span>
             </div>
           </div>
         </div>
@@ -880,7 +900,7 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
                     <span className="hidden sm:inline">Camera</span>
                   </TabsTrigger>
                   <TabsTrigger value="elevator">
-                    <Elevator className="h-4 w-4 mr-1" />
+                    <ArrowUpDown className="h-4 w-4 mr-1" />
                     <span className="hidden sm:inline">Elevator</span>
                   </TabsTrigger>
                   <TabsTrigger value="intercom">
@@ -936,4 +956,4 @@ const ModernFloorplanViewer = ({ projectId, onMarkersUpdated }: ModernFloorplanV
   );
 };
 
-export default ModernFloorplanViewer;
+export default EnhancedFloorplanViewer;
