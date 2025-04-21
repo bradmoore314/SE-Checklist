@@ -207,14 +207,6 @@ export default function AuthPage() {
                       </div>
                     )}
                   </div>
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    className="w-full border-dashed border-gray-300"
-                    onClick={() => bypassAuth()}
-                  >
-                    Development: Skip Login
-                  </Button>
                   <p className="text-sm text-white text-center">
                     Don't have an account?{" "}
                     <Button 
