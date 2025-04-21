@@ -835,10 +835,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         throw new Error('PDF container not found');
       }
       
-      // First, we need to get the PDF embed element
-      const pdfEmbed = pdfContainer.querySelector('embed') as HTMLEmbedElement;
+      // First, we need to get the PDF element - it could be an embed or iframe or object tag
+      // Try different possible PDF elements
+      const pdfEmbed = pdfContainer.querySelector('embed, iframe, object, [data-pdf-element="true"]') as HTMLElement;
       if (!pdfEmbed) {
-        throw new Error('PDF embed element not found');
+        console.error('PDF container DOM:', pdfContainer.innerHTML);
+        throw new Error('PDF element not found - check console for details');
       }
       
       // Now let's create a proper container that has both PDF and markers
