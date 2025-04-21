@@ -21,13 +21,20 @@ import {
   MoreVertical,
   Edit,
   FileDown,
-  Minus
+  Minus,
+  RotateCcw,
+  FileQuestion,
+  Info,
+  Camera,
+  DoorClosed,
+  ChevronsUpDown
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -56,6 +63,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Document, Page } from 'react-pdf';
 
 // Import the equipment-specific modals
 import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
@@ -139,6 +164,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   // State for marker placement
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
   const [markerDialogOpen, setMarkerDialogOpen] = useState<boolean>(false);
+  const [noteDialogOpen, setNoteDialogOpen] = useState<boolean>(false);
   const [markerType, setMarkerType] = useState<string>('access_point');
   const [markerLabel, setMarkerLabel] = useState<string>('');
   const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
