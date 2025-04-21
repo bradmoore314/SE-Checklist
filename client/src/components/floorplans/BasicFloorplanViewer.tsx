@@ -233,31 +233,51 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
         URL.revokeObjectURL(pdfBlobUrl);
       }
 
-      // Convert base64 to blob directly without using fetch
+      // Add more debugging info
+      console.log('Processing PDF data, length:', selectedFloorplan.pdf_data.length);
+      
+      // Different approach for handling the PDF
       try {
-        // Decode the base64 string
-        const byteCharacters = atob(selectedFloorplan.pdf_data);
-        const byteNumbers = new Array(byteCharacters.length);
-        
-        // Convert to byte array
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        
-        // Create object URL from blob
-        const url = URL.createObjectURL(blob);
-        setPdfBlobUrl(url);
+        // Create a data URI for the PDF
+        // This is more reliable than creating a blob for some PDFs
+        const dataUri = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
+        console.log('Created data URI for PDF');
+        setPdfBlobUrl(dataUri);
       } catch (err) {
-        console.error('Error converting PDF data:', err);
-        setPdfBlobUrl(null);
-        toast({
-          title: "Error",
-          description: "Failed to load PDF data",
-          variant: "destructive",
-        });
+        console.error('Error creating data URI:', err);
+        
+        // Fall back to the blob approach
+        try {
+          // Decode the base64 string
+          const byteCharacters = atob(selectedFloorplan.pdf_data);
+          console.log('Decoded base64 string, length:', byteCharacters.length);
+          
+          const byteNumbers = new Array(byteCharacters.length);
+          
+          // Convert to byte array
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          
+          const byteArray = new Uint8Array(byteNumbers);
+          console.log('Created byte array, length:', byteArray.length);
+          
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          console.log('Created blob, size:', blob.size);
+          
+          // Create object URL from blob
+          const url = URL.createObjectURL(blob);
+          console.log('Created blob URL:', url);
+          setPdfBlobUrl(url);
+        } catch (blobErr) {
+          console.error('Error converting PDF data:', blobErr);
+          setPdfBlobUrl(null);
+          toast({
+            title: "Error",
+            description: "Failed to load PDF data. The uploaded file may be corrupted.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (err) {
       console.error('Error creating blob URL:', err);
@@ -992,15 +1012,30 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           >
             {pdfBlobUrl ? (
               <div className="relative">
-                {/* Use an iframe for PDF display */}
+                {/* Use an embed element for PDF display - more compatible than iframe */}
                 <div className="relative border rounded w-full" style={{ height: '800px' }}>
-                  <iframe 
-                    src={pdfBlobUrl}
-                    width="100%"
-                    height="100%"
-                    className="border-0 absolute inset-0"
-                    style={{ zIndex: 10 }}
-                  />
+                  {pdfBlobUrl.startsWith('data:') ? (
+                    // For data URIs, use an object tag which handles them better
+                    <object 
+                      data={pdfBlobUrl}
+                      type="application/pdf"
+                      width="100%"
+                      height="100%"
+                      className="border-0 absolute inset-0"
+                      style={{ zIndex: 10 }}
+                    >
+                      <p>Your browser does not support PDF viewing. <a href={pdfBlobUrl} target="_blank" rel="noreferrer">Click here to download the PDF</a></p>
+                    </object>
+                  ) : (
+                    // For blob URLs, use iframe
+                    <iframe 
+                      src={pdfBlobUrl}
+                      width="100%"
+                      height="100%"
+                      className="border-0 absolute inset-0"
+                      style={{ zIndex: 10 }}
+                    />
+                  )}
                   
                   {/* Layer for markers that sits on top of the PDF - fixed to PDF content */}
                   <div 
