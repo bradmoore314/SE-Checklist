@@ -1,0 +1,25 @@
+chunk-WERSD76P.js?v=50d15a13:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+/api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)Understand this errorAI
+chunk-2MYDAEXZ.js?v=50d15a13:124 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2
+FixedFloorplanViewer.tsx:229 Selected floorplan changed: asdf
+@radix-ui_react-dialog.js?v=50d15a13:342 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=50d15a13:342Understand this warningAI
+FixedFloorplanViewer.tsx:1549 Creating access_point marker with equipment ID: 1
+AddAccessPointModal.tsx:141 Created access point with ID: 1
+FixedFloorplanViewer.tsx:310 Creating marker with data: Object
+/api/floorplan-markers:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this errorAI
+FixedFloorplanViewer.tsx:370 Error creating marker: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:32:3)
+    at async Object.mutationFn (FixedFloorplanViewer.tsx:343:26)
+mutationFn @ FixedFloorplanViewer.tsx:370Understand this errorAI
+FixedFloorplanViewer.tsx:397 Marker creation error: Error: 400: {"message":"Invalid marker data","errors":[{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_x"]},{"code":"invalid_type","expected":"integer","received":"float","message":"Expected integer, received float","path":["position_y"]}]}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:32:3)
+    at async Object.mutationFn (FixedFloorplanViewer.tsx:343:26)

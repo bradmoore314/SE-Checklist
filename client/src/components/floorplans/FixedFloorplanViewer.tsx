@@ -537,8 +537,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const rect = pdfContainer.getBoundingClientRect();
     
     // Calculate the relative position (percentage) within the container
-    const relX = ((e.clientX - rect.left) / rect.width) * 100;
-    const relY = ((e.clientY - rect.top) / rect.height) * 100;
+    // Convert to integers as required by the database schema
+    const relX = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    const relY = Math.round(((e.clientY - rect.top) / rect.height) * 100);
     
     // Store the marker position
     setNewMarkerPosition({ x: relX, y: relY });
@@ -616,8 +617,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       const rect = pdfContainer.getBoundingClientRect();
       
       // Calculate the relative position (percentage) within the container
-      const relX = ((e.clientX - rect.left) / rect.width) * 100;
-      const relY = ((e.clientY - rect.top) / rect.height) * 100;
+      // Convert to integers as required by the database schema
+      const relX = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      const relY = Math.round(((e.clientY - rect.top) / rect.height) * 100);
       
       // Update the marker position (live preview)
       const markerElement = document.getElementById(`marker-${markerId}`);
@@ -641,8 +643,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       const rect = pdfContainer.getBoundingClientRect();
       
       // Calculate the final position
-      const relX = ((e.clientX - rect.left) / rect.width) * 100;
-      const relY = ((e.clientY - rect.top) / rect.height) * 100;
+      // Convert to integers as required by the database schema
+      const relX = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      const relY = Math.round(((e.clientY - rect.top) / rect.height) * 100);
       
       // Ensure position is within bounds
       const clampedX = Math.max(0, Math.min(100, relX));
