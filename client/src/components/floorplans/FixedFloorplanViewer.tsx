@@ -151,6 +151,37 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const containerRef = useRef<HTMLDivElement>(null);
   const { user, bypassAuth } = useAuth(); // Add authentication
   
+  // Helper function to convert hex color to RGB
+  const hexToRgb = (hex: string): [number, number, number] => {
+    // Remove # if present
+    hex = hex.replace(/^#/, '');
+    
+    // Parse hex values
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    
+    return [r, g, b];
+  };
+  
+  // Get unique marker number by type - each type has its own sequence 1, 2, 3...
+  const getMarkerNumberByType = (type: string, equipmentId: number): number => {
+    // Notes don't have numbers
+    if (type === 'note' || equipmentId === -1) return 0;
+    
+    // Filter markers by type and sort by equipment ID
+    const sameTypeMarkers = markers
+      .filter(m => m.marker_type === type)
+      .sort((a, b) => a.equipment_id - b.equipment_id);
+    
+    // Find the index of this marker in the sorted list
+    const index = sameTypeMarkers.findIndex(m => m.equipment_id === equipmentId);
+    
+    // Return 1-based index
+    return index >= 0 ? index + 1 : 1;
+  };
+  
   // State for floorplan data and selection
   const [selectedFloorplanId, setSelectedFloorplanId] = useState<number | null>(null);
   // We no longer need to store the blob URL - using data URL directly
