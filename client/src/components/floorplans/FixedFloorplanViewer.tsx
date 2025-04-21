@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
+import html2canvas from 'html2canvas';
+import { PDFDocument } from 'pdf-lib';
 import { 
   Loader2, 
   Upload, 
@@ -17,7 +19,9 @@ import {
   Trash,
   Copy,
   MoreVertical,
-  Edit
+  Edit,
+  FileDown,
+  Minus
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -148,7 +152,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   } | null>(null);
   
   // Default marker sizes
-  const defaultMarkerSizes = {
+  const defaultMarkerSizes: Record<string, number | { width: number, height: number }> = {
     'access_point': 36,
     'camera': 36,
     'elevator': 36,
@@ -987,7 +991,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         </div>
         
         {/* Equipment Marker Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant={isAddingMarker ? "default" : "outline"}
             size="sm"
@@ -1007,6 +1011,18 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
             )}
           </Button>
           
+          {/* Export PDF with Markers button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportFloorplanWithMarkers()}
+            disabled={!selectedFloorplanId || isLoadingMarkers || (markers as FloorplanMarker[]).length === 0}
+          >
+            <FileDown className="h-4 w-4 mr-1" />
+            Export with Markers
+          </Button>
+          
+          {/* Zoom Controls */}
           <div className="flex gap-1">
             <Button variant="outline" size="icon" onClick={zoomOut} disabled={!selectedFloorplanId}>
               <ZoomOut className="h-4 w-4" />
@@ -1016,6 +1032,32 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
             </Button>
             <Button variant="outline" size="icon" onClick={zoomIn} disabled={!selectedFloorplanId}>
               <ZoomIn className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {/* Marker Size Controls */}
+          <div className="flex items-center gap-2 ml-2">
+            <Label className="text-xs">Marker Size:</Label>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setEquipmentMarkerScale(Math.max(0.5, equipmentMarkerScale - 0.1))}
+              disabled={!selectedFloorplanId}
+              title="Decrease marker size"
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <div className="w-12 text-center text-xs">
+              {Math.round(equipmentMarkerScale * 100)}%
+            </div>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setEquipmentMarkerScale(Math.min(2.0, equipmentMarkerScale + 0.1))}
+              disabled={!selectedFloorplanId}
+              title="Increase marker size"
+            >
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>
