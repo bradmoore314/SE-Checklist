@@ -820,44 +820,63 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: "Generating PDF with markers...",
       });
       
-      // Store original scale and set a temporary zoom level for export
+      // Store original scale
       const originalScale = pdfScale;
       
-      // First pause any ongoing animations or transitions
+      // Set to scale 1 for consistent export
+      setPdfScale(1.0);
+      
+      // Wait for scale change to take effect
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Find both PDF embed and markers container
       const pdfContainer = containerRef.current.querySelector('#pdf-container') as HTMLElement;
       if (!pdfContainer) {
         throw new Error('PDF container not found');
       }
       
-      // Temporarily set styles for consistent export
-      const originalStyles = {
-        transform: pdfContainer.style.transform,
-        transition: pdfContainer.style.transition,
-        transformOrigin: pdfContainer.style.transformOrigin,
-      };
+      // First, we need to get the PDF embed element
+      const pdfEmbed = pdfContainer.querySelector('embed') as HTMLEmbedElement;
+      if (!pdfEmbed) {
+        throw new Error('PDF embed element not found');
+      }
       
-      // Set to scale 1 for the export
-      setPdfScale(1.0);
-      pdfContainer.style.transition = 'none';
+      // Now let's create a proper container that has both PDF and markers
+      // Instead of trying to capture the existing one which has scale transforms
+      const combinedContainer = document.createElement('div');
+      combinedContainer.style.position = 'absolute';
+      combinedContainer.style.left = '-9999px';
+      combinedContainer.style.top = '-9999px';
+      combinedContainer.style.width = pdfContainer.offsetWidth + 'px';
+      combinedContainer.style.height = pdfContainer.offsetHeight + 'px';
+      combinedContainer.style.backgroundColor = 'white';
+      document.body.appendChild(combinedContainer);
       
-      // Create a temporary container for holding both floorplan and markers
-      const exportContainer = document.createElement('div');
-      exportContainer.style.position = 'absolute';
-      exportContainer.style.left = '-9999px';
-      exportContainer.style.top = '-9999px';
-      exportContainer.style.width = pdfContainer.offsetWidth + 'px';
-      exportContainer.style.height = pdfContainer.offsetHeight + 'px';
-      exportContainer.style.overflow = 'hidden';
-      document.body.appendChild(exportContainer);
+      // 1. First render the PDF
+      const pdfClone = document.createElement('embed');
+      pdfClone.src = pdfEmbed.src;
+      pdfClone.type = 'application/pdf';
+      pdfClone.style.width = '100%';
+      pdfClone.style.height = '100%';
+      pdfClone.style.position = 'absolute';
+      pdfClone.style.top = '0';
+      pdfClone.style.left = '0';
+      combinedContainer.appendChild(pdfClone);
       
-      // Clone the content to this offscreen container
-      exportContainer.innerHTML = pdfContainer.outerHTML;
+      // 2. Then clone all markers and add them on top
+      const markersContainer = pdfContainer.querySelector('.markers-container');
+      if (markersContainer) {
+        const markersClone = markersContainer.cloneNode(true) as HTMLElement;
+        // Remove transform scale that would cause issues
+        markersClone.style.transform = '';
+        combinedContainer.appendChild(markersClone);
+      }
       
-      // Wait for rendering
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Give time for the embed to render
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Use html2canvas to capture the combined content
-      const canvas = await html2canvas(exportContainer, {
+      // Use html2canvas to capture the container with both PDF and markers
+      const canvas = await html2canvas(combinedContainer, {
         scale: 2, // Higher quality
         logging: false,
         useCORS: true,
@@ -866,7 +885,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       });
       
       // Clean up the temporary container
-      document.body.removeChild(exportContainer);
+      document.body.removeChild(combinedContainer);
       
       // Get the canvas data
       const imageData = canvas.toDataURL('image/png');
