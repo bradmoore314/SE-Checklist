@@ -464,21 +464,8 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
     
     setNewMarkerPosition({ x, y });
     
-    // Open the appropriate modal based on the marker type
-    if (markerType === 'access_point') {
-      setShowAccessPointModal(true);
-    } else if (markerType === 'camera') {
-      setShowCameraModal(true);
-    } else if (markerType === 'elevator') {
-      setShowElevatorModal(true);
-    } else if (markerType === 'intercom') {
-      setShowIntercomModal(true);
-    } else if (markerType === 'note') {
-      setNoteDialogOpen(true);
-    } else {
-      // Fallback to the generic marker dialog for any other type
-      setMarkerDialogOpen(true);
-    }
+    // Always open the marker type selection dialog first
+    setMarkerDialogOpen(true);
   };
   
   // Handle marker drag
@@ -524,9 +511,13 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
     }
   };
   
-  // Setup event listeners for drag operations
+  // Setup event listeners for drag operations with debounce for better performance
   useEffect(() => {
     if (!draggedMarker) return;
+    
+    // Keep track of the last position to prevent excessive updates
+    let lastPosition = { x: 0, y: 0 };
+    let isInitialized = false;
     
     const handleMouseMove = (e: MouseEvent) => {
       const container = containerRef.current;
@@ -538,6 +529,12 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       // Round to integer as the server expects integer values
       const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
       const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+      
+      // Initialize last position with the first mouse move event
+      if (!isInitialized) {
+        lastPosition = { x, y };
+        isInitialized = true;
+      }
       
       // Update marker position in UI immediately for smooth movement
       const markerElement = document.getElementById(`marker-${draggedMarker}`);
@@ -557,8 +554,11 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
       const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
       
-      // Update marker position in backend
-      updateMarkerPosition(draggedMarker, x, y);
+      // Check if there was actual movement before updating in the backend
+      if (Math.abs(x - lastPosition.x) > 0 || Math.abs(y - lastPosition.y) > 0) {
+        // Update marker position in backend
+        updateMarkerPosition(draggedMarker, x, y);
+      }
       
       // Reset dragged marker
       setDraggedMarker(null);
@@ -814,20 +814,21 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
               <div
                 id={`marker-${marker.id}`}
                 key={marker.id}
-                className="absolute rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+                className="absolute rounded-full flex items-center justify-center cursor-move active:cursor-grabbing hover:scale-110"
                 style={{
                   left: `${marker.position_x}%`,
                   top: `${marker.position_y}%`,
-                  width: `${markerSize[marker.id]?.width || 24}px`,
-                  height: `${markerSize[marker.id]?.height || 24}px`,
+                  width: `${markerSize[marker.id]?.width || 32}px`, // Increased from 24px
+                  height: `${markerSize[marker.id]?.height || 32}px`, // Increased from 24px
                   backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
                   color: 'white',
                   transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)', // Enhanced shadow
                   zIndex: draggedMarker === marker.id ? 1000 : 100,
                   transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease-out',
                   border: '2px solid white',
-                  pointerEvents: isAddingMarker ? 'none' : 'auto' // Disable marker interaction during adding mode
+                  pointerEvents: isAddingMarker ? 'none' : 'auto', // Disable marker interaction during adding mode
+                  touchAction: 'none' // Prevent scrolling during drag
                 }}
                 onMouseDown={(e) => handleDragStart(e, marker.id)}
               >
