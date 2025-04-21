@@ -30,62 +30,24 @@ app.use(session({
 // Initialize Passport.js
 setupAuth(app);
 
-// Authentication skip middleware for paths
-const skipForPublicPaths = (req: Request, res: Response, next: NextFunction) => {
-  // Skip auth for login, register, and some public endpoints
-  if (req.path === '/api/login' || 
-      req.path === '/api/register' ||
-      req.path === '/api/lookup' ||
-      req.path.startsWith('/assets/')) {
-    return next();
-  }
+import { createAuthBypassMiddleware } from './auth-bypass';
+
+// Create the authentication middleware with configuration
+const skipForPublicPaths = createAuthBypassMiddleware({
+  // Allow bypassing authentication in production by default
+  // This will use ALLOW_INITIAL_SETUP env var if set
+  allowBypassInProduction: true,
   
-  // In development mode, bypass authentication and create a mock user
-  if (process.env.NODE_ENV !== 'production' && !req.isAuthenticated()) {
-    console.log('⚠️ Main auth middleware: Authentication bypassed for development');
-    
-    // Create a mock admin user for the request
-    req.user = {
-      id: 999,
-      username: 'dev-admin',
-      email: 'dev@example.com',
-      fullName: 'Development Admin',
-      role: 'admin',
-      created_at: new Date(),
-      updated_at: new Date()
-    } as Express.User;
-    
-    return next();
-  }
-  
-  // For production, check if authenticated with passport
-  if (process.env.NODE_ENV === 'production' && !req.isAuthenticated()) {
-    // Special case - if we're in production but this is the first deployment,
-    // create a temporary bypass to allow initial setup
-    if (process.env.ALLOW_INITIAL_SETUP === 'true') {
-      console.log('⚠️ Production auth bypass enabled for initial setup');
-      
-      req.user = {
-        id: 999,
-        username: 'setup-admin',
-        email: 'admin@example.com',
-        fullName: 'Setup Admin',
-        role: 'admin',
-        created_at: new Date(),
-        updated_at: new Date()
-      } as Express.User;
-      
-      return next();
-    }
-    
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Authentication required' 
-    });
-  }
-  
-  return next();
-};
+  // Define public routes that don't need auth
+  publicRoutes: [
+    '/api/login',
+    '/api/register',
+    '/api/lookup',
+    '/api/auth/microsoft/status',
+    '/assets/',
+    '/api/user'  // Allow unauthenticated user checks
+  ]
+});
 
 // Apply authentication middleware to protect API routes
 app.use('/api', skipForPublicPaths);

@@ -5,15 +5,19 @@
  * It sets production environment variables and launches the application.
  */
 
+// Set environment variables specific to production
 process.env.NODE_ENV = 'production';
 
-// If this is the first deployment, enable the setup bypass
-// for initial admin user creation
-if (!process.env.DISABLE_INITIAL_SETUP) {
-  console.log('Initial setup mode enabled for first deployment');
-  process.env.ALLOW_INITIAL_SETUP = 'true';
-}
+// Enable auth bypass for initial deployment
+process.env.ALLOW_INITIAL_SETUP = 'true';
 
-// Start the server
-console.log('Starting application in production mode...');
-require('./server/index.js');
+// Log startup info
+console.log('Starting Azure application...');
+console.log(`Environment: ${process.env.NODE_ENV}`);
+console.log(`Auth bypass: ${process.env.ALLOW_INITIAL_SETUP}`);
+
+// Start the application using production build
+import('./dist/index.js').catch(err => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});
