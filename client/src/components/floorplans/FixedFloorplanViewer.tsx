@@ -785,77 +785,167 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       
       console.log("Starting export process");
       
-      // Store original scale
-      const originalScale = pdfScale;
+      // For an improved approach, we'll load the original PDF document and draw markers on top of it
+      const originalPdfBytes = Uint8Array.from(atob(selectedFloorplan.pdf_data), c => c.charCodeAt(0));
       
-      // Set to scale 1 for consistent export
-      setPdfScale(1.0);
+      // Load the original PDF
+      const pdfDoc = await PDFDocument.load(originalPdfBytes);
+      const pages = pdfDoc.getPages();
       
-      // Wait for scale change to take effect
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Find the PDF container that contains both the PDF and markers
-      const pdfContainer = containerRef.current.querySelector('.pdf-container-with-markers') as HTMLElement;
-      if (!pdfContainer) {
-        throw new Error('PDF container not found');
+      if (pages.length === 0) {
+        throw new Error('PDF has no pages');
       }
       
-      console.log("PDF container found, dimensions:", pdfContainer.offsetWidth, "x", pdfContainer.offsetHeight);
+      // We'll draw markers on the first page
+      const page = pages[0];
+      const { width: pageWidth, height: pageHeight } = page.getSize();
       
-      // Force a layout calculation to ensure all elements are positioned correctly
-      window.getComputedStyle(pdfContainer).getPropertyValue('transform');
+      // For each marker, calculate its position relative to the page dimensions
+      const markersForPage = (markers as FloorplanMarker[]).filter(marker => marker.page === 1);
       
-      // Enhanced approach with improved capture settings
-      const canvasOptions = {
-        scale: 2, // Higher quality
-        logging: true, // Enable logging for debugging
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#FFFFFF',
-        // These options help with rendering complex elements
-        foreignObjectRendering: false,
-        removeContainer: false,
-        ignoreElements: (element: Element) => {
-          // Exclude elements that shouldn't be captured
-          return element.classList.contains('exclude-from-capture');
-        }
+      // Define colors for markers
+      const markerColorRgb = {
+        'access_point': { r: 1, g: 0.3, b: 0.3 }, // Red
+        'camera': { r: 0.1, g: 0.56, b: 1 },      // Blue
+        'elevator': { r: 0.45, g: 0.18, b: 0.82 }, // Purple
+        'intercom': { r: 0.08, g: 0.76, b: 0.76 }, // Teal
+        'note': { r: 0.98, g: 0.68, b: 0.08 }     // Yellow/Orange
       };
       
-      console.log("Preparing to capture PDF container...");
-      
-      // Capture the container with all its contents
-      const canvas = await html2canvas(pdfContainer, canvasOptions);
-      
-      console.log("Canvas captured, dimensions:", canvas.width, "x", canvas.height);
-      
-      if (canvas.width === 0 || canvas.height === 0) {
-        throw new Error('Canvas capture failed - zero dimensions');
+      for (const marker of markersForPage) {
+        if (marker.marker_type === 'note') {
+          // For notes, draw a yellow rectangle with the label text
+          page.drawRectangle({
+            x: (marker.position_x / 100) * pageWidth - 50,
+            y: pageHeight - (marker.position_y / 100) * pageHeight - 25, // Flip Y coordinate for PDF
+            width: 100,
+            height: 50,
+            borderColor: { r: 1, g: 0, b: 0 },
+            borderWidth: 2,
+            color: { r: 1, g: 1, b: 0, a: 0.7 },
+          });
+          
+          // Draw the note text
+          page.drawText(marker.label || 'Note', {
+            x: (marker.position_x / 100) * pageWidth - 40,
+            y: pageHeight - (marker.position_y / 100) * pageHeight - 10,
+            size: 10,
+            color: { r: 1, g: 0, b: 0 },
+          });
+        } else {
+          // For equipment markers, draw a colored circle with number
+          const color = markerColorRgb[marker.marker_type as keyof typeof markerColorRgb];
+          
+          // Draw colored circle
+          page.drawCircle({
+            x: (marker.position_x / 100) * pageWidth,
+            y: pageHeight - (marker.position_y / 100) * pageHeight, // Flip Y coordinate for PDF
+            size: 12,
+            color,
+            borderColor: { r: 1, g: 1, b: 1 },
+            borderWidth: 1,
+          });
+          
+          // Calculate marker number based on type
+          const sameTypeMarkers = (markers as FloorplanMarker[])
+            .filter(m => m.marker_type === marker.marker_type)
+            .sort((a, b) => a.id - b.id);
+          const markerTypeNumber = sameTypeMarkers.findIndex(m => m.id === marker.id) + 1;
+          
+          // Draw marker number
+          page.drawText(markerTypeNumber.toString(), {
+            x: (marker.position_x / 100) * pageWidth - 4,
+            y: pageHeight - (marker.position_y / 100) * pageHeight - 4,
+            size: 8,
+            color: { r: 1, g: 1, b: 1 },
+          });
+        }
       }
       
-      // Get the canvas data
-      const imageData = canvas.toDataURL('image/png');
+      // Add a legend to the bottom of the page
+      const legendY = 30;
+      const legendX = 50;
+      const legendSpacing = 80;
       
-      console.log("Converting to PDF...");
+      // Draw legend title
+      page.drawText("Legend:", {
+        x: 30,
+        y: legendY + 15,
+        size: 10,
+        color: { r: 0, g: 0, b: 0 },
+      });
       
-      // Create a new PDF document
-      const pdfDoc = await PDFDocument.create();
+      // Draw access point legend
+      page.drawCircle({
+        x: legendX,
+        y: legendY,
+        size: 6,
+        color: markerColorRgb['access_point'],
+      });
+      page.drawText(`Access Points (${(markers as FloorplanMarker[]).filter(m => m.marker_type === 'access_point').length})`, {
+        x: legendX + 10,
+        y: legendY - 3,
+        size: 8,
+        color: { r: 0, g: 0, b: 0 },
+      });
       
-      // Embed the image in the PDF
-      const pngImage = await pdfDoc.embedPng(imageData);
+      // Draw camera legend
+      page.drawCircle({
+        x: legendX + legendSpacing,
+        y: legendY,
+        size: 6,
+        color: markerColorRgb['camera'],
+      });
+      page.drawText(`Cameras (${(markers as FloorplanMarker[]).filter(m => m.marker_type === 'camera').length})`, {
+        x: legendX + legendSpacing + 10,
+        y: legendY - 3,
+        size: 8,
+        color: { r: 0, g: 0, b: 0 },
+      });
       
-      // Calculate page dimensions to match the image aspect ratio
-      const pageWidth = 612; // Standard letter width in points (8.5 x 72)
-      const pageHeight = (pageWidth / pngImage.width) * pngImage.height;
+      // Draw elevator legend
+      page.drawCircle({
+        x: legendX + legendSpacing * 2,
+        y: legendY,
+        size: 6,
+        color: markerColorRgb['elevator'],
+      });
+      page.drawText(`Elevators (${(markers as FloorplanMarker[]).filter(m => m.marker_type === 'elevator').length})`, {
+        x: legendX + legendSpacing * 2 + 10,
+        y: legendY - 3,
+        size: 8,
+        color: { r: 0, g: 0, b: 0 },
+      });
       
-      // Add a page with the calculated dimensions
-      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      // Draw intercom legend
+      page.drawCircle({
+        x: legendX + legendSpacing * 3,
+        y: legendY,
+        size: 6,
+        color: markerColorRgb['intercom'],
+      });
+      page.drawText(`Intercoms (${(markers as FloorplanMarker[]).filter(m => m.marker_type === 'intercom').length})`, {
+        x: legendX + legendSpacing * 3 + 10,
+        y: legendY - 3,
+        size: 8,
+        color: { r: 0, g: 0, b: 0 },
+      });
       
-      // Draw the image on the page to fill it completely
-      page.drawImage(pngImage, {
-        x: 0,
-        y: 0,
-        width: pageWidth,
-        height: pageHeight,
+      // Draw note legend
+      page.drawRectangle({
+        x: legendX + legendSpacing * 4,
+        y: legendY - 6,
+        width: 12,
+        height: 12,
+        color: { r: 1, g: 1, b: 0, a: 0.7 },
+        borderColor: { r: 1, g: 0, b: 0 },
+        borderWidth: 1,
+      });
+      page.drawText(`Notes (${(markers as FloorplanMarker[]).filter(m => m.marker_type === 'note').length})`, {
+        x: legendX + legendSpacing * 4 + 15,
+        y: legendY - 3,
+        size: 8,
+        color: { r: 0, g: 0, b: 0 },
       });
       
       // Save the PDF
@@ -880,9 +970,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // Clean up URL
       URL.revokeObjectURL(url);
       
-      // Reset to original scale
-      setPdfScale(originalScale);
-      
       toast({
         title: "Success",
         description: "Floorplan with markers exported successfully",
@@ -894,9 +981,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: error instanceof Error ? error.message : 'Unknown error occurred',
         variant: "destructive",
       });
-      
-      // Reset zoom to default scale if error occurs
-      setPdfScale(1.0);
     }
   };
   
