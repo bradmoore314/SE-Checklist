@@ -1378,6 +1378,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Add PATCH endpoint for updating marker positions
+  app.patch("/api/floorplan-markers/:id", async (req: Request, res: Response) => {
+    console.log(`PATCH updating marker ID ${req.params.id} with position data:`, req.body);
+    const markerId = parseInt(req.params.id);
+    if (isNaN(markerId)) {
+      return res.status(400).json({ message: "Invalid marker ID" });
+    }
+
+    try {
+      // This is used primarily for position updates, which are just x/y coordinates
+      const { position_x, position_y } = req.body;
+      
+      if (position_x === undefined && position_y === undefined) {
+        return res.status(400).json({ 
+          message: "Invalid marker data: At least one of position_x or position_y must be provided"
+        });
+      }
+      
+      // Create the update object with only the fields that were provided
+      const updateData: Partial<InsertFloorplanMarker> = {};
+      if (position_x !== undefined) updateData.position_x = position_x;
+      if (position_y !== undefined) updateData.position_y = position_y;
+      
+      const marker = await storage.updateFloorplanMarker(markerId, updateData);
+      if (!marker) {
+        return res.status(404).json({ message: "Marker not found" });
+      }
+
+      res.json(marker);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to update marker position",
+        error: (error as Error).message
+      });
+    }
+  });
 
   app.delete("/api/floorplan-markers/:id", async (req: Request, res: Response) => {
     console.log(`Deleting marker ID: ${req.params.id}`);
