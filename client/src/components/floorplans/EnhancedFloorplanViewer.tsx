@@ -756,14 +756,24 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
             }}
           >
             {pdfBlobUrl ? (
-              <object
-                data={pdfBlobUrl}
-                type="application/pdf"
-                className="w-full h-auto"
-                style={{ pointerEvents: isAddingMarker ? 'none' : 'auto' }}
-              >
-                <p>Unable to display PDF. Please download it to view.</p>
-              </object>
+              <div className="relative">
+                <iframe
+                  src={pdfBlobUrl}
+                  className="w-full"
+                  style={{ 
+                    height: '800px',
+                    pointerEvents: isAddingMarker ? 'none' : 'auto' 
+                  }}
+                  title="Floorplan PDF"
+                />
+                {/* Overlay div to catch clicks when in marker adding mode */}
+                {isAddingMarker && (
+                  <div 
+                    className="absolute inset-0" 
+                    style={{ backgroundColor: 'transparent' }}
+                  />
+                )}
+              </div>
             ) : (
               <div className="flex justify-center items-center h-64">
                 <Loader2 className="h-8 w-8 animate-spin" />
