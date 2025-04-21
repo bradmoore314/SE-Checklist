@@ -99,7 +99,7 @@ export default function AddElevatorModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open || isOpen} onOpenChange={onOpenChange || onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">
@@ -210,7 +210,7 @@ export default function AddElevatorModal({
               <Button
                 type="button"
                 variant="outline"
-                onClick={onClose}
+                onClick={onCancel || onClose || (() => onOpenChange?.(false))}
                 className="mr-2"
               >
                 Cancel
