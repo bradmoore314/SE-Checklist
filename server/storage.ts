@@ -655,9 +655,8 @@ export class MemStorage implements IStorage {
       id,
       project_id: insertFloorplan.project_id,
       name: insertFloorplan.name,
-      floor_number: insertFloorplan.floor_number ?? null,
-      image_data: insertFloorplan.image_data,
-      original_filename: insertFloorplan.original_filename ?? null,
+      pdf_data: insertFloorplan.pdf_data,
+      page_count: insertFloorplan.page_count ?? 1,
       created_at: now,
       updated_at: now
     };
@@ -705,14 +704,13 @@ export class MemStorage implements IStorage {
     const marker: FloorplanMarker = {
       id,
       floorplan_id: insertMarker.floorplan_id,
-      equipment_id: insertMarker.equipment_id,
-      equipment_type: insertMarker.equipment_type,
+      page: insertMarker.page ?? 1,
       marker_type: insertMarker.marker_type,
+      equipment_id: insertMarker.equipment_id,
       position_x: insertMarker.position_x,
       position_y: insertMarker.position_y,
-      notes: insertMarker.notes ?? null,
-      created_at: now,
-      updated_at: now
+      label: insertMarker.label ?? null,
+      created_at: now
     };
     
     this.floorplanMarkers.set(id, marker);
@@ -727,8 +725,7 @@ export class MemStorage implements IStorage {
     
     const updatedMarker: FloorplanMarker = { 
       ...marker, 
-      ...updateMarker, 
-      updated_at: new Date() 
+      ...updateMarker 
     };
     
     this.floorplanMarkers.set(id, updatedMarker);
