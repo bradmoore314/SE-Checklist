@@ -136,6 +136,13 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
   const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
   const [markerSize, setMarkerSize] = useState<Record<number, {width: number, height: number}>>({});
   
+  // State for equipment-specific modals
+  const [showAccessPointModal, setShowAccessPointModal] = useState(false);
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const [showElevatorModal, setShowElevatorModal] = useState(false);
+  const [showIntercomModal, setShowIntercomModal] = useState(false);
+  const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+  
   // Fetch floorplans for this project
   const { 
     data: floorplans = [], 
@@ -456,7 +463,22 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
     const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
     
     setNewMarkerPosition({ x, y });
-    setMarkerDialogOpen(true);
+    
+    // Open the appropriate modal based on the marker type
+    if (markerType === 'access_point') {
+      setShowAccessPointModal(true);
+    } else if (markerType === 'camera') {
+      setShowCameraModal(true);
+    } else if (markerType === 'elevator') {
+      setShowElevatorModal(true);
+    } else if (markerType === 'intercom') {
+      setShowIntercomModal(true);
+    } else if (markerType === 'note') {
+      setNoteDialogOpen(true);
+    } else {
+      // Fallback to the generic marker dialog for any other type
+      setMarkerDialogOpen(true);
+    }
   };
   
   // Handle marker drag
@@ -900,13 +922,13 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
         </div>
       )}
       
-      {/* New Marker Dialog */}
+      {/* Marker Type Selection Dialog */}
       <Dialog open={markerDialogOpen} onOpenChange={setMarkerDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Marker</DialogTitle>
             <DialogDescription>
-              Create a new marker at the selected location.
+              Choose the type of equipment to add at this location.
             </DialogDescription>
           </DialogHeader>
           
@@ -943,12 +965,57 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
                 </TabsList>
               </Tabs>
             </div>
-            
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setMarkerDialogOpen(false);
+                setNewMarkerPosition(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                setMarkerDialogOpen(false);
+                // Open the appropriate modal based on the selected type
+                if (markerType === 'access_point') {
+                  setShowAccessPointModal(true);
+                } else if (markerType === 'camera') {
+                  setShowCameraModal(true);
+                } else if (markerType === 'elevator') {
+                  setShowElevatorModal(true);
+                } else if (markerType === 'intercom') {
+                  setShowIntercomModal(true);
+                } else if (markerType === 'note') {
+                  setNoteDialogOpen(true);
+                }
+              }}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Note Marker Dialog */}
+      <Dialog open={noteDialogOpen} onOpenChange={setNoteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Note Marker</DialogTitle>
+            <DialogDescription>
+              Add a note or label to the floorplan at this location.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="marker-label">Label (Optional)</Label>
+              <Label htmlFor="note-label">Note Label</Label>
               <Input
-                id="marker-label"
-                placeholder="e.g., Main Entrance, Elevator #1"
+                id="note-label"
+                placeholder="e.g., Emergency Exit, Storage Room"
                 value={markerLabel}
                 onChange={(e) => setMarkerLabel(e.target.value)}
               />
@@ -959,15 +1026,29 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
             <Button 
               variant="outline" 
               onClick={() => {
-                setMarkerDialogOpen(false);
-                setMarkerLabel('');
+                setNoteDialogOpen(false);
+                setNewMarkerPosition(null);
               }}
             >
               Cancel
             </Button>
             <Button 
-              onClick={handleAddMarker} 
-              disabled={createMarkerMutation.isPending}
+              onClick={() => {
+                if (!selectedFloorplanId || !newMarkerPosition) return;
+                
+                createMarkerMutation.mutate({
+                  floorplan_id: selectedFloorplanId,
+                  page: 1, // Default to first page
+                  marker_type: 'note',
+                  equipment_id: -1, // Notes don't have associated equipment
+                  position_x: newMarkerPosition.x,
+                  position_y: newMarkerPosition.y,
+                  label: markerLabel || 'Note'
+                });
+                
+                setNoteDialogOpen(false);
+              }}
+              disabled={createMarkerMutation.isPending || !markerLabel}
             >
               {createMarkerMutation.isPending ? (
                 <>
@@ -975,12 +1056,121 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
                   Adding...
                 </>
               ) : (
-                'Add Marker'
+                'Add Note'
               )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Equipment-specific Modals */}
+      {/* Access Point Modal */}
+      {showAccessPointModal && newMarkerPosition && selectedFloorplan && (
+        <AddAccessPointModal
+          isOpen={showAccessPointModal}
+          projectId={projectId}
+          onSave={(accessPoint) => {
+            // Create a marker that points to this new access point
+            createMarkerMutation.mutate({
+              floorplan_id: selectedFloorplan.id,
+              page: 1, // Default to first page
+              marker_type: 'access_point',
+              equipment_id: accessPoint.id,
+              position_x: newMarkerPosition.x,
+              position_y: newMarkerPosition.y,
+              label: accessPoint.location
+            });
+            
+            setShowAccessPointModal(false);
+            setNewMarkerPosition(null);
+          }}
+          onClose={() => {
+            setShowAccessPointModal(false);
+            setNewMarkerPosition(null);
+          }}
+        />
+      )}
+      
+      {/* Camera Modal */}
+      {showCameraModal && newMarkerPosition && selectedFloorplan && (
+        <AddCameraModal
+          isOpen={showCameraModal}
+          projectId={projectId}
+          onSave={(camera) => {
+            // Create a marker that points to this new camera
+            createMarkerMutation.mutate({
+              floorplan_id: selectedFloorplan.id,
+              page: 1, // Default to first page
+              marker_type: 'camera',
+              equipment_id: camera.id,
+              position_x: newMarkerPosition.x,
+              position_y: newMarkerPosition.y,
+              label: camera.location
+            });
+            
+            setShowCameraModal(false);
+            setNewMarkerPosition(null);
+          }}
+          onClose={() => {
+            setShowCameraModal(false);
+            setNewMarkerPosition(null);
+          }}
+        />
+      )}
+      
+      {/* Elevator Modal */}
+      {showElevatorModal && newMarkerPosition && selectedFloorplan && (
+        <AddElevatorModal
+          isOpen={showElevatorModal}
+          projectId={projectId}
+          onSave={(elevator) => {
+            // Create a marker that points to this new elevator
+            createMarkerMutation.mutate({
+              floorplan_id: selectedFloorplan.id,
+              page: 1, // Default to first page
+              marker_type: 'elevator',
+              equipment_id: elevator.id,
+              position_x: newMarkerPosition.x,
+              position_y: newMarkerPosition.y,
+              label: elevator.location
+            });
+            
+            setShowElevatorModal(false);
+            setNewMarkerPosition(null);
+          }}
+          onClose={() => {
+            setShowElevatorModal(false);
+            setNewMarkerPosition(null);
+          }}
+        />
+      )}
+      
+      {/* Intercom Modal */}
+      {showIntercomModal && newMarkerPosition && selectedFloorplan && (
+        <AddIntercomModal
+          isOpen={showIntercomModal}
+          projectId={projectId}
+          onSave={(intercom) => {
+            // Create a marker that points to this new intercom
+            createMarkerMutation.mutate({
+              floorplan_id: selectedFloorplan.id,
+              page: 1, // Default to first page
+              marker_type: 'intercom',
+              equipment_id: intercom.id,
+              position_x: newMarkerPosition.x,
+              position_y: newMarkerPosition.y,
+              label: intercom.location
+            });
+            
+            setShowIntercomModal(false);
+            setNewMarkerPosition(null);
+          }}
+          onClose={() => {
+            setShowIntercomModal(false);
+            setNewMarkerPosition(null);
+          }}
+        />
+      )}
     </div>
   );
 };
