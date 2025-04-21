@@ -67,11 +67,44 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   const [viewerMode, setViewerMode] = useState<'select' | 'add_access_point' | 'add_camera'>('select');
   
   // Fetch floorplans for this project
-  const { data: floorplans = [], isLoading: isLoadingFloorplans } = useQuery<Floorplan[]>({
+  const { data: floorplans = [], isLoading: isLoadingFloorplans, refetch: refetchFloorplans } = useQuery<Floorplan[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
       return await res.json();
+    },
+  });
+  
+  // Mutation for deleting floorplans
+  const deleteFloorplanMutation = useMutation({
+    mutationFn: async (floorplanId: number) => {
+      await apiRequest('DELETE', `/api/floorplans/${floorplanId}`);
+    },
+    onSuccess: () => {
+      // Clear selected floorplan if it was deleted
+      setSelectedFloorplan(null);
+      
+      // Clear PDF blob URL
+      if (pdfBlobUrl) {
+        URL.revokeObjectURL(pdfBlobUrl);
+        setPdfBlobUrl(null);
+      }
+      
+      // Refetch floorplans
+      refetchFloorplans();
+      
+      toast({
+        title: "Success",
+        description: "Floorplan deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Error deleting floorplan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete floorplan",
+        variant: "destructive",
+      });
     },
   });
   
@@ -833,23 +866,45 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                 />
               </div>
               
-              <Button 
-                onClick={handleUploadFloorplan} 
-                disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
-                className="w-full h-8 text-xs"
-              >
-                {uploadFloorplanMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-3 w-3 mr-2" />
-                    Upload Floorplan
-                  </>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleUploadFloorplan} 
+                  disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
+                  className="flex-1 h-8 text-xs"
+                >
+                  {uploadFloorplanMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-3 w-3 mr-2" />
+                      Upload Floorplan
+                    </>
+                  )}
+                </Button>
+                
+                {selectedFloorplan && (
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete the "${selectedFloorplan.name}" floorplan? This cannot be undone.`)) {
+                        deleteFloorplanMutation.mutate(selectedFloorplan.id);
+                      }
+                    }}
+                    disabled={deleteFloorplanMutation.isPending}
+                    className="h-8 text-xs"
+                  >
+                    {deleteFloorplanMutation.isPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      "Delete"
+                    )}
+                  </Button>
                 )}
-              </Button>
+              </div>
             </div>
           </div>
           
