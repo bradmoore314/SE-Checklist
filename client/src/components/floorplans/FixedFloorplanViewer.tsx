@@ -860,8 +860,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const getMarkerColor = (type: string) => {
     switch (type) {
       case 'access_point':
-        // Teal
-        return '#14b8a6';
+        // Red
+        return '#ef4444';
       case 'camera':
         // Blue
         return '#3b82f6';
@@ -1485,6 +1485,33 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               >
                                 <Edit className="mr-2 h-4 w-4" />
                                 <span>Edit</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  // Duplicate marker at a slightly offset position
+                                  if (selectedFloorplan) {
+                                    const offsetX = marker.position_x + 20;
+                                    const offsetY = marker.position_y + 20;
+                                    
+                                    createMarkerMutation.mutate({
+                                      floorplan_id: selectedFloorplan.id,
+                                      page: marker.page,
+                                      marker_type: marker.marker_type,
+                                      equipment_id: marker.equipment_id,
+                                      position_x: offsetX,
+                                      position_y: offsetY,
+                                      label: marker.label
+                                    });
+                                    
+                                    toast({
+                                      title: "Marker Duplicated",
+                                      description: "Created a copy with slight offset"
+                                    });
+                                  }
+                                }}
+                              >
+                                <Copy className="mr-2 h-4 w-4" />
+                                <span>Duplicate</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 className="text-red-500"
