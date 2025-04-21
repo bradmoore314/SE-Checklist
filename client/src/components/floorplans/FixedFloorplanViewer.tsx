@@ -76,9 +76,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { Document, Page, pdfjs } from 'react-pdf';
-// Import our local worker wrapper
-import '@/lib/pdf-worker';
+import { Document, Page } from 'react-pdf';
+// Configure PDF.js worker directly here to ensure version compatibility
+import { pdfjs } from 'react-pdf';
+// Use local worker - this prevents CORS issues
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 // Import the equipment-specific modals
 import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
@@ -573,6 +575,16 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     if (selectedFloorplan && selectedFloorplan.page_count !== numPages) {
       console.log(`Updating page count from ${selectedFloorplan.page_count} to ${numPages}`);
     }
+  };
+  
+  // Handle PDF document load error
+  const handleDocumentLoadError = (error: Error) => {
+    console.error('PDF document load error:', error);
+    toast({
+      title: "Error Loading PDF",
+      description: `${error.message}. Check console for details.`,
+      variant: "destructive",
+    });
   };
   
   // Handle marker placement on PDF
@@ -1322,6 +1334,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                       <Document
                         file={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`}
                         onLoadSuccess={handleDocumentLoadSuccess}
+                        onLoadError={handleDocumentLoadError}
                         loading={
                           <div className="flex flex-col items-center justify-center p-8">
                             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
