@@ -130,7 +130,9 @@ export default function AddAccessPointModal({
       setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/access-points", values);
       const accessPoint = await response.json();
-      onSave(accessPoint);
+      // Extract just the ID from the created access point before passing it back
+      onSave(accessPoint.id);
+      console.log('Created access point with ID:', accessPoint.id);
     } catch (error) {
       console.error("Failed to create access point:", error);
     } finally {

@@ -82,7 +82,9 @@ export default function AddElevatorModal({
       setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/elevators", values);
       const elevator = await response.json();
-      onSave(elevator);
+      // Extract just the ID from the created elevator before passing it back
+      onSave(elevator.id);
+      console.log('Created elevator with ID:', elevator.id);
     } catch (error) {
       console.error("Failed to create elevator:", error);
     } finally {

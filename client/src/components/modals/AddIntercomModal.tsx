@@ -77,7 +77,9 @@ export default function AddIntercomModal({
       setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/intercoms", values);
       const intercom = await response.json();
-      onSave(intercom);
+      // Extract just the ID from the created intercom before passing it back
+      onSave(intercom.id);
+      console.log('Created intercom with ID:', intercom.id);
     } catch (error) {
       console.error("Failed to create intercom:", error);
     } finally {

@@ -83,7 +83,9 @@ export default function AddCameraModal({
       setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/cameras", values);
       const camera = await response.json();
-      onSave(camera);
+      // Extract just the ID from the created camera before passing it back
+      onSave(camera.id);
+      console.log('Created camera with ID:', camera.id);
     } catch (error) {
       console.error("Failed to create camera:", error);
     } finally {
