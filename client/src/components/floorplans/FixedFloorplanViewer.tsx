@@ -820,27 +820,53 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: "Generating PDF with markers...",
       });
       
-      // Reset zoom to 100% for consistent export
+      // Store original scale and set a temporary zoom level for export
       const originalScale = pdfScale;
-      setPdfScale(1.0);
       
-      // Wait for the state update to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Find the container with markers
-      const pdfContainer = containerRef.current.querySelector('#pdf-container');
+      // First pause any ongoing animations or transitions
+      const pdfContainer = containerRef.current.querySelector('#pdf-container') as HTMLElement;
       if (!pdfContainer) {
         throw new Error('PDF container not found');
       }
       
-      // Use html2canvas to capture the container with markers
-      const canvas = await html2canvas(pdfContainer as HTMLElement, {
+      // Temporarily set styles for consistent export
+      const originalStyles = {
+        transform: pdfContainer.style.transform,
+        transition: pdfContainer.style.transition,
+        transformOrigin: pdfContainer.style.transformOrigin,
+      };
+      
+      // Set to scale 1 for the export
+      setPdfScale(1.0);
+      pdfContainer.style.transition = 'none';
+      
+      // Create a temporary container for holding both floorplan and markers
+      const exportContainer = document.createElement('div');
+      exportContainer.style.position = 'absolute';
+      exportContainer.style.left = '-9999px';
+      exportContainer.style.top = '-9999px';
+      exportContainer.style.width = pdfContainer.offsetWidth + 'px';
+      exportContainer.style.height = pdfContainer.offsetHeight + 'px';
+      exportContainer.style.overflow = 'hidden';
+      document.body.appendChild(exportContainer);
+      
+      // Clone the content to this offscreen container
+      exportContainer.innerHTML = pdfContainer.outerHTML;
+      
+      // Wait for rendering
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Use html2canvas to capture the combined content
+      const canvas = await html2canvas(exportContainer, {
         scale: 2, // Higher quality
         logging: false,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#FFFFFF',
       });
+      
+      // Clean up the temporary container
+      document.body.removeChild(exportContainer);
       
       // Get the canvas data
       const imageData = canvas.toDataURL('image/png');
@@ -1182,7 +1208,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                 {/* Markers Layer - Positioned absolutely over the PDF */}
                 <div className="absolute inset-0 z-20" style={{ 
                   // This ensures markers scale with the PDF
-                  // We apply the inverse scale to markers so they appear at correct size
+                  // Use the same scale as the PDF to ensure markers move properly with zooming
+                  transform: `scale(${pdfScale})`,
                   transformOrigin: 'top left'
                 }}>
                   {/* Render markers inside the PDF container */}
@@ -1238,13 +1265,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               Delete
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => {
+                              // Create a duplicate note marker at a slight offset but keep the original in place
                               createMarkerMutation.mutate({
                                 floorplan_id: marker.floorplan_id,
                                 page: marker.page,
                                 marker_type: marker.marker_type,
                                 equipment_id: -1, // Notes don't have associated equipment
-                                position_x: Math.min(100, marker.position_x + 2),
-                                position_y: Math.min(100, marker.position_y + 2),
+                                position_x: Math.min(100, marker.position_x + 5), // Offset by 5% instead of 2%
+                                position_y: Math.min(100, marker.position_y + 5), // Offset by 5% instead of 2%
                                 label: marker.label ? `${marker.label} (Copy)` : null
                               });
                             }}>
@@ -1332,14 +1360,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               Delete
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => {
-                              // Duplicate marker logic
+                              // Create a duplicate equipment marker at a slight offset but keep the original in place
                               createMarkerMutation.mutate({
                                 floorplan_id: marker.floorplan_id,
                                 page: marker.page,
                                 marker_type: marker.marker_type,
                                 equipment_id: marker.equipment_id,
-                                position_x: Math.min(100, marker.position_x + 2),
-                                position_y: Math.min(100, marker.position_y + 2),
+                                position_x: Math.min(100, marker.position_x + 5), // Offset by 5% instead of 2%
+                                position_y: Math.min(100, marker.position_y + 5), // Offset by 5% instead of 2%
                                 label: marker.label ? `${marker.label} (Copy)` : null
                               });
                             }}>
