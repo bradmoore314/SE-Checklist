@@ -38,10 +38,13 @@ import {
 } from "@/components/ui/card";
 
 interface AddAccessPointModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
+  open?: boolean;
   projectId: number;
   onSave: (accessPoint: any) => void;
-  onClose: () => void;
+  onClose?: () => void;
+  onCancel?: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Create schema based on shared schema but with validation
@@ -83,9 +86,12 @@ type AccessPointFormValues = z.infer<typeof accessPointSchema>;
 
 export default function AddAccessPointModal({
   isOpen,
+  open,
   projectId,
   onSave,
   onClose,
+  onCancel,
+  onOpenChange,
 }: AddAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
@@ -147,7 +153,7 @@ export default function AddAccessPointModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open || isOpen} onOpenChange={onOpenChange || onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">
