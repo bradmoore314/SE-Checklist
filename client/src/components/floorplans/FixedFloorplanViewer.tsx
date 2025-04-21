@@ -828,33 +828,51 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // Set to scale 1 for consistent export
       setPdfScale(1.0);
       
-      // Wait for scale change to take effect - give it more time
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for scale change to take effect
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Find the PDF container
-      const pdfContainer = containerRef.current.querySelector('#pdf-container') as HTMLElement;
+      // Find the PDF container that contains both the PDF and markers
+      const pdfContainer = containerRef.current.querySelector('.pdf-container-with-markers') as HTMLElement;
       if (!pdfContainer) {
         throw new Error('PDF container not found');
       }
       
       console.log("PDF container found, dimensions:", pdfContainer.offsetWidth, "x", pdfContainer.offsetHeight);
       
-      // New simplified approach: Just capture what's already on screen
-      console.log("Directly capturing the visible PDF container with markers");
+      // Force a layout calculation to ensure all elements are positioned correctly
+      window.getComputedStyle(pdfContainer).getPropertyValue('transform');
       
-      // Capture the visible area directly
-      const canvas = await html2canvas(pdfContainer, {
+      // Enhanced approach with improved capture settings
+      const canvasOptions = {
         scale: 2, // Higher quality
         logging: true, // Enable logging for debugging
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#FFFFFF'
-      });
+        backgroundColor: '#FFFFFF',
+        // These options help with rendering complex elements
+        foreignObjectRendering: false,
+        removeContainer: false,
+        ignoreElements: (element: Element) => {
+          // Exclude elements that shouldn't be captured
+          return element.classList.contains('exclude-from-capture');
+        }
+      };
+      
+      console.log("Preparing to capture PDF container...");
+      
+      // Capture the container with all its contents
+      const canvas = await html2canvas(pdfContainer, canvasOptions);
       
       console.log("Canvas captured, dimensions:", canvas.width, "x", canvas.height);
       
+      if (canvas.width === 0 || canvas.height === 0) {
+        throw new Error('Canvas capture failed - zero dimensions');
+      }
+      
       // Get the canvas data
       const imageData = canvas.toDataURL('image/png');
+      
+      console.log("Converting to PDF...");
       
       // Create a new PDF document
       const pdfDoc = await PDFDocument.create();
@@ -862,19 +880,25 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // Embed the image in the PDF
       const pngImage = await pdfDoc.embedPng(imageData);
       
-      // Add a page with the same dimensions as the image
-      const page = pdfDoc.addPage([pngImage.width, pngImage.height]);
+      // Calculate page dimensions to match the image aspect ratio
+      const pageWidth = 612; // Standard letter width in points (8.5 x 72)
+      const pageHeight = (pageWidth / pngImage.width) * pngImage.height;
       
-      // Draw the image on the page
+      // Add a page with the calculated dimensions
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      
+      // Draw the image on the page to fill it completely
       page.drawImage(pngImage, {
         x: 0,
         y: 0,
-        width: pngImage.width,
-        height: pngImage.height,
+        width: pageWidth,
+        height: pageHeight,
       });
       
       // Save the PDF
       const pdfBytes = await pdfDoc.save();
+      
+      console.log("PDF created, size:", pdfBytes.length, "bytes");
       
       // Create a blob from the PDF bytes
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -908,7 +932,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         variant: "destructive",
       });
       
-      // Reset zoom
+      // Reset zoom to default scale if error occurs
       setPdfScale(1.0);
     }
   };
@@ -1150,7 +1174,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
             }}
           >
             {selectedFloorplan ? (
-              <div className="relative" id="pdf-container" style={{
+              <div className="relative pdf-container-with-markers" id="pdf-container" style={{
                   transform: `scale(${pdfScale})`,
                   transformOrigin: 'top left',
                   transition: 'transform 0.2s ease-out',
