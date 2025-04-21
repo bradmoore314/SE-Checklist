@@ -1,0 +1,23 @@
+/* PDF-specific styles */
+
+.pdf-page {
+  background-color: white !important;
+  filter: invert(0) !important;
+}
+
+.pdf-page canvas {
+  background-color: white !important;
+  filter: invert(0) !important;
+}
+
+/* Fix for potential inverted colors */
+.pdf-container canvas {
+  background-color: white !important;
+  filter: invert(0) !important;
+}
+
+/* Make sure the react-pdf Document component renders correctly */
+.react-pdf__Document {
+  display: inline-block;
+  background-color: white;
+}

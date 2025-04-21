@@ -1,8 +1,14 @@
-// This file explicitly sets up the PDF.js worker
+/**
+ * PDF.js Worker Configuration
+ * 
+ * This file handles the initialization of the PDF.js worker,
+ * ensuring consistent use across the application.
+ */
+
 import { pdfjs } from 'react-pdf';
 
-// Import the worker directly
-import 'pdfjs-dist/build/pdf.worker.entry';
+// Configure proper worker source - use CDN for reliability
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-console.log('PDF.js worker loaded successfully');
-console.log(`Using PDF.js version: ${pdfjs.version}`);
+// Export worker configuration - keeping as separate file for easier debugging
+export default pdfjs;

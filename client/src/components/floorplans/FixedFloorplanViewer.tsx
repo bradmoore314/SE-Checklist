@@ -77,10 +77,11 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Document, Page } from 'react-pdf';
-// Configure PDF.js worker directly here to ensure version compatibility
-import { pdfjs } from 'react-pdf';
-// Use local worker - this prevents CORS issues
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Import worker configuration from dedicated file
+import '@/lib/pdf-worker';
+
+// Import PDF-specific styles
+import '@/styles/pdf.css';
 
 // Import the equipment-specific modals
 import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
@@ -1327,7 +1328,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                     style={{
                       transform: `scale(${pdfScale})`,
                       transformOrigin: 'top left',
-                      position: 'relative'
+                      position: 'relative',
+                      background: 'white'
                     }}
                   >
                     {selectedFloorplan?.pdf_data ? (
@@ -1335,6 +1337,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         file={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`}
                         onLoadSuccess={handleDocumentLoadSuccess}
                         onLoadError={handleDocumentLoadError}
+                        className="react-pdf__Document bg-white"
+                        options={{
+                          cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
+                          cMapPacked: true,
+                          standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/'
+                        }}
                         loading={
                           <div className="flex flex-col items-center justify-center p-8">
                             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -1359,7 +1367,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                           renderTextLayer={false}
                           renderAnnotationLayer={false}
                           scale={pdfScale}
-                          canvasBackground="transparent"
+                          canvasBackground="white"
+                          className="pdf-page"
                         />
                       </Document>
                     ) : (
