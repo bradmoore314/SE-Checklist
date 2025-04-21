@@ -156,7 +156,7 @@ export default function AddElevatorModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.elevatorTypes.map((type: string) => (
+                          getLookupOptions("elevatorTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
