@@ -3,7 +3,7 @@ import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2, Layout, Map } from 'lucide-react';
-import EnhancedFloorplanViewer from '@/components/floorplans/EnhancedFloorplanViewer';
+import FixedFloorplanViewer from '@/components/floorplans/FixedFloorplanViewer';
 import { useProject } from '@/context/ProjectContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -103,7 +103,7 @@ const EnhancedFloorplansPage = () => {
       </div>
 
       <div className="rounded-lg border bg-card shadow-sm">
-        <EnhancedFloorplanViewer 
+        <FixedFloorplanViewer 
           projectId={projectId as number} 
           onMarkersUpdated={refreshEquipment}
         />
