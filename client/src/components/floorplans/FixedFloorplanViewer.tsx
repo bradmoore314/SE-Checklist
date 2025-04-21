@@ -77,8 +77,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Document, Page, pdfjs } from 'react-pdf';
-// Set up the worker for pdf.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// We'll set up the worker in the useEffect
 
 // Import the equipment-specific modals
 import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
@@ -299,8 +298,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     enabled: !!selectedFloorplan
   });
   
-  // We no longer need to create a blob URL since we're using the base64 data directly
-  // This helps avoid CORS issues with blob URLs
+  // Initialize the PDF.js worker
+  useEffect(() => {
+    // Set worker source using a CDN
+    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+  }, []);
+  
+  // Handle floorplan changes
   useEffect(() => {
     if (selectedFloorplan) {
       console.log('Selected floorplan changed:', selectedFloorplan.name);
