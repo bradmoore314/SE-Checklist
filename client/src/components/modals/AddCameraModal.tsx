@@ -33,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface AddCameraModalProps {
   isOpen: boolean;
   projectId: number;
-  onSave: () => void;
+  onSave: (camera: any) => void;
   onClose: () => void;
 }
 
@@ -81,8 +81,9 @@ export default function AddCameraModal({
   const onSubmit = async (values: CameraFormValues) => {
     try {
       setIsSubmitting(true);
-      await apiRequest("POST", "/api/cameras", values);
-      onSave();
+      const response = await apiRequest("POST", "/api/cameras", values);
+      const camera = await response.json();
+      onSave(camera);
     } catch (error) {
       console.error("Failed to create camera:", error);
     } finally {

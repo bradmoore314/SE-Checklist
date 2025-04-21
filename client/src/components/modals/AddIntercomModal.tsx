@@ -33,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface AddIntercomModalProps {
   isOpen: boolean;
   projectId: number;
-  onSave: () => void;
+  onSave: (intercom: any) => void;
   onClose: () => void;
 }
 
@@ -75,8 +75,9 @@ export default function AddIntercomModal({
   const onSubmit = async (values: IntercomFormValues) => {
     try {
       setIsSubmitting(true);
-      await apiRequest("POST", "/api/intercoms", values);
-      onSave();
+      const response = await apiRequest("POST", "/api/intercoms", values);
+      const intercom = await response.json();
+      onSave(intercom);
     } catch (error) {
       console.error("Failed to create intercom:", error);
     } finally {

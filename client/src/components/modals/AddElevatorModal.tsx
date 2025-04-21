@@ -33,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface AddElevatorModalProps {
   isOpen: boolean;
   projectId: number;
-  onSave: () => void;
+  onSave: (elevator: any) => void;
   onClose: () => void;
 }
 
@@ -80,8 +80,9 @@ export default function AddElevatorModal({
   const onSubmit = async (values: ElevatorFormValues) => {
     try {
       setIsSubmitting(true);
-      await apiRequest("POST", "/api/elevators", values);
-      onSave();
+      const response = await apiRequest("POST", "/api/elevators", values);
+      const elevator = await response.json();
+      onSave(elevator);
     } catch (error) {
       console.error("Failed to create elevator:", error);
     } finally {
