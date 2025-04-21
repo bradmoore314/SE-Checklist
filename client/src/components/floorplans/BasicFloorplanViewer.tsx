@@ -67,44 +67,11 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
   const [viewerMode, setViewerMode] = useState<'select' | 'add_access_point' | 'add_camera'>('select');
   
   // Fetch floorplans for this project
-  const { data: floorplans = [], isLoading: isLoadingFloorplans, refetch: refetchFloorplans } = useQuery<Floorplan[]>({
+  const { data: floorplans = [], isLoading: isLoadingFloorplans } = useQuery<Floorplan[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
       return await res.json();
-    },
-  });
-  
-  // Mutation for deleting floorplans
-  const deleteFloorplanMutation = useMutation({
-    mutationFn: async (floorplanId: number) => {
-      await apiRequest('DELETE', `/api/floorplans/${floorplanId}`);
-    },
-    onSuccess: () => {
-      // Clear selected floorplan if it was deleted
-      setSelectedFloorplan(null);
-      
-      // Clear PDF blob URL
-      if (pdfBlobUrl) {
-        URL.revokeObjectURL(pdfBlobUrl);
-        setPdfBlobUrl(null);
-      }
-      
-      // Refetch floorplans
-      refetchFloorplans();
-      
-      toast({
-        title: "Success",
-        description: "Floorplan deleted successfully",
-      });
-    },
-    onError: (error: Error) => {
-      console.error('Error deleting floorplan:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete floorplan",
-        variant: "destructive",
-      });
     },
   });
   
@@ -201,92 +168,57 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     },
   });
   
-  // Set default floorplan if available - with better dependency tracking to avoid infinite loops
+  // Set default floorplan if available
   useEffect(() => {
-    // Only set if we have floorplans but none selected
     if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
       setSelectedFloorplan(floorplans[0]);
     }
-  }, [floorplans.length > 0, selectedFloorplan === null]);
+  }, [floorplans, selectedFloorplan]);
 
   // Update markers when floorplanMarkers changes
   useEffect(() => {
     if (floorplanMarkers) {
       setMarkers(floorplanMarkers);
     }
-  }, [JSON.stringify(floorplanMarkers)]);
+  }, [floorplanMarkers]);
 
   // Convert base64 to blob URL for PDF display
   useEffect(() => {
-    // Skip if no floorplan or no pdf_data
-    if (!selectedFloorplan || !selectedFloorplan.pdf_data) {
-      setPdfBlobUrl(null);
-      return;
-    }
-    
-    // Reference selected floorplan id to prevent rerendering on each state update
-    const floorplanId = selectedFloorplan.id;
-    
-    try {
-      // Clean up previous blob URL
-      if (pdfBlobUrl) {
-        URL.revokeObjectURL(pdfBlobUrl);
-      }
-
-      // Add more debugging info
-      console.log('Processing PDF data, length:', selectedFloorplan.pdf_data.length);
-      
-      // Different approach for handling the PDF
+    if (selectedFloorplan) {
       try {
-        // Create a data URI for the PDF
-        // This is more reliable than creating a blob for some PDFs
-        const dataUri = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
-        console.log('Created data URI for PDF');
-        setPdfBlobUrl(dataUri);
-      } catch (err) {
-        console.error('Error creating data URI:', err);
-        
-        // Fall back to the blob approach
-        try {
-          // Decode the base64 string
-          const byteCharacters = atob(selectedFloorplan.pdf_data);
-          console.log('Decoded base64 string, length:', byteCharacters.length);
-          
-          const byteNumbers = new Array(byteCharacters.length);
-          
-          // Convert to byte array
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          
-          const byteArray = new Uint8Array(byteNumbers);
-          console.log('Created byte array, length:', byteArray.length);
-          
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          console.log('Created blob, size:', blob.size);
-          
-          // Create object URL from blob
-          const url = URL.createObjectURL(blob);
-          console.log('Created blob URL:', url);
-          setPdfBlobUrl(url);
-        } catch (blobErr) {
-          console.error('Error converting PDF data:', blobErr);
-          setPdfBlobUrl(null);
-          toast({
-            title: "Error",
-            description: "Failed to load PDF data. The uploaded file may be corrupted.",
-            variant: "destructive",
-          });
+        // Clean up previous blob URL
+        if (pdfBlobUrl) {
+          URL.revokeObjectURL(pdfBlobUrl);
         }
+
+        // Create data URL directly from the base64
+        const dataUrl = `data:application/pdf;base64,${selectedFloorplan.pdf_data}`;
+        
+        // For better browser compatibility, we'll still create a blob
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            setPdfBlobUrl(url);
+          })
+          .catch(err => {
+            console.error('Error fetching PDF data:', err);
+            setPdfBlobUrl(null);
+            toast({
+              title: "Error",
+              description: "Failed to load PDF data",
+              variant: "destructive",
+            });
+          });
+      } catch (err) {
+        console.error('Error creating blob URL:', err);
+        setPdfBlobUrl(null);
+        toast({
+          title: "Error",
+          description: "Failed to process PDF data",
+          variant: "destructive",
+        });
       }
-    } catch (err) {
-      console.error('Error creating blob URL:', err);
-      setPdfBlobUrl(null);
-      toast({
-        title: "Error",
-        description: "Failed to process PDF data",
-        variant: "destructive",
-      });
     }
     
     // Cleanup function
@@ -295,7 +227,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
         URL.revokeObjectURL(pdfBlobUrl);
       }
     };
-  }, [selectedFloorplan?.id]);
+  }, [selectedFloorplan]);
 
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -407,138 +339,104 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     e.stopPropagation();
   };
   
-  // Keep track of marker's current position during drag
-  const [dragPosition, setDragPosition] = useState<{ x: number, y: number } | null>(null);
-  
-  // This function has been optimized and moved into the mousemove handler in the useEffect
-  // We keep a stub here in case it's called elsewhere
+  // Handle marker drag
   const handleDrag = (e: React.MouseEvent) => {
-    // The actual drag logic is now handled in the mousemove event inside useEffect
-    // This prevents redundant state updates and improves performance
-  };
-  
-  // Save marker position when drag ends
-  const handleDragEnd = () => {
-    if (draggedMarker && dragPosition) {
-      // Find marker
-      const markerToUpdate = markers.find(m => m.id === draggedMarker);
-      
-      if (markerToUpdate) {
-        // Update marker position in database
-        apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, {
-          position_x: dragPosition.x,
-          position_y: dragPosition.y,
-          // Add these required fields
-          floorplan_id: markerToUpdate.floorplan_id,
-          page: markerToUpdate.page,
-          marker_type: markerToUpdate.marker_type,
-          equipment_id: markerToUpdate.equipment_id,
-          label: markerToUpdate.label
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to update marker position');
-          }
-          return response.json();
-        })
-        .catch(err => {
-          console.error('Error updating marker position:', err);
-          toast({
-            title: "Error",
-            description: "Failed to update marker position",
-            variant: "destructive",
-          });
-          
-          // Refresh markers to get back to the correct positions
-          queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+    if (!draggedMarker || !containerRef.current) return;
+    
+    // Prevent default browser behavior
+    e.preventDefault();
+    
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Calculate the new position as percentage
+    // Round to integer as the server expects integer values
+    const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+    const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+    
+    // Find marker
+    const markerToUpdate = markers.find(m => m.id === draggedMarker);
+    
+    if (markerToUpdate) {
+      // Update marker position directly
+      apiRequest('PUT', `/api/floorplan-markers/${draggedMarker}`, {
+        position_x: x,
+        position_y: y,
+        // Add these required fields
+        floorplan_id: markerToUpdate.floorplan_id,
+        page: markerToUpdate.page,
+        marker_type: markerToUpdate.marker_type,
+        equipment_id: markerToUpdate.equipment_id,
+        label: markerToUpdate.label
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to update marker position');
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Refresh markers
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      })
+      .catch(err => {
+        console.error('Error updating marker position:', err);
+        toast({
+          title: "Error",
+          description: "Failed to update marker position",
+          variant: "destructive",
         });
-      }
+      });
     }
     
-    // Reset states
+    // Reset dragged marker
     setDraggedMarker(null);
-    setDragPosition(null);
   };
   
-  // Setup event listeners for drag operations with performance optimizations
+  // Cancel drag operation
+  const handleDragEnd = () => {
+    setDraggedMarker(null);
+  };
+  
+  // Setup event listeners for drag operations
   useEffect(() => {
-    if (!draggedMarker) return;
-    
-    let animationFrameId: number | null = null;
-    let lastX = 0;
-    let lastY = 0;
-    
     const handleMouseMove = (e: MouseEvent) => {
-      if (!draggedMarker || !containerRef.current) return;
-      
-      const container = containerRef.current;
-      const rect = container.getBoundingClientRect();
-      
-      // Calculate the new position as percentage
-      // Round to integer as the server expects integer values
-      const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-      const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
-      
-      // Store the latest position
-      lastX = x;
-      lastY = y;
-      
-      // Use requestAnimationFrame for smoother updates (throttles updates to screen refresh rate)
-      if (animationFrameId === null) {
-        animationFrameId = window.requestAnimationFrame(() => {
-          // Update marker position in UI immediately for smooth movement
-          const markerElement = document.getElementById(`marker-${draggedMarker}`);
-          if (markerElement) {
-            markerElement.style.left = `${lastX}%`;
-            markerElement.style.top = `${lastY}%`;
-          }
-          
-          // Also update the dragPosition state for when we save
-          setDragPosition({ x: lastX, y: lastY });
-          
-          // Reset the animation frame ID
-          animationFrameId = null;
-        });
+      if (draggedMarker) {
+        const container = containerRef.current;
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        
+        // Calculate the new position as percentage
+        // Round to integer as the server expects integer values
+        const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+        const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+        
+        // Update marker position in UI immediately for smooth movement
+        const markerElement = document.getElementById(`marker-${draggedMarker}`);
+        if (markerElement) {
+          markerElement.style.left = `${x}%`;
+          markerElement.style.top = `${y}%`;
+        }
       }
     };
     
     const handleMouseUp = (e: MouseEvent) => {
       if (draggedMarker) {
-        // Cancel any pending animation frame
-        if (animationFrameId !== null) {
-          window.cancelAnimationFrame(animationFrameId);
-          animationFrameId = null;
-        }
-        
-        // First ensure the drag position is updated with the final position
-        const container = containerRef.current;
-        if (container) {
-          const rect = container.getBoundingClientRect();
-          const finalX = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-          const finalY = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
-          setDragPosition({ x: finalX, y: finalY });
-        }
-        
-        // Then finalize the drag operation and save to database
-        handleDragEnd();
+        handleDrag(e as unknown as React.MouseEvent);
       }
     };
     
-    // Add event listeners when a marker is being dragged
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseup', handleMouseUp);
+    if (draggedMarker) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
     
-    // Clean up event listeners
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      
-      // Cancel any pending animation frame
-      if (animationFrameId !== null) {
-        window.cancelAnimationFrame(animationFrameId);
-      }
     };
-  }, [draggedMarker, containerRef]);
+  }, [draggedMarker]);
   
   // Resize marker with granular control (20 steps)
   const resizeMarker = (markerId: number, increase: boolean) => {
@@ -703,44 +601,15 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     return match ? match[1] : "";
   };
   
-  // Render markers on the PDF with sequential numbering
+  // Render markers on the PDF
   const renderMarkers = () => {
-    // Sort and group markers by type for sequential numbering
-    const accessPoints = markers
-      .filter(m => m.marker_type === 'access_point')
-      .sort((a, b) => a.id - b.id);
-      
-    const cameras = markers
-      .filter(m => m.marker_type === 'camera')
-      .sort((a, b) => a.id - b.id);
-    
-    // Create a mapping of marker IDs to their sequential numbers
-    const markerSequence: Record<number, number> = {};
-    
-    // Assign sequential numbers to access points
-    accessPoints.forEach((marker, index) => {
-      markerSequence[marker.id] = index + 1;
-    });
-    
-    // Assign sequential numbers to cameras
-    cameras.forEach((marker, index) => {
-      markerSequence[marker.id] = index + 1;
-    });
-    
     return markers.map((marker) => {
-      // Get marker size from state or use default
+      // Get marker size from state or use default - smaller size by default (2.5rem)
       const size = markerSize[marker.id] || { width: 2.5, height: 2.5 };
       
-      // Get equipment number from label if available or use sequential number
+      // Get equipment number from label if available or display sequential number
       const markerLabel = marker.label || '';
-      const labelNumber = getMarkerNumber(markerLabel);
-      
-      // Use the sequence number if we have one, otherwise fallback to label number
-      const sequenceNumber = markerSequence[marker.id] || '';
-      const displayNumber = labelNumber || sequenceNumber;
-      
-      // Prefix based on type
-      const prefix = marker.marker_type === 'access_point' ? 'AP' : 'C';
+      const markerNumber = getMarkerNumber(markerLabel);
       
       return (
         <div
@@ -758,7 +627,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
             transform: 'translate(-50%, -50%)',
             transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease'
           }}
-          title={marker.label || `${marker.marker_type === 'access_point' ? 'Access Point' : 'Camera'} #${sequenceNumber}`}
+          title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
           onMouseDown={(e) => {
             if (e.button === 0) { // Left click
               handleDragStart(e, marker.id);
@@ -767,7 +636,7 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           onDoubleClick={() => editMarker(marker)}
           onContextMenu={(e) => handleMarkerRightClick(e, marker)}
         >
-          {displayNumber ? `${prefix}${displayNumber}` : prefix}
+          {markerNumber || (marker.marker_type === 'access_point' ? 'AP' : 'C')}
         </div>
       );
     });
@@ -894,45 +763,23 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
                 />
               </div>
               
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleUploadFloorplan} 
-                  disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
-                  className="flex-1 h-8 text-xs"
-                >
-                  {uploadFloorplanMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="h-3 w-3 mr-2" />
-                      Upload Floorplan
-                    </>
-                  )}
-                </Button>
-                
-                {selectedFloorplan && (
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    onClick={() => {
-                      if (window.confirm(`Are you sure you want to delete the "${selectedFloorplan.name}" floorplan? This cannot be undone.`)) {
-                        deleteFloorplanMutation.mutate(selectedFloorplan.id);
-                      }
-                    }}
-                    disabled={deleteFloorplanMutation.isPending}
-                    className="h-8 text-xs"
-                  >
-                    {deleteFloorplanMutation.isPending ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      "Delete"
-                    )}
-                  </Button>
+              <Button 
+                onClick={handleUploadFloorplan} 
+                disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
+                className="w-full h-8 text-xs"
+              >
+                {uploadFloorplanMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-3 w-3 mr-2" />
+                    Upload Floorplan
+                  </>
                 )}
-              </div>
+              </Button>
             </div>
           </div>
           
@@ -1012,30 +859,15 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
           >
             {pdfBlobUrl ? (
               <div className="relative">
-                {/* Use an embed element for PDF display - more compatible than iframe */}
+                {/* Use an iframe for PDF display */}
                 <div className="relative border rounded w-full" style={{ height: '800px' }}>
-                  {pdfBlobUrl.startsWith('data:') ? (
-                    // For data URIs, use an object tag which handles them better
-                    <object 
-                      data={pdfBlobUrl}
-                      type="application/pdf"
-                      width="100%"
-                      height="100%"
-                      className="border-0 absolute inset-0"
-                      style={{ zIndex: 10 }}
-                    >
-                      <p>Your browser does not support PDF viewing. <a href={pdfBlobUrl} target="_blank" rel="noreferrer">Click here to download the PDF</a></p>
-                    </object>
-                  ) : (
-                    // For blob URLs, use iframe
-                    <iframe 
-                      src={pdfBlobUrl}
-                      width="100%"
-                      height="100%"
-                      className="border-0 absolute inset-0"
-                      style={{ zIndex: 10 }}
-                    />
-                  )}
+                  <iframe 
+                    src={pdfBlobUrl}
+                    width="100%"
+                    height="100%"
+                    className="border-0 absolute inset-0"
+                    style={{ zIndex: 10 }}
+                  />
                   
                   {/* Layer for markers that sits on top of the PDF - fixed to PDF content */}
                   <div 

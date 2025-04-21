@@ -1,86 +1,177 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Plus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { Loader2, Plus, Download, ZoomIn, ZoomOut } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { queryClient } from '@/lib/queryClient';
+import AccessPointMarkerForm from './AccessPointMarkerForm';
+import CameraMarkerForm from './CameraMarkerForm';
 
-// Simple types just for this component
-interface Floorplan {
+type FloorplanViewerProps = {
+  projectId: number;
+  onMarkersUpdated?: () => void;
+};
+
+type Marker = {
+  id: number;
+  floorplan_id: number;
+  page: number;
+  marker_type: 'access_point' | 'camera';
+  equipment_id: number;
+  position_x: number;
+  position_y: number;
+  label: string | null;
+  created_at: string;
+};
+
+type Floorplan = {
   id: number;
   project_id: number;
   name: string;
-  pdf_data: string;
-}
+  pdf_data: string; // base64 encoded PDF
+  page_count: number;
+  created_at: string;
+  updated_at: string;
+};
 
-export default function SimpleFloorplanViewer({ projectId }: { projectId: number }) {
-  const { toast } = useToast();
-  const [newFloorplanName, setNewFloorplanName] = useState('');
+const SimpleFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMarkersUpdated }) => {
+  const [selectedFloorplan, setSelectedFloorplan] = useState<Floorplan | null>(null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false);
+  const [newFloorplanName, setNewFloorplanName] = useState<string>("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [selectedFloorplanId, setSelectedFloorplanId] = useState<number | null>(null);
-
+  const [markers, setMarkers] = useState<Marker[]>([]);
+  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
+  const [markerType, setMarkerType] = useState<'access_point' | 'camera'>('access_point');
+  const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
+  const [markerDialogOpen, setMarkerDialogOpen] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // Fetch floorplans for this project
-  const { data: floorplans = [], isLoading: isLoadingFloorplans, refetch } = useQuery<Floorplan[]>({
+  const { data: floorplans, isLoading: isLoadingFloorplans } = useQuery<Floorplan[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
     queryFn: async () => {
       const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
       return await res.json();
     },
+    enabled: !!projectId,
   });
 
-  // Mutation for deleting floorplans
-  const deleteFloorplanMutation = useMutation({
-    mutationFn: async (floorplanId: number) => {
-      await apiRequest('DELETE', `/api/floorplans/${floorplanId}`);
+  // Fetch markers for selected floorplan
+  const { data: floorplanMarkers, isLoading: isLoadingMarkers } = useQuery<Marker[]>({
+    queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/floorplans/${selectedFloorplan?.id}/markers`);
+      return await res.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Floorplan deleted successfully",
-      });
-      refetch();
-    },
-    onError: (error: Error) => {
-      console.error('Error deleting floorplan:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete floorplan",
-        variant: "destructive",
-      });
-    },
+    enabled: !!selectedFloorplan?.id,
   });
 
-  // Mutation for uploading floorplans
+  // Upload a new floorplan
   const uploadFloorplanMutation = useMutation({
-    mutationFn: async (floorplan: { name: string, pdf_data: string, project_id: number }) => {
-      const res = await apiRequest('POST', '/api/floorplans', floorplan);
+    mutationFn: async (data: { name: string, pdf_data: string, project_id: number }) => {
+      const res = await apiRequest('POST', '/api/floorplans', data);
       return await res.json();
     },
     onSuccess: () => {
-      // Reset form
-      setNewFloorplanName('');
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
+      setUploadDialogOpen(false);
       setPdfFile(null);
-      
-      // Refetch floorplans
-      refetch();
-      
+      setNewFloorplanName("");
       toast({
         title: "Success",
         description: "Floorplan uploaded successfully",
       });
     },
     onError: (error: Error) => {
-      console.error('Error uploading floorplan:', error);
       toast({
         title: "Error",
-        description: "Failed to upload floorplan",
+        description: `Failed to upload floorplan: ${error.message}`,
         variant: "destructive",
       });
-    },
+    }
   });
+
+  // Create a new marker
+  const createMarkerMutation = useMutation({
+    mutationFn: async (data: {
+      floorplan_id: number;
+      page: number;
+      marker_type: 'access_point' | 'camera';
+      equipment_id: number;
+      position_x: number;
+      position_y: number;
+      label: string | null;
+    }) => {
+      const res = await apiRequest('POST', '/api/floorplan-markers', data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      if (onMarkersUpdated) onMarkersUpdated();
+      setMarkerDialogOpen(false);
+      setNewMarkerPosition(null);
+      toast({
+        title: "Success",
+        description: `${markerType === 'access_point' ? 'Access point' : 'Camera'} marker added successfully`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to add marker: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete a marker
+  const deleteMarkerMutation = useMutation({
+    mutationFn: async (markerId: number) => {
+      const res = await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
+      return res.ok;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      if (onMarkersUpdated) onMarkersUpdated();
+      toast({
+        title: "Success",
+        description: "Marker deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete marker: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Select first floorplan if available and none selected
+  useEffect(() => {
+    if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
+      setSelectedFloorplan(floorplans[0]);
+    }
+  }, [floorplans, selectedFloorplan]);
+
+  // Update markers when floorplanMarkers changes
+  useEffect(() => {
+    if (floorplanMarkers) {
+      setMarkers(floorplanMarkers);
+    }
+  }, [floorplanMarkers]);
 
   // Handle file change for upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,135 +260,311 @@ export default function SimpleFloorplanViewer({ projectId }: { projectId: number
     }
   };
 
-  // Render the PDF when floorplan is selected
-  const renderSelectedFloorplan = () => {
-    if (!selectedFloorplanId) return null;
+  // Handle PDF click for marker placement
+  const handlePdfContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isAddingMarker || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
     
-    const floorplan = floorplans.find(f => f.id === selectedFloorplanId);
-    if (!floorplan) return null;
+    // Calculate position as percentage of container
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
     
-    const pdfDataUrl = `data:application/pdf;base64,${floorplan.pdf_data}`;
-    
-    return (
-      <div className="border rounded-md p-4 mt-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">{floorplan.name}</h3>
-          <Button 
-            variant="destructive" 
-            size="sm"
-            onClick={() => {
-              if (window.confirm(`Are you sure you want to delete the "${floorplan.name}" floorplan? This cannot be undone.`)) {
-                deleteFloorplanMutation.mutate(floorplan.id);
-                setSelectedFloorplanId(null);
-              }
-            }}
-            disabled={deleteFloorplanMutation.isPending}
-          >
-            {deleteFloorplanMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Delete"
-            )}
-          </Button>
-        </div>
-        
-        <div className="border rounded w-full overflow-hidden" style={{ height: '800px' }}>
-          <iframe 
-            src={pdfDataUrl}
-            width="100%"
-            height="100%"
-            className="border-0"
-          />
-        </div>
+    setNewMarkerPosition({ x, y });
+    setMarkerDialogOpen(true);
+  };
+
+  // Render markers on the PDF
+  const renderMarkers = () => {
+    return markers.map((marker) => (
+      <div
+        key={marker.id}
+        className={`absolute rounded-full flex items-center justify-center cursor-pointer 
+                   ${marker.marker_type === 'access_point' ? 'bg-red-500' : 'bg-blue-500'}
+                   text-white font-bold text-xs w-6 h-6 hover:w-7 hover:h-7 transition-all z-50`}
+        style={{
+          left: `${marker.position_x}%`,
+          top: `${marker.position_y}%`,
+          transform: 'translate(-50%, -50%)'
+        }}
+        title={marker.label || (marker.marker_type === 'access_point' ? 'Access Point' : 'Camera')}
+        onClick={() => {
+          if (window.confirm(`Delete this ${marker.marker_type.replace('_', ' ')} marker?`)) {
+            deleteMarkerMutation.mutate(marker.id);
+          }
+        }}
+      >
+        {marker.id}
       </div>
-    );
+    ));
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Floorplans</h2>
-      <p className="mb-4 text-muted-foreground">Upload PDF floorplans for your site walk.</p>
-      
-      {/* Upload form */}
-      <div className="p-4 border rounded-md bg-muted/10">
-        <h3 className="text-sm font-medium mb-2">Upload New Floorplan</h3>
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="floorplan-name" className="text-xs">Name</Label>
-            <Input
-              id="floorplan-name"
-              value={newFloorplanName}
-              onChange={(e) => setNewFloorplanName(e.target.value)}
-              placeholder="First Floor"
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="floorplan-file" className="text-xs">PDF File</Label>
-            <Input
-              id="floorplan-file"
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              className="h-8 text-xs"
-              autoComplete="off"
-            />
-          </div>
-          
-          <Button 
-            onClick={handleUploadFloorplan} 
-            disabled={uploadFloorplanMutation.isPending || !pdfFile || !newFloorplanName}
-            className="w-full h-8 text-xs"
-          >
-            {uploadFloorplanMutation.isPending ? (
-              <>
-                <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Plus className="h-3 w-3 mr-2" />
-                Upload Floorplan
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-      
-      {/* Floorplan list */}
-      <div className="mt-6">
-        <h3 className="text-lg font-medium mb-3">Available Floorplans</h3>
-        
-        {isLoadingFloorplans ? (
-          <div className="flex justify-center p-4">
-            <Loader2 className="h-6 w-6 animate-spin" />
-          </div>
-        ) : floorplans.length === 0 ? (
-          <div className="text-center p-4 text-muted-foreground">
-            No floorplans uploaded yet. Upload your first floorplan above.
-          </div>
-        ) : (
-          <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-            {floorplans.map(floorplan => (
+    <div className="flex flex-col space-y-4">
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {isLoadingFloorplans ? (
+            <Button disabled variant="outline">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading floorplans...
+            </Button>
+          ) : floorplans && floorplans.length > 0 ? (
+            floorplans.map((floorplan) => (
               <Button
                 key={floorplan.id}
-                variant={selectedFloorplanId === floorplan.id ? "default" : "outline"}
-                className="text-sm p-4 h-auto justify-start"
-                onClick={() => setSelectedFloorplanId(
-                  selectedFloorplanId === floorplan.id ? null : floorplan.id
-                )}
+                variant={selectedFloorplan?.id === floorplan.id ? "default" : "outline"}
+                onClick={() => setSelectedFloorplan(floorplan)}
               >
                 {floorplan.name}
               </Button>
-            ))}
-          </div>
-        )}
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No floorplans available</p>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-1">
+                <Plus className="h-4 w-4" />
+                Upload Floorplan
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Upload Floorplan</DialogTitle>
+                <DialogDescription>
+                  Upload a PDF floorplan to mark access points and cameras.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={newFloorplanName}
+                    onChange={(e) => setNewFloorplanName(e.target.value)}
+                    className="col-span-3"
+                    placeholder="e.g., First Floor"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="pdf" className="text-right">
+                    PDF File
+                  </Label>
+                  <Input
+                    id="pdf"
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleFileChange}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button 
+                  type="submit" 
+                  onClick={handleUploadFloorplan}
+                  disabled={uploadFloorplanMutation.isPending}
+                >
+                  {uploadFloorplanMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : "Upload"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          {selectedFloorplan && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsAddingMarker(true);
+                  setMarkerType('access_point');
+                  toast({
+                    title: "Access Point Marker Mode",
+                    description: "Click on the floorplan to place an access point marker",
+                  });
+                }}
+                className={isAddingMarker && markerType === 'access_point' ? 'bg-red-100' : ''}
+              >
+                <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+                Add Access Point
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsAddingMarker(true);
+                  setMarkerType('camera');
+                  toast({
+                    title: "Camera Marker Mode",
+                    description: "Click on the floorplan to place a camera marker",
+                  });
+                }}
+                className={isAddingMarker && markerType === 'camera' ? 'bg-blue-100' : ''}
+              >
+                <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+                Add Camera
+              </Button>
+              {isAddingMarker && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsAddingMarker(false);
+                    toast({
+                      title: "Marker Mode Disabled",
+                      description: "You can now view and interact with the floorplan",
+                    });
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </div>
       
-      {/* Render selected floorplan */}
-      {renderSelectedFloorplan()}
+      {selectedFloorplan ? (
+        <div className="border rounded-md p-4 max-w-full overflow-auto relative">
+          <div 
+            ref={containerRef}
+            className="relative" 
+            onClick={handlePdfContainerClick}
+            style={{ minHeight: "500px" }}
+          >
+            {/* Simple embed using an iframe, more compatible than react-pdf */}
+            <iframe 
+              src={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`} 
+              className="w-full h-[600px] border-0"
+              title={`Floorplan: ${selectedFloorplan.name}`}
+            />
+            
+            {/* Overlay for marker placement that sits on top of the iframe */}
+            <div 
+              className="absolute top-0 left-0 w-full h-full pointer-events-none"
+              style={{ zIndex: 40 }}
+            >
+              {/* This lets us place markers on top of the PDF */}
+              {renderMarkers()}
+            </div>
+            
+            {/* Transparent layer to catch clicks when in marker mode */}
+            {isAddingMarker && (
+              <div 
+                className="absolute top-0 left-0 w-full h-full" 
+                style={{ zIndex: 30 }}
+              />
+            )}
+          </div>
+          
+          <div className="mt-4 text-center">
+            <a 
+              href={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`} 
+              download={`${selectedFloorplan.name}.pdf`}
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div className="border rounded-md p-8 text-center">
+          {isLoadingFloorplans ? (
+            <div className="flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              No floorplans available. Upload a floorplan to get started.
+            </p>
+          )}
+        </div>
+      )}
+      
+      {/* Access Point Marker Form Dialog */}
+      <Dialog open={markerDialogOpen && markerType === 'access_point'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Access Point</DialogTitle>
+            <DialogDescription>
+              Configure the access point details for this marker.
+            </DialogDescription>
+          </DialogHeader>
+          {newMarkerPosition && (
+            <AccessPointMarkerForm
+              projectId={projectId}
+              onSubmit={(equipmentId, label) => {
+                if (!selectedFloorplan || !newMarkerPosition) return;
+                
+                createMarkerMutation.mutateAsync({
+                  floorplan_id: selectedFloorplan.id,
+                  page: 1, // We're using a simpler viewer without pages
+                  marker_type: 'access_point',
+                  equipment_id: equipmentId,
+                  position_x: newMarkerPosition.x,
+                  position_y: newMarkerPosition.y,
+                  label
+                });
+              }}
+              onCancel={() => {
+                setMarkerDialogOpen(false);
+                setNewMarkerPosition(null);
+              }}
+              position={newMarkerPosition}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Camera Marker Form Dialog */}
+      <Dialog open={markerDialogOpen && markerType === 'camera'} onOpenChange={(open) => !open && setMarkerDialogOpen(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Camera</DialogTitle>
+            <DialogDescription>
+              Configure the camera details for this marker.
+            </DialogDescription>
+          </DialogHeader>
+          {newMarkerPosition && (
+            <CameraMarkerForm
+              projectId={projectId}
+              onSubmit={(equipmentId, label) => {
+                if (!selectedFloorplan || !newMarkerPosition) return;
+                
+                createMarkerMutation.mutateAsync({
+                  floorplan_id: selectedFloorplan.id,
+                  page: 1, // We're using a simpler viewer without pages
+                  marker_type: 'camera',
+                  equipment_id: equipmentId,
+                  position_x: newMarkerPosition.x,
+                  position_y: newMarkerPosition.y,
+                  label
+                });
+              }}
+              onCancel={() => {
+                setMarkerDialogOpen(false);
+                setNewMarkerPosition(null);
+              }}
+              position={newMarkerPosition}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
+
+export default SimpleFloorplanViewer;
