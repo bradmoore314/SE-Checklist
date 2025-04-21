@@ -5,6 +5,7 @@ import { useProject } from "@/context/ProjectContext";
 import { useSiteWalk } from "@/context/SiteWalkContext";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
+import { DebugInfo } from "@/components/DebugInfo";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -50,6 +51,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           {children}
         </main>
       </div>
+      <DebugInfo />
     </div>
   );
 }
