@@ -37,6 +37,20 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
+// Interface for lookup data
+interface LookupData {
+  quickConfigOptions?: string[];
+  readerTypes?: string[];
+  lockTypes?: string[];
+  monitoringTypes?: string[];
+  lockProviderOptions?: string[];
+  takeoverOptions?: string[];
+  interiorPerimeterOptions?: string[];
+  noisyPropOptions?: string[];
+  crashbarsOptions?: string[];
+  realLockTypeOptions?: string[];
+}
+
 interface AddAccessPointModalProps {
   isOpen?: boolean;
   open?: boolean;
@@ -97,9 +111,14 @@ export default function AddAccessPointModal({
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
 
   // Fetch lookup data for dropdowns
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
     queryKey: ["/api/lookup"],
   });
+  
+  // Helper function to safely access lookup data
+  const getLookupOptions = (key: keyof LookupData) => {
+    return lookupData && lookupData[key] ? lookupData[key] || [] : [];
+  };
   
   // Toggle the visibility of advanced fields
   const toggleAdvancedFields = () => {
@@ -201,7 +220,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.quickConfigOptions.map((type: string) => (
+                          getLookupOptions("quickConfigOptions").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -241,7 +260,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.readerTypes.map((type: string) => (
+                          getLookupOptions("readerTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -276,7 +295,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.lockTypes.map((type: string) => (
+                          getLookupOptions("lockTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -311,7 +330,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.monitoringTypes.map((type: string) => (
+                          getLookupOptions("monitoringTypes").map((type: string) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>
@@ -346,7 +365,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.lockProviderOptions.map((option: string) => (
+                          getLookupOptions("lockProviderOptions").map((option: string) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
@@ -381,7 +400,7 @@ export default function AddAccessPointModal({
                         {isLoadingLookups ? (
                           <SelectItem value="loading">Loading...</SelectItem>
                         ) : (
-                          lookupData?.takeoverOptions.map((option: string) => (
+                          getLookupOptions("takeoverOptions").map((option: string) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
