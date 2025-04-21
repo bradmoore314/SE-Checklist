@@ -1,13 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { useRoute } from 'wouter';
+import { useRoute, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2 } from 'lucide-react';
 import BasicFloorplanViewer from '@/components/floorplans/BasicFloorplanViewer';
+import { useProject } from '@/context/ProjectContext';
 
 const FloorplansPage = () => {
   const [, params] = useRoute('/projects/:projectId/floorplans');
-  const projectId = params ? parseInt(params.projectId) : null;
+  const [location] = useLocation();
+  const { currentProject, setCurrentProject, allProjects } = useProject();
+  
+  // Try to get project ID from route params first
+  const projectIdFromParams = params ? parseInt(params.projectId) : null;
+  
+  // Use current project ID if we have one and no route params
+  const projectId = projectIdFromParams || (currentProject ? currentProject.id : null);
+
+  // When projectId is available and different from currentProject, update the current project
+  useEffect(() => {
+    if (projectId && (!currentProject || currentProject.id !== projectId)) {
+      const project = allProjects.find(p => p.id === projectId);
+      if (project) {
+        setCurrentProject(project);
+      }
+    }
+  }, [projectId, currentProject, allProjects, setCurrentProject]);
 
   const { data: project, isLoading: isLoadingProject } = useQuery({
     queryKey: ['/api/projects', projectId],
