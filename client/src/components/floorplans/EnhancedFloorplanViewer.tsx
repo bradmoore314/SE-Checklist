@@ -135,6 +135,11 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
   const [markerLabel, setMarkerLabel] = useState('');
   const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
   const [markerSize, setMarkerSize] = useState<Record<number, {width: number, height: number}>>({});
+  const [resizingMarker, setResizingMarker] = useState<number | null>(null);
+  const [initialResizeData, setInitialResizeData] = useState<{
+    size: {width: number, height: number},
+    mousePos: {x: number, y: number}
+  } | null>(null);
   
   // State for equipment-specific modals
   const [showAccessPointModal, setShowAccessPointModal] = useState(false);
@@ -511,6 +516,33 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
     }
   };
   
+  // Handle marker resize start
+  const handleResizeStart = (e: React.MouseEvent, markerId: number) => {
+    if (isAddingMarker) return; // Don't allow resizing when in adding mode
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    setResizingMarker(markerId);
+    
+    // Get the current marker size
+    const currentSize = markerSize[markerId] || { width: 32, height: 32 };
+    
+    // Store the initial mouse position and size
+    setInitialResizeData({
+      size: currentSize,
+      mousePos: { x: e.clientX, y: e.clientY }
+    });
+  };
+  
+  // Update marker size in state
+  const updateMarkerSize = (markerId: number, width: number, height: number) => {
+    setMarkerSize(prev => ({
+      ...prev,
+      [markerId]: { width, height }
+    }));
+  };
+  
   // Setup event listeners for drag operations with debounce for better performance
   useEffect(() => {
     if (!draggedMarker) return;
@@ -572,6 +604,54 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [draggedMarker, containerRef.current]);
+  
+  // Setup event listeners for resize operations
+  useEffect(() => {
+    if (!resizingMarker || !initialResizeData) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      // Get change in mouse position from the initial position
+      const deltaX = e.clientX - initialResizeData.mousePos.x;
+      const deltaY = e.clientY - initialResizeData.mousePos.y;
+      
+      // Calculate new size with minimum of 20px
+      const newWidth = Math.max(20, initialResizeData.size.width + deltaX);
+      const newHeight = Math.max(20, initialResizeData.size.height + deltaY);
+      
+      // Update the marker size in the UI for immediate feedback
+      const markerElement = document.getElementById(`marker-${resizingMarker}`);
+      if (markerElement) {
+        markerElement.style.width = `${newWidth}px`;
+        markerElement.style.height = `${newHeight}px`;
+      }
+    };
+    
+    const handleMouseUp = (e: MouseEvent) => {
+      if (!resizingMarker || !initialResizeData) return;
+      
+      // Calculate final size
+      const deltaX = e.clientX - initialResizeData.mousePos.x;
+      const deltaY = e.clientY - initialResizeData.mousePos.y;
+      
+      const newWidth = Math.max(20, initialResizeData.size.width + deltaX);
+      const newHeight = Math.max(20, initialResizeData.size.height + deltaY);
+      
+      // Update the marker size in state
+      updateMarkerSize(resizingMarker, newWidth, newHeight);
+      
+      // Reset resizing state
+      setResizingMarker(null);
+      setInitialResizeData(null);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingMarker, initialResizeData]);
   
   // Create a new marker
   const handleAddMarker = () => {
@@ -814,24 +894,31 @@ const EnhancedFloorplanViewer = ({ projectId, onMarkersUpdated }: EnhancedFloorp
               <div
                 id={`marker-${marker.id}`}
                 key={marker.id}
-                className="absolute rounded-full flex items-center justify-center cursor-move active:cursor-grabbing hover:scale-110"
+                className="absolute rounded-full flex items-center justify-center cursor-move active:cursor-grabbing hover:scale-105"
                 style={{
                   left: `${marker.position_x}%`,
                   top: `${marker.position_y}%`,
-                  width: `${markerSize[marker.id]?.width || 32}px`, // Increased from 24px
-                  height: `${markerSize[marker.id]?.height || 32}px`, // Increased from 24px
+                  width: `${markerSize[marker.id]?.width || 32}px`,
+                  height: `${markerSize[marker.id]?.height || 32}px`,
                   backgroundColor: markerColors[marker.marker_type as keyof typeof markerColors],
                   color: 'white',
                   transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)', // Enhanced shadow
-                  zIndex: draggedMarker === marker.id ? 1000 : 100,
-                  transition: draggedMarker === marker.id ? 'none' : 'all 0.2s ease-out',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  zIndex: (draggedMarker === marker.id || resizingMarker === marker.id) ? 1000 : 100,
+                  transition: (draggedMarker === marker.id || resizingMarker === marker.id) ? 'none' : 'all 0.2s ease-out',
                   border: '2px solid white',
-                  pointerEvents: isAddingMarker ? 'none' : 'auto', // Disable marker interaction during adding mode
-                  touchAction: 'none' // Prevent scrolling during drag
+                  pointerEvents: isAddingMarker ? 'none' : 'auto',
+                  touchAction: 'none',
+                  position: 'relative' // Needed for the resize handle
                 }}
                 onMouseDown={(e) => handleDragStart(e, marker.id)}
               >
+                {/* Resize handle in bottom-right corner */}
+                <div 
+                  className="absolute bottom-0 right-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full cursor-se-resize transform translate-x-1/4 translate-y-1/4 opacity-70 hover:opacity-100 z-20"
+                  onMouseDown={(e) => handleResizeStart(e, marker.id)}
+                  title="Resize marker"
+                ></div>
                 <MarkerIcon type={marker.marker_type} />
                 
                 {/* Context Menu */}
