@@ -1138,7 +1138,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
               minHeight: '800px'
             }}
           >
-            {pdfBlobUrl ? (
+            {selectedFloorplan ? (
               <div className="relative" id="pdf-container" style={{
                   transform: `scale(${pdfScale})`,
                   transformOrigin: 'top left',
