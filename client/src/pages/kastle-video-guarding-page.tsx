@@ -1084,7 +1084,7 @@ const KastleVideoGuardingPage: React.FC = () => {
               
               {streams.length > 0 ? (
                 viewMode === 'cards' ? (
-                  /* Card-based Layout for Camera Stream Details */
+                  /* Card-based Layout for Speaker Details */
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                     {streams.map((stream) => (
                       <Card key={stream.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -1094,7 +1094,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                               <span className="p-1 bg-teal-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm">
                                 {stream.id}
                               </span>
-                              Camera Stream
+                              Speaker
                             </CardTitle>
                             <div className="flex gap-1">
                               <Button 
@@ -1343,7 +1343,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                       }
                                     }}
                                   >
-                                    Association
+                                    Speakers
                                   </Button>
                                   <Button 
                                     variant="ghost" 
