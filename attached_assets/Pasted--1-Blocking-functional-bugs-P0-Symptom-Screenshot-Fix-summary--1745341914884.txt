@@ -1,0 +1,104 @@
+## 1 – Blocking functional bugs (P0)
+
+| # | Symptom | Screenshot | Fix summary |
+|---|---------|------------|-------------|
+| **1.1** | BDM entries lost when project not chosen | ![BDM lost](./kvg_images/image_1.jpg) | Create Project shell first **or** persist draft in localStorage; redirect back with ID |
+| **1.2** | “Add My First Stream” → blank page | ![Blank stream](./kvg_images/image_4.jpg) | Guard if `streams.length === 0` → render Create‑Stream form |
+| **1.3** | Browser Back logs user out | _n/a_ | Keep JWT in `sessionStorage`; add `/projects/:id` deep‑link + reload |
+
+
+## 2 – Dropdown & enum fixes (P1)
+
+**BDM ➜ Opportunity Details**
+
+- **Region** → add `MidAtlantic, Enterprise, Greater Philadelphia, Mutual Statland`; replace “Southeast/Southwest” with `South` and `Central`.
+- **Services Recommended** – implement multi‑select. Options mirror screenshot below.  
+  ![Services list](./kvg_images/image_2.jpg)
+- **Technology** – replace list with values in screenshot.  
+  ![Tech list](./kvg_images/image_3.jpg)
+
+**Incident‑Type selector** – convert to Chips/Tags with highlighted `selected` state.
+
+## 3 – Site Assessment tab gaps (P1‑P2)
+
+| Feature | Need | Suggested control |
+|---------|------|-------------------|
+| Stream Counts | Numeric dropdown spinner | `<Select>` 1‑500 |
+| Site Plan & BOM | File‑upload/link fields | Use same S3 helper as Documents tab |
+| Health Monitoring | Toggle (default ON) | Auto‑set `healthMonitoringStreams` = Event streams |
+| Monitored Schedule | Complex weekday/weekend modal | Can use cron‑grid component |
+| Patrol vs Event Monitoring | Radio group at top | Conditionally render schedules |
+
+## 4 – Stream Tab improvements (P2)
+
+- **Camera type dropdown** – use list:  
+  `Indoor Fixed Single Lens`, `Outdoor Fixed Single Lens`, `Indoor Fisheye Pano/Quad`, `Outdoor Fisheye Pano/Quad`, `Indoor Multi‑Sensor Stream`, `Outdoor Multi‑Sensor Stream`, `Thermal`, `Radiometric`, `PTZ`
+- **FOV Accessibility** – replace Yes/No with environment list (see screenshot).  
+  ![Accessibility](./kvg_images/image_6.jpg)
+- **Monitoring time** – default minutes to `00` (screenshot shows `20`).  
+  ![Monitoring default bug](./kvg_images/image_8.jpg)
+- **Image upload** – display explicit **Save Stream** button _or_ auto‑save; current error:  
+  ![Save image error](./kvg_images/image_9.jpg)
+
+
+## 5 – UX polish & navigation (P2)
+
+1. Strong highlight on incident‑type chips when selected.  
+2. Breadcrumb or “Back to Project” button (avoid browser Back).  
+3. Persist unsaved form state (localStorage keyed to temp UUID).
+
+
+## 6 – Jira ticket seeds
+
+| Priority | Title | AC (acceptance criteria) |
+|----------|-------|--------------------------|
+| **P0** | Create‑Project‑first workflow | User completes BDM tab with no data loss |
+| **P0** | Empty‑stream guard | `/streams/new` renders form; no blank page |
+| **P1** | Add missing Regions | Full list appears; API returns correct enum |
+| **P1** | Services Recommended selector | Multi‑select saves array |
+| **P1** | Technology dropdown update | Matches spec |
+| **P2** | Health Monitoring toggle logic | Counts auto‑populate; stored in DB |
+| **P2** | Incident‑type chip UI | Selected state visually obvious |
+
+
+---
+
+## 7 – Replit workflow checklist
+
+1. **Pull latest main**  
+```bash
+git checkout main
+git pull
+```
+
+2. **Create sprint branch**  
+```bash
+git checkout -b kvg-sprint-Apr-22
+```
+
+3. **Clone Word‑doc screenshots**  
+Copy images in `assets/kvg/` and commit them (already provided in this markdown’s folder).
+
+4. **Update enums & constants**  
+- `src/constants/regions.ts`  
+- `src/constants/technology.ts`  
+- `src/constants/serviceTypes.ts`
+
+5. **BDM form refactor**  
+- Ensure `projectId` exists before showing BDM wizard (`createDraftProject()` helper).  
+- Fallback: use `localStorage.setItem('bdmDraft', JSON.stringify(formState))`.
+
+6. **Stream route guard**  
+Add to `StreamNew.tsx`:  
+```ts
+if (!streams?.length) return <CreateStreamForm />;
+```
+
+7. **Session persistence**  
+Store JWT in `sessionStorage`; add `<Route path="/projects/:id">` that fetches and stores project in Redux/Context.
+
+8. **FOV accessibility component**  
+Replace `<Select yes/no>` with new `<EnvironmentSelect>` component.
+
+9. **Unit + Cypress tests**  
+Add test files under `__tests__/` and `cypress/e2e/`.
