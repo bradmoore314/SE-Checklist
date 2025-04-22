@@ -194,13 +194,30 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     return index >= 0 ? index + 1 : 1;
   };
   
-  // Zoom control functions
+  // Zoom control functions with safety limits to prevent PDF.js errors
+  const MAX_ZOOM = 2.5; // Reduced from 3.0 to prevent PDF.js "sendWithPromise" errors
+  const MIN_ZOOM = 0.25;
+  
   const zoomIn = () => {
-    setPdfScale(Math.min(3.0, pdfScale + 0.1));
+    // Apply a more conservative upper limit to prevent PDF.js from breaking
+    // This prevents the "Cannot read properties of null (reading 'sendWithPromise')" error
+    setPdfScale(prev => {
+      const newScale = prev + 0.1;
+      if (newScale > MAX_ZOOM) {
+        // Show warning toast when reaching max zoom
+        toast({
+          title: "Maximum zoom reached",
+          description: "You've reached the maximum safe zoom level",
+          variant: "default",
+        });
+        return MAX_ZOOM;
+      }
+      return newScale;
+    });
   };
   
   const zoomOut = () => {
-    setPdfScale(Math.max(0.25, pdfScale - 0.1));
+    setPdfScale(prev => Math.max(MIN_ZOOM, prev - 0.1));
   };
   
   const resetZoom = () => {
@@ -1342,7 +1359,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         options={{
                           cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
                           cMapPacked: true,
-                          standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/'
+                          standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/',
+                          // Add these options to improve stability and prevent sendWithPromise errors
+                          isEvalSupported: false,
+                          disableStream: true,
+                          disableAutoFetch: true
                         }}
                         loading={
                           <div className="flex flex-col items-center justify-center p-8">
@@ -1370,6 +1391,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                           scale={pdfScale}
                           canvasBackground="white"
                           className="pdf-page"
+                          // The error component must be a React node, not a function
+                          error={
+                            <div className="p-4 border border-red-300 rounded bg-red-50 text-red-700">
+                              <p>Error rendering page</p>
+                              <p className="text-sm mt-2">Try resetting the zoom level.</p>
+                            </div>
+                          }
                         />
                       </Document>
                     ) : (
