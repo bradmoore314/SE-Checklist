@@ -969,8 +969,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const getMarkerColor = (type: string) => {
     switch (type) {
       case 'access_point':
-        // Red
-        return '#ef4444';
+        // Changed from teal to red as requested
+        return '#dc2626';
       case 'camera':
         // Blue
         return '#3b82f6';
@@ -1295,7 +1295,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                       }}
                       className="flex items-center"
                     >
-                      <div className="w-3 h-3 rounded-full bg-teal-500 mr-2"></div>
+                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
                       Add Access Point
                     </Button>
                     

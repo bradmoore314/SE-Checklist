@@ -10,7 +10,7 @@ interface FOVAccessibilitySelectorProps {
 }
 
 /**
- * Dropdown selector for FOV Accessibility options with standardized values
+ * Dropdown selector for FOV accessibility options
  * Uses environment-based options instead of simple Yes/No
  */
 export function FOVAccessibilitySelector({
@@ -27,7 +27,7 @@ export function FOVAccessibilitySelector({
         onValueChange={onChange}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select accessibility" />
+          <SelectValue placeholder="Select accessibility option" />
         </SelectTrigger>
         <SelectContent>
           {FOV_ACCESSIBILITY_OPTIONS.map((option) => (
