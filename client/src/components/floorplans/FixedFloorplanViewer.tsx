@@ -639,11 +639,19 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // Handle starting the drag of a marker
   const handleMarkerMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>, 
+    e: MouseEvent | React.MouseEvent<HTMLDivElement>, 
     markerId: number, 
     isResizeHandle = false
   ) => {
-    e.stopPropagation();
+    // Ensure event propagation is stopped
+    if ('stopPropagation' in e) {
+      e.stopPropagation();
+    }
+    
+    // Prevent default behavior like text selection
+    if ('preventDefault' in e) {
+      e.preventDefault();
+    }
     
     if (isResizeHandle) {
       // We're resizing a marker
@@ -658,9 +666,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
             : { width: defaultMarkerSizes[marker.marker_type] as number, height: defaultMarkerSizes[marker.marker_type] as number }
           );
         
+        // Get mouse position from appropriate event
+        const clientX = 'clientX' in e ? e.clientX : 0;
+        const clientY = 'clientY' in e ? e.clientY : 0;
+        
         setInitialResizeData({
           size,
-          mousePos: { x: e.clientX, y: e.clientY }
+          mousePos: { x: clientX, y: clientY }
         });
       }
       
@@ -674,6 +686,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // Add drag event listeners
       document.addEventListener('mousemove', handleDragMouseMove);
       document.addEventListener('mouseup', handleDragMouseUp);
+      
+      console.log(`Started dragging marker ${markerId}`);
     }
   };
   
@@ -1527,7 +1541,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             transform: isNote ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                           }}
-                          onMouseDown={(e) => handleMarkerMouseDown(e, marker.id)}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault(); 
+                            handleMarkerMouseDown(e.nativeEvent, marker.id);
+                          }}
                         >
                           {marker.label !== null ? (
                             isNote ? (
@@ -1543,7 +1561,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                                   }}
                                   onMouseDown={(e) => {
                                     e.stopPropagation();
-                                    handleMarkerMouseDown(e, marker.id, true);
+                                    e.preventDefault();
+                                    handleMarkerMouseDown(e.nativeEvent, marker.id, true);
                                   }}
                                 />
                               </div>
