@@ -22,7 +22,7 @@ export function TimeInputWithDefaults({
   defaultMinutes = "00"
 }: TimeInputWithDefaultsProps) {
   const [hours, setHours] = useState<string>("");
-  const [minutes, setMinutes] = useState<string>("");
+  const [minutes, setMinutes] = useState<string>(defaultMinutes);
   
   // Initialize from value
   useEffect(() => {
@@ -30,10 +30,15 @@ export function TimeInputWithDefaults({
       const parts = value.split(":");
       if (parts.length === 2) {
         setHours(parts[0]);
-        setMinutes(parts[1]);
+        // Always force minutes to be defaultMinutes (00)
+        setMinutes(defaultMinutes);
+        // Automatically update the value to use default minutes
+        if (parts[1] !== defaultMinutes) {
+          onChange(`${parts[0]}:${defaultMinutes}`);
+        }
       }
     }
-  }, []);
+  }, [value, onChange, defaultMinutes]);
   
   // When hours change, set default minutes if none are set
   const handleHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +55,9 @@ export function TimeInputWithDefaults({
   };
   
   const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newMinutes = e.target.value;
-    setMinutes(newMinutes);
-    onChange(`${hours || "00"}:${newMinutes}`);
+    // Force minutes to be defaultMinutes (usually "00")
+    setMinutes(defaultMinutes);
+    onChange(`${hours || "00"}:${defaultMinutes}`);
   };
   
   return (
