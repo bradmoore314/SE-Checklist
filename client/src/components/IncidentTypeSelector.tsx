@@ -50,7 +50,7 @@ export function IncidentTypeSelector({ value = [], onChange }: IncidentTypeSelec
   const handleSelectAll = (category: string) => {
     const categoryIncidentIds = incidentTypesByCategory[category].map(i => i.id);
     // Add all that aren't already included
-    const newValue = [...new Set([...value, ...categoryIncidentIds])];
+    const newValue = Array.from(new Set([...value, ...categoryIncidentIds]));
     onChange(newValue);
   };
 

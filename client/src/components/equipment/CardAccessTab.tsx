@@ -15,6 +15,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ViewModeToggle, type ViewMode } from "@/components/ViewModeToggle";
+import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 interface CardAccessTabProps {
   project: Project;
@@ -27,7 +30,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedAccessPoint, setSelectedAccessPoint] = useState<AccessPoint | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
@@ -157,30 +160,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium bg-gradient-to-r from-red-500 to-rose-600 bg-clip-text text-transparent">Card Access Points</h3>
         <div className="flex items-center gap-2">
-          <div className="flex border border-gray-200 rounded-md overflow-hidden">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className={`h-9 ${viewMode === 'cards' ? 
-                'bg-red-50 text-red-700' : 
-                'text-gray-600 hover:text-red-600 hover:bg-red-50'}`}
-              onClick={() => setViewMode('cards')}
-              title="Card View"
-            >
-              <Layers size={18} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className={`h-9 ${viewMode === 'table' ? 
-                'bg-red-50 text-red-700' : 
-                'text-gray-600 hover:text-red-600 hover:bg-red-50'}`}
-              onClick={() => setViewMode('table')}
-              title="Table View"
-            >
-              <span className="material-icons text-base">view_list</span>
-            </Button>
-          </div>
+          <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
           
           {viewMode === 'table' && (
             <Popover>
