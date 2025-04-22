@@ -698,14 +698,25 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // Handle dragging a marker
   function handleDragMouseMove(e: MouseEvent) {
-    if (draggedMarker === null || !pdfDocumentRef.current) return;
+    if (draggedMarker === null) {
+      console.log('No dragged marker in handleDragMouseMove');
+      return;
+    }
+    
+    if (!pdfDocumentRef.current) {
+      console.log('No PDF document reference in handleDragMouseMove');
+      return;
+    }
     
     // Prevent default behavior to avoid text selection during drag
     e.preventDefault();
     e.stopPropagation();
     
     const marker = markers.find(m => m.id === draggedMarker);
-    if (!marker) return;
+    if (!marker) {
+      console.log('Marker not found in markers array during drag move');
+      return;
+    }
     
     // Get PDF container position
     const rect = pdfDocumentRef.current.getBoundingClientRect();
@@ -716,7 +727,10 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const y = Math.floor((e.clientY - rect.top) / pdfScale);
     
     // Make sure the position is within bounds of the PDF
-    if (x < 0 || y < 0 || !Number.isInteger(x) || !Number.isInteger(y)) return;
+    if (x < 0 || y < 0 || !Number.isInteger(x) || !Number.isInteger(y)) {
+      console.log('Position out of bounds during drag move:', { x, y });
+      return;
+    }
     
     console.log(`Dragging marker to (${x}, ${y}) at scale ${pdfScale}`);
     
@@ -725,11 +739,15 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     if (markerElement) {
       markerElement.style.left = `${x}px`;
       markerElement.style.top = `${y}px`;
+    } else {
+      console.log(`Could not find marker element with ID: marker-${draggedMarker}`);
     }
   }
   
   // Handle releasing a marker after dragging
   function handleDragMouseUp(e: MouseEvent) {
+    console.log('Drag ended - handleDragMouseUp called');
+    
     // Prevent default behavior 
     e.preventDefault();
     e.stopPropagation();
@@ -740,22 +758,26 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     
     // If we don't have a dragged marker or PDF ref, exit early
     if (draggedMarker === null || !pdfDocumentRef.current) {
+      console.log('No dragged marker or PDF ref - exiting early');
       setDraggedMarker(null);
       return;
     }
     
     const marker = markers.find(m => m.id === draggedMarker);
     if (!marker) {
+      console.log('Marker not found in markers array - exiting');
       setDraggedMarker(null);
       return;
     }
     
     // Get PDF container position
     const rect = pdfDocumentRef.current.getBoundingClientRect();
+    console.log('PDF container rect:', rect);
     
     // Calculate position in PDF coordinates, accounting for scale
     const x = Math.floor((e.clientX - rect.left) / pdfScale);
     const y = Math.floor((e.clientY - rect.top) / pdfScale);
+    console.log('Calculated coordinates:', { x, y, clientX: e.clientX, clientY: e.clientY, scale: pdfScale });
     
     // Store the marker ID before resetting state
     const markerId = draggedMarker;
@@ -774,12 +796,20 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: "Saving new position to database",
       });
       
-      // Update marker position in database with integer values
-      // We need to await the async function
-      updateMarkerPosition(markerId, x, y).catch(err => {
-        console.error("Error in marker position update:", err);
-      });
+      try {
+        // Update marker position in database with integer values
+        updateMarkerPosition(markerId, x, y)
+          .then(() => {
+            console.log('Marker position update successful');
+          })
+          .catch(err => {
+            console.error("Error in marker position update:", err);
+          });
+      } catch (error) {
+        console.error('Error calling updateMarkerPosition:', error);
+      }
     } else {
+      console.log('Invalid position - outside PDF bounds');
       toast({
         title: "Invalid position",
         description: "Marker position must be within the floorplan boundaries",
