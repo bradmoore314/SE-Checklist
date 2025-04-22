@@ -648,6 +648,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     markerId: number, 
     isResizeHandle = false
   ) => {
+    console.log("MOUSE DOWN START", markerId, isResizeHandle);
+    
     // Ensure event propagation is stopped
     if ('stopPropagation' in e) {
       e.stopPropagation();
@@ -685,14 +687,77 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       document.addEventListener('mousemove', handleResizeMouseMove);
       document.addEventListener('mouseup', handleResizeMouseUp);
     } else {
-      // We're dragging a marker
+      // New simplified drag implementation
+      console.log(`Started dragging marker ${markerId}`);
+      
+      // Get the marker data
+      const marker = markers.find(m => m.id === markerId);
+      if (!marker) {
+        console.error('Marker not found:', markerId);
+        return;
+      }
+      
+      // Store original coordinates for the drag operation
+      const originalX = marker.position_x;
+      const originalY = marker.position_y;
+      
+      // Track initial mouse position
+      const initialMouseX = 'clientX' in e ? e.clientX : 0;
+      const initialMouseY = 'clientY' in e ? e.clientY : 0;
+      
+      console.log('Initial marker position:', { x: originalX, y: originalY });
+      console.log('Initial mouse position:', { x: initialMouseX, y: initialMouseY });
+      
+      // Set the dragged marker ID in state
       setDraggedMarker(markerId);
       
-      // Add drag event listeners
-      document.addEventListener('mousemove', handleDragMouseMove);
-      document.addEventListener('mouseup', handleDragMouseUp);
+      // Function to handle mouse move during drag
+      const handleDrag = (moveEvent: MouseEvent) => {
+        // Calculate how far the mouse has moved since the drag started
+        const deltaX = moveEvent.clientX - initialMouseX;
+        const deltaY = moveEvent.clientY - initialMouseY;
+        
+        // Calculate the new position, adjusting for scale
+        const newX = originalX + (deltaX / pdfScale);
+        const newY = originalY + (deltaY / pdfScale);
+        
+        console.log('Dragging to:', { newX, newY, deltaX, deltaY });
+        
+        // Apply the position visually
+        const markerEl = document.getElementById(`marker-${markerId}`);
+        if (markerEl) {
+          markerEl.style.left = `${newX}px`;
+          markerEl.style.top = `${newY}px`;
+        }
+      };
       
-      console.log(`Started dragging marker ${markerId}`);
+      // Function to handle the end of the drag
+      const handleDragEnd = (upEvent: MouseEvent) => {
+        console.log('Drag ended');
+        
+        // Calculate final position
+        const deltaX = upEvent.clientX - initialMouseX;
+        const deltaY = upEvent.clientY - initialMouseY;
+        
+        const finalX = Math.floor(originalX + (deltaX / pdfScale));
+        const finalY = Math.floor(originalY + (deltaY / pdfScale));
+        
+        console.log('Final marker position:', { x: finalX, y: finalY });
+        
+        // Update the marker position in the database
+        updateMarkerPosition(markerId, finalX, finalY)
+          .then(() => console.log('Updated marker position in database'))
+          .catch(error => console.error('Failed to update marker position:', error));
+        
+        // Clean up
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
+        setDraggedMarker(null);
+      };
+      
+      // Add the event listeners
+      document.addEventListener('mousemove', handleDrag);
+      document.addEventListener('mouseup', handleDragEnd);
     }
   };
   
