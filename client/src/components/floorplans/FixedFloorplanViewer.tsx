@@ -610,12 +610,17 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const handlePdfClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isAddingMarker || !pdfDocumentRef.current) return;
     
+    // Get the PDF container's position and dimensions
     const rect = pdfDocumentRef.current.getBoundingClientRect();
+    
+    // Calculate the position in PDF coordinates
+    // We divide by pdfScale to convert screen coordinates back to PDF coordinates
     const x = Math.round((e.clientX - rect.left) / pdfScale);
     const y = Math.round((e.clientY - rect.top) / pdfScale);
     
-    console.log(`Clicked on PDF at (${x}, ${y})`);
+    console.log(`Clicked on PDF at (${x}, ${y}) with scale ${pdfScale}`);
     
+    // Store the PDF-space coordinates
     setNewMarkerPosition({ x, y });
     
     if (markerType === 'note') {
