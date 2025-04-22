@@ -952,7 +952,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           setStreams(prevStreams => 
             prevStreams.map(stream => 
               stream.id === streamId 
-                ? { ...stream, images: [...stream.images, newImage] } 
+                ? { ...stream, images: [...(stream.images || []), newImage] } 
                 : stream
             )
           );
@@ -971,9 +971,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                   
                   return {
                     ...stream,
-                    images: stream.images.map(img => 
+                    images: stream.images?.map(img => 
                       img.id === tempId ? savedImage : img
-                    )
+                    ) || []
                   };
                 })
               );
@@ -1154,7 +1154,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                             <div className="flex items-center gap-2 mt-1">
                               <Label className="text-xs font-medium text-teal-700 whitespace-nowrap flex items-center gap-1.5">
                                 <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🖼️</span>
-                                Images ({stream.images.length})
+                                Images ({stream.images?.length || 0})
                               </Label>
                               <div className="flex items-center gap-1.5">
                                 <Button 
