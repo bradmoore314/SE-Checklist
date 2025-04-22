@@ -1,39 +1,41 @@
-import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { SERVICE_TYPES } from "@/constants/serviceTypes";
 
 interface ServicesRecommendedSelectorProps {
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: string;
+  onChange: (value: string) => void;
+  label?: string;
+  className?: string;
 }
 
-export function ServicesRecommendedSelector({ value = [], onChange }: ServicesRecommendedSelectorProps) {
-  const handleChange = (id: string, checked: boolean) => {
-    if (checked) {
-      onChange([...value, id]);
-    } else {
-      onChange(value.filter(v => v !== id));
-    }
-  };
-  
+/**
+ * Dropdown selector for recommended services with standard values
+ */
+export function ServicesRecommendedSelector({
+  value,
+  onChange,
+  label = "Services Recommended",
+  className = ""
+}: ServicesRecommendedSelectorProps) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium mb-3">Recommended Services</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {SERVICE_TYPES.map(option => (
-          <div key={option.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={`service-${option.id}`}
-              checked={value.includes(option.id)}
-              onCheckedChange={(checked) => handleChange(option.id, !!checked)}
-            />
-            <Label htmlFor={`service-${option.id}`} className="text-sm">
-              {option.label}
-            </Label>
-          </div>
-        ))}
-      </div>
+    <div className={className}>
+      {label && <Label className="mb-2">{label}</Label>}
+      <Select 
+        value={value} 
+        onValueChange={onChange}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select service" />
+        </SelectTrigger>
+        <SelectContent>
+          {SERVICE_TYPES.map((service) => (
+            <SelectItem key={service.value} value={service.value}>
+              {service.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

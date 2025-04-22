@@ -1,23 +1,36 @@
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { REGIONS } from "@/constants/regions";
 
 interface RegionSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  label?: string;
+  className?: string;
 }
 
-export function RegionSelector({ value, onChange }: RegionSelectorProps) {
+/**
+ * Dropdown selector for regions with standard values
+ */
+export function RegionSelector({
+  value,
+  onChange,
+  label = "Region",
+  className = ""
+}: RegionSelectorProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor="region-selector" className="text-base">Region</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger id="region-selector" className="w-full">
+    <div className={className}>
+      {label && <Label className="mb-2">{label}</Label>}
+      <Select 
+        value={value} 
+        onValueChange={onChange}
+      >
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select region" />
         </SelectTrigger>
         <SelectContent>
-          {REGIONS.map(region => (
-            <SelectItem key={region.id} value={region.id}>
+          {REGIONS.map((region) => (
+            <SelectItem key={region.value} value={region.value}>
               {region.label}
             </SelectItem>
           ))}

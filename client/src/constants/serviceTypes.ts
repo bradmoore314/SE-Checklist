@@ -1,14 +1,12 @@
-// Service types as shown in the screenshot
 export const SERVICE_TYPES = [
-  { id: 'kvg', label: 'Kastle Video Guarding' },
-  { id: 'krs', label: 'KastleReady Spaces' },
-  { id: 'access_control', label: 'Access Control' },
-  { id: 'cameras', label: 'Cameras' },
-  { id: 'monitoring', label: 'Monitoring' },
-  { id: 'alarms', label: 'Alarms' },
-  { id: 'intrusion_detection', label: 'Intrusion Detection' },
-  { id: 'ka2e', label: 'KA2E' },
-  { id: 'krsa', label: 'KRSA' },
-  { id: 'visitor_management', label: 'Visitor Management' },
-  { id: 'elevator_management', label: 'Elevator Management' }
+  { value: "Select", label: "Select" },
+  { value: "myVGS", label: "myVGS" },
+  { value: "myVGS-PlatinumPlus", label: "myVGS-PlatinumPlus" },
+  { value: "myVGS-Pro", label: "myVGS-Pro" },
+  { value: "myVGS-Standard", label: "myVGS-Standard" },
+  { value: "myKastleSecure", label: "myKastleSecure" },
+  { value: "myKMO", label: "myKMO" },
+  { value: "myKV", label: "myKV" },
+  { value: "Dedicated System", label: "Dedicated System" },
+  { value: "Custom", label: "Custom" }
 ];
