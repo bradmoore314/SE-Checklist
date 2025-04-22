@@ -10,7 +10,8 @@ interface RegionSelectorProps {
 }
 
 /**
- * Dropdown selector for regions with standard values
+ * Dropdown selector for Kastle regions with standard values
+ * Uses updated region list with MidAtlantic, Enterprise, etc.
  */
 export function RegionSelector({
   value,

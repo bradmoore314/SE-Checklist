@@ -10,7 +10,8 @@ interface ServicesRecommendedSelectorProps {
 }
 
 /**
- * Dropdown selector for recommended services with standard values
+ * Dropdown selector for recommended service types
+ * Uses updated service types with Events/Health, Patrols, etc.
  */
 export function ServicesRecommendedSelector({
   value,
@@ -26,7 +27,7 @@ export function ServicesRecommendedSelector({
         onValueChange={onChange}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select service" />
+          <SelectValue placeholder="Select services" />
         </SelectTrigger>
         <SelectContent>
           {SERVICE_TYPES.map((service) => (

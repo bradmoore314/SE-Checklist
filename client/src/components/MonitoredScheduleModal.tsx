@@ -1,142 +1,212 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { TimeInputWithDefaults } from "./TimeInputWithDefaults";
-import { setDefaultMinutes } from "@/lib/time-utils";
-import { Clock } from "lucide-react";
 
-interface Schedule {
-  startTime: string;
-  endTime: string;
+interface ScheduleConfig {
+  weekdays: {
+    enabled: boolean;
+    startTime: string;
+    endTime: string;
+  };
+  weekends: {
+    enabled: boolean;
+    startTime: string;
+    endTime: string;
+  };
 }
 
 interface MonitoredScheduleModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  weekdaySchedule: Schedule;
-  weekendSchedule: Schedule;
-  onSave: (weekday: Schedule, weekend: Schedule) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (schedule: ScheduleConfig) => void;
+  initialSchedule?: ScheduleConfig;
 }
 
+const DEFAULT_SCHEDULE: ScheduleConfig = {
+  weekdays: {
+    enabled: true,
+    startTime: "17:00",
+    endTime: "08:00"
+  },
+  weekends: {
+    enabled: true,
+    startTime: "00:00",
+    endTime: "23:59"
+  }
+};
+
 /**
- * Modal for setting advanced weekday/weekend monitoring schedules
- * Ensures minutes are set to "00" for all time inputs
+ * Modal for configuring weekday and weekend monitoring schedules
+ * Allows for different time ranges on different days
  */
 export function MonitoredScheduleModal({
-  open,
-  onOpenChange,
-  weekdaySchedule,
-  weekendSchedule,
-  onSave
+  isOpen,
+  onClose,
+  onSave,
+  initialSchedule = DEFAULT_SCHEDULE
 }: MonitoredScheduleModalProps) {
-  const [weekdayStart, setWeekdayStart] = useState(weekdaySchedule.startTime || "08:00");
-  const [weekdayEnd, setWeekdayEnd] = useState(weekdaySchedule.endTime || "18:00");
-  const [weekendStart, setWeekendStart] = useState(weekendSchedule.startTime || "08:00");
-  const [weekendEnd, setWeekendEnd] = useState(weekendSchedule.endTime || "18:00");
+  const [schedule, setSchedule] = useState<ScheduleConfig>(initialSchedule);
+  const [activeTab, setActiveTab] = useState<string>("weekdays");
   
-  // Sync internal state with props
-  useEffect(() => {
-    if (open) {
-      setWeekdayStart(weekdaySchedule.startTime || "08:00");
-      setWeekdayEnd(weekdaySchedule.endTime || "18:00");
-      setWeekendStart(weekendSchedule.startTime || "08:00");
-      setWeekendEnd(weekendSchedule.endTime || "18:00");
-    }
-  }, [open, weekdaySchedule, weekendSchedule]);
+  // Handle schedule updates
+  const updateWeekdayEnabled = (enabled: boolean) => {
+    setSchedule({
+      ...schedule,
+      weekdays: {
+        ...schedule.weekdays,
+        enabled
+      }
+    });
+  };
   
-  // Ensure all times use "00" minutes
-  useEffect(() => {
-    if (weekdayStart && !weekdayStart.endsWith(":00")) {
-      setWeekdayStart(setDefaultMinutes(weekdayStart, "00"));
-    }
-    if (weekdayEnd && !weekdayEnd.endsWith(":00")) {
-      setWeekdayEnd(setDefaultMinutes(weekdayEnd, "00"));
-    }
-    if (weekendStart && !weekendStart.endsWith(":00")) {
-      setWeekendStart(setDefaultMinutes(weekendStart, "00"));
-    }
-    if (weekendEnd && !weekendEnd.endsWith(":00")) {
-      setWeekendEnd(setDefaultMinutes(weekendEnd, "00"));
-    }
-  }, []);
+  const updateWeekendEnabled = (enabled: boolean) => {
+    setSchedule({
+      ...schedule,
+      weekends: {
+        ...schedule.weekends,
+        enabled
+      }
+    });
+  };
   
+  const updateWeekdayStartTime = (startTime: string) => {
+    setSchedule({
+      ...schedule,
+      weekdays: {
+        ...schedule.weekdays,
+        startTime
+      }
+    });
+  };
+  
+  const updateWeekdayEndTime = (endTime: string) => {
+    setSchedule({
+      ...schedule,
+      weekdays: {
+        ...schedule.weekdays,
+        endTime
+      }
+    });
+  };
+  
+  const updateWeekendStartTime = (startTime: string) => {
+    setSchedule({
+      ...schedule,
+      weekends: {
+        ...schedule.weekends,
+        startTime
+      }
+    });
+  };
+  
+  const updateWeekendEndTime = (endTime: string) => {
+    setSchedule({
+      ...schedule,
+      weekends: {
+        ...schedule.weekends,
+        endTime
+      }
+    });
+  };
+  
+  // Handle save
   const handleSave = () => {
-    onSave(
-      { startTime: weekdayStart, endTime: weekdayEnd },
-      { startTime: weekendStart, endTime: weekendEnd }
-    );
-    onOpenChange(false);
+    onSave(schedule);
+    onClose();
   };
   
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-primary" />
-            Monitoring Schedule Configuration
-          </DialogTitle>
+          <DialogTitle>Configure Monitoring Schedule</DialogTitle>
           <DialogDescription>
-            Set different monitoring schedules for weekdays and weekends.
-            All times will use "00" minutes for standardization.
+            Set up different monitoring schedules for weekdays and weekends
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
-          {/* Weekday Schedule */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Weekday Schedule (Monday - Friday)</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="weekday-start" className="text-xs">Start Time</Label>
-                <TimeInputWithDefaults
-                  value={weekdayStart}
-                  onChange={setWeekdayStart}
-                  defaultHour="08"
-                  className="h-9"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weekday-end" className="text-xs">End Time</Label>
-                <TimeInputWithDefaults
-                  value={weekdayEnd}
-                  onChange={setWeekdayEnd}
-                  defaultHour="18"
-                  className="h-9"
-                />
-              </div>
-            </div>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="weekdays">Weekdays (Mon-Fri)</TabsTrigger>
+            <TabsTrigger value="weekends">Weekends (Sat-Sun)</TabsTrigger>
+          </TabsList>
           
-          {/* Weekend Schedule */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Weekend Schedule (Saturday - Sunday)</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="weekend-start" className="text-xs">Start Time</Label>
-                <TimeInputWithDefaults
-                  value={weekendStart}
-                  onChange={setWeekendStart}
-                  defaultHour="08"
-                  className="h-9"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weekend-end" className="text-xs">End Time</Label>
-                <TimeInputWithDefaults
-                  value={weekendEnd}
-                  onChange={setWeekendEnd}
-                  defaultHour="18"
-                  className="h-9"
-                />
-              </div>
+          <TabsContent value="weekdays" className="space-y-4 pt-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="weekday-enabled" className="font-medium">
+                Enable weekday monitoring
+              </Label>
+              <Switch
+                id="weekday-enabled"
+                checked={schedule.weekdays.enabled}
+                onCheckedChange={updateWeekdayEnabled}
+              />
             </div>
-          </div>
-        </div>
+            
+            {schedule.weekdays.enabled && (
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <TimeInputWithDefaults
+                  label="Start Time"
+                  value={schedule.weekdays.startTime}
+                  onChange={updateWeekdayStartTime}
+                  className="w-full"
+                />
+                
+                <TimeInputWithDefaults
+                  label="End Time"
+                  value={schedule.weekdays.endTime}
+                  onChange={updateWeekdayEndTime}
+                  className="w-full"
+                />
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="weekends" className="space-y-4 pt-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="weekend-enabled" className="font-medium">
+                Enable weekend monitoring
+              </Label>
+              <Switch
+                id="weekend-enabled"
+                checked={schedule.weekends.enabled}
+                onCheckedChange={updateWeekendEnabled}
+              />
+            </div>
+            
+            {schedule.weekends.enabled && (
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <TimeInputWithDefaults
+                  label="Start Time" 
+                  value={schedule.weekends.startTime}
+                  onChange={updateWeekendStartTime}
+                  className="w-full"
+                />
+                
+                <TimeInputWithDefaults
+                  label="End Time"
+                  value={schedule.weekends.endTime}
+                  onChange={updateWeekendEndTime}
+                  className="w-full"
+                />
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
         
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={handleSave}>

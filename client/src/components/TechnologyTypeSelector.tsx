@@ -11,11 +11,12 @@ interface TechnologyTypeSelectorProps {
 
 /**
  * Dropdown selector for technology types with standard values
+ * Uses updated technology types like KV Gateway + KVG, Avigilon, etc.
  */
 export function TechnologyTypeSelector({
   value,
   onChange,
-  label = "Technology Type",
+  label = "Technology",
   className = ""
 }: TechnologyTypeSelectorProps) {
   return (
@@ -29,9 +30,9 @@ export function TechnologyTypeSelector({
           <SelectValue placeholder="Select technology type" />
         </SelectTrigger>
         <SelectContent>
-          {TECHNOLOGY_TYPES.map((tech) => (
-            <SelectItem key={tech.value} value={tech.value}>
-              {tech.label}
+          {TECHNOLOGY_TYPES.map((type) => (
+            <SelectItem key={type.value} value={type.value}>
+              {type.label}
             </SelectItem>
           ))}
         </SelectContent>

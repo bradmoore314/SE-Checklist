@@ -1,6 +1,5 @@
-import { Fragment } from "react";
-import { Link } from "wouter";
-import { ChevronRight, HomeIcon } from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 interface BreadcrumbItem {
   label: string;
@@ -13,51 +12,38 @@ interface BreadcrumbNavProps {
 }
 
 /**
- * Breadcrumb navigation component for easy back-navigation
- * Displays a path hierarchy from home to current location
+ * Breadcrumb navigation component that shows the user's current location in the app
+ * And provides links back to previous pages
  */
 export function BreadcrumbNav({ items, className = "" }: BreadcrumbNavProps) {
+  const [location] = useLocation();
+
   return (
-    <nav 
-      className={`flex items-center text-sm text-muted-foreground ${className}`}
-      aria-label="Breadcrumb"
-    >
-      <ol className="flex items-center space-x-2">
-        <li>
-          <Link href="/">
-            <a className="flex items-center hover:text-primary">
-              <HomeIcon className="h-4 w-4" />
-              <span className="sr-only">Home</span>
-            </a>
-          </Link>
-        </li>
-        
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+    <nav className={`flex items-center text-sm ${className}`}>
+      <Link href="/">
+        <a className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+          <Home className="h-4 w-4 mr-1" />
+          Home
+        </a>
+      </Link>
+      
+      {items.map((item, index) => (
+        <div key={index} className="flex items-center">
+          <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
           
-          return (
-            <Fragment key={index}>
-              <li className="flex items-center">
-                <ChevronRight className="h-4 w-4" />
-              </li>
-              
-              <li>
-                {isLast || !item.href ? (
-                  <span className={isLast ? "font-medium text-foreground" : ""}>
-                    {item.label}
-                  </span>
-                ) : (
-                  <Link href={item.href}>
-                    <a className="hover:text-primary">
-                      {item.label}
-                    </a>
-                  </Link>
-                )}
-              </li>
-            </Fragment>
-          );
-        })}
-      </ol>
+          {item.href && item.href !== location ? (
+            <Link href={item.href}>
+              <a className="text-muted-foreground hover:text-foreground transition-colors">
+                {item.label}
+              </a>
+            </Link>
+          ) : (
+            <span className="font-medium text-foreground">
+              {item.label}
+            </span>
+          )}
+        </div>
+      ))}
     </nav>
   );
 }
