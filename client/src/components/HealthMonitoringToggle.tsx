@@ -3,64 +3,57 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 interface HealthMonitoringToggleProps {
-  value: boolean;
-  onChange: (value: boolean) => void;
-  streamCount: number;
-  onStreamCountChange: (value: number) => void;
+  enabled: boolean;
+  onChange: (enabled: boolean) => void;
+  onStreamCountChange?: (count: number) => void;
+  streamCount?: number;
   className?: string;
 }
 
 /**
- * Toggle component for health monitoring with auto-stream count setting
- * When enabled, automatically sets the stream count to the appropriate value
+ * Toggle component for health monitoring with automatic stream count setting
+ * Sets stream count to match total stream count when enabled
  */
 export function HealthMonitoringToggle({
-  value,
+  enabled,
   onChange,
-  streamCount,
   onStreamCountChange,
+  streamCount = 0,
   className = ""
 }: HealthMonitoringToggleProps) {
-  const [previousStreamCount, setPreviousStreamCount] = useState<number>(streamCount);
+  const [isEnabled, setIsEnabled] = useState(enabled);
   
-  // Set the default stream count when health monitoring is toggled on
+  // Update component state when prop changes
   useEffect(() => {
-    if (value && streamCount === 0) {
-      // When turned on and no streams, set to default of 2
-      onStreamCountChange(2);
-    }
-  }, [value]);
+    setIsEnabled(enabled);
+  }, [enabled]);
   
-  const handleToggleChange = (toggled: boolean) => {
-    if (toggled) {
-      // Store previous count before enabling
-      setPreviousStreamCount(streamCount);
-      
-      // When turning on, set a minimum of 2 streams if current count is less
-      if (streamCount < 2) {
-        onStreamCountChange(2);
-      }
-    } else {
-      // When turning off, we keep the current count
-      // Optionally could restore previous count: onStreamCountChange(previousStreamCount);
-    }
+  // Handle toggle changes
+  const handleToggleChange = (checked: boolean) => {
+    setIsEnabled(checked);
+    onChange(checked);
     
-    onChange(toggled);
+    // If enabled and we have a streamCount and a callback, update the stream count
+    if (checked && streamCount > 0 && onStreamCountChange) {
+      onStreamCountChange(streamCount);
+    }
   };
   
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       <Switch
-        id="health-monitoring"
-        checked={value}
+        id="health-monitoring-toggle"
+        checked={isEnabled}
         onCheckedChange={handleToggleChange}
       />
-      <Label 
-        htmlFor="health-monitoring"
-        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      >
-        Health Monitoring {value ? "(Enabled)" : "(Disabled)"}
+      <Label htmlFor="health-monitoring-toggle" className="cursor-pointer">
+        Health Monitoring
       </Label>
+      {isEnabled && streamCount > 0 && (
+        <span className="text-sm text-muted-foreground ml-2">
+          ({streamCount} streams monitored)
+        </span>
+      )}
     </div>
   );
 }
