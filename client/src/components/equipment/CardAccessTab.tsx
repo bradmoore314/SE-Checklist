@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AccessPoint, Project } from "@shared/schema";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Camera } from "lucide-react";
+import { Settings, Camera, ChevronDown, ChevronUp, Copy, Trash, Image as ImageIcon, Layers, DoorOpen } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CardAccessTabProps {
   project: Project;
@@ -25,6 +27,8 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedAccessPoint, setSelectedAccessPoint] = useState<AccessPoint | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -40,6 +44,25 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     newPanelType: false,
     newReaderType: false,
     notes: false
+  });
+  
+  // Auto-save mutation
+  const updateAccessPointMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await apiRequest('PUT', `/api/access-points/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${project.id}/access-points`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${project.id}/reports/project-summary`] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Auto-save Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   // Fetch access points
