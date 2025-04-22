@@ -1,30 +1,42 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CAMERA_TYPES } from "@/constants/cameraTypes";
 
 interface StreamTypeSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  label?: string;
+  className?: string;
 }
 
-export function StreamTypeSelector({ value, onChange }: StreamTypeSelectorProps) {
+/**
+ * Dropdown selector for stream types with standard values
+ * Uses updated camera types that include "Stream" wording
+ */
+export function StreamTypeSelector({
+  value,
+  onChange,
+  label = "Stream Type",
+  className = ""
+}: StreamTypeSelectorProps) {
   return (
-    <div className="space-y-3">
-      <Label className="text-base">Camera Type</Label>
-      <RadioGroup
-        value={value}
+    <div className={className}>
+      {label && <Label className="mb-2">{label}</Label>}
+      <Select 
+        value={value} 
         onValueChange={onChange}
-        className="grid grid-cols-1 md:grid-cols-2 gap-2"
       >
-        {CAMERA_TYPES.map((type) => (
-          <div key={type.id} className="flex items-center space-x-2">
-            <RadioGroupItem value={type.id} id={`camera-type-${type.id}`} />
-            <Label htmlFor={`camera-type-${type.id}`} className="text-sm">
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select stream type" />
+        </SelectTrigger>
+        <SelectContent>
+          {CAMERA_TYPES.map((type) => (
+            <SelectItem key={type.value} value={type.value}>
               {type.label}
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

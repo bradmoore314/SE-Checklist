@@ -1,67 +1,82 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { setDefaultMinutes } from "@/lib/time-utils";
+import { Label } from "@/components/ui/label";
 
 interface TimeInputWithDefaultsProps {
-  value: string;
-  onChange: (value: string) => void;
+  label: string;
+  value: string; // in HH:MM format
+  onChange: (value: string) => void; 
   className?: string;
-  defaultHour?: string;
-  placeholder?: string;
-  disabled?: boolean;
+  defaultMinutes?: string; // defaults to "00"
 }
 
 /**
- * Time input component that enforces "00" minutes
- * Fixes the issue where time inputs get "20" minutes by default
+ * Time input component that defaults minutes to "00" when hours are set
+ * Addresses issue where time inputs weren't saving properly and minutes weren't defaulting correctly
  */
 export function TimeInputWithDefaults({
+  label,
   value,
   onChange,
   className = "",
-  defaultHour = "08",
-  placeholder = "Select time",
-  disabled = false
+  defaultMinutes = "00"
 }: TimeInputWithDefaultsProps) {
-  // On initial render or when value changes, ensure minutes are set to "00"
+  const [hours, setHours] = useState<string>("");
+  const [minutes, setMinutes] = useState<string>("");
+  
+  // Initialize from value
   useEffect(() => {
-    if (!value) {
-      // If no value, set default
-      onChange(`${defaultHour}:00`);
-      return;
-    }
-
-    // If value exists but doesn't have ":00" minutes, update it
-    if (value && !value.endsWith(":00")) {
-      const updatedValue = setDefaultMinutes(value, "00");
-      onChange(updatedValue);
+    if (value) {
+      const parts = value.split(":");
+      if (parts.length === 2) {
+        setHours(parts[0]);
+        setMinutes(parts[1]);
+      }
     }
   }, []);
-
-  // Handle change but enforce "00" minutes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = e.target.value;
+  
+  // When hours change, set default minutes if none are set
+  const handleHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newHours = e.target.value;
+    setHours(newHours);
     
-    // If the value is being cleared, set default
-    if (!newValue) {
-      newValue = `${defaultHour}:00`;
-    } 
-    // Otherwise force "00" minutes
-    else if (newValue && !newValue.endsWith(":00")) {
-      newValue = setDefaultMinutes(newValue, "00");
+    // If hours are set and minutes are empty, default to "00"
+    if (newHours && !minutes) {
+      setMinutes(defaultMinutes);
+      onChange(`${newHours}:${defaultMinutes}`);
+    } else {
+      onChange(`${newHours}:${minutes || defaultMinutes}`);
     }
-    
-    onChange(newValue);
   };
-
+  
+  const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newMinutes = e.target.value;
+    setMinutes(newMinutes);
+    onChange(`${hours || "00"}:${newMinutes}`);
+  };
+  
   return (
-    <Input
-      type="time"
-      value={value || `${defaultHour}:00`}
-      onChange={handleChange}
-      placeholder={placeholder}
-      className={className}
-      disabled={disabled}
-    />
+    <div className={className}>
+      <Label className="mb-2">{label}</Label>
+      <div className="flex items-center space-x-2">
+        <Input
+          type="text"
+          placeholder="HH"
+          maxLength={2}
+          value={hours}
+          onChange={handleHoursChange}
+          className="w-16 text-center"
+        />
+        <span className="text-xl">:</span>
+        <Input
+          type="text"
+          placeholder="MM"
+          maxLength={2}
+          value={minutes}
+          onChange={handleMinutesChange}
+          className="w-16 text-center"
+        />
+      </div>
+    </div>
   );
 }

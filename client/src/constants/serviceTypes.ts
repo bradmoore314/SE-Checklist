@@ -1,12 +1,13 @@
 export const SERVICE_TYPES = [
   { value: "Select", label: "Select" },
-  { value: "myVGS", label: "myVGS" },
-  { value: "myVGS-PlatinumPlus", label: "myVGS-PlatinumPlus" },
-  { value: "myVGS-Pro", label: "myVGS-Pro" },
-  { value: "myVGS-Standard", label: "myVGS-Standard" },
-  { value: "myKastleSecure", label: "myKastleSecure" },
-  { value: "myKMO", label: "myKMO" },
-  { value: "myKV", label: "myKV" },
-  { value: "Dedicated System", label: "Dedicated System" },
-  { value: "Custom", label: "Custom" }
+  { value: "Events/Health", label: "Events/Health" },
+  { value: "Patrols", label: "Patrols" },
+  { value: "Events/Patrols", label: "Events/Patrols" },
+  { value: "Events/Patrols/Audio", label: "Events/Patrols/Audio" },
+  { value: "Events/Patrols/Audio/Dispatch", label: "Events/Patrols/Audio/Dispatch" },
+  { value: "Events/Health/Dispatch", label: "Events/Health/Dispatch" },
+  { value: "Events/Audio/Health/Dispatch", label: "Events/Audio/Health/Dispatch" },
+  { value: "Patrols/Dispatch", label: "Patrols/Dispatch" },
+  { value: "Patrols/Audio/Dispatch", label: "Patrols/Audio/Dispatch" },
+  { value: "Other", label: "Other" }
 ];
