@@ -775,7 +775,10 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       });
       
       // Update marker position in database with integer values
-      updateMarkerPosition(markerId, x, y);
+      // We need to await the async function
+      updateMarkerPosition(markerId, x, y).catch(err => {
+        console.error("Error in marker position update:", err);
+      });
     } else {
       toast({
         title: "Invalid position",
@@ -847,24 +850,23 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   }
   
   // Update marker position in the database
-  const updateMarkerPosition = (markerId: number, x: number, y: number) => {
-    // Find the marker in the current markers list
-    const marker = markers.find(m => m.id === markerId);
-    if (!marker) {
-      console.error('Cannot update position: Marker not found:', markerId);
-      return;
-    }
-    
-    // Log the update
-    console.log(`Updating marker ${markerId} position to:`, { x, y });
-    
-    // Send to the server - the API expects all marker fields
-    fetch(`/api/floorplan-markers/${markerId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+  const updateMarkerPosition = async (markerId: number, x: number, y: number) => {
+    try {
+      // Make sure we have authentication
+      await bypassAuth();
+      
+      // Find the marker in the current markers list
+      const marker = markers.find(m => m.id === markerId);
+      if (!marker) {
+        console.error('Cannot update position: Marker not found:', markerId);
+        return;
+      }
+      
+      // Log the update
+      console.log(`Updating marker ${markerId} position to:`, { x, y });
+      
+      // Use our API request helper function that handles auth
+      const response = await apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
         floorplan_id: marker.floorplan_id,
         page: marker.page,
         marker_type: marker.marker_type,
@@ -872,15 +874,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         position_x: x,
         position_y: y,
         label: marker.label
-      })
-    })
-    .then(response => {
+      });
+      
       if (!response.ok) {
         throw new Error(`API Error (${response.status})`);
       }
-      return response.json();
-    })
-    .then(() => {
+      
       // Refresh markers list
       queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
       
@@ -894,15 +893,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
-    })
-    .catch(error => {
+    } catch (error) {
       console.error('Error updating marker position:', error);
       toast({
         title: "Error updating position",
         description: error instanceof Error ? error.message : "Failed to update marker position.",
         variant: "destructive",
       });
-    });
+    }
   };
   
   // Create a new marker
