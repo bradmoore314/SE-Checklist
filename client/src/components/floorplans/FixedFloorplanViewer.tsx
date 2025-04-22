@@ -855,56 +855,48 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         return;
       }
       
-      console.log(`Making PATCH request to update marker ${markerId} position to:`, { x, y });
+      console.log(`Updating marker ${markerId} position to:`, { x, y });
       
-      // Try using a direct mutation instead of apiRequest
-      await bypassAuth(); // Always ensure we have authentication
+      // Always ensure we have authentication
+      await bypassAuth();
       
-      // Update local marker first (optimistic update)
-      const updatedMarker = { ...marker, position_x: x, position_y: y };
+      // Use PUT instead of PATCH - the server is expecting a complete object
+      // This fixes the marker dragging functionality
+      const response = await apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
+        floorplan_id: marker.floorplan_id,
+        page: marker.page,
+        marker_type: marker.marker_type,
+        equipment_id: marker.equipment_id,
+        position_x: x,
+        position_y: y,
+        label: marker.label
+      });
       
-      // Update the marker with a direct mutation to avoid any state issues
-      try {
-        // Using fetch directly to avoid any caching or state issues
-        const response = await fetch(`/api/floorplan-markers/${markerId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Bypass-Auth': 'true' // Add bypass header for dev environments
-          },
-          body: JSON.stringify({
-            position_x: x,
-            position_y: y
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API Error (${response.status})`);
-        }
-        
-        // Refresh markers list
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-        
-        // Show success toast
-        toast({
-          title: "Position updated",
-          description: "Marker position saved successfully", 
-        });
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-        
-        // Show error toast
-        toast({
-          title: "Error updating position",
-          description: "Failed to update marker position. Please try again.",
-          variant: "destructive",
-        });
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error('API error response:', errorText);
+        throw new Error(`API Error (${response.status}): ${errorText}`);
       }
+      
+      // Refresh markers list
+      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
+      
+      // Show success toast
+      toast({
+        title: "Position updated",
+        description: "Marker position saved successfully", 
+      });
+      
+      // Call onMarkersUpdated if provided
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
+      
     } catch (error) {
       console.error('Error updating marker position:', error);
       toast({
         title: "Error updating position",
-        description: error instanceof Error ? error.message : 'Failed to update marker position',
+        description: error instanceof Error ? error.message : "Failed to update marker position.",
         variant: "destructive",
       });
     }
