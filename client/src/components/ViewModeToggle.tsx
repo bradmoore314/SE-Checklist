@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LayoutList, Grid } from "lucide-react";
 
-export type ViewMode = "cards" | "list";
+export type ViewMode = "cards" | "table";
 
 interface ViewModeToggleProps {
   viewMode: ViewMode;
@@ -22,13 +22,13 @@ export function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
         Cards
       </Button>
       <Button
-        variant={viewMode === "list" ? "default" : "outline"}
+        variant={viewMode === "table" ? "default" : "outline"}
         size="sm"
-        onClick={() => onChange("list")}
+        onClick={() => onChange("table")}
         className="px-2 py-1 h-8"
       >
         <LayoutList className="h-4 w-4 mr-1" />
-        List
+        Table
       </Button>
     </div>
   );
