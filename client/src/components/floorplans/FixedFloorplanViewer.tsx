@@ -689,11 +689,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     
     // Get PDF container position and adjust for scale
     const rect = pdfDocumentRef.current.getBoundingClientRect();
-    const x = Math.round((e.clientX - rect.left) / pdfScale);
-    const y = Math.round((e.clientY - rect.top) / pdfScale);
     
-    // Make sure the position is within bounds
-    if (x < 0 || y < 0) return;
+    // Calculate position and ensure they are integers
+    const x = Math.floor((e.clientX - rect.left) / pdfScale);
+    const y = Math.floor((e.clientY - rect.top) / pdfScale);
+    
+    // Make sure the position is within bounds and valid integers
+    if (x < 0 || y < 0 || !Number.isInteger(x) || !Number.isInteger(y)) return;
     
     // Update marker position visually - use direct DOM manipulation for smoother dragging
     const markerElement = document.getElementById(`marker-${draggedMarker}`);
@@ -720,13 +722,15 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return;
     }
     
-    // Calculate final position
+    // Calculate final position - ensure positions are integers
     const rect = pdfDocumentRef.current.getBoundingClientRect();
-    const x = Math.round((e.clientX - rect.left) / pdfScale);
-    const y = Math.round((e.clientY - rect.top) / pdfScale);
     
-    // Make sure the position is within bounds
-    if (x >= 0 && y >= 0) {
+    // Calculate position and convert to integers
+    const x = Math.floor((e.clientX - rect.left) / pdfScale);
+    const y = Math.floor((e.clientY - rect.top) / pdfScale);
+    
+    // Make sure the position is within bounds and valid
+    if (x >= 0 && y >= 0 && Number.isInteger(x) && Number.isInteger(y)) {
       // Log the update
       console.log(`Updating marker ${draggedMarker} position to:`, { x, y });
       
@@ -736,7 +740,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         description: "Saving new position to database",
       });
       
-      // Update marker position in database
+      // Update marker position in database with integer values
       updateMarkerPosition(draggedMarker, x, y);
     }
     
@@ -903,14 +907,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     // Default equipment ID for non-note markers
     const defaultEquipmentId = -1;
     
-    // Create the marker
+    // Create the marker with integer positions 
     await createMarkerMutation.mutateAsync({
       floorplan_id: selectedFloorplan.id,
       page: 1, // Default to first page for now
       marker_type: markerType,
       equipment_id: defaultEquipmentId,
-      position_x: newMarkerPosition.x,
-      position_y: newMarkerPosition.y,
+      position_x: Math.floor(newMarkerPosition.x),
+      position_y: Math.floor(newMarkerPosition.y),
       label
     });
   };
@@ -925,14 +929,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     // Get auto-generated label based on the equipment number
     const label = equipmentId.toString(); 
     
-    // Create the marker
+    // Create the marker with integer positions
     await createMarkerMutation.mutateAsync({
       floorplan_id: selectedFloorplan.id,
       page: 1, // Default to first page for now
       marker_type: selectedEquipmentType!,
       equipment_id: equipmentId,
-      position_x: newMarkerPosition.x,
-      position_y: newMarkerPosition.y,
+      position_x: Math.floor(newMarkerPosition.x),
+      position_y: Math.floor(newMarkerPosition.y),
       label
     });
     
