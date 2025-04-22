@@ -135,11 +135,44 @@ export const insertCameraSchema = createInsertSchema(cameras).omit({
 export const elevators = pgTable("elevators", {
   id: serial("id").primaryKey(),
   project_id: integer("project_id").notNull(),
+  title: text("title"),
   location: text("location").notNull(),
   elevator_type: text("elevator_type").notNull(),
   floor_count: integer("floor_count"),
   bank_name: text("bank_name"),
   notes: text("notes"),
+  // Building information
+  building_number: text("building_number"),
+  address: text("address"),
+  city: text("city"),
+  // Management company information
+  management_company: text("management_company"),
+  management_contact_person: text("management_contact_person"),
+  management_phone_number: text("management_phone_number"),
+  // Elevator company information
+  elevator_company: text("elevator_company"),
+  elevator_contact_person: text("elevator_contact_person"),
+  elevator_phone_number: text("elevator_phone_number"),
+  elevator_system_type: text("elevator_system_type"),
+  // Security configuration
+  secured_floors: text("secured_floors"),
+  rear_hall_calls: boolean("rear_hall_calls"),
+  rear_hall_control: boolean("rear_hall_control"),
+  // Reader specifications
+  reader_type: text("reader_type"),
+  reader_mounting_surface_ferrous: boolean("reader_mounting_surface_ferrous"),
+  flush_mount_required: boolean("flush_mount_required"),
+  // Visitor processing
+  visitor_processing: text("visitor_processing"),
+  elevator_phones_for_visitors: boolean("elevator_phones_for_visitors"),
+  elevator_phone_type: text("elevator_phone_type"),
+  engineer_override_key_switch: boolean("engineer_override_key_switch"),
+  // Freight car specifications
+  freight_car_numbers: text("freight_car_numbers"),
+  freight_car_in_group: boolean("freight_car_in_group"),
+  freight_secure_type: text("freight_secure_type"),
+  freight_car_home_floor: text("freight_car_home_floor"),
+  shutdown_freight_car: boolean("shutdown_freight_car"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
