@@ -702,15 +702,18 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const marker = markers.find(m => m.id === draggedMarker);
     if (!marker) return;
     
-    // Get PDF container position and adjust for scale
+    // Get PDF container position
     const rect = pdfDocumentRef.current.getBoundingClientRect();
     
-    // Calculate position and ensure they are integers
+    // Calculate position in PDF coordinates, adjusting for scale
+    // We divide by pdfScale to convert from screen coordinates to PDF coordinates
     const x = Math.floor((e.clientX - rect.left) / pdfScale);
     const y = Math.floor((e.clientY - rect.top) / pdfScale);
     
-    // Make sure the position is within bounds and valid integers
+    // Make sure the position is within bounds of the PDF
     if (x < 0 || y < 0 || !Number.isInteger(x) || !Number.isInteger(y)) return;
+    
+    console.log(`Dragging marker to (${x}, ${y}) at scale ${pdfScale}`);
     
     // Update marker position visually - use direct DOM manipulation for smoother dragging
     const markerElement = document.getElementById(`marker-${draggedMarker}`);
@@ -742,10 +745,10 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return;
     }
     
-    // Calculate final position - ensure positions are integers
+    // Get PDF container position
     const rect = pdfDocumentRef.current.getBoundingClientRect();
     
-    // Calculate position and convert to integers
+    // Calculate position in PDF coordinates, accounting for scale
     const x = Math.floor((e.clientX - rect.left) / pdfScale);
     const y = Math.floor((e.clientY - rect.top) / pdfScale);
     
@@ -755,7 +758,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     // Reset dragged marker state immediately to avoid UI issues
     setDraggedMarker(null);
     
-    // Make sure the position is within bounds and valid
+    // Make sure the position is within bounds of the PDF and valid
     if (x >= 0 && y >= 0 && Number.isInteger(x) && Number.isInteger(y)) {
       // Log the update
       console.log(`Updating marker ${markerId} position to:`, { x, y });
@@ -768,6 +771,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       
       // Update marker position in database with integer values
       updateMarkerPosition(markerId, x, y);
+    } else {
+      toast({
+        title: "Invalid position",
+        description: "Marker position must be within the floorplan boundaries",
+        variant: "destructive"
+      });
     }
   }
   
@@ -1522,9 +1531,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                         <div
                           key={marker.id}
                           id={`marker-${marker.id}`}
-                          className={`absolute flex items-center justify-center select-none ${
+                          className={`absolute flex items-center justify-center select-none group ${
                             isNote ? 'flex-col' : ''
-                          }`}
+                          } ${marker.id === draggedMarker ? 'z-20' : 'z-10'}`}
                           style={{
                             left: `${marker.position_x}px`,
                             top: `${marker.position_y}px`,
@@ -1534,11 +1543,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             color: textColor,
                             border: `2px solid ${borderColor}`,
                             borderRadius: isNote ? '4px' : '50%',
-                            zIndex: 10,
                             cursor: 'move',
                             fontSize: isNote ? '12px' : '14px',
                             fontWeight: 'bold',
-                            transform: isNote ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)',
+                            transform: `translate(-50%, -50%) scale(${1/pdfScale})`,
+                            transformOrigin: 'center',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                           }}
                           onMouseDown={(e) => {
@@ -1573,13 +1582,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             getMarkerNumber(marker.id)
                           )}
                           
-                          {/* Tooltip with marker context menu */}
+                          {/* Tooltip with marker context menu - only visible on hover */}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="absolute -top-3 -right-3 h-6 w-6 p-0 rounded-full bg-white"
+                                className="absolute -top-3 -right-3 h-6 w-6 p-0 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                               >
                                 <MoreHorizontal className="h-3 w-3" />
                               </Button>
