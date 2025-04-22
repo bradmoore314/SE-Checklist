@@ -1,20 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AccessPoint, Project } from "@shared/schema";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Camera, ChevronDown, ChevronUp, Copy, Trash, Image as ImageIcon, Layers, DoorOpen } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ViewModeToggle, type ViewMode } from "@/components/ViewModeToggle";
 import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -48,7 +47,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     newReaderType: false,
     notes: false
   });
-  
+
   // Auto-save mutation
   const updateAccessPointMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
@@ -213,121 +212,40 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                     />
                     <Label htmlFor="exst-panel-location" className="text-sm text-gray-700">Existing Panel Location</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="exst-panel-type"
-                      checked={visibleColumns.exstPanelType}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, exstPanelType: !!checked})
-                      }
-                    />
-                    <Label htmlFor="exst-panel-type" className="text-sm text-gray-700">Existing Panel Type</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="exst-reader-type"
-                      checked={visibleColumns.exstReaderType}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, exstReaderType: !!checked})
-                      }
-                    />
-                    <Label htmlFor="exst-reader-type" className="text-sm text-gray-700">Existing Reader Type</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="new-panel-location"
-                      checked={visibleColumns.newPanelLocation}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, newPanelLocation: !!checked})
-                      }
-                    />
-                    <Label htmlFor="new-panel-location" className="text-sm text-gray-700">New Panel Location</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="new-panel-type"
-                      checked={visibleColumns.newPanelType}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, newPanelType: !!checked})
-                      }
-                    />
-                    <Label htmlFor="new-panel-type" className="text-sm text-gray-700">New Panel Type</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="new-reader-type"
-                      checked={visibleColumns.newReaderType}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, newReaderType: !!checked})
-                      }
-                    />
-                    <Label htmlFor="new-reader-type" className="text-sm text-gray-700">New Reader Type</Label>
-                  </div>
-                  
-                  <div className="pt-2 border-t border-gray-100">
-                    <h5 className="text-xs font-medium mb-2 text-gray-700">Other</h5>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="notes"
-                      checked={visibleColumns.notes}
-                      onCheckedChange={(checked) => 
-                        setVisibleColumns({...visibleColumns, notes: !!checked})
-                      }
-                    />
-                    <Label htmlFor="notes" className="text-sm text-gray-700">Notes</Label>
-                  </div>
+                  {/* Add other checkboxes for columns */}
                 </div>
               </PopoverContent>
             </Popover>
           )}
           
-          <div className="relative">
-            <div className="relative">
-              <span className="material-icons absolute left-3 top-2 text-gray-400">search</span>
-              <Input
-                type="text"
-                placeholder="Search access points"
-                className="pl-10 pr-4 py-2 w-64 border-gray-200"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset to first page on search
-                }}
-              />
-            </div>
-          </div>
-          
-          {filteredAccessPoints.length > 0 && (
-            <div className="text-sm text-gray-500">
-              {filteredAccessPoints.length} {filteredAccessPoints.length === 1 ? 'access point' : 'access points'}
-            </div>
-          )}
-          
-          <Button 
-            className="px-4 py-2 rounded-md flex items-center bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white"
+          <Button
+            variant="outline"
+            className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            size="sm"
             onClick={() => setShowAddModal(true)}
           >
-            <span className="material-icons mr-1">add</span>
-            Add Access Point
+            <span className="material-icons mr-1" style={{ fontSize: '16px' }}>add</span>
+            Add
           </Button>
         </div>
       </div>
-      
-      {/* Access Points Content */}
+
+      <div className="mb-6">
+        <Input
+          placeholder="Search access points by location, config, or reader type..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
+        />
+      </div>
+
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+        <div className="flex justify-center items-center p-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
         </div>
-      ) : paginatedAccessPoints.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-          <DoorOpen className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No access points found</h3>
-          <p className="mt-2 text-gray-500">
-            {searchTerm 
-              ? "No access points match your search criteria. Try adjusting your search."
-              : "Get started by adding your first access point."}
-          </p>
+      ) : filteredAccessPoints.length === 0 ? (
+        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+          <p className="text-gray-500 mb-4">No access points found for this project.</p>
           <Button 
             className="mt-4 px-4 py-2 rounded-md flex items-center mx-auto bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white"
             onClick={() => setShowAddModal(true)}
@@ -339,191 +257,104 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       ) : viewMode === 'cards' ? (
         // Card View
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-          {paginatedAccessPoints.map((ap: AccessPoint) => (
-            <Card key={ap.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
-              <CardHeader className="bg-gradient-to-r from-red-50 to-rose-100 border-b pb-3">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg text-red-800 flex items-center gap-2">
-                    <span className="p-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm">
-                      {ap.id}
-                    </span>
-                    Access Point
-                  </CardTitle>
-                  <div className="flex gap-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        setSelectedAccessPoint(ap);
-                        setShowImageModal(true);
-                      }}
-                      className="text-blue-500 p-0 h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
-                      title="Image Gallery"
-                    >
-                      <ImageIcon size={14} />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        setSelectedAccessPoint(ap);
-                        setShowEditModal(true);
-                      }}
-                      className="text-indigo-500 p-0 h-7 w-7 hover:bg-indigo-50 hover:text-indigo-600"
-                      title="Edit Access Point"
-                    >
-                      <span className="material-icons" style={{ fontSize: '14px' }}>edit</span>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDelete(ap.id)}
-                      className="text-red-500 p-0 h-7 w-7 hover:bg-red-50 hover:text-red-600"
-                      title="Delete Access Point"
-                    >
-                      <Trash size={14} />
-                    </Button>
+          {paginatedAccessPoints.map((ap: AccessPoint, index: number) => (
+            <ExpandableEquipmentCard
+              key={ap.id}
+              title="Access Point"
+              subtitle={ap.location}
+              number={index + 1}
+              onEdit={() => {
+                setSelectedAccessPoint(ap);
+                setShowEditModal(true);
+              }}
+              onDelete={() => handleDelete(ap.id)}
+              headerContent={
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Quick Config</p>
+                    <p className="text-sm font-medium">{ap.quick_config || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Reader Type</p>
+                    <p className="text-sm font-medium">{ap.reader_type || "Not specified"}</p>
                   </div>
                 </div>
-                <div className="text-sm text-red-700 font-medium mt-1 flex items-center gap-1">
-                  <DoorOpen size={14} className="text-red-600" /> 
-                  {ap.location ? 
-                    (ap.location.length > 40 ? 
-                      `${ap.location.substring(0, 40)}...` : 
-                      ap.location) : 
-                    "Location not specified"}
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-4 pb-3 px-4">
-                <div className="space-y-3 text-sm">
+              }
+            >
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Basic Information</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-500 font-medium">Quick Config</p>
-                      <p className="text-gray-900">{ap.quick_config || "Not specified"}</p>
+                      <p className="text-muted-foreground text-xs">Lock Provider</p>
+                      <p className="text-sm">{ap.lock_provider || "Not specified"}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500 font-medium">Reader Type</p>
-                      <p className="text-gray-900">{ap.reader_type || "Not specified"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 font-medium">Lock Type</p>
-                      <p className="text-gray-900">{ap.lock_type || "Not specified"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 font-medium">Monitoring</p>
-                      <p className="text-gray-900">{ap.monitoring_type || "Not specified"}</p>
+                      <p className="text-muted-foreground text-xs">Interior/Perimeter</p>
+                      <p className="text-sm">{ap.interior_perimeter || "Not specified"}</p>
                     </div>
                   </div>
-                  
-                  <div className="pt-2 border-t border-gray-100 mt-3">
-                    <Button 
-                      variant="ghost" 
-                      className="p-0 h-auto text-blue-600 hover:text-blue-800 hover:bg-transparent flex items-center gap-1"
-                      onClick={() => setExpandedCards(prev => ({ ...prev, [ap.id]: !prev[ap.id] }))}
-                    >
-                      {expandedCards[ap.id] ? (
-                        <>
-                          <ChevronUp size={16} />
-                          <span>Show less</span>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown size={16} />
-                          <span>Show more</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                  
-                  {expandedCards[ap.id] && (
-                    <div className="pt-2 space-y-4 border-t border-gray-100 mt-2">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-gray-500 font-medium">Takeover</p>
-                          <p className="text-gray-900">{ap.takeover || "No"}</p>
-                        </div>
-                        {ap.lock_provider && (
-                          <div>
-                            <p className="text-gray-500 font-medium">Lock Provider</p>
-                            <p className="text-gray-900">{ap.lock_provider}</p>
-                          </div>
-                        )}
-                        {ap.interior_perimeter && (
-                          <div>
-                            <p className="text-gray-500 font-medium">Interior/Perimeter</p>
-                            <p className="text-gray-900">{ap.interior_perimeter}</p>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {(ap.exst_panel_location || ap.exst_panel_type || ap.exst_reader_type) && (
-                        <div>
-                          <p className="text-gray-600 font-medium text-xs uppercase mb-2">Existing Equipment</p>
-                          <div className="grid grid-cols-2 gap-4">
-                            {ap.exst_panel_location && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Panel Location</p>
-                                <p className="text-gray-900">{ap.exst_panel_location}</p>
-                              </div>
-                            )}
-                            {ap.exst_panel_type && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Panel Type</p>
-                                <p className="text-gray-900">{ap.exst_panel_type}</p>
-                              </div>
-                            )}
-                            {ap.exst_reader_type && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Reader Type</p>
-                                <p className="text-gray-900">{ap.exst_reader_type}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {(ap.new_panel_location || ap.new_panel_type || ap.new_reader_type) && (
-                        <div>
-                          <p className="text-gray-600 font-medium text-xs uppercase mb-2">New Equipment</p>
-                          <div className="grid grid-cols-2 gap-4">
-                            {ap.new_panel_location && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Panel Location</p>
-                                <p className="text-gray-900">{ap.new_panel_location}</p>
-                              </div>
-                            )}
-                            {ap.new_panel_type && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Panel Type</p>
-                                <p className="text-gray-900">{ap.new_panel_type}</p>
-                              </div>
-                            )}
-                            {ap.new_reader_type && (
-                              <div>
-                                <p className="text-gray-500 font-medium">Reader Type</p>
-                                <p className="text-gray-900">{ap.new_reader_type}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {ap.notes && (
-                        <div>
-                          <p className="text-gray-500 font-medium">Notes</p>
-                          <p className="text-gray-900 whitespace-pre-wrap">{ap.notes}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
-              </CardContent>
-            </Card>
+                
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Panel Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-muted-foreground text-xs">Existing Panel Location</p>
+                      <p className="text-sm">{ap.exst_panel_location || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">Existing Panel Type</p>
+                      <p className="text-sm">{ap.exst_panel_type || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">Existing Reader Type</p>
+                      <p className="text-sm">{ap.exst_reader_type || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">New Panel Location</p>
+                      <p className="text-sm">{ap.new_panel_location || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">New Panel Type</p>
+                      <p className="text-sm">{ap.new_panel_type || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">New Reader Type</p>
+                      <p className="text-sm">{ap.new_reader_type || "N/A"}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {ap.notes && (
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Notes</h4>
+                    <p className="text-sm bg-muted/30 p-2 rounded border">
+                      {ap.notes}
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedAccessPoint(ap);
+                      setShowImageModal(true);
+                    }}
+                    className="flex items-center"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    View Images
+                  </Button>
+                </div>
+              </div>
+            </ExpandableEquipmentCard>
           ))}
         </div>
       ) : (
-        // Table View - improved styling
+        // Table View
         <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
           <table className="w-full text-sm text-left">
             <thead>
@@ -540,97 +371,59 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 {visibleColumns.interiorPerimeter && (
                   <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">INTERIOR/PERIMETER</th>
                 )}
-                {visibleColumns.exstPanelLocation && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING PANEL LOCATION</th>
-                )}
-                {visibleColumns.exstPanelType && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING PANEL TYPE</th>
-                )}
-                {visibleColumns.exstReaderType && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">EXISTING READER TYPE</th>
-                )}
-                {visibleColumns.newPanelLocation && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW PANEL LOCATION</th>
-                )}
-                {visibleColumns.newPanelType && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW PANEL TYPE</th>
-                )}
-                {visibleColumns.newReaderType && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NEW READER TYPE</th>
-                )}
-                {visibleColumns.notes && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">NOTES</th>
-                )}
                 <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">ACTIONS</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {paginatedAccessPoints.map((ap: AccessPoint, idx: number) => (
-                <tr key={ap.id} className={`border-b ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                  <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-800">{ap.location}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.quick_config}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.reader_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.lock_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.monitoring_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.takeover || 'No'}</td>
+                <tr key={ap.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-blue-600">{ap.location || "—"}</td>
+                  <td className="px-4 py-3">{ap.quick_config || "—"}</td>
+                  <td className="px-4 py-3">{ap.reader_type || "—"}</td>
+                  <td className="px-4 py-3">{ap.lock_type || "—"}</td>
+                  <td className="px-4 py-3">{ap.monitoring_type || "—"}</td>
+                  <td className="px-4 py-3">{ap.takeover || "No"}</td>
                   {visibleColumns.lockProvider && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.lock_provider || '-'}</td>
+                    <td className="px-4 py-3">{ap.lock_provider || "—"}</td>
                   )}
                   {visibleColumns.interiorPerimeter && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.interior_perimeter || '-'}</td>
+                    <td className="px-4 py-3">{ap.interior_perimeter || "—"}</td>
                   )}
-                  {visibleColumns.exstPanelLocation && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_panel_location || '-'}</td>
-                  )}
-                  {visibleColumns.exstPanelType && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_panel_type || '-'}</td>
-                  )}
-                  {visibleColumns.exstReaderType && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.exst_reader_type || '-'}</td>
-                  )}
-                  {visibleColumns.newPanelLocation && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_panel_location || '-'}</td>
-                  )}
-                  {visibleColumns.newPanelType && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_panel_type || '-'}</td>
-                  )}
-                  {visibleColumns.newReaderType && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">{ap.new_reader_type || '-'}</td>
-                  )}
-                  {visibleColumns.notes && (
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-800">
-                      {ap.notes?.length > 20 ? `${ap.notes.substring(0, 20)}...` : ap.notes || '-'}
-                    </td>
-                  )}
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      <button
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
                         onClick={() => {
                           setSelectedAccessPoint(ap);
                           setShowEditModal(true);
                         }}
-                        className="text-indigo-600 hover:text-indigo-900"
-                        title="Edit"
+                        className="p-0 h-7 w-7 text-indigo-600"
+                        title="Edit Access Point"
                       >
-                        <span className="material-icons text-xl">edit</span>
-                      </button>
-                      <button
+                        <span className="material-icons" style={{ fontSize: '14px' }}>edit</span>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
                         onClick={() => handleDelete(ap.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete"
+                        className="p-0 h-7 w-7 text-red-600"
+                        title="Delete Access Point"
                       >
-                        <span className="material-icons text-xl">delete</span>
-                      </button>
-                      <button
+                        <Trash size={14} />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
                         onClick={() => {
                           setSelectedAccessPoint(ap);
                           setShowImageModal(true);
                         }}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="p-0 h-7 w-7 text-blue-600"
                         title="Image Gallery"
                       >
-                        <ImageIcon className="h-5 w-5" />
-                      </button>
+                        <ImageIcon size={14} />
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -639,34 +432,31 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           </table>
         </div>
       )}
-      
-      {/* Pagination */}
-      {filteredAccessPoints.length > 0 && (
-        <div className="flex items-center justify-between mt-4">
+
+      {/* Pagination controls */}
+      {filteredAccessPoints.length > itemsPerPage && (
+        <div className="flex justify-between items-center mt-6">
           <div className="text-sm text-gray-600">
-            Showing <span className="font-medium text-gray-800">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredAccessPoints.length)}</span> to <span className="font-medium text-gray-800">{Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)}</span> of <span className="font-medium text-gray-800">{filteredAccessPoints.length}</span> access points
+            Showing {Math.min(currentPage * itemsPerPage, filteredAccessPoints.length)} of {filteredAccessPoints.length} access points
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex gap-2">
             <Button
+              variant="outline"
+              size="sm"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              variant="outline"
-              size="sm"
-              className="border-gray-200 text-gray-600"
+              disabled={currentPage <= 1}
+              className="h-8 px-3"
             >
-              <span className="material-icons text-base">chevron_left</span>
+              Previous
             </Button>
-            <div className="text-sm text-gray-600">
-              Page <span className="font-medium text-gray-800">{currentPage}</span> of <span className="font-medium text-gray-800">{totalPages || 1}</span>
-            </div>
             <Button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages || totalPages === 0}
               variant="outline"
               size="sm"
-              className="border-gray-200 text-gray-600"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage >= totalPages}
+              className="h-8 px-3"
             >
-              <span className="material-icons text-base">chevron_right</span>
+              Next
             </Button>
           </div>
         </div>
@@ -681,11 +471,10 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           onSave={handleAddSave}
         />
       )}
-      
+
       {showEditModal && selectedAccessPoint && (
         <EditAccessPointModal
           accessPoint={selectedAccessPoint}
-          open={showEditModal}
           onClose={() => {
             setShowEditModal(false);
             setSelectedAccessPoint(null);
@@ -693,26 +482,25 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           onSave={handleEditSave}
         />
       )}
-      
+
       {showImageModal && selectedAccessPoint && (
         <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Image Gallery - {selectedAccessPoint.location}</DialogTitle>
+              <DialogTitle>Images for Access Point {selectedAccessPoint.id}</DialogTitle>
               <DialogDescription>
-                Manage images for this access point
+                View and manage images for this access point
               </DialogDescription>
             </DialogHeader>
-            <div className="mt-2">
-              <ImageGallery 
-                equipmentId={selectedAccessPoint.id} 
-                equipmentType="access_point"
-                onClose={() => {
-                  setShowImageModal(false);
-                  setSelectedAccessPoint(null);
-                }}
-              />
-            </div>
+            
+            <ImageGallery
+              equipmentId={selectedAccessPoint.id}
+              equipmentType="access_point"
+              onClose={() => {
+                setShowImageModal(false);
+                setSelectedAccessPoint(null);
+              }}
+            />
           </DialogContent>
         </Dialog>
       )}
