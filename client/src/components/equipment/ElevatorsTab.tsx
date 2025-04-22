@@ -23,7 +23,7 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
   const { toast } = useToast();
 
   // Fetch elevators
-  const { data: elevators = [], isLoading } = useQuery({
+  const { data: elevators = [], isLoading } = useQuery<Elevator[]>({
     queryKey: [`/api/projects/${project.id}/elevators`],
     enabled: !!project.id,
   });
@@ -132,31 +132,96 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-neutral-700 uppercase bg-neutral-100">
             <tr>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Title</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap">Location</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap">Type</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">Floor Count</th>
-              <th scope="col" className="px-4 py-3 whitespace-nowrap">Notes</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Building Info</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Management Company</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Elevator Company</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Security</th>
+              <th scope="col" className="px-4 py-3 whitespace-nowrap">Freight Car</th>
               <th scope="col" className="px-4 py-3 whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center">Loading elevators...</td>
+                <td colSpan={9} className="px-4 py-8 text-center">Loading elevators...</td>
               </tr>
             ) : paginatedElevators.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center">
+                <td colSpan={9} className="px-4 py-8 text-center">
                   {searchTerm ? "No elevators match your search." : "No elevators have been added yet."}
                 </td>
               </tr>
             ) : (
               paginatedElevators.map((elevator: Elevator) => (
                 <tr key={elevator.id} className="border-b hover:bg-neutral-50">
-                  <td className="px-4 py-3 whitespace-nowrap font-medium">{elevator.location}</td>
+                  <td className="px-4 py-3 whitespace-nowrap font-medium">{elevator.title || "—"}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{elevator.location}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{elevator.elevator_type}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{elevator.floor_count || "N/A"}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{elevator.notes || "N/A"}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {elevator.building_number ? (
+                      <div className="flex flex-col">
+                        <span>Building: {elevator.building_number}</span>
+                        {elevator.address && <span className="text-xs text-gray-500">{elevator.address}, {elevator.city || ""}</span>}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {elevator.management_company ? (
+                      <div className="flex flex-col">
+                        <span>{elevator.management_company}</span>
+                        {elevator.management_contact_person && (
+                          <span className="text-xs text-gray-500">Contact: {elevator.management_contact_person}</span>
+                        )}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {elevator.elevator_company ? (
+                      <div className="flex flex-col">
+                        <span>{elevator.elevator_company}</span>
+                        {elevator.elevator_system_type && (
+                          <span className="text-xs text-gray-500">System: {elevator.elevator_system_type}</span>
+                        )}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {elevator.secured_floors ? (
+                      <div className="flex flex-col">
+                        <span>Floors: {elevator.secured_floors}</span>
+                        <span className="text-xs text-gray-500">
+                          {elevator.reader_type ? `Reader: ${elevator.reader_type}` : ""}
+                          {elevator.reader_mounting_surface_ferrous ? " (Ferrous)" : ""}
+                        </span>
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {elevator.freight_car_numbers ? (
+                      <div className="flex flex-col">
+                        <span>Cars: {elevator.freight_car_numbers}</span>
+                        {elevator.freight_car_home_floor && (
+                          <span className="text-xs text-gray-500">Home: {elevator.freight_car_home_floor}</span>
+                        )}
+                        {elevator.shutdown_freight_car && (
+                          <span className="text-xs text-red-500">Shutdown Required</span>
+                        )}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button 
                       className="text-primary hover:text-primary-dark focus:outline-none mr-2"
@@ -164,12 +229,14 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
                         setSelectedElevator(elevator);
                         setShowEditModal(true);
                       }}
+                      title="Edit"
                     >
                       <span className="material-icons text-sm">edit</span>
                     </button>
                     <button 
                       className="text-red-500 hover:text-red-700 focus:outline-none"
                       onClick={() => handleDelete(elevator.id)}
+                      title="Delete"
                     >
                       <span className="material-icons text-sm">delete</span>
                     </button>
