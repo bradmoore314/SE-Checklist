@@ -1,43 +1,65 @@
-import { useEffect } from "react";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface HealthMonitoringToggleProps {
   value: boolean;
   onChange: (value: boolean) => void;
-  onStreamCountChange?: (count: number) => void;
-  streamType?: string;
+  streamCount: number;
+  onStreamCountChange: (value: number) => void;
   className?: string;
 }
 
 /**
- * A toggle component for health monitoring with auto stream count setting
- * for Event monitoring streams
+ * Toggle component for health monitoring with auto-stream count setting
+ * When enabled, automatically sets the stream count to the appropriate value
  */
 export function HealthMonitoringToggle({
   value,
   onChange,
+  streamCount,
   onStreamCountChange,
-  streamType = "",
   className = ""
 }: HealthMonitoringToggleProps) {
-  // When enabled and stream type is for event monitoring, auto-set stream count
+  const [previousStreamCount, setPreviousStreamCount] = useState<number>(streamCount);
+  
+  // Set the default stream count when health monitoring is toggled on
   useEffect(() => {
-    if (onStreamCountChange && value && streamType.toLowerCase().includes("event")) {
-      // Set default stream count for event monitoring
-      onStreamCountChange(3); // Default to 3 streams for event monitoring
+    if (value && streamCount === 0) {
+      // When turned on and no streams, set to default of 2
+      onStreamCountChange(2);
     }
-  }, [value, streamType, onStreamCountChange]);
+  }, [value]);
+  
+  const handleToggleChange = (toggled: boolean) => {
+    if (toggled) {
+      // Store previous count before enabling
+      setPreviousStreamCount(streamCount);
+      
+      // When turning on, set a minimum of 2 streams if current count is less
+      if (streamCount < 2) {
+        onStreamCountChange(2);
+      }
+    } else {
+      // When turning off, we keep the current count
+      // Optionally could restore previous count: onStreamCountChange(previousStreamCount);
+    }
+    
+    onChange(toggled);
+  };
   
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       <Switch
         id="health-monitoring"
         checked={value}
-        onCheckedChange={onChange}
+        onCheckedChange={handleToggleChange}
       />
-      <Label htmlFor="health-monitoring" className="text-base cursor-pointer">
-        Health Monitoring
+      <Label 
+        htmlFor="health-monitoring"
+        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        Health Monitoring {value ? "(Enabled)" : "(Disabled)"}
       </Label>
     </div>
   );

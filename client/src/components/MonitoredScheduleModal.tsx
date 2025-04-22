@@ -1,25 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { timeStringToMinutes, minutesToTimeString } from "@/lib/time-utils";
+import { TimeInputWithDefaults } from "./TimeInputWithDefaults";
+import { setDefaultMinutes } from "@/lib/time-utils";
+import { Clock } from "lucide-react";
 
 interface Schedule {
   startTime: string;
   endTime: string;
 }
 
-interface MonitoredScheduleProps {
+interface MonitoredScheduleModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   weekdaySchedule: Schedule;
   weekendSchedule: Schedule;
-  onSave: (weekdaySchedule: Schedule, weekendSchedule: Schedule) => void;
+  onSave: (weekday: Schedule, weekend: Schedule) => void;
 }
 
 /**
- * Modal component for configuring separate weekday and weekend monitoring schedules
+ * Modal for setting advanced weekday/weekend monitoring schedules
+ * Ensures minutes are set to "00" for all time inputs
  */
 export function MonitoredScheduleModal({
   open,
@@ -27,133 +29,111 @@ export function MonitoredScheduleModal({
   weekdaySchedule,
   weekendSchedule,
   onSave
-}: MonitoredScheduleProps) {
-  const [localWeekdaySchedule, setLocalWeekdaySchedule] = useState<Schedule>(weekdaySchedule);
-  const [localWeekendSchedule, setLocalWeekendSchedule] = useState<Schedule>(weekendSchedule);
-  const [activeTab, setActiveTab] = useState<"weekday" | "weekend">("weekday");
+}: MonitoredScheduleModalProps) {
+  const [weekdayStart, setWeekdayStart] = useState(weekdaySchedule.startTime || "08:00");
+  const [weekdayEnd, setWeekdayEnd] = useState(weekdaySchedule.endTime || "18:00");
+  const [weekendStart, setWeekendStart] = useState(weekendSchedule.startTime || "08:00");
+  const [weekendEnd, setWeekendEnd] = useState(weekendSchedule.endTime || "18:00");
   
-  // Reset form when modal opens
-  const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen) {
-      setLocalWeekdaySchedule(weekdaySchedule);
-      setLocalWeekendSchedule(weekendSchedule);
-      setActiveTab("weekday");
+  // Sync internal state with props
+  useEffect(() => {
+    if (open) {
+      setWeekdayStart(weekdaySchedule.startTime || "08:00");
+      setWeekdayEnd(weekdaySchedule.endTime || "18:00");
+      setWeekendStart(weekendSchedule.startTime || "08:00");
+      setWeekendEnd(weekendSchedule.endTime || "18:00");
     }
-    onOpenChange(newOpen);
-  };
+  }, [open, weekdaySchedule, weekendSchedule]);
   
-  // Handle time input changes
-  const handleWeekdayChange = (field: keyof Schedule, value: string) => {
-    setLocalWeekdaySchedule(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  // Ensure all times use "00" minutes
+  useEffect(() => {
+    if (weekdayStart && !weekdayStart.endsWith(":00")) {
+      setWeekdayStart(setDefaultMinutes(weekdayStart, "00"));
+    }
+    if (weekdayEnd && !weekdayEnd.endsWith(":00")) {
+      setWeekdayEnd(setDefaultMinutes(weekdayEnd, "00"));
+    }
+    if (weekendStart && !weekendStart.endsWith(":00")) {
+      setWeekendStart(setDefaultMinutes(weekendStart, "00"));
+    }
+    if (weekendEnd && !weekendEnd.endsWith(":00")) {
+      setWeekendEnd(setDefaultMinutes(weekendEnd, "00"));
+    }
+  }, []);
   
-  const handleWeekendChange = (field: keyof Schedule, value: string) => {
-    setLocalWeekendSchedule(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-  
-  // Validate time ranges and save
   const handleSave = () => {
-    // Convert times to minutes for validation
-    const weekdayStart = timeStringToMinutes(localWeekdaySchedule.startTime);
-    const weekdayEnd = timeStringToMinutes(localWeekdaySchedule.endTime);
-    const weekendStart = timeStringToMinutes(localWeekendSchedule.startTime);
-    const weekendEnd = timeStringToMinutes(localWeekendSchedule.endTime);
-    
-    // Validate weekday range
-    let validWeekday = localWeekdaySchedule;
-    if (weekdayStart >= weekdayEnd) {
-      validWeekday = {
-        startTime: "08:00",
-        endTime: "18:00"
-      };
-    }
-    
-    // Validate weekend range
-    let validWeekend = localWeekendSchedule;
-    if (weekendStart >= weekendEnd) {
-      validWeekend = {
-        startTime: "08:00",
-        endTime: "18:00"
-      };
-    }
-    
-    onSave(validWeekday, validWeekend);
+    onSave(
+      { startTime: weekdayStart, endTime: weekdayEnd },
+      { startTime: weekendStart, endTime: weekendEnd }
+    );
     onOpenChange(false);
   };
   
-  // Time picker component to keep UI consistent
-  const TimePicker = ({ 
-    label, 
-    value, 
-    onChange 
-  }: { 
-    label: string; 
-    value: string; 
-    onChange: (value: string) => void 
-  }) => (
-    <div className="space-y-1">
-      <Label className="text-sm">{label}</Label>
-      <input
-        type="time"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      />
-    </div>
-  );
-  
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Monitored Schedule</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-primary" />
+            Monitoring Schedule Configuration
+          </DialogTitle>
           <DialogDescription>
-            Configure separate monitoring schedules for weekdays and weekends.
+            Set different monitoring schedules for weekdays and weekends.
+            All times will use "00" minutes for standardization.
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "weekday" | "weekend")} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="weekday">Weekdays (Mon-Fri)</TabsTrigger>
-            <TabsTrigger value="weekend">Weekends (Sat-Sun)</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="weekday" className="space-y-4 pt-4">
+        <div className="space-y-6 py-4">
+          {/* Weekday Schedule */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium">Weekday Schedule (Monday - Friday)</h3>
             <div className="grid grid-cols-2 gap-4">
-              <TimePicker
-                label="Start Time"
-                value={localWeekdaySchedule.startTime}
-                onChange={(value) => handleWeekdayChange("startTime", value)}
-              />
-              <TimePicker
-                label="End Time"
-                value={localWeekdaySchedule.endTime}
-                onChange={(value) => handleWeekdayChange("endTime", value)}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="weekday-start" className="text-xs">Start Time</Label>
+                <TimeInputWithDefaults
+                  value={weekdayStart}
+                  onChange={setWeekdayStart}
+                  defaultHour="08"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="weekday-end" className="text-xs">End Time</Label>
+                <TimeInputWithDefaults
+                  value={weekdayEnd}
+                  onChange={setWeekdayEnd}
+                  defaultHour="18"
+                  className="h-9"
+                />
+              </div>
             </div>
-          </TabsContent>
+          </div>
           
-          <TabsContent value="weekend" className="space-y-4 pt-4">
+          {/* Weekend Schedule */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium">Weekend Schedule (Saturday - Sunday)</h3>
             <div className="grid grid-cols-2 gap-4">
-              <TimePicker
-                label="Start Time"
-                value={localWeekendSchedule.startTime}
-                onChange={(value) => handleWeekendChange("startTime", value)}
-              />
-              <TimePicker
-                label="End Time"
-                value={localWeekendSchedule.endTime}
-                onChange={(value) => handleWeekendChange("endTime", value)}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="weekend-start" className="text-xs">Start Time</Label>
+                <TimeInputWithDefaults
+                  value={weekendStart}
+                  onChange={setWeekendStart}
+                  defaultHour="08"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="weekend-end" className="text-xs">End Time</Label>
+                <TimeInputWithDefaults
+                  value={weekendEnd}
+                  onChange={setWeekendEnd}
+                  defaultHour="18"
+                  className="h-9"
+                />
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

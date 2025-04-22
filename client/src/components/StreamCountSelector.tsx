@@ -2,112 +2,128 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Minus, Plus } from "lucide-react";
 
 interface StreamCountSelectorProps {
   value: number;
   onChange: (value: number) => void;
+  label?: string;
   min?: number;
   max?: number;
-  label?: string;
   className?: string;
+  size?: "default" | "sm";
 }
 
 /**
- * A numeric selector component for stream counts
- * Features a clean numeric field with increment/decrement buttons
+ * A numeric input component for selecting stream counts
+ * Provides a cleaner interface than the default number input with arrows
  */
 export function StreamCountSelector({
   value,
   onChange,
+  label,
   min = 0,
   max = 100,
-  label = "Stream Count",
-  className = ""
+  className = "",
+  size = "default"
 }: StreamCountSelectorProps) {
-  const [inputValue, setInputValue] = useState<string>(value.toString());
+  // List of predefined values for quick selection
+  const quickValues = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50];
+  const [displayMode, setDisplayMode] = useState<"input" | "select">("input");
   
-  // Handle direct input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    
-    // Only update the actual value if it's a valid number
-    const numValue = parseInt(newValue, 10);
-    if (!isNaN(numValue) && numValue >= min && numValue <= max) {
-      onChange(numValue);
-    }
-  };
+  // Filter quick values to be within min and max range
+  const filteredQuickValues = quickValues.filter(v => v >= min && v <= max);
   
-  // Handle blur to ensure input value matches actual value
-  const handleBlur = () => {
-    let numValue = parseInt(inputValue, 10);
-    
-    // If input is not a valid number, reset to current value
-    if (isNaN(numValue)) {
-      setInputValue(value.toString());
-      return;
-    }
-    
-    // Clamp value between min and max
-    numValue = Math.max(min, Math.min(max, numValue));
-    setInputValue(numValue.toString());
-    onChange(numValue);
-  };
-  
-  // Handle increment and decrement
   const handleIncrement = () => {
     if (value < max) {
-      const newValue = value + 1;
-      setInputValue(newValue.toString());
-      onChange(newValue);
+      onChange(value + 1);
     }
   };
   
   const handleDecrement = () => {
     if (value > min) {
-      const newValue = value - 1;
-      setInputValue(newValue.toString());
-      onChange(newValue);
+      onChange(value - 1);
     }
   };
   
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value);
+    if (!isNaN(newValue)) {
+      // Ensure value is within min and max range
+      const boundedValue = Math.min(Math.max(newValue, min), max);
+      onChange(boundedValue);
+    }
+  };
+  
+  const inputHeight = size === "sm" ? "h-8" : "h-10";
+  const buttonSize = size === "sm" ? "h-8 w-8" : "h-10 w-10";
+  const labelSize = size === "sm" ? "text-xs" : "text-sm";
+  
   return (
     <div className={`space-y-2 ${className}`}>
-      {label && <Label className="text-base">{label}</Label>}
-      <div className="flex items-center space-x-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={handleDecrement}
-          disabled={value <= min}
-          className="h-9 w-9"
+      {label && (
+        <div className="flex justify-between items-center">
+          <Label className={labelSize}>{label}</Label>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setDisplayMode(displayMode === "input" ? "select" : "input")}
+            className="h-6 px-2 text-xs"
+          >
+            {displayMode === "input" ? "Use Dropdown" : "Use Input"}
+          </Button>
+        </div>
+      )}
+      
+      {displayMode === "input" ? (
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            size={size}
+            onClick={handleDecrement}
+            disabled={value <= min}
+            className={`${buttonSize} p-0`}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          
+          <Input
+            type="number"
+            value={value}
+            onChange={handleInputChange}
+            className={`mx-2 text-center ${inputHeight}`}
+            min={min}
+            max={max}
+          />
+          
+          <Button
+            variant="outline"
+            size={size}
+            onClick={handleIncrement}
+            disabled={value >= max}
+            className={`${buttonSize} p-0`}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <Select
+          value={value.toString()}
+          onValueChange={(val) => onChange(parseInt(val))}
         >
-          <MinusIcon className="h-4 w-4" />
-        </Button>
-        
-        <Input
-          type="number"
-          value={inputValue}
-          onChange={handleInputChange}
-          onBlur={handleBlur}
-          min={min}
-          max={max}
-          className="w-20 text-center"
-        />
-        
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={handleIncrement}
-          disabled={value >= max}
-          className="h-9 w-9"
-        >
-          <PlusIcon className="h-4 w-4" />
-        </Button>
-      </div>
+          <SelectTrigger className={inputHeight}>
+            <SelectValue placeholder="Select count" />
+          </SelectTrigger>
+          <SelectContent>
+            {filteredQuickValues.map((val) => (
+              <SelectItem key={val} value={val.toString()}>
+                {val}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }
