@@ -28,7 +28,11 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
-import { generateSiteWalkAnalysis } from "./utils/gemini";
+import { 
+  generateSiteWalkAnalysis,
+  generateQuoteReviewAgenda,
+  generateTurnoverCallAgenda
+} from "./utils/gemini";
 import { translateText } from "./services/gemini-translation";
 import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
 import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
