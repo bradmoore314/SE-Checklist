@@ -1046,12 +1046,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Generate AI analysis using Gemini
-      const analysis = await generateSiteWalkAnalysis(analysisData);
-      
-      res.json({
-        success: true,
-        analysis: analysis
-      });
+      console.log("Making Gemini API call for project:", projectId);
+      try {
+        const analysis = await generateSiteWalkAnalysis(analysisData);
+        console.log("Gemini API call successful with sections:", Object.keys(analysis));
+        
+        res.json({
+          success: true,
+          analysis: analysis
+        });
+      } catch (aiError) {
+        console.error("Gemini API detailed error:", aiError);
+        throw aiError; // Will be caught by outer try/catch
+      }
     } catch (error) {
       console.error("AI analysis error:", error);
       res.status(500).json({

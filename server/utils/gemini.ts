@@ -6,53 +6,72 @@ const API_KEY = process.env.GEMINI_API_KEY;
 // Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(API_KEY!);
 
-// Configure the model - using Gemini 1.5 Pro for advanced analysis
-export async function generateSiteWalkAnalysis(siteWalkData: any): Promise<{summary: string, detailedAnalysis: string, recommendations: string[], risks: string[], timeline: string}> {
+// Define the result type
+interface AnalysisResult {
+  summary: string;
+  detailedAnalysis: string;
+  recommendations: string[];
+  risks: string[];
+  timeline: string;
+}
+
+// Configure the model - using Gemini 2.0 Flash for advanced analysis
+export async function generateSiteWalkAnalysis(siteWalkData: any): Promise<AnalysisResult> {
   try {
     // Create a structured prompt with all the site walk data
     const prompt = createAnalysisPrompt(siteWalkData);
+    console.log("Gemini API: Created analysis prompt");
     
-    // Get the generative model (Gemini-1.5-flash)
+    // Initialize the Gemini client with API key check
+    if (!API_KEY) {
+      console.error("Gemini API key is missing or undefined");
+      throw new Error("Gemini API key is not configured");
+    }
+    console.log("Gemini API: API key is configured");
+    
+    // Get the generative model (Gemini-2.0-flash)
+    console.log("Gemini API: Initializing model: models/gemini-2.0-flash");
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "models/gemini-2.0-flash",
+      systemInstruction: "You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. You analyze data comprehensively and provide detailed guidance for security projects.",
     });
     
     // Generate content with a structured response format
-    const result = await model.generateContent(
-      {
-        contents: [{
-          role: "user",
-          parts: [{
-            text: `${prompt}
-            
-You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. Please analyze the given project data comprehensively.
+    console.log("Gemini API: Sending request with temperature: 0.2, topP: 0.9, maxTokens: 4096");
+    const result = await model.generateContent({
+      contents: [{
+        role: "user",
+        parts: [{
+          text: `${prompt}
 
-I need a complete, well-structured analysis with the following sections:
+I need a complete security analysis with these sections:
 
-1. EXECUTIVE SUMMARY: Write a crisp, professional 150-200 word summary describing the scope of the security project, focused on business value.
+1. EXECUTIVE SUMMARY: A professional 150-200 word summary of the security project scope, highlighting business value.
 
-2. TECHNICAL ANALYSIS: Create a detailed technical analysis that would help an installation team successfully implement this project. Include specific requirements, standards compliance considerations, and best practices for installation. Structure this with clear sections and bullet points for better readability.
+2. TECHNICAL ANALYSIS: Detailed technical specifications for installation teams, including requirements, compliance considerations, and best practices. Use sections and bullet points for readability.
 
-3. KEY RECOMMENDATIONS: Provide 4-6 concrete, actionable recommendations to ensure project success.
+3. KEY RECOMMENDATIONS: List 4-6 specific, actionable recommendations to ensure project success.
 
-4. RISK ASSESSMENT: Identify 3-5 potential risks or challenges specific to this project, with mitigation strategies for each.
+4. RISK ASSESSMENT: Identify 3-5 potential risks or challenges specific to this project, with detailed mitigation strategies for each.
 
-5. IMPLEMENTATION TIMELINE: Suggest a high-level timeline or phasing approach for the project.
+5. IMPLEMENTATION TIMELINE: A high-level timeline or phasing approach for project execution.
 
-Format your response using Markdown for proper structure with headings, bullet points, and emphasis where appropriate.`
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.2,
-          topP: 0.8,
-          topK: 40,
-          maxOutputTokens: 4096,
-        }
+Format your response using clear headings, bullet points, and organized structure.`
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.2, 
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 4096,
       }
-    );
+    });
+    
+    console.log("Gemini API: Successfully received response");
     
     const response = result.response;
     const text = response.text();
+    console.log("Gemini API: Response text length:", text.length);
     
     try {
       // Extract each section using regex patterns
@@ -61,6 +80,14 @@ Format your response using Markdown for proper structure with headings, bullet p
       const recommendationsMatch = text.match(/#+\s*KEY\s*RECOMMENDATIONS\s*\n+([\s\S]*?)(?=#+\s*RISK|$)/i);
       const risksMatch = text.match(/#+\s*RISK\s*ASSESSMENT\s*\n+([\s\S]*?)(?=#+\s*IMPLEMENTATION|$)/i);
       const timelineMatch = text.match(/#+\s*IMPLEMENTATION\s*TIMELINE\s*\n+([\s\S]*?)(?=$)/i);
+      
+      console.log("Gemini API: Parsing sections", { 
+        summary: !!execSummaryMatch, 
+        technical: !!technicalMatch,
+        recommendations: !!recommendationsMatch,
+        risks: !!risksMatch,
+        timeline: !!timelineMatch
+      });
       
       // Extract recommendations as array of bullet points
       const recommendationsText = recommendationsMatch ? recommendationsMatch[1].trim() : "";
@@ -85,6 +112,7 @@ Format your response using Markdown for proper structure with headings, bullet p
       console.error("Error parsing Gemini response:", e);
       
       // More sophisticated fallback that attempts to divide the text into relevant sections
+      console.log("Gemini API: Using fallback parser");
       const lines = text.split("\n");
       let sections: {
         summary: string[];
@@ -142,7 +170,7 @@ Format your response using Markdown for proper structure with headings, bullet p
     }
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    throw new Error("Failed to generate site walk analysis");
+    throw new Error(`Failed to generate site walk analysis: ${(error as Error).message}`);
   }
 }
 
