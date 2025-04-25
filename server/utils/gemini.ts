@@ -29,10 +29,11 @@ export async function generateSiteWalkAnalysis(siteWalkData: any): Promise<Analy
     }
     console.log("Gemini API: API key is configured");
     
-    // Get the generative model (Gemini-2.0-flash)
-    console.log("Gemini API: Initializing model: models/gemini-2.0-flash");
+    // Get the generative model (Gemini-1.5-pro)
+    // Note: gemini-2.0-flash doesn't exist yet, using gemini-1.5-pro instead
+    console.log("Gemini API: Initializing model with gemini-1.5-pro");
     const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.0-flash",
+      model: "gemini-1.5-pro",
       systemInstruction: "You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. You analyze data comprehensively and provide detailed guidance for security projects.",
     });
     
@@ -73,40 +74,85 @@ Format your response using clear headings, bullet points, and organized structur
     const text = response.text();
     console.log("Gemini API: Response text length:", text.length);
     
+    // Print the first 200 characters of the response for debugging
+    console.log("Gemini API: Response preview:", text.substring(0, 200));
+    
     try {
-      // Extract each section using regex patterns
-      const execSummaryMatch = text.match(/#+\s*EXECUTIVE\s*SUMMARY\s*\n+([\s\S]*?)(?=#+\s*TECHNICAL|$)/i);
-      const technicalMatch = text.match(/#+\s*TECHNICAL\s*ANALYSIS\s*\n+([\s\S]*?)(?=#+\s*KEY\s*RECOMMENDATIONS|$)/i);
-      const recommendationsMatch = text.match(/#+\s*KEY\s*RECOMMENDATIONS\s*\n+([\s\S]*?)(?=#+\s*RISK|$)/i);
-      const risksMatch = text.match(/#+\s*RISK\s*ASSESSMENT\s*\n+([\s\S]*?)(?=#+\s*IMPLEMENTATION|$)/i);
-      const timelineMatch = text.match(/#+\s*IMPLEMENTATION\s*TIMELINE\s*\n+([\s\S]*?)(?=$)/i);
+      // Use a simpler approach to extract sections by looking for keywords
+      const lines = text.split('\n');
+      let sections: Record<string, string[]> = {
+        summary: [],
+        technical: [],
+        recommendations: [],
+        risks: [],
+        timeline: []
+      };
       
-      console.log("Gemini API: Parsing sections", { 
-        summary: !!execSummaryMatch, 
-        technical: !!technicalMatch,
-        recommendations: !!recommendationsMatch,
-        risks: !!risksMatch,
-        timeline: !!timelineMatch
+      let currentSection = '';
+      
+      for (const line of lines) {
+        const lowerLine = line.toLowerCase();
+        
+        if (lowerLine.includes('executive summary') || lowerLine.includes('executive overview')) {
+          currentSection = 'summary';
+          continue;
+        } else if (lowerLine.includes('technical analysis') || lowerLine.includes('technical details')) {
+          currentSection = 'technical';
+          continue;
+        } else if (lowerLine.includes('key recommendations') || lowerLine.includes('recommendations')) {
+          currentSection = 'recommendations';
+          continue;
+        } else if (lowerLine.includes('risk assessment') || lowerLine.includes('risks')) {
+          currentSection = 'risks';
+          continue;
+        } else if (lowerLine.includes('implementation timeline') || lowerLine.includes('timeline')) {
+          currentSection = 'timeline';
+          continue;
+        }
+        
+        // If we're in a section, add the line to it
+        if (currentSection && currentSection in sections) {
+          sections[currentSection].push(line);
+        } else if (!currentSection && lowerLine.includes('summary')) {
+          // If we're not in a section yet but line contains "summary", assume it's part of the executive summary
+          currentSection = 'summary';
+          sections[currentSection].push(line);
+        }
+      }
+      
+      console.log("Gemini API: Parsed sections", {
+        summary: sections.summary.length > 0,
+        technical: sections.technical.length > 0,
+        recommendations: sections.recommendations.length > 0,
+        risks: sections.risks.length > 0,
+        timeline: sections.timeline.length > 0
       });
       
-      // Extract recommendations as array of bullet points
-      const recommendationsText = recommendationsMatch ? recommendationsMatch[1].trim() : "";
-      const recommendations = recommendationsText.split('\n')
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*'))
-        .map(line => line.replace(/^[-*]\s*/, '').trim());
+      // Extract all bullet points from recommendations section
+      const recommendations = sections.recommendations
+        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().match(/^\d+\./))
+        .map(line => line.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').trim());
       
-      // Extract risks as array of bullet points
-      const risksText = risksMatch ? risksMatch[1].trim() : "";
-      const risks = risksText.split('\n')
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*'))
-        .map(line => line.replace(/^[-*]\s*/, '').trim());
+      // Extract all bullet points from risks section
+      const risks = sections.risks
+        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().match(/^\d+\./))
+        .map(line => line.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').trim());
+      
+      // If no bullet points found, take everything
+      const finalRecommendations = recommendations.length > 0 ? 
+        recommendations : 
+        sections.recommendations.join('\n').split('.').filter(s => s.trim().length > 10).map(s => s.trim());
+      
+      const finalRisks = risks.length > 0 ? 
+        risks : 
+        sections.risks.join('\n').split('.').filter(s => s.trim().length > 10).map(s => s.trim());
       
       return {
-        summary: execSummaryMatch ? execSummaryMatch[1].trim() : "Executive summary not available",
-        detailedAnalysis: technicalMatch ? technicalMatch[1].trim() : "Technical analysis not available",
-        recommendations: recommendations.length > 0 ? recommendations : ["No specific recommendations available"],
-        risks: risks.length > 0 ? risks : ["No specific risks identified"],
-        timeline: timelineMatch ? timelineMatch[1].trim() : "Timeline information not available"
+        summary: sections.summary.join('\n').trim() || "Executive summary not available",
+        detailedAnalysis: sections.technical.join('\n').trim() || "Technical analysis not available",
+        recommendations: finalRecommendations.length > 0 ? finalRecommendations : ["No specific recommendations available"],
+        risks: finalRisks.length > 0 ? finalRisks : ["No specific risks identified"],
+        timeline: sections.timeline.join('\n').trim() || "Timeline information not available"
       };
     } catch (e) {
       console.error("Error parsing Gemini response:", e);
