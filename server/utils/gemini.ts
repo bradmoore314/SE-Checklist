@@ -1,10 +1,10 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import fetch from 'node-fetch';
 
 // Access the API key from environment variables
 const API_KEY = process.env.GEMINI_API_KEY;
 
-// Initialize the Gemini API
-const genAI = new GoogleGenerativeAI(API_KEY!);
+// Define the API endpoint with the correct model
+const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // Define the result types
 interface AnalysisResult {
@@ -49,18 +49,16 @@ export async function generateQuoteReviewAgenda(projectData: any): Promise<Quote
       throw new Error("Gemini API key is not configured");
     }
     
-    // Get the generative model
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro",
-      systemInstruction: "You are an expert security system consultant specializing in creating professional quote review meeting agendas."
-    });
+    // Create the API request with the provided URL and API key
+    const url = `${API_ENDPOINT}?key=${API_KEY}`;
     
-    // Generate content with a structured response format
-    const result = await model.generateContent({
+    // Build the request payload
+    const payload = {
       contents: [{
-        role: "user",
         parts: [{
-          text: `${prompt}
+          text: `You are an expert security system consultant specializing in creating professional quote review meeting agendas.
+          
+${prompt}
             
 Please create a comprehensive quote review meeting agenda with the following sections:
 
@@ -82,15 +80,33 @@ Format your response using clear headings, bullet points, and organized structur
         }]
       }],
       generationConfig: {
-        temperature: 0.2, 
+        temperature: 0.2,
         topP: 0.9,
         topK: 40,
         maxOutputTokens: 4096,
       }
+    };
+    
+    // Make the API request
+    console.log("Calling Gemini API endpoint:", API_ENDPOINT);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
     
-    const response = result.response;
-    const text = response.text();
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Gemini API error:", errorData);
+      throw new Error(`Gemini API returned status ${response.status}: ${errorData}`);
+    }
+    
+    const result = await response.json();
+    
+    // Extract the text from the response
+    const text = result.candidates[0].content.parts[0].text;
     console.log("Gemini API: Quote Review Agenda response length:", text.length);
     console.log("Gemini API: Quote Review Agenda preview:", text.substring(0, 200));
     
@@ -216,18 +232,16 @@ export async function generateTurnoverCallAgenda(projectData: any): Promise<Turn
       throw new Error("Gemini API key is not configured");
     }
     
-    // Get the generative model
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro",
-      systemInstruction: "You are an expert security system consultant specializing in creating professional turnover call meeting agendas for completed security projects."
-    });
+    // Create the API request with the provided URL and API key
+    const url = `${API_ENDPOINT}?key=${API_KEY}`;
     
-    // Generate content with a structured response format
-    const result = await model.generateContent({
+    // Build the request payload
+    const payload = {
       contents: [{
-        role: "user",
         parts: [{
-          text: `${prompt}
+          text: `You are an expert security system consultant specializing in creating professional turnover call meeting agendas for completed security projects.
+          
+${prompt}
           
 Please create a comprehensive turnover call meeting agenda with the following sections:
 
@@ -251,15 +265,33 @@ Format your response using clear headings, bullet points, and organized structur
         }]
       }],
       generationConfig: {
-        temperature: 0.2, 
+        temperature: 0.2,
         topP: 0.9,
         topK: 40,
         maxOutputTokens: 4096,
       }
+    };
+    
+    // Make the API request
+    console.log("Calling Gemini API endpoint:", API_ENDPOINT);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
     
-    const response = result.response;
-    const text = response.text();
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Gemini API error:", errorData);
+      throw new Error(`Gemini API returned status ${response.status}: ${errorData}`);
+    }
+    
+    const result = await response.json();
+    
+    // Extract the text from the response
+    const text = result.candidates[0].content.parts[0].text;
     console.log("Gemini API: Turnover Call Agenda response length:", text.length);
     console.log("Gemini API: Turnover Call Agenda preview:", text.substring(0, 200));
     
@@ -400,21 +432,16 @@ export async function generateSiteWalkAnalysis(siteWalkData: any): Promise<Analy
     }
     console.log("Gemini API: API key is configured");
     
-    // Get the generative model (Gemini-1.5-pro)
-    // Note: gemini-2.0-flash doesn't exist yet, using gemini-1.5-pro instead
-    console.log("Gemini API: Initializing model with gemini-1.5-pro");
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro",
-      systemInstruction: "You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. You analyze data comprehensively and provide detailed guidance for security projects.",
-    });
+    // Create the API request with the provided URL and API key
+    const url = `${API_ENDPOINT}?key=${API_KEY}`;
     
-    // Generate content with a structured response format
-    console.log("Gemini API: Sending request with temperature: 0.2, topP: 0.9, maxTokens: 4096");
-    const result = await model.generateContent({
+    // Build the request payload
+    const payload = {
       contents: [{
-        role: "user",
         parts: [{
-          text: `${prompt}
+          text: `You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. You analyze data comprehensively and provide detailed guidance for security projects.
+          
+${prompt}
 
 I need a complete security analysis with these sections:
 
@@ -432,17 +459,35 @@ Format your response using clear headings, bullet points, and organized structur
         }]
       }],
       generationConfig: {
-        temperature: 0.2, 
+        temperature: 0.2,
         topP: 0.9,
         topK: 40,
         maxOutputTokens: 4096,
       }
+    };
+    
+    // Make the API request
+    console.log("Calling Gemini API endpoint:", API_ENDPOINT);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
+    
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Gemini API error:", errorData);
+      throw new Error(`Gemini API returned status ${response.status}: ${errorData}`);
+    }
+    
+    const result = await response.json();
     
     console.log("Gemini API: Successfully received response");
     
-    const response = result.response;
-    const text = response.text();
+    // Extract the text from the response
+    const text = result.candidates[0].content.parts[0].text;
     console.log("Gemini API: Response text length:", text.length);
     
     // Print the first 200 characters of the response for debugging
