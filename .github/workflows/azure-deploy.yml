@@ -30,7 +30,7 @@ jobs:
       run: |
         mkdir -p deploy
         # Copy only necessary files (exclude node_modules, source files, tests, etc.)
-        cp -r dist package.json azure-startup.js .deployment web.config deploy/
+        cp -r dist package.json azure-startup.cjs .deployment web.config deploy/
         # Create a slim version of node_modules with only production dependencies
         cd deploy
         npm ci --production --no-optional
