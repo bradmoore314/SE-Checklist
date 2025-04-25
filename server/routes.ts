@@ -1481,6 +1481,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gemini API diagnostic endpoint
+  app.get("/api/diagnose/gemini", isAuthenticated, async (req: Request, res: Response) => {
+    console.log("Gemini API diagnostic endpoint called");
+    try {
+      // First check if API key is configured
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({
+          success: false,
+          message: "Gemini API key is not configured on the server"
+        });
+      }
+      
+      // Sample data for testing
+      const sampleData = {
+        project: { 
+          id: 1, 
+          name: "Test Project",
+          client: "Test Client", 
+          replace_readers: true,
+          install_locks: true 
+        },
+        summary: {
+          accessPointCount: 2,
+          interiorAccessPointCount: 1,
+          perimeterAccessPointCount: 1,
+          cameraCount: 2,
+          indoorCameraCount: 1,
+          outdoorCameraCount: 1,
+          elevatorCount: 0,
+          elevatorBankCount: 0,
+          intercomCount: 0,
+          totalEquipmentCount: 4
+        },
+        equipment: {
+          accessPoints: [
+            { id: 1, project_id: 1, location: "Main Door", quick_config: "Standard" },
+            { id: 2, project_id: 1, location: "Side Door", quick_config: "Standard" }
+          ],
+          cameras: [
+            { id: 1, project_id: 1, location: "Entrance", camera_type: "Fixed Dome" },
+            { id: 2, project_id: 1, location: "Parking", camera_type: "PTZ" }
+          ],
+          elevators: [],
+          intercoms: []
+        },
+        tooltips: {
+          replace_readers: "Existing readers are being swapped out",
+          install_locks: "New locks are being installed"
+        }
+      };
+      
+      console.log("Making Gemini API call with sample data");
+      const startTime = Date.now();
+      
+      // Call the Gemini API with sample data
+      const analysis = await generateSiteWalkAnalysis(sampleData);
+      
+      const endTime = Date.now();
+      const timeTaken = (endTime - startTime) / 1000;
+      console.log(`Gemini API call completed in ${timeTaken} seconds`);
+      
+      // Check for default values
+      const hasDefaultSummary = analysis.summary === "Executive summary not available";
+      const hasDefaultAnalysis = analysis.detailedAnalysis === "Technical analysis not available";
+      const hasDefaultRecs = analysis.recommendations.length === 1 && 
+                            analysis.recommendations[0] === "No specific recommendations available";
+      const hasDefaultRisks = analysis.risks.length === 1 && 
+                             analysis.risks[0] === "No specific risks identified";
+      const hasDefaultTimeline = analysis.timeline === "Timeline information not available";
+      
+      const usingDefaults = hasDefaultSummary || hasDefaultAnalysis || 
+                           hasDefaultRecs || hasDefaultRisks || hasDefaultTimeline;
+      
+      res.json({
+        success: true,
+        diagnostics: {
+          apiKeyConfigured: true,
+          timeTaken: timeTaken,
+          responseReceived: true,
+          usingDefaultValues: usingDefaults,
+          defaultFields: {
+            summary: hasDefaultSummary,
+            detailedAnalysis: hasDefaultAnalysis,
+            recommendations: hasDefaultRecs,
+            risks: hasDefaultRisks,
+            timeline: hasDefaultTimeline
+          },
+          contentLengths: {
+            summary: analysis.summary.length,
+            detailedAnalysis: analysis.detailedAnalysis.length,
+            recommendations: analysis.recommendations.length,
+            risks: analysis.risks.length,
+            timeline: analysis.timeline.length
+          }
+        },
+        analysis: analysis
+      });
+    } catch (error) {
+      console.error("Gemini API diagnostic error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Gemini API diagnostic failed",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // CRM Integration endpoints
   app.get("/api/integration/status", isAuthenticated, async (req: Request, res: Response) => {
     try {
