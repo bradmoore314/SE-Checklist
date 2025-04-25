@@ -71,7 +71,7 @@ const ExportMenu = ({
           <DropdownMenuLabel>Choose format</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => handleExport('pdf')}>
-            <FileType className="h-4 w-4 mr-2 text-red-600" />
+            <File className="h-4 w-4 mr-2 text-red-600" />
             <span>PDF Document</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleExport('excel')}>
