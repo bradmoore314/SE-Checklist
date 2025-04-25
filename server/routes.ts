@@ -1073,6 +1073,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Quote Review Agenda endpoint
+  app.post("/api/projects/:projectId/quote-review-agenda", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Get project data
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      console.log(`Requesting Quote Review Agenda for project ${projectId}`);
+
+      // Get all equipment for this project
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+
+      // Calculate summary stats
+      const interiorAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Interior").length;
+      const perimeterAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Perimeter").length;
+      const indoorCameraCount = cameras.filter(cam => cam.mounting_type === "Indoor").length;
+      const outdoorCameraCount = cameras.filter(cam => cam.mounting_type === "Outdoor").length;
+      
+      // Get unique elevator banks by counting distinct floor counts
+      const elevatorBankCount = new Set(elevators.map(el => el.floor_count)).size;
+
+      const summary = {
+        accessPointCount: accessPoints.length,
+        interiorAccessPointCount,
+        perimeterAccessPointCount,
+        cameraCount: cameras.length,
+        indoorCameraCount,
+        outdoorCameraCount,
+        elevatorCount: elevators.length,
+        elevatorBankCount,
+        intercomCount: intercoms.length
+      };
+
+      // Get tooltip data for project configuration options
+      const tooltips = lookupData.tooltips;
+
+      // Prepare data for AI analysis
+      const agendaData = {
+        project,
+        summary,
+        equipment: {
+          accessPoints,
+          cameras,
+          elevators,
+          intercoms
+        },
+        tooltips
+      };
+
+      // Call AI service to generate quote review agenda
+      try {
+        const agenda = await generateQuoteReviewAgenda(agendaData);
+        
+        console.log("Quote Review Agenda generated successfully");
+
+        res.json({
+          success: true,
+          agenda
+        });
+      } catch (aiError) {
+        console.error("Error calling Gemini API for quote review agenda:", aiError);
+        res.status(500).json({
+          success: false,
+          message: "Failed to generate quote review agenda",
+          error: (aiError as Error).message
+        });
+      }
+    } catch (error) {
+      console.error("Error in quote review agenda endpoint:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate quote review agenda",
+        error: (error as Error).message
+      });
+    }
+  });
+  
+  // Turnover Call Agenda endpoint
+  app.post("/api/projects/:projectId/turnover-call-agenda", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Get project data
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      console.log(`Requesting Turnover Call Agenda for project ${projectId}`);
+
+      // Get all equipment for this project
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+
+      // Calculate summary stats
+      const interiorAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Interior").length;
+      const perimeterAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Perimeter").length;
+      const indoorCameraCount = cameras.filter(cam => cam.mounting_type === "Indoor").length;
+      const outdoorCameraCount = cameras.filter(cam => cam.mounting_type === "Outdoor").length;
+      
+      // Get unique elevator banks by counting distinct floor counts
+      const elevatorBankCount = new Set(elevators.map(el => el.floor_count)).size;
+
+      const summary = {
+        accessPointCount: accessPoints.length,
+        interiorAccessPointCount,
+        perimeterAccessPointCount,
+        cameraCount: cameras.length,
+        indoorCameraCount,
+        outdoorCameraCount,
+        elevatorCount: elevators.length,
+        elevatorBankCount,
+        intercomCount: intercoms.length
+      };
+
+      // Get tooltip data for project configuration options
+      const tooltips = lookupData.tooltips;
+
+      // Prepare data for AI analysis
+      const agendaData = {
+        project,
+        summary,
+        equipment: {
+          accessPoints,
+          cameras,
+          elevators,
+          intercoms
+        },
+        tooltips
+      };
+
+      // Call AI service to generate turnover call agenda
+      try {
+        const agenda = await generateTurnoverCallAgenda(agendaData);
+        
+        console.log("Turnover Call Agenda generated successfully");
+
+        res.json({
+          success: true,
+          agenda
+        });
+      } catch (aiError) {
+        console.error("Error calling Gemini API for turnover call agenda:", aiError);
+        res.status(500).json({
+          success: false,
+          message: "Failed to generate turnover call agenda",
+          error: (aiError as Error).message
+        });
+      }
+    } catch (error) {
+      console.error("Error in turnover call agenda endpoint:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate turnover call agenda",
+        error: (error as Error).message
+      });
+    }
+  });
+  
   // Image endpoints
   app.get("/api/images/:equipmentType/:equipmentId", isAuthenticated, async (req: Request, res: Response) => {
     const equipmentType = req.params.equipmentType;
