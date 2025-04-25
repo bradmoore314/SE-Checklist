@@ -179,9 +179,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const marker = (markers as FloorplanMarker[]).find(m => m.id === markerId);
     if (!marker) return 0;
     
-    // Check if marker has an explicit label that's numeric
-    if (marker.label && /^\d+$/.test(marker.label)) {
-      return parseInt(marker.label);
+    // For notes, use the label text directly
+    if (marker.marker_type === 'note') {
+      return 0; // Notes don't get numbers
     }
     
     // Get all markers of the same type
@@ -192,7 +192,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     });
     
-    // Find index of this marker and ensure unique numbers
+    // Find index of this marker and use its position for the number
     const index = typeMarkers.findIndex(m => m.id === markerId);
     
     // Return 1-based index
@@ -324,6 +324,36 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     },
     enabled: !!selectedFloorplan
   });
+  
+  // Force the markers to refresh with sequential numbers when markers list changes
+  useEffect(() => {
+    if (!markers || markers.length === 0) return;
+    
+    // Wait for DOM to update with new markers
+    const timer = setTimeout(() => {
+      const markerElements = document.querySelectorAll('[id^="marker-"]');
+      
+      markerElements.forEach((element) => {
+        const markerId = parseInt(element.id.replace('marker-', ''));
+        const marker = markers.find(m => m.id === markerId);
+        
+        if (marker && marker.marker_type !== 'note') {
+          // Find position in same-type markers (sorted by creation date)
+          const sameTypeMarkers = markers
+            .filter(m => m.marker_type === marker.marker_type)
+            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          
+          const position = sameTypeMarkers.findIndex(m => m.id === markerId);
+          
+          if (position >= 0 && element.textContent !== (position + 1).toString()) {
+            element.textContent = (position + 1).toString();
+          }
+        }
+      });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [markers]);
   
   // The worker is already initialized via the import above
   // No need for additional worker configuration
@@ -1040,17 +1070,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     }
     
     // Calculate the next sequential number for this marker type
-    let sequentialNumber = 1;
-    if (selectedEquipmentType) {
-      const typeMarkers = markers.filter(m => m.marker_type === selectedEquipmentType);
-      
-      // Sort by creation date to ensure consistent ordering
-      typeMarkers.sort((a, b) => {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      });
-      
-      sequentialNumber = typeMarkers.length + 1;
-    }
+    let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
     
     // Use the sequential number as the label
     const label = sequentialNumber.toString();
