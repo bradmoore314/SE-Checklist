@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AutoAwesome, PriceCheck, Description, Timer, Settings, ChevronRight, Help } from "@mui/icons-material";
+import { AlertCircle, FileText, Clock, Settings, ChevronRight, HelpCircle, Sparkles, BanknoteIcon } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -81,7 +81,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
                 </>
               ) : (
                 <>
-                  <AutoAwesome className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                   Generate Quote Review Agenda
                 </>
               )}
@@ -92,7 +92,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
             <Tabs defaultValue="introduction" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-7 mb-4">
                 <TabsTrigger value="introduction" className="flex items-center">
-                  <Description className="h-4 w-4 mr-2" />
+                  <FileText className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Introduction</span>
                 </TabsTrigger>
                 <TabsTrigger value="scope" className="flex items-center">
@@ -100,7 +100,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
                   <span className="hidden md:inline">Scope</span>
                 </TabsTrigger>
                 <TabsTrigger value="pricing" className="flex items-center">
-                  <PriceCheck className="h-4 w-4 mr-2" />
+                  <BanknoteIcon className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Pricing</span>
                 </TabsTrigger>
                 <TabsTrigger value="technical" className="flex items-center">
@@ -108,7 +108,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
                   <span className="hidden md:inline">Technical</span>
                 </TabsTrigger>
                 <TabsTrigger value="timeline" className="flex items-center">
-                  <Timer className="h-4 w-4 mr-2" />
+                  <Clock className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Timeline</span>
                 </TabsTrigger>
                 <TabsTrigger value="next-steps" className="flex items-center">
@@ -116,7 +116,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
                   <span className="hidden md:inline">Next Steps</span>
                 </TabsTrigger>
                 <TabsTrigger value="questions" className="flex items-center">
-                  <Help className="h-4 w-4 mr-2" />
+                  <HelpCircle className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Questions</span>
                 </TabsTrigger>
               </TabsList>
@@ -196,7 +196,7 @@ const QuoteReviewAgenda: React.FC<QuoteReviewAgendaProps> = ({ projectId }) => {
                 </>
               ) : (
                 <>
-                  <AutoAwesome className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                   Regenerate
                 </>
               )}

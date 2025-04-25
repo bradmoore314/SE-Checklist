@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AutoAwesome, CheckCircle, InfoOutlined, Hardware, School, Support, Assignment, QuestionAnswer } from "@mui/icons-material";
+import { Sparkles, CheckCircle, Info, Cpu, GraduationCap, LifeBuoy, ClipboardList, HelpCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -82,7 +82,7 @@ const TurnoverCallAgenda: React.FC<TurnoverCallAgendaProps> = ({ projectId }) =>
                 </>
               ) : (
                 <>
-                  <AutoAwesome className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                   Generate Turnover Call Agenda
                 </>
               )}
@@ -93,7 +93,7 @@ const TurnoverCallAgenda: React.FC<TurnoverCallAgendaProps> = ({ projectId }) =>
             <Tabs defaultValue="introduction" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-4 mb-4">
                 <TabsTrigger value="introduction" className="flex items-center">
-                  <InfoOutlined className="h-4 w-4 mr-2" />
+                  <Info className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Introduction</span>
                 </TabsTrigger>
                 <TabsTrigger value="deliverables" className="flex items-center">
@@ -101,30 +101,30 @@ const TurnoverCallAgenda: React.FC<TurnoverCallAgendaProps> = ({ projectId }) =>
                   <span className="hidden md:inline">Deliverables</span>
                 </TabsTrigger>
                 <TabsTrigger value="components" className="flex items-center">
-                  <Hardware className="h-4 w-4 mr-2" />
+                  <Cpu className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Components</span>
                 </TabsTrigger>
                 <TabsTrigger value="training" className="flex items-center">
-                  <School className="h-4 w-4 mr-2" />
+                  <GraduationCap className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Training</span>
                 </TabsTrigger>
               </TabsList>
               
               <TabsList className="grid grid-cols-4 mb-4">
                 <TabsTrigger value="support" className="flex items-center">
-                  <Support className="h-4 w-4 mr-2" />
+                  <LifeBuoy className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Support</span>
                 </TabsTrigger>
                 <TabsTrigger value="responsibilities" className="flex items-center">
-                  <Assignment className="h-4 w-4 mr-2" />
+                  <ClipboardList className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Responsibilities</span>
                 </TabsTrigger>
                 <TabsTrigger value="questions" className="flex items-center">
-                  <QuestionAnswer className="h-4 w-4 mr-2" />
+                  <HelpCircle className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Questions</span>
                 </TabsTrigger>
                 <TabsTrigger value="overview" className="flex items-center">
-                  <InfoOutlined className="h-4 w-4 mr-2" />
+                  <Info className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Overview</span>
                 </TabsTrigger>
               </TabsList>
@@ -213,7 +213,7 @@ const TurnoverCallAgenda: React.FC<TurnoverCallAgendaProps> = ({ projectId }) =>
                 </>
               ) : (
                 <>
-                  <AutoAwesome className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                   Regenerate
                 </>
               )}

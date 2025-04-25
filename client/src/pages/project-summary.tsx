@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
 import { SiteWalkAnalysis } from "@/components/ai/SiteWalkAnalysis";
+import AgendaContainer from "@/components/ai/AgendaContainer";
 
 interface EquipmentWithImages extends AccessPoint {
   images: EquipmentImage[];
@@ -552,6 +553,9 @@ export default function SiteWalkSummary() {
 
       {/* AI Analysis */}
       <SiteWalkAnalysis projectId={currentSiteWalk.id} />
+      
+      {/* Meeting Agenda Generator */}
+      <AgendaContainer projectId={currentSiteWalk.id} />
 
       {/* Export Options */}
       <div className="flex gap-2">
