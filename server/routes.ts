@@ -1214,46 +1214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
-    const floorplanId = parseInt(req.params.id);
-    if (isNaN(floorplanId)) {
-      return res.status(400).json({ message: "Invalid floorplan ID" });
-    }
 
-    console.log(`Attempting to delete floorplan ID: ${floorplanId}`);
-    
-    // Check if floorplan exists
-    const floorplan = await storage.getFloorplan(floorplanId);
-    if (!floorplan) {
-      console.log(`Floorplan with ID ${floorplanId} not found`);
-      return res.status(404).json({ message: "Floorplan not found" });
-    }
-    
-    // First delete all associated markers
-    console.log(`Deleting markers for floorplan ID: ${floorplanId}`);
-    try {
-      const markers = await storage.getFloorplanMarkers(floorplanId);
-      console.log(`Found ${markers.length} markers to delete`);
-      
-      // Delete each marker
-      for (const marker of markers) {
-        await storage.deleteFloorplanMarker(marker.id);
-      }
-      
-      // Now delete the floorplan
-      const success = await storage.deleteFloorplan(floorplanId);
-      if (!success) {
-        console.log(`Failed to delete floorplan with ID ${floorplanId} after deleting markers`);
-        return res.status(500).json({ message: "Failed to delete floorplan" });
-      }
-      
-      console.log(`Successfully deleted floorplan with ID ${floorplanId}`);
-      res.status(204).end();
-    } catch (error) {
-      console.error(`Error deleting floorplan with ID ${floorplanId}:`, error);
-      res.status(500).json({ message: "Internal server error", error: String(error) });
-    }
-  });
 
   // Floorplan Marker endpoints
   // Authentication middleware removed for debugging purposes
