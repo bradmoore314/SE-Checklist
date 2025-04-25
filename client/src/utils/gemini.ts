@@ -3,6 +3,9 @@ import { apiRequest } from "@/lib/queryClient";
 export interface AiAnalysisResponse {
   summary: string;
   detailedAnalysis: string;
+  recommendations: string[];
+  risks: string[];
+  timeline: string;
 }
 
 /**
@@ -21,7 +24,15 @@ export async function generateAiAnalysis(projectId: number): Promise<AiAnalysisR
     }
     
     const data = await response.json();
-    return data.analysis;
+    
+    // Ensure all fields exist with default values if missing
+    return {
+      summary: data.analysis.summary || "Executive summary not available",
+      detailedAnalysis: data.analysis.detailedAnalysis || "Technical analysis not available",
+      recommendations: data.analysis.recommendations || [],
+      risks: data.analysis.risks || [],
+      timeline: data.analysis.timeline || "Timeline information not available"
+    };
   } catch (error) {
     console.error('Error generating AI analysis:', error);
     throw error;
