@@ -179,6 +179,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const marker = (markers as FloorplanMarker[]).find(m => m.id === markerId);
     if (!marker) return 0;
     
+    // Check if marker has an explicit label that's numeric
+    if (marker.label && /^\d+$/.test(marker.label)) {
+      return parseInt(marker.label);
+    }
+    
     // Get all markers of the same type
     const typeMarkers = (markers as FloorplanMarker[]).filter(m => m.marker_type === marker.marker_type);
     
@@ -187,7 +192,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     });
     
-    // Find index of this marker
+    // Find index of this marker and ensure unique numbers
     const index = typeMarkers.findIndex(m => m.id === markerId);
     
     // Return 1-based index
@@ -1034,8 +1039,23 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return;
     }
     
-    // Get auto-generated label based on the equipment number
-    const label = equipmentId.toString(); 
+    // Calculate the next sequential number for this marker type
+    let sequentialNumber = 1;
+    if (selectedEquipmentType) {
+      const typeMarkers = markers.filter(m => m.marker_type === selectedEquipmentType);
+      
+      // Sort by creation date to ensure consistent ordering
+      typeMarkers.sort((a, b) => {
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+      
+      sequentialNumber = typeMarkers.length + 1;
+    }
+    
+    // Use the sequential number as the label
+    const label = sequentialNumber.toString();
+    
+    console.log(`Creating ${selectedEquipmentType} marker with sequential number: ${sequentialNumber}`);
     
     // Create the marker with integer positions
     await createMarkerMutation.mutateAsync({
