@@ -48,6 +48,12 @@ import {
   ToggleGroup, 
   ToggleGroupItem 
 } from "@/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import StreamImagesModal from "@/components/modals/StreamImagesModal";
 
@@ -2999,24 +3005,46 @@ const KastleVideoGuardingPage: React.FC = () => {
                 <span className="text-xs mt-1 text-center">Car Driving Through Gate</span>
               </div>
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.carBurglaries}
-                  onPressedChange={(value) => handleFormChange("carBurglaries", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.carBurglaries ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Car Burglaries</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.carBurglaries}
+                          onPressedChange={(value) => handleFormChange("carBurglaries", value)}
+                          className="data-[state=on]:bg-red-500 h-8 w-full"
+                        >
+                          {formData.carBurglaries ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Car Burglaries</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">Theft from vehicles, including breaking into parked cars to steal items inside.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.trespassing}
-                  onPressedChange={(value) => handleFormChange("trespassing", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.trespassing ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Trespassing</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.trespassing}
+                          onPressedChange={(value) => handleFormChange("trespassing", value)}
+                          className="data-[state=on]:bg-red-500 h-8 w-full"
+                        >
+                          {formData.trespassing ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Trespassing</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">Unauthorized entry onto private property, including individuals who have been previously banned.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex flex-col items-center">
                 <Toggle 
@@ -3049,44 +3077,88 @@ const KastleVideoGuardingPage: React.FC = () => {
             </h4>
             <div className="grid grid-cols-4 gap-2 mb-4">
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.suspiciousActivity}
-                  onPressedChange={(value) => handleFormChange("suspiciousActivity", value)}
-                  className="data-[state=on]:bg-orange-500 h-8 w-full"
-                >
-                  {formData.suspiciousActivity ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Suspicious Activity</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.suspiciousActivity}
+                          onPressedChange={(value) => handleFormChange("suspiciousActivity", value)}
+                          className="data-[state=on]:bg-orange-500 h-8 w-full"
+                        >
+                          {formData.suspiciousActivity ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Suspicious Activity</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">General category for concerning behavior that doesn't fit other specific categories but requires attention or monitoring.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.intentToCommitCriminalAct}
-                  onPressedChange={(value) => handleFormChange("intentToCommitCriminalAct", value)}
-                  className="data-[state=on]:bg-orange-500 h-8 w-full"
-                >
-                  {formData.intentToCommitCriminalAct ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Intent to Commit Criminal Act</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.intentToCommitCriminalAct}
+                          onPressedChange={(value) => handleFormChange("intentToCommitCriminalAct", value)}
+                          className="data-[state=on]:bg-orange-500 h-8 w-full"
+                        >
+                          {formData.intentToCommitCriminalAct ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Intent to Commit Criminal Act</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">Behavior suggesting preparation for a criminal activity, such as surveilling a property or preparing equipment for a break-in.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.checkingMultipleCarDoors}
-                  onPressedChange={(value) => handleFormChange("checkingMultipleCarDoors", value)}
-                  className="data-[state=on]:bg-orange-500 h-8 w-full"
-                >
-                  {formData.checkingMultipleCarDoors ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Checking Multiple Car Doors</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.checkingMultipleCarDoors}
+                          onPressedChange={(value) => handleFormChange("checkingMultipleCarDoors", value)}
+                          className="data-[state=on]:bg-orange-500 h-8 w-full"
+                        >
+                          {formData.checkingMultipleCarDoors ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Checking Multiple Car Doors</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">Person moving through parking area trying multiple car doors, often looking for unlocked vehicles to steal from.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.dumpsterDivingOrDumping}
-                  onPressedChange={(value) => handleFormChange("dumpsterDivingOrDumping", value)}
-                  className="data-[state=on]:bg-orange-500 h-8 w-full"
-                >
-                  {formData.dumpsterDivingOrDumping ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Dumpster Diving/Dumping</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Toggle 
+                          pressed={formData.dumpsterDivingOrDumping}
+                          onPressedChange={(value) => handleFormChange("dumpsterDivingOrDumping", value)}
+                          className="data-[state=on]:bg-orange-500 h-8 w-full"
+                        >
+                          {formData.dumpsterDivingOrDumping ? "Yes" : "No"}
+                        </Toggle>
+                        <span className="text-xs mt-1 text-center">Dumpster Diving/Dumping</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-sm">People searching through garbage containers for valuable items or unauthorized disposal of waste at the property.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
                     
