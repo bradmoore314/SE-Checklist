@@ -1094,7 +1094,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                               <span className="p-1 bg-teal-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm">
                                 {stream.id}
                               </span>
-                              Speaker
+                              Camera Stream
                             </CardTitle>
                             <div className="flex gap-1">
                               <Button 
@@ -1343,7 +1343,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                       }
                                     }}
                                   >
-                                    Speakers
+                                    Audio Devices
                                   </Button>
                                   <Button 
                                     variant="ghost" 
@@ -1386,7 +1386,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                               <div id={`stream-${stream.id}-association-detail`} className="mb-3" style={{display: 'none'}}>
                                 <Label htmlFor={`stream-${stream.id}-association`} className="text-xs font-medium text-pink-700 mb-1 flex items-center gap-1.5">
                                   <span className="p-0.5 bg-pink-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔗</span>
-                                  Speaker Association
+                                  Audio Device Association
                                 </Label>
                                 <div className="relative">
                                   <Textarea 
@@ -1394,7 +1394,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                     value={stream.speakerAssociation || ""}
                                     onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
                                     className="min-h-[120px] resize-y focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200 bg-white/90 text-sm"
-                                    placeholder="Fill in if speaker is dedicated to single camera or a group of cameras"
+                                    placeholder="Fill in if audio device is dedicated to single camera or a group of cameras"
                                   />
                                   <div className="absolute bottom-1 right-1 text-xs text-gray-400">
                                     {stream.speakerAssociation?.length || 0} chars
@@ -1547,7 +1547,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <div>
                     <h3 className="font-medium text-blue-800 text-base">About Camera Streams</h3>
                     <p className="text-sm text-blue-900">
-                      Configure each camera stream with its specified monitoring and patrol details. You can specify unique problem descriptions for each camera and associate speakers with one or multiple cameras. 
+                      Configure each camera stream with its specified monitoring and patrol details. You can specify unique problem descriptions for each camera and associate audio devices with one or multiple cameras. 
                       The text fields support larger entries for detailed descriptions. Use the duplicate function (copy icon) to quickly create similar streams.
                     </p>
                   </div>
