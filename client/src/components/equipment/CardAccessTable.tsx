@@ -10,6 +10,7 @@ import { Edit, Plus, FileCog, Copy, Trash, Filter, ArrowUpDown } from "lucide-re
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import EquipmentExportButton from "@/components/EquipmentExportButton";
 
 interface CardAccessTableProps {
   project: { id: number };
