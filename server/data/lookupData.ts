@@ -170,6 +170,21 @@ export const realLockTypeOptions = [
   "Single Strike"
 ];
 
+// Define tooltips for AI processing
+export const tooltips = {
+  replace_readers: "Installation/Hardware Scope: Existing readers are being swapped out. Consider compatibility with existing wiring and backboxes.",
+  install_locks: "Installation/Hardware Scope: New locks are being installed as part of the project.",
+  pull_wire: "Installation/Hardware Scope: New wiring is required for some or all devices.",
+  wireless_locks: "Installation/Hardware Scope: Project includes wireless locks that communicate via gateway.",
+  conduit_drawings: "Installation/Hardware Scope: Project requires identification of conduit pathways.",
+  interior_access_points: "Access points located inside the building, typically controlling access between interior spaces.",
+  perimeter_access_points: "Access points located at building entrances or perimeter, controlling access from outside.",
+  indoor_cameras: "Cameras designed for indoor use with appropriate resolution and features.",
+  outdoor_cameras: "Cameras designed to withstand outdoor conditions with weatherproofing and appropriate features.",
+  elevator_control: "Systems that integrate with elevators to control floor access based on credentials.",
+  intercom_systems: "Communication devices at entry points that allow visitors to contact occupants for access."
+};
+
 // Export all lookup data as a single object
 export const lookupData = {
   // Include both new names and backward compatible names
@@ -192,5 +207,6 @@ export const lookupData = {
   resolutions,
   elevatorTypes,
   turnstileTypes,
-  intercomTypes
+  intercomTypes,
+  tooltips // Add tooltips to the lookup data
 };
