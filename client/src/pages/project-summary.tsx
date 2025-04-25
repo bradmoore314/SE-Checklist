@@ -352,14 +352,12 @@ export default function SiteWalkSummary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Cameras</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Printer className="h-4 w-4 mr-1" />
-                Print
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <FileDown className="h-4 w-4 mr-1" />
-                Export
-              </Button>
+              <ExportMenu 
+                data={summary.equipment.cameras}
+                filename={`${summary.project.name}_Cameras`}
+                title={`${summary.project.name} - Cameras`}
+                size="sm"
+              />
             </div>
           </CardHeader>
           <CardContent>
@@ -424,14 +422,12 @@ export default function SiteWalkSummary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Elevators & Turnstiles</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Printer className="h-4 w-4 mr-1" />
-                Print
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <FileDown className="h-4 w-4 mr-1" />
-                Export
-              </Button>
+              <ExportMenu 
+                data={summary.equipment.elevators}
+                filename={`${summary.project.name}_Elevators`}
+                title={`${summary.project.name} - Elevators & Turnstiles`}
+                size="sm"
+              />
             </div>
           </CardHeader>
           <CardContent>
@@ -496,14 +492,12 @@ export default function SiteWalkSummary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Intercoms</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Printer className="h-4 w-4 mr-1" />
-                Print
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <FileDown className="h-4 w-4 mr-1" />
-                Export
-              </Button>
+              <ExportMenu 
+                data={summary.equipment.intercoms}
+                filename={`${summary.project.name}_Intercoms`}
+                title={`${summary.project.name} - Intercoms`}
+                size="sm"
+              />
             </div>
           </CardHeader>
           <CardContent>
@@ -562,15 +556,11 @@ export default function SiteWalkSummary() {
 
       {/* Export Options */}
       <div className="flex gap-2">
-        <Button className="flex items-center">
-          <FileDown className="h-4 w-4 mr-1" />
-          Export Complete Report
-        </Button>
-        
-        <Button variant="outline" className="flex items-center">
-          <Printer className="h-4 w-4 mr-1" />
-          Print Report
-        </Button>
+        <ProjectExportMenu 
+          projectId={currentSiteWalk.id} 
+          variant="default"
+          size="default"
+        />
       </div>
     </div>
   );
