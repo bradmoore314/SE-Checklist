@@ -1134,7 +1134,7 @@ import {
   images, floorplans, floorplanMarkers, crmSettings, equipmentImages,
   kvgFormData, kvgStreams, streamImages
 } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import connectPg from "connect-pg-simple";
 
 const PostgresSessionStore = connectPg(session);
@@ -1149,6 +1149,44 @@ export class DatabaseStorage implements IStorage {
       },
       createTableIfMissing: true,
     });
+    
+    // Initialize sample data if not already exists
+    this.initSampleData();
+  }
+  
+  private async initSampleData() {
+    try {
+      // Check if there are any users
+      const userCount = await db.select({ count: sql`count(*)` }).from(users);
+      if (parseInt(userCount[0].count.toString()) === 0) {
+        // Create admin user
+        await db.insert(users).values({
+          username: "admin",
+          password: "1c1c737e65afa38ef7bd9c90832e657eb53442a11e68fd7e621a75fd7648045e8fb84b887c511873879d26fd952270b2b186cfc1efacf36e0cf2d78a342fd307.37a5435ee0a77fd9",
+          email: "admin@example.com",
+          fullName: "Admin User",
+          role: "admin",
+        });
+      }
+      
+      // Check if there are any projects
+      const projectCount = await db.select({ count: sql`count(*)` }).from(projects);
+      if (parseInt(projectCount[0].count.toString()) === 0) {
+        // Create sample project
+        await db.insert(projects).values({
+          name: "Building Security Upgrade",
+          client: "Acme Corporation",
+          site_address: "123 Business Ave, Suite 500",
+          se_name: "Sarah Johnson",
+          bdm_name: "Michael Chen",
+          replace_readers: true,
+          pull_wire: true,
+          install_locks: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error initializing sample data:", error);
+    }
   }
 
   // Users
@@ -1208,8 +1246,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    const result = await db.delete(projects).where(eq(projects.id, id));
-    return result.count > 0;
+    await db.delete(projects).where(eq(projects.id, id));
+    return true;
   }
 
   // Access Points
@@ -1243,8 +1281,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAccessPoint(id: number): Promise<boolean> {
-    const result = await db.delete(accessPoints).where(eq(accessPoints.id, id));
-    return result.count > 0;
+    await db.delete(accessPoints).where(eq(accessPoints.id, id));
+    return true;
   }
 
   // Cameras
@@ -1278,8 +1316,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCamera(id: number): Promise<boolean> {
-    const result = await db.delete(cameras).where(eq(cameras.id, id));
-    return result.count > 0;
+    await db.delete(cameras).where(eq(cameras.id, id));
+    return true;
   }
 
   // Elevators
