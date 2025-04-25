@@ -4,7 +4,7 @@ import {
   FileSpreadsheetIcon, 
   FileTextIcon, 
   FileIcon,
-  FilePdf
+  FileType
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,7 +71,7 @@ const ExportMenu = ({
           <DropdownMenuLabel>Choose format</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => handleExport('pdf')}>
-            <FilePdf className="h-4 w-4 mr-2 text-red-600" />
+            <FileType className="h-4 w-4 mr-2 text-red-600" />
             <span>PDF Document</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleExport('excel')}>

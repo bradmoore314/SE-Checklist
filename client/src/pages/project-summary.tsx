@@ -16,6 +16,8 @@ import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
 import { SiteWalkAnalysis } from "@/components/ai/SiteWalkAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
+import ProjectExportMenu from "@/components/ProjectExportMenu";
+import ExportMenu from "@/components/ExportMenu";
 
 interface EquipmentWithImages extends AccessPoint {
   images: EquipmentImage[];
@@ -167,14 +169,17 @@ export default function SiteWalkSummary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Site Walk Summary</h1>
-        <Button 
-          variant="outline" 
-          onClick={() => setLocation("/")}
-          className="flex items-center"
-        >
-          <span className="material-icons mr-1">arrow_back</span>
-          Back to Dashboard
-        </Button>
+        <div className="flex gap-2">
+          <ProjectExportMenu projectId={currentSiteWalk.id} />
+          <Button 
+            variant="outline" 
+            onClick={() => setLocation("/")}
+            className="flex items-center"
+          >
+            <span className="material-icons mr-1">arrow_back</span>
+            Back to Dashboard
+          </Button>
+        </div>
       </div>
       
       <Card>
@@ -275,14 +280,12 @@ export default function SiteWalkSummary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Card Access Points</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Printer className="h-4 w-4 mr-1" />
-                Print
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <FileDown className="h-4 w-4 mr-1" />
-                Export
-              </Button>
+              <ExportMenu 
+                data={summary.equipment.accessPoints}
+                filename={`${summary.project.name}_Access_Points`}
+                title={`${summary.project.name} - Access Points`}
+                size="sm"
+              />
             </div>
           </CardHeader>
           <CardContent>

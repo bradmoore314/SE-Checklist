@@ -13,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import EquipmentExportButton from "@/components/EquipmentExportButton";
 
 interface CardAccessTableProps {
-  project: { id: number };
+  project: { id: number; name?: string };
   onEdit: (accessPoint: AccessPoint) => void;
   onAdd: () => void;
   onShowImages: (accessPoint: AccessPoint) => void;
@@ -306,9 +306,17 @@ export default function CardAccessTable({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <CardTitle className="text-xl font-medium">Card Access Points</CardTitle>
-        <Button onClick={onAdd} className="bg-red-600 hover:bg-red-700 text-white">
-          <Plus className="mr-2 h-4 w-4" /> Add Access Point
-        </Button>
+        <div className="flex gap-2">
+          <EquipmentExportButton 
+            data={accessPoints}
+            equipmentType="Access Points"
+            projectName={project?.name || "Project"}
+            disabled={isLoading || accessPoints.length === 0}
+          />
+          <Button onClick={onAdd} className="bg-red-600 hover:bg-red-700 text-white">
+            <Plus className="mr-2 h-4 w-4" /> Add Access Point
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-0 pb-4">
         {isLoading ? (
