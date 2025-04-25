@@ -1128,4 +1128,448 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import {
+  projects, users, accessPoints, cameras, elevators, intercoms,
+  images, floorplans, floorplanMarkers, crmSettings, equipmentImages,
+  kvgFormData, kvgStreams, streamImages
+} from "@shared/schema";
+import { eq, and } from "drizzle-orm";
+import connectPg from "connect-pg-simple";
+
+const PostgresSessionStore = connectPg(session);
+
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({
+      conObject: {
+        connectionString: process.env.DATABASE_URL,
+      },
+      createTableIfMissing: true,
+    });
+  }
+
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByMicrosoftId(microsoftId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.microsoftId, microsoftId));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUserRefreshToken(userId: number, refreshToken: string): Promise<User | undefined> {
+    const now = new Date();
+    const [user] = await db
+      .update(users)
+      .set({ refreshToken, lastLogin: now, updated_at: now })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  // Projects
+  async getProjects(): Promise<Project[]> {
+    return await db.select().from(projects);
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values(insertProject).returning();
+    return project;
+  }
+
+  async updateProject(id: number, updateProject: Partial<InsertProject>): Promise<Project | undefined> {
+    const now = new Date();
+    const [project] = await db
+      .update(projects)
+      .set({ ...updateProject, updated_at: now })
+      .where(eq(projects.id, id))
+      .returning();
+    return project;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    const result = await db.delete(projects).where(eq(projects.id, id));
+    return result.count > 0;
+  }
+
+  // Access Points
+  async getAccessPoints(projectId: number): Promise<AccessPoint[]> {
+    return await db.select().from(accessPoints).where(eq(accessPoints.project_id, projectId));
+  }
+
+  // Alias for consistent naming
+  async getAccessPointsByProject(projectId: number): Promise<AccessPoint[]> {
+    return this.getAccessPoints(projectId);
+  }
+
+  async getAccessPoint(id: number): Promise<AccessPoint | undefined> {
+    const [accessPoint] = await db.select().from(accessPoints).where(eq(accessPoints.id, id));
+    return accessPoint;
+  }
+
+  async createAccessPoint(insertAccessPoint: InsertAccessPoint): Promise<AccessPoint> {
+    const [accessPoint] = await db.insert(accessPoints).values(insertAccessPoint).returning();
+    return accessPoint;
+  }
+
+  async updateAccessPoint(id: number, updateAccessPoint: Partial<InsertAccessPoint>): Promise<AccessPoint | undefined> {
+    const now = new Date();
+    const [accessPoint] = await db
+      .update(accessPoints)
+      .set({ ...updateAccessPoint, updated_at: now })
+      .where(eq(accessPoints.id, id))
+      .returning();
+    return accessPoint;
+  }
+
+  async deleteAccessPoint(id: number): Promise<boolean> {
+    const result = await db.delete(accessPoints).where(eq(accessPoints.id, id));
+    return result.count > 0;
+  }
+
+  // Cameras
+  async getCameras(projectId: number): Promise<Camera[]> {
+    return await db.select().from(cameras).where(eq(cameras.project_id, projectId));
+  }
+
+  // Alias for consistent naming
+  async getCamerasByProject(projectId: number): Promise<Camera[]> {
+    return this.getCameras(projectId);
+  }
+
+  async getCamera(id: number): Promise<Camera | undefined> {
+    const [camera] = await db.select().from(cameras).where(eq(cameras.id, id));
+    return camera;
+  }
+
+  async createCamera(insertCamera: InsertCamera): Promise<Camera> {
+    const [camera] = await db.insert(cameras).values(insertCamera).returning();
+    return camera;
+  }
+
+  async updateCamera(id: number, updateCamera: Partial<InsertCamera>): Promise<Camera | undefined> {
+    const now = new Date();
+    const [camera] = await db
+      .update(cameras)
+      .set({ ...updateCamera, updated_at: now })
+      .where(eq(cameras.id, id))
+      .returning();
+    return camera;
+  }
+
+  async deleteCamera(id: number): Promise<boolean> {
+    const result = await db.delete(cameras).where(eq(cameras.id, id));
+    return result.count > 0;
+  }
+
+  // Elevators
+  async getElevators(projectId: number): Promise<Elevator[]> {
+    return await db.select().from(elevators).where(eq(elevators.project_id, projectId));
+  }
+
+  // Alias for consistent naming
+  async getElevatorsByProject(projectId: number): Promise<Elevator[]> {
+    return this.getElevators(projectId);
+  }
+
+  async getElevator(id: number): Promise<Elevator | undefined> {
+    const [elevator] = await db.select().from(elevators).where(eq(elevators.id, id));
+    return elevator;
+  }
+
+  async createElevator(insertElevator: InsertElevator): Promise<Elevator> {
+    const [elevator] = await db.insert(elevators).values(insertElevator).returning();
+    return elevator;
+  }
+
+  async updateElevator(id: number, updateElevator: Partial<InsertElevator>): Promise<Elevator | undefined> {
+    const now = new Date();
+    const [elevator] = await db
+      .update(elevators)
+      .set({ ...updateElevator, updated_at: now })
+      .where(eq(elevators.id, id))
+      .returning();
+    return elevator;
+  }
+
+  async deleteElevator(id: number): Promise<boolean> {
+    const result = await db.delete(elevators).where(eq(elevators.id, id));
+    return result.count > 0;
+  }
+
+  // Intercoms
+  async getIntercoms(projectId: number): Promise<Intercom[]> {
+    return await db.select().from(intercoms).where(eq(intercoms.project_id, projectId));
+  }
+
+  // Alias for consistent naming
+  async getIntercomsByProject(projectId: number): Promise<Intercom[]> {
+    return this.getIntercoms(projectId);
+  }
+
+  async getIntercom(id: number): Promise<Intercom | undefined> {
+    const [intercom] = await db.select().from(intercoms).where(eq(intercoms.id, id));
+    return intercom;
+  }
+
+  async createIntercom(insertIntercom: InsertIntercom): Promise<Intercom> {
+    const [intercom] = await db.insert(intercoms).values(insertIntercom).returning();
+    return intercom;
+  }
+
+  async updateIntercom(id: number, updateIntercom: Partial<InsertIntercom>): Promise<Intercom | undefined> {
+    const now = new Date();
+    const [intercom] = await db
+      .update(intercoms)
+      .set({ ...updateIntercom, updated_at: now })
+      .where(eq(intercoms.id, id))
+      .returning();
+    return intercom;
+  }
+
+  async deleteIntercom(id: number): Promise<boolean> {
+    const result = await db.delete(intercoms).where(eq(intercoms.id, id));
+    return result.count > 0;
+  }
+
+  // Images
+  async saveImage(insertImage: InsertImage): Promise<Image> {
+    const [image] = await db.insert(images).values(insertImage).returning();
+    return image;
+  }
+
+  async getImages(equipmentType: string, equipmentId: number): Promise<Image[]> {
+    // In a real implementation, we would need to join with the appropriate junction table
+    // This is a simplified implementation
+    return [];
+  }
+
+  async deleteImage(id: number): Promise<boolean> {
+    const result = await db.delete(images).where(eq(images.id, id));
+    return result.count > 0;
+  }
+
+  // Floorplans
+  async getFloorplans(projectId: number): Promise<Floorplan[]> {
+    return await db.select().from(floorplans).where(eq(floorplans.project_id, projectId));
+  }
+
+  async getFloorplan(id: number): Promise<Floorplan | undefined> {
+    const [floorplan] = await db.select().from(floorplans).where(eq(floorplans.id, id));
+    return floorplan;
+  }
+
+  async createFloorplan(insertFloorplan: InsertFloorplan): Promise<Floorplan> {
+    const [floorplan] = await db.insert(floorplans).values(insertFloorplan).returning();
+    return floorplan;
+  }
+
+  async updateFloorplan(id: number, updateFloorplan: Partial<InsertFloorplan>): Promise<Floorplan | undefined> {
+    const now = new Date();
+    const [floorplan] = await db
+      .update(floorplans)
+      .set({ ...updateFloorplan, updated_at: now })
+      .where(eq(floorplans.id, id))
+      .returning();
+    return floorplan;
+  }
+
+  async deleteFloorplan(id: number): Promise<boolean> {
+    const result = await db.delete(floorplans).where(eq(floorplans.id, id));
+    return result.count > 0;
+  }
+
+  // Floorplan Markers
+  async getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]> {
+    return await db.select().from(floorplanMarkers).where(eq(floorplanMarkers.floorplan_id, floorplanId));
+  }
+
+  async getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined> {
+    const [marker] = await db.select().from(floorplanMarkers).where(eq(floorplanMarkers.id, id));
+    return marker;
+  }
+
+  async createFloorplanMarker(insertMarker: InsertFloorplanMarker): Promise<FloorplanMarker> {
+    const [marker] = await db.insert(floorplanMarkers).values(insertMarker).returning();
+    return marker;
+  }
+
+  async updateFloorplanMarker(id: number, updateMarker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined> {
+    const now = new Date();
+    const [marker] = await db
+      .update(floorplanMarkers)
+      .set({ ...updateMarker, updated_at: now })
+      .where(eq(floorplanMarkers.id, id))
+      .returning();
+    return marker;
+  }
+
+  async deleteFloorplanMarker(id: number): Promise<boolean> {
+    const result = await db.delete(floorplanMarkers).where(eq(floorplanMarkers.id, id));
+    return result.count > 0;
+  }
+
+  // CRM Settings
+  async getCrmSettings(): Promise<CrmSettings[]> {
+    return await db.select().from(crmSettings);
+  }
+
+  async getCrmSetting(id: number): Promise<CrmSettings | undefined> {
+    const [setting] = await db.select().from(crmSettings).where(eq(crmSettings.id, id));
+    return setting;
+  }
+
+  async getCrmSettingByType(type: string): Promise<CrmSettings | undefined> {
+    const [setting] = await db.select().from(crmSettings).where(eq(crmSettings.type, type));
+    return setting;
+  }
+
+  async createCrmSettings(insertSettings: InsertCrmSettings): Promise<CrmSettings> {
+    const [setting] = await db.insert(crmSettings).values(insertSettings).returning();
+    return setting;
+  }
+
+  async updateCrmSettings(id: number, updateSettings: Partial<InsertCrmSettings>): Promise<CrmSettings | undefined> {
+    const now = new Date();
+    const [setting] = await db
+      .update(crmSettings)
+      .set({ ...updateSettings, updated_at: now })
+      .where(eq(crmSettings.id, id))
+      .returning();
+    return setting;
+  }
+
+  async deleteCrmSettings(id: number): Promise<boolean> {
+    const result = await db.delete(crmSettings).where(eq(crmSettings.id, id));
+    return result.count > 0;
+  }
+
+  // Equipment Images
+  async getEquipmentImages(projectId: number, equipmentType: string, equipmentId?: number): Promise<EquipmentImage[]> {
+    let query = db.select().from(equipmentImages)
+      .where(and(
+        eq(equipmentImages.project_id, projectId),
+        eq(equipmentImages.equipment_type, equipmentType)
+      ));
+    
+    if (equipmentId) {
+      query = query.where(eq(equipmentImages.equipment_id, equipmentId));
+    }
+    
+    return await query;
+  }
+
+  async getEquipmentImage(id: number): Promise<EquipmentImage | undefined> {
+    const [image] = await db.select().from(equipmentImages).where(eq(equipmentImages.id, id));
+    return image;
+  }
+
+  async createEquipmentImage(insertImage: InsertEquipmentImage): Promise<EquipmentImage> {
+    const [image] = await db.insert(equipmentImages).values(insertImage).returning();
+    return image;
+  }
+
+  async updateEquipmentImage(id: number, updateImage: Partial<InsertEquipmentImage>): Promise<EquipmentImage | undefined> {
+    const now = new Date();
+    const [image] = await db
+      .update(equipmentImages)
+      .set({ ...updateImage, updated_at: now })
+      .where(eq(equipmentImages.id, id))
+      .returning();
+    return image;
+  }
+
+  async deleteEquipmentImage(id: number): Promise<boolean> {
+    const result = await db.delete(equipmentImages).where(eq(equipmentImages.id, id));
+    return result.count > 0;
+  }
+
+  // KVG Form Data
+  async getKvgFormData(projectId: number): Promise<KvgFormData | undefined> {
+    const [formData] = await db.select().from(kvgFormData).where(eq(kvgFormData.project_id, projectId));
+    return formData;
+  }
+
+  async createKvgFormData(insertFormData: InsertKvgFormData): Promise<KvgFormData> {
+    const [formData] = await db.insert(kvgFormData).values(insertFormData).returning();
+    return formData;
+  }
+
+  async updateKvgFormData(id: number, updateFormData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined> {
+    const now = new Date();
+    const [formData] = await db
+      .update(kvgFormData)
+      .set({ ...updateFormData, updated_at: now })
+      .where(eq(kvgFormData.id, id))
+      .returning();
+    return formData;
+  }
+
+  // KVG Streams
+  async getKvgStreams(projectId: number): Promise<KvgStream[]> {
+    return await db.select().from(kvgStreams).where(eq(kvgStreams.project_id, projectId));
+  }
+
+  async getKvgStream(id: number): Promise<KvgStream | undefined> {
+    const [stream] = await db.select().from(kvgStreams).where(eq(kvgStreams.id, id));
+    return stream;
+  }
+
+  async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
+    const [stream] = await db.insert(kvgStreams).values(insertStream).returning();
+    return stream;
+  }
+
+  async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
+    const now = new Date();
+    const [stream] = await db
+      .update(kvgStreams)
+      .set({ ...updateStream, updated_at: now })
+      .where(eq(kvgStreams.id, id))
+      .returning();
+    return stream;
+  }
+
+  async deleteKvgStream(id: number): Promise<boolean> {
+    const result = await db.delete(kvgStreams).where(eq(kvgStreams.id, id));
+    return result.count > 0;
+  }
+
+  // Stream Images
+  async getStreamImages(streamId: number): Promise<StreamImage[]> {
+    return await db.select().from(streamImages).where(eq(streamImages.stream_id, streamId));
+  }
+
+  async createStreamImage(insertImage: InsertStreamImage): Promise<StreamImage> {
+    const [image] = await db.insert(streamImages).values(insertImage).returning();
+    return image;
+  }
+
+  async deleteStreamImage(id: number): Promise<boolean> {
+    const result = await db.delete(streamImages).where(eq(streamImages.id, id));
+    return result.count > 0;
+  }
+}
+
+// Use the DatabaseStorage implementation
+export const storage = new DatabaseStorage();
