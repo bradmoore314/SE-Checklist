@@ -202,13 +202,25 @@ export default function Step1AddCameras({
           </div>
         </div>
         
-        <Button 
-          onClick={handleAddCamera}
-          className="flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Camera
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={handleAddCamera}
+            className="flex items-center"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Camera
+          </Button>
+          
+          <Button
+            disabled={cameras.length === 0}
+            onClick={onCalculate}
+            className="flex items-center"
+            variant="outline"
+          >
+            Calculate Requirements
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
 
       {cameras.length === 0 ? (
@@ -298,17 +310,7 @@ export default function Step1AddCameras({
         </Card>
       )}
 
-      <div className="flex justify-end mt-6">
-        <Button
-          disabled={cameras.length === 0}
-          onClick={onCalculate}
-          className="flex items-center"
-          size="lg"
-        >
-          Calculate Requirements
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
+      {/* Calculate Requirements button moved to top */}
 
       {/* Add/Edit Camera Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
