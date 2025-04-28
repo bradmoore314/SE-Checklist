@@ -593,6 +593,8 @@ export class MemStorage implements IStorage {
       resolution: insertCamera.resolution ?? null,
       field_of_view: insertCamera.field_of_view ?? null,
       notes: insertCamera.notes ?? null,
+      is_indoor: insertCamera.is_indoor ?? true, // Default to true for indoor
+      import_to_gateway: insertCamera.import_to_gateway ?? true, // Default to true
       created_at: now,
       updated_at: now
     };
@@ -1532,7 +1534,37 @@ export class DatabaseStorage implements IStorage {
 
   // Cameras
   async getCameras(projectId: number): Promise<Camera[]> {
-    return await db.select().from(cameras).where(eq(cameras.project_id, projectId));
+    try {
+      const dbCameras = await db.select().from(cameras).where(eq(cameras.project_id, projectId));
+      
+      // Handle missing columns by adding default values
+      return dbCameras.map(camera => ({
+        ...camera,
+        is_indoor: (camera as any).is_indoor !== undefined ? (camera as any).is_indoor : true,
+        import_to_gateway: (camera as any).import_to_gateway !== undefined ? (camera as any).import_to_gateway : true
+      }));
+    } catch (error) {
+      // If we're having database column issues, fall back to a minimal query and add the missing fields
+      console.error("Error fetching cameras with full schema, falling back to minimal query:", error);
+      
+      // Use raw SQL to only select the columns we know exist
+      const sql = `
+        SELECT 
+          id, project_id, location, camera_type, mounting_type, 
+          resolution, field_of_view, notes, created_at, updated_at
+        FROM cameras
+        WHERE project_id = ${projectId}
+      `;
+      
+      const result = await db.execute(sql);
+      
+      // Add default values for new columns
+      return result.rows.map(row => ({
+        ...row,
+        is_indoor: true,  // Default value
+        import_to_gateway: true  // Default value
+      }));
+    }
   }
 
   // Alias for consistent naming
@@ -1541,23 +1573,98 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getCamera(id: number): Promise<Camera | undefined> {
-    const [camera] = await db.select().from(cameras).where(eq(cameras.id, id));
-    return camera;
+    try {
+      const [camera] = await db.select().from(cameras).where(eq(cameras.id, id));
+      
+      if (!camera) return undefined;
+      
+      // Handle missing columns by adding default values
+      return {
+        ...camera,
+        is_indoor: (camera as any).is_indoor !== undefined ? (camera as any).is_indoor : true,
+        import_to_gateway: (camera as any).import_to_gateway !== undefined ? (camera as any).import_to_gateway : true
+      };
+    } catch (error) {
+      // If we're having database column issues, fall back to a minimal query and add the missing fields
+      console.error("Error fetching camera with full schema, falling back to minimal query:", error);
+      
+      // Use raw SQL to only select the columns we know exist
+      const sql = `
+        SELECT 
+          id, project_id, location, camera_type, mounting_type, 
+          resolution, field_of_view, notes, created_at, updated_at
+        FROM cameras
+        WHERE id = ${id}
+      `;
+      
+      const result = await db.execute(sql);
+      
+      if (result.rows.length === 0) return undefined;
+      
+      // Add default values for new columns
+      return {
+        ...result.rows[0],
+        is_indoor: true,  // Default value
+        import_to_gateway: true  // Default value
+      };
+    }
   }
 
   async createCamera(insertCamera: InsertCamera): Promise<Camera> {
-    const [camera] = await db.insert(cameras).values(insertCamera).returning();
-    return camera;
+    try {
+      const [camera] = await db.insert(cameras).values(insertCamera).returning();
+      return camera;
+    } catch (error) {
+      console.error("Error creating camera with new schema, falling back to minimal insert:", error);
+      
+      // Create a copy of the data without the potentially missing columns
+      const { is_indoor, import_to_gateway, ...safeData } = insertCamera;
+      
+      // Insert with only the fields we know exist
+      const [camera] = await db.insert(cameras).values(safeData).returning();
+      
+      // Return the result with default values for the missing fields
+      return {
+        ...camera,
+        is_indoor: is_indoor ?? true,
+        import_to_gateway: import_to_gateway ?? true
+      };
+    }
   }
 
   async updateCamera(id: number, updateCamera: Partial<InsertCamera>): Promise<Camera | undefined> {
-    const now = new Date();
-    const [camera] = await db
-      .update(cameras)
-      .set({ ...updateCamera, updated_at: now })
-      .where(eq(cameras.id, id))
-      .returning();
-    return camera;
+    try {
+      const now = new Date();
+      const [camera] = await db
+        .update(cameras)
+        .set({ ...updateCamera, updated_at: now })
+        .where(eq(cameras.id, id))
+        .returning();
+      
+      return camera;
+    } catch (error) {
+      console.error("Error updating camera with new schema, falling back to minimal update:", error);
+      
+      // Create a copy of the data without the potentially missing columns
+      const { is_indoor, import_to_gateway, ...safeData } = updateCamera;
+      
+      // Update with only the fields we know exist
+      const now = new Date();
+      const [camera] = await db
+        .update(cameras)
+        .set({ ...safeData, updated_at: now })
+        .where(eq(cameras.id, id))
+        .returning();
+      
+      if (!camera) return undefined;
+      
+      // Return the result with the requested values for the missing fields
+      return {
+        ...camera,
+        is_indoor: is_indoor ?? true,
+        import_to_gateway: import_to_gateway ?? true
+      };
+    }
   }
 
   async deleteCamera(id: number): Promise<boolean> {

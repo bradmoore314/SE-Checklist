@@ -406,10 +406,13 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
             </div>
           </CardContent>
         </Card>
+        
+        {/* Add any other dashboard cards here if needed */}
+        
       </div>
       
-      {/* Project Collaborators Section */}
-      <div className="mt-6">
+      {/* Project Collaborators Section - Moved to the bottom */}
+      <div className="mt-8">
         <CollaborationProvider projectId={project.id}>
           <ProjectCollaborators projectId={project.id} />
         </CollaborationProvider>

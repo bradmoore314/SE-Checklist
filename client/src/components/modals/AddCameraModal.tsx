@@ -61,6 +61,7 @@ const cameraSchema = z.object({
   resolution: z.string().optional(),
   field_of_view: z.string().optional(),
   notes: z.string().optional(),
+  is_indoor: z.boolean().default(true),
   import_to_gateway: z.boolean().default(true),
 });
 
@@ -102,6 +103,7 @@ export default function AddCameraModal({
       resolution: "",
       field_of_view: "",
       notes: "",
+      is_indoor: true,
       import_to_gateway: true,
     },
   });
@@ -375,35 +377,67 @@ export default function AddCameraModal({
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="import_to_gateway"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-sm font-medium text-neutral-700">
-                      Import to Gateway Calculator?
-                    </FormLabel>
-                    <FormDescription>
-                      Choose whether to auto-import this camera to the Gateway Calculator
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <div className="flex items-center space-x-2">
-                      <div className={`cursor-pointer px-3 py-1 rounded-md ${field.value ? 'bg-primary text-white' : 'bg-gray-100'}`} 
-                           onClick={() => field.onChange(true)}>
-                        Yes
-                      </div>
-                      <div className={`cursor-pointer px-3 py-1 rounded-md ${!field.value ? 'bg-primary text-white' : 'bg-gray-100'}`}
-                           onClick={() => field.onChange(false)}>
-                        No
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="is_indoor"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Camera Location
+                      </FormLabel>
+                      <FormDescription>
+                        Is this an indoor or outdoor camera?
+                      </FormDescription>
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormControl>
+                      <div className="flex items-center space-x-2">
+                        <div className={`cursor-pointer px-3 py-1 rounded-md ${field.value ? 'bg-primary text-white' : 'bg-gray-100'}`} 
+                             onClick={() => field.onChange(true)}>
+                          Indoor
+                        </div>
+                        <div className={`cursor-pointer px-3 py-1 rounded-md ${!field.value ? 'bg-primary text-white' : 'bg-gray-100'}`}
+                             onClick={() => field.onChange(false)}>
+                          Outdoor
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="import_to_gateway"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm font-medium text-neutral-700">
+                        Import to Gateway Calculator?
+                      </FormLabel>
+                      <FormDescription>
+                        Auto-import to Gateway Calculator
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <div className="flex items-center space-x-2">
+                        <div className={`cursor-pointer px-3 py-1 rounded-md ${field.value ? 'bg-primary text-white' : 'bg-gray-100'}`} 
+                             onClick={() => field.onChange(true)}>
+                          Yes
+                        </div>
+                        <div className={`cursor-pointer px-3 py-1 rounded-md ${!field.value ? 'bg-primary text-white' : 'bg-gray-100'}`}
+                             onClick={() => field.onChange(false)}>
+                          No
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="space-y-4">
               <FormLabel className="text-sm font-medium text-neutral-700">
