@@ -1675,6 +1675,27 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return item;
   }
+
+  async updateFeedback(id: number, updateData: Partial<InsertFeedback>): Promise<Feedback | undefined> {
+    const now = new Date();
+    const updateObject = { ...updateData, updated_at: now };
+    
+    const [item] = await db
+      .update(feedback)
+      .set(updateObject)
+      .where(eq(feedback.id, id))
+      .returning();
+      
+    return item;
+  }
+
+  async deleteFeedback(id: number): Promise<boolean> {
+    const result = await db
+      .delete(feedback)
+      .where(eq(feedback.id, id));
+      
+    return result.rowCount > 0;
+  }
 }
 
 // Use the DatabaseStorage implementation
