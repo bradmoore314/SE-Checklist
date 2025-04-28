@@ -28,7 +28,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
                style={{ backgroundColor: 'var(--red-accent)' }}>SE</div>
           <div className="ml-3">
-            <div className="font-medium text-gray-900">Security Engineer</div>
+            <div className="font-medium text-gray-900">Sales Engineer</div>
             <div className="text-sm text-gray-600">Site Walk App</div>
           </div>
         </div>
