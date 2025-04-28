@@ -400,7 +400,6 @@ export class MemStorage implements IStorage {
       id,
       project_id: insertAccessPoint.project_id,
       location: insertAccessPoint.location,
-      quick_config: insertAccessPoint.quick_config,
       reader_type: insertAccessPoint.reader_type,
       lock_type: insertAccessPoint.lock_type,
       monitoring_type: insertAccessPoint.monitoring_type,
