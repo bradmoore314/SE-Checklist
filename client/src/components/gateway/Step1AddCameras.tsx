@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { StreamCamera } from "@shared/schema";
+import { useState, useEffect } from "react";
+import { StreamCamera, Camera } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -38,8 +38,10 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Check, Pencil, Plus, Trash2, ArrowRight } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, ArrowRight, Download, ChevronDown, ChevronUp } from "lucide-react";
 import { getLensTypeText } from "@/lib/gateway-calculator";
+import { useQuery } from "@tanstack/react-query";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface Step1AddCamerasProps {
   cameras: StreamCamera[];
@@ -79,7 +81,38 @@ export default function Step1AddCameras({
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [duplicateQuantity, setDuplicateQuantity] = useState(1);
   const [duplicatePrefix, setDuplicatePrefix] = useState("");
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const [projectId, setProjectId] = useState<number>(2); // Default to first project
+
+  // Fetch project cameras
+  const { data: projectCameras, isLoading: isLoadingCameras } = useQuery({
+    queryKey: ['/api/projects', projectId, 'cameras'],
+    enabled: !!projectId
+  });
   
+  // Add handler for importing cameras from project
+  const handleImportCameras = () => {
+    if (!projectCameras || projectCameras.length === 0) return;
+    
+    // Map project cameras to StreamCamera format
+    const importedCameras: StreamCamera[] = projectCameras.map((projectCamera: Camera) => ({
+      name: projectCamera.location || `Camera ${projectCamera.id}`,
+      lensCount: 1, // Default to single lens
+      streamingResolution: 2, // Default to 1080p
+      frameRate: 10, // Default frame rate
+      storageDays: 30, // Default storage days
+      recordingResolution: 2, // Default to 1080p
+    }));
+    
+    // Add imported cameras to existing cameras
+    setCameras([...cameras, ...importedCameras]);
+  };
+  
+  // Toggle the advanced fields visibility
+  const toggleAdvancedFields = () => {
+    setShowAdvancedFields(!showAdvancedFields);
+  };
+
   const form = useForm<CameraFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -200,9 +233,34 @@ export default function Step1AddCameras({
               <span className="ml-1 font-bold">{totalStreams}</span>
             </div>
           </div>
+          
+          {/* Advanced Fields Toggle */}
+          <Button 
+            onClick={toggleAdvancedFields}
+            variant="link" 
+            className="p-0 h-auto mt-2 text-blue-600"
+            size="sm"
+          >
+            {showAdvancedFields ? (
+              <>Hide Advanced Fields <ChevronUp className="h-3 w-3 ml-1" /></>
+            ) : (
+              <>Show Advanced Fields <ChevronDown className="h-3 w-3 ml-1" /></>
+            )}
+          </Button>
         </div>
         
         <div className="flex items-center gap-2">
+          <Button
+            onClick={handleImportCameras}
+            className="flex items-center"
+            variant="outline"
+            disabled={!projectCameras || projectCameras.length === 0}
+            title={!projectCameras || projectCameras.length === 0 ? "No cameras found in project" : "Import cameras from project"}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Import Cameras
+          </Button>
+          
           <Button 
             onClick={handleAddCamera}
             className="flex items-center"
@@ -453,53 +511,62 @@ export default function Step1AddCameras({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="sameAsStreaming"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Use same resolution for recording</FormLabel>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/* Advanced fields section wrapped in Collapsible */}
+              <Collapsible open={showAdvancedFields} className="space-y-4 pt-2">
+                <CollapsibleContent>
+                  <div className="rounded-lg border p-2 pb-3">
+                    <h4 className="text-sm font-medium mb-2 text-gray-500 px-2">Advanced Settings</h4>
+                    
+                    <FormField
+                      control={form.control}
+                      name="sameAsStreaming"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>Use same resolution for recording</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-              {!sameAsStreaming && (
-                <FormField
-                  control={form.control}
-                  name="recordingResolution"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Recording Resolution (MP)</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value.toString()}
-                          onValueChange={(value) => field.onChange(parseFloat(value))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {resolutionOptions.map((option) => (
-                              <SelectItem key={option.value} value={option.value.toString()}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                    {!sameAsStreaming && (
+                      <FormField
+                        control={form.control}
+                        name="recordingResolution"
+                        render={({ field }) => (
+                          <FormItem className="mt-3">
+                            <FormLabel>Recording Resolution (MP)</FormLabel>
+                            <FormControl>
+                              <Select
+                                value={field.value.toString()}
+                                onValueChange={(value) => field.onChange(parseFloat(value))}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {resolutionOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value.toString()}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
 
               <DialogFooter className="flex justify-between gap-2">
                 <Button type="button" variant="outline" onClick={handleCancel}>
