@@ -249,3 +249,48 @@ export const feedback = pgTable("feedback", {
 export type Feedback = typeof feedback.$inferSelect;
 export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, status: true, created_at: true, updated_at: true });
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
+
+// Camera Stream Gateway types
+export type GatewayType = '8ch' | '16ch';
+
+export interface GatewayConfiguration {
+  type: GatewayType;
+  count: number;
+}
+
+export interface Calculations {
+  totalStreams: number;
+  totalThroughput: number;
+  totalStorage: number;
+}
+
+export interface StreamCamera {
+  name: string;
+  lensCount: number;
+  streamingResolution: number;
+  frameRate: number;
+  storageDays: number;
+  recordingResolution: number;
+}
+
+export interface Stream {
+  id: string;
+  name: string;
+  lensType: string;
+  resolution: string;
+  frameRate: string;
+  throughput: number;
+  storage: number;
+  cameraId: string;
+}
+
+// BitRate table as a constant object
+export const BITRATE_TABLE = {
+  1: 1.5,
+  2: 2.0,
+  4: 2.5,
+  5: 2.8,
+  6: 3.0,
+  8: 3.5,
+  12: 4.0
+};
