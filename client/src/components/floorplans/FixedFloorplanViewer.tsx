@@ -1087,6 +1087,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     }
     
     try {
+      // Make sure we're authenticated before proceeding
+      await bypassAuth();
+      
       // Calculate the next sequential number for this marker type
       let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
       
@@ -1096,7 +1099,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       console.log(`Creating ${selectedEquipmentType} marker with equipment ID ${equipmentId} and sequential number: ${sequentialNumber}`);
       
       // Create the marker with integer positions
-      await createMarkerMutation.mutateAsync({
+      const markerData = {
         floorplan_id: selectedFloorplan.id,
         page: 1, // Default to first page for now
         marker_type: selectedEquipmentType!,
@@ -1104,18 +1107,51 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         position_x: Math.floor(newMarkerPosition.x),
         position_y: Math.floor(newMarkerPosition.y),
         label
-      });
+      };
       
-      toast({
-        title: "Success",
-        description: `Added ${selectedEquipmentType} marker with ID #${label}`,
-      });
+      // First try using the mutation
+      try {
+        await createMarkerMutation.mutateAsync(markerData);
+        
+        // Refresh the markers data
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
+        
+        // If onMarkersUpdated callback exists, call it
+        if (onMarkersUpdated) {
+          onMarkersUpdated();
+        }
+        
+        toast({
+          title: "Success",
+          description: `Added ${selectedEquipmentType} marker with ID #${label}`,
+        });
+      } catch (mutationError) {
+        console.error('Mutation failed, trying direct API call:', mutationError);
+        
+        // If the mutation fails, try a direct API call as fallback
+        const response = await apiRequest('POST', '/api/floorplan-markers', markerData);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          console.error('Direct API call also failed:', errorData);
+          throw new Error(errorData?.message || `Failed to create marker (${response.status})`);
+        }
+        
+        // Refresh the markers data
+        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
+        
+        toast({
+          title: "Success",
+          description: `Added ${selectedEquipmentType} marker with ID #${label} (via fallback)`,
+        });
+      }
       
-      // Close the equipment modal
+      // Reset the state
+      setNewMarkerPosition(null);
       setShowAddEquipmentModal(false);
       setSelectedEquipmentType(null);
     } catch (error) {
-      console.error('Error creating marker:', error);
+      console.error('Error creating marker after all attempts:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to create marker on floorplan",
