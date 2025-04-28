@@ -509,7 +509,20 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 
                 {ap.notes && (
                   <div>
-                    <h4 className="text-sm font-medium mb-2">Notes</h4>
+                    <div className="flex items-center">
+                      <h4 className="text-sm font-medium mb-2">Notes</h4>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1 mb-2" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                     <p className="text-sm bg-muted/30 p-2 rounded border">
                       {ap.notes}
                     </p>
