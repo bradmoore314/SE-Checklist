@@ -65,7 +65,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
   
   // Access point details state - prepopulated if editing
   const [location, setLocation] = useState<string>(existingAccessPoint?.location || "");
-  const [quickConfig, setQuickConfig] = useState<string>(existingAccessPoint?.quick_config || "");
+  // Quick Config field removed
   const [readerType, setReaderType] = useState<string>(existingAccessPoint?.reader_type || "KR-100");
   const [lockType, setLockType] = useState<string>(existingAccessPoint?.lock_type || "Standard");
   const [monitoringType, setMonitoringType] = useState<string>(existingAccessPoint?.monitoring_type || "Prop Monitoring");
@@ -77,7 +77,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
   React.useEffect(() => {
     if (existingAccessPoint) {
       setLocation(existingAccessPoint.location || "");
-      setQuickConfig(existingAccessPoint.quick_config || "");
+      // Quick Config removed
       setReaderType(existingAccessPoint.reader_type || "KR-100");
       setLockType(existingAccessPoint.lock_type || "Standard");
       setMonitoringType(existingAccessPoint.monitoring_type || "Prop Monitoring");
@@ -92,7 +92,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
       // For new access points, pass all the form data to create a complete record
       const accessPointData = {
         location,
-        quick_config: quickConfig,
+        // quick_config field removed
         reader_type: readerType,
         lock_type: lockType,
         monitoring_type: monitoringType,
@@ -108,7 +108,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
       // If we're editing an existing marker, pass the updated data
       const updatedData = {
         location,
-        quick_config: quickConfig,
+        // quick_config field removed
         reader_type: readerType,
         lock_type: lockType,
         monitoring_type: monitoringType,
@@ -121,7 +121,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
       onSubmit(existingMarker.equipment_id, location, updatedData);
     } else {
       // Using an existing access point without modifications
-      onSubmit(selectedAccessPointId, null);
+      onSubmit(selectedAccessPointId, accessPoints?.find(ap => ap.id === selectedAccessPointId)?.location || null);
     }
   };
 
@@ -182,36 +182,7 @@ const AccessPointMarkerForm: React.FC<AccessPointMarkerFormProps> = ({
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="quick-config">Quick Config</Label>
-                  <Select 
-                    value={quickConfig} 
-                    onValueChange={setQuickConfig}
-                  >
-                    <SelectTrigger id="quick-config">
-                      <SelectValue placeholder="Select configuration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {isLoadingLookups ? (
-                        <SelectItem value="loading">Loading...</SelectItem>
-                      ) : lookupData?.quickConfigOptions ? (
-                        lookupData.quickConfigOptions.map((type: string) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <>
-                          <SelectItem value="Default Config">Default Config</SelectItem>
-                          <SelectItem value="In/Out Reader">In/Out Reader</SelectItem>
-                          <SelectItem value="N/A">N/A</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="interior-perimeter">Interior/Perimeter</Label>
                   <Select 
