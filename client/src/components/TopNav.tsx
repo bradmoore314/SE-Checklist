@@ -64,6 +64,24 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
       </div>
       
       <div className="flex items-center">
+        <Link href="/documentation">
+          <Button 
+            variant="outline" 
+            className="text-gray-700 hover:text-gray-900 mr-4 flex items-center"
+          >
+            <span className="material-icons mr-1">menu_book</span>
+            Documentation
+          </Button>
+        </Link>
+        <Link href="/feedback">
+          <Button 
+            variant="outline" 
+            className="text-gray-700 hover:text-gray-900 mr-4 flex items-center"
+          >
+            <span className="material-icons mr-1">bug_report</span>
+            Feedback
+          </Button>
+        </Link>
         <Button 
           variant="ghost" 
           size="icon" 
