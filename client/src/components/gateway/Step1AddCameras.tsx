@@ -38,7 +38,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Check, Pencil, Plus, Trash2, ArrowRight, Download } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, ArrowRight, Download, ChevronDown, ChevronUp } from "lucide-react";
 import { getLensTypeText } from "@/lib/gateway-calculator";
 import { useQuery } from "@tanstack/react-query";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -503,6 +503,20 @@ export default function Step1AddCameras({
                   </FormItem>
                 )}
               />
+              
+              {/* Advanced Fields Toggle Button */}
+              <Button 
+                onClick={() => setShowAdvancedFields(!showAdvancedFields)}
+                variant="link" 
+                className="p-0 h-auto mt-2 text-blue-600"
+                size="sm"
+              >
+                {showAdvancedFields ? (
+                  <>Hide Advanced Fields <ChevronUp className="h-3 w-3 ml-1" /></>
+                ) : (
+                  <>Show Advanced Fields <ChevronDown className="h-3 w-3 ml-1" /></>
+                )}
+              </Button>
 
               {/* Advanced fields section wrapped in Collapsible */}
               <Collapsible open={showAdvancedFields} className="space-y-4 pt-2">
