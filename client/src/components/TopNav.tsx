@@ -89,13 +89,7 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
         >
           <span className="material-icons">notifications</span>
         </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-gray-600 hover:text-gray-900 mr-4"
-        >
-          <span className="material-icons">help_outline</span>
-        </Button>
+
         <Link href="/projects">
           <Button 
             className="text-white px-4 py-2 rounded-md flex items-center mr-4"
