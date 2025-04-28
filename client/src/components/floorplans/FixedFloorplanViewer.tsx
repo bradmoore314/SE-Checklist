@@ -1065,6 +1065,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   };
 
   // Create a new marker with associated equipment
+
   const handleCreateMarkerWithEquipment = async (equipmentId: number) => {
     if (!selectedFloorplan || !newMarkerPosition) {
       console.error('Missing required data for creating marker');
@@ -1087,8 +1088,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     }
     
     try {
-      // Make sure we're authenticated before proceeding
-      await bypassAuth();
+      // No need to bypass auth, we added authentication check in server API endpoint
       
       // Calculate the next sequential number for this marker type
       let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
