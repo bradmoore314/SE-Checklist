@@ -1,18 +1,20 @@
 import { 
-  User, InsertUser, 
-  Project, InsertProject, 
-  AccessPoint, InsertAccessPoint,
-  Camera, InsertCamera,
-  Elevator, InsertElevator,
-  Intercom, InsertIntercom,
-  Floorplan, InsertFloorplan,
-  FloorplanMarker, InsertFloorplanMarker,
-  Feedback, InsertFeedback,
-  ProjectCollaborator, InsertProjectCollaborator,
+  User, InsertUser, users,
+  Project, InsertProject, projects,
+  AccessPoint, InsertAccessPoint, accessPoints,
+  Camera, InsertCamera, cameras,
+  Elevator, InsertElevator, elevators,
+  Intercom, InsertIntercom, intercoms,
+  Floorplan, InsertFloorplan, floorplans,
+  FloorplanMarker, InsertFloorplanMarker, floorplanMarkers,
+  Feedback, InsertFeedback, feedback,
+  ProjectCollaborator, InsertProjectCollaborator, projectCollaborators,
   PERMISSION, Permission
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { db } from "./db";
+import { and, eq, inArray } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -27,10 +29,19 @@ export interface IStorage {
   
   // Projects
   getProjects(): Promise<Project[]>;
+  getProjectsForUser(userId: number): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<boolean>;
+  
+  // Project Collaborators
+  getProjectCollaborators(projectId: number): Promise<ProjectCollaborator[]>;
+  getProjectCollaborator(id: number): Promise<ProjectCollaborator | undefined>;
+  getUserProjectPermission(userId: number, projectId: number): Promise<Permission | undefined>;
+  addProjectCollaborator(collaborator: InsertProjectCollaborator): Promise<ProjectCollaborator>;
+  updateProjectCollaborator(id: number, collaborator: Partial<InsertProjectCollaborator>): Promise<ProjectCollaborator | undefined>;
+  removeProjectCollaborator(id: number): Promise<boolean>;
   
   // Access Points
   getAccessPoints(projectId: number): Promise<AccessPoint[]>;
@@ -91,6 +102,7 @@ export class MemStorage implements IStorage {
   public sessionStore: session.Store;
   private users: Map<number, User>;
   private projects: Map<number, Project>;
+  private projectCollaborators: Map<number, ProjectCollaborator>;
   private accessPoints: Map<number, AccessPoint>;
   private cameras: Map<number, Camera>;
   private elevators: Map<number, Elevator>;
@@ -101,6 +113,7 @@ export class MemStorage implements IStorage {
   
   private currentUserId: number;
   private currentProjectId: number;
+  private currentProjectCollaboratorId: number;
   private currentAccessPointId: number;
   private currentCameraId: number;
   private currentElevatorId: number;
@@ -183,6 +196,7 @@ export class MemStorage implements IStorage {
     
     this.users = new Map();
     this.projects = new Map();
+    this.projectCollaborators = new Map();
     this.accessPoints = new Map();
     this.cameras = new Map();
     this.elevators = new Map();
@@ -193,6 +207,7 @@ export class MemStorage implements IStorage {
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
+    this.currentProjectCollaboratorId = 1;
     this.currentAccessPointId = 1;
     this.currentCameraId = 1;
     this.currentElevatorId = 1;
@@ -375,6 +390,90 @@ export class MemStorage implements IStorage {
 
   async deleteProject(id: number): Promise<boolean> {
     return this.projects.delete(id);
+  }
+  
+  // Project Collaborators
+  async getProjectCollaborators(projectId: number): Promise<ProjectCollaborator[]> {
+    return Array.from(this.projectCollaborators.values()).filter(
+      (collab) => collab.project_id === projectId
+    );
+  }
+  
+  async getProjectCollaborator(id: number): Promise<ProjectCollaborator | undefined> {
+    return this.projectCollaborators.get(id);
+  }
+  
+  async getUserProjectPermission(userId: number, projectId: number): Promise<Permission | undefined> {
+    // For admin users, always return admin permission level
+    const user = await this.getUser(userId);
+    if (user?.role === 'admin') {
+      return PERMISSION.ADMIN;
+    }
+    
+    // Find collaboration records for this user and project
+    const collaborator = Array.from(this.projectCollaborators.values()).find(
+      (collab) => collab.user_id === userId && collab.project_id === projectId
+    );
+    
+    return collaborator?.permission as Permission | undefined;
+  }
+  
+  async getProjectsForUser(userId: number): Promise<Project[]> {
+    // For admin users, return all projects
+    const user = await this.getUser(userId);
+    if (user?.role === 'admin') {
+      return this.getProjects();
+    }
+    
+    // Get all project IDs where this user is a collaborator
+    const projectIds = Array.from(this.projectCollaborators.values())
+      .filter((collab) => collab.user_id === userId)
+      .map((collab) => collab.project_id);
+    
+    // Get all projects with matching IDs
+    return Array.from(this.projects.values()).filter(
+      (project) => projectIds.includes(project.id)
+    );
+  }
+  
+  async addProjectCollaborator(insertCollaborator: InsertProjectCollaborator): Promise<ProjectCollaborator> {
+    const id = this.currentProjectCollaboratorId++;
+    const now = new Date();
+    
+    const collaborator: ProjectCollaborator = {
+      id,
+      project_id: insertCollaborator.project_id,
+      user_id: insertCollaborator.user_id,
+      permission: insertCollaborator.permission,
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.projectCollaborators.set(id, collaborator);
+    return collaborator;
+  }
+  
+  async updateProjectCollaborator(
+    id: number, 
+    updateCollaborator: Partial<InsertProjectCollaborator>
+  ): Promise<ProjectCollaborator | undefined> {
+    const collaborator = this.projectCollaborators.get(id);
+    if (!collaborator) {
+      return undefined;
+    }
+    
+    const updatedCollaborator: ProjectCollaborator = {
+      ...collaborator,
+      ...updateCollaborator,
+      updated_at: new Date()
+    };
+    
+    this.projectCollaborators.set(id, updatedCollaborator);
+    return updatedCollaborator;
+  }
+  
+  async removeProjectCollaborator(id: number): Promise<boolean> {
+    return this.projectCollaborators.delete(id);
   }
 
   // Access Points
@@ -1288,6 +1387,85 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProject(id: number): Promise<boolean> {
     await db.delete(projects).where(eq(projects.id, id));
+    return true;
+  }
+  
+  // Project Collaborators
+  async getProjectCollaborators(projectId: number): Promise<ProjectCollaborator[]> {
+    return await db.select().from(projectCollaborators).where(eq(projectCollaborators.project_id, projectId));
+  }
+  
+  async getProjectCollaborator(id: number): Promise<ProjectCollaborator | undefined> {
+    const [collaborator] = await db.select().from(projectCollaborators).where(eq(projectCollaborators.id, id));
+    return collaborator;
+  }
+  
+  async getUserProjectPermission(userId: number, projectId: number): Promise<Permission | undefined> {
+    // For admin users, always return admin permission level
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (user?.role === 'admin') {
+      return PERMISSION.ADMIN;
+    }
+    
+    // Find collaboration records for this user and project
+    const [collaborator] = await db.select()
+      .from(projectCollaborators)
+      .where(and(
+        eq(projectCollaborators.user_id, userId),
+        eq(projectCollaborators.project_id, projectId)
+      ));
+    
+    return collaborator?.permission as Permission | undefined;
+  }
+  
+  async getProjectsForUser(userId: number): Promise<Project[]> {
+    // For admin users, return all projects
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (user?.role === 'admin') {
+      return this.getProjects();
+    }
+    
+    // Get all projects where this user is a collaborator
+    const collaborations = await db.select({
+      projectId: projectCollaborators.project_id
+    })
+    .from(projectCollaborators)
+    .where(eq(projectCollaborators.user_id, userId));
+    
+    const projectIds = collaborations.map(c => c.projectId);
+    
+    if (projectIds.length === 0) {
+      return [];
+    }
+    
+    return await db.select()
+      .from(projects)
+      .where(inArray(projects.id, projectIds));
+  }
+  
+  async addProjectCollaborator(insertCollaborator: InsertProjectCollaborator): Promise<ProjectCollaborator> {
+    const [collaborator] = await db
+      .insert(projectCollaborators)
+      .values(insertCollaborator)
+      .returning();
+    return collaborator;
+  }
+  
+  async updateProjectCollaborator(
+    id: number, 
+    updateCollaborator: Partial<InsertProjectCollaborator>
+  ): Promise<ProjectCollaborator | undefined> {
+    const now = new Date();
+    const [collaborator] = await db
+      .update(projectCollaborators)
+      .set({ ...updateCollaborator, updated_at: now })
+      .where(eq(projectCollaborators.id, id))
+      .returning();
+    return collaborator;
+  }
+  
+  async removeProjectCollaborator(id: number): Promise<boolean> {
+    await db.delete(projectCollaborators).where(eq(projectCollaborators.id, id));
     return true;
   }
 
