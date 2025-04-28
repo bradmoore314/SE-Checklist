@@ -61,6 +61,7 @@ const cameraSchema = z.object({
   resolution: z.string().optional(),
   field_of_view: z.string().optional(),
   notes: z.string().optional(),
+  import_to_gateway: z.boolean().default(true),
 });
 
 type CameraFormValues = z.infer<typeof cameraSchema>;
@@ -101,6 +102,7 @@ export default function AddCameraModal({
       resolution: "",
       field_of_view: "",
       notes: "",
+      import_to_gateway: true,
     },
   });
 
@@ -367,6 +369,36 @@ export default function AddCameraModal({
                       autoComplete="off"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="import_to_gateway"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Import to Gateway Calculator?
+                    </FormLabel>
+                    <FormDescription>
+                      Choose whether to auto-import this camera to the Gateway Calculator
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <div className="flex items-center space-x-2">
+                      <div className={`cursor-pointer px-3 py-1 rounded-md ${field.value ? 'bg-primary text-white' : 'bg-gray-100'}`} 
+                           onClick={() => field.onChange(true)}>
+                        Yes
+                      </div>
+                      <div className={`cursor-pointer px-3 py-1 rounded-md ${!field.value ? 'bg-primary text-white' : 'bg-gray-100'}`}
+                           onClick={() => field.onChange(false)}>
+                        No
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

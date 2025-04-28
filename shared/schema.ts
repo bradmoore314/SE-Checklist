@@ -148,6 +148,7 @@ export const cameras = pgTable("cameras", {
   resolution: text("resolution"),
   field_of_view: text("field_of_view"),
   notes: text("notes"),
+  import_to_gateway: boolean("import_to_gateway").default(true),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
