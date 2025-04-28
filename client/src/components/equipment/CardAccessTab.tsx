@@ -271,12 +271,24 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               headerContent={
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-muted-foreground">Quick Config</p>
-                    <p className="text-sm font-medium">{ap.quick_config || "Not specified"}</p>
+                    <p className="text-xs text-muted-foreground">Lock Type</p>
+                    <p className="text-sm font-medium">{ap.lock_type || "Not specified"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Reader Type</p>
-                    <p className="text-sm font-medium">{ap.reader_type || "Not specified"}</p>
+                    <p className="text-xs text-muted-foreground">Monitoring Type</p>
+                    <p className="text-sm font-medium">{ap.monitoring_type || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Lock Provider</p>
+                    <p className="text-sm font-medium">{ap.lock_provider || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Interior/Perimeter</p>
+                    <p className="text-sm font-medium">{ap.interior_perimeter || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Takeover</p>
+                    <p className="text-sm font-medium">{ap.takeover || "Not specified"}</p>
                   </div>
                 </div>
               }
