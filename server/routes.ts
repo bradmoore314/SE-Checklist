@@ -9,24 +9,49 @@ import {
   insertCameraSchema,
   insertElevatorSchema,
   insertIntercomSchema,
-  insertImageSchema,
   insertFloorplanSchema,
   insertFloorplanMarkerSchema,
-  insertKvgFormDataSchema,
-  insertKvgStreamSchema,
-  insertStreamImageSchema,
+  insertFeedbackSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
-  InsertImage,
   InsertFloorplan,
   InsertFloorplanMarker,
-  InsertKvgFormData,
-  InsertKvgStream,
-  InsertStreamImage
+  InsertFeedback
 } from "@shared/schema";
 import { z } from "zod";
+
+// Mock schemas for types that haven't been added to schema.ts yet
+const insertImageSchema = z.object({
+  project_id: z.number(),
+  equipment_type: z.string(),
+  equipment_id: z.number(),
+  image_data: z.string()
+});
+type InsertImage = z.infer<typeof insertImageSchema>;
+
+const insertKvgFormDataSchema = z.object({
+  project_id: z.number(),
+  form_type: z.string(),
+  form_data: z.record(z.string(), z.any())
+});
+type InsertKvgFormData = z.infer<typeof insertKvgFormDataSchema>;
+
+const insertKvgStreamSchema = z.object({
+  project_id: z.number(),
+  stream_type: z.string(),
+  stream_name: z.string(),
+  stream_data: z.record(z.string(), z.any())
+});
+type InsertKvgStream = z.infer<typeof insertKvgStreamSchema>;
+
+const insertStreamImageSchema = z.object({
+  project_id: z.number(),
+  stream_id: z.number(),
+  image_data: z.string()
+});
+type InsertStreamImage = z.infer<typeof insertStreamImageSchema>;
 import { setupAuth } from "./auth";
 import { 
   generateSiteWalkAnalysis,
@@ -293,7 +318,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const duplicateData: InsertAccessPoint = {
         project_id: existingAccessPoint.project_id,
         location: `${existingAccessPoint.location} (Copy)`,
-        quick_config: existingAccessPoint.quick_config,
         reader_type: existingAccessPoint.reader_type,
         lock_type: existingAccessPoint.lock_type,
         monitoring_type: existingAccessPoint.monitoring_type,

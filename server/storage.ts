@@ -5,14 +5,9 @@ import {
   Camera, InsertCamera,
   Elevator, InsertElevator,
   Intercom, InsertIntercom,
-  Image, InsertImage,
   Floorplan, InsertFloorplan,
   FloorplanMarker, InsertFloorplanMarker,
-  CrmSettings, InsertCrmSettings,
-  EquipmentImage, InsertEquipmentImage,
-  KvgFormData, InsertKvgFormData,
-  KvgStream, InsertKvgStream,
-  StreamImage, InsertStreamImage
+  Feedback, InsertFeedback
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -67,11 +62,6 @@ export interface IStorage {
   updateIntercom(id: number, intercom: Partial<InsertIntercom>): Promise<Intercom | undefined>;
   deleteIntercom(id: number): Promise<boolean>;
   
-  // Images for Equipment
-  saveImage(image: InsertImage): Promise<Image>;
-  getImages(equipmentType: string, equipmentId: number): Promise<Image[]>;
-  deleteImage(id: number): Promise<boolean>;
-  
   // Floorplans
   getFloorplans(projectId: number): Promise<Floorplan[]>;
   getFloorplan(id: number): Promise<Floorplan | undefined>;
@@ -86,37 +76,11 @@ export interface IStorage {
   updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
   deleteFloorplanMarker(id: number): Promise<boolean>;
   
-  // CRM Settings
-  getCrmSettings(): Promise<CrmSettings[]>;
-  getCrmSetting(id: number): Promise<CrmSettings | undefined>;
-  getCrmSettingByType(type: string): Promise<CrmSettings | undefined>;
-  createCrmSettings(settings: InsertCrmSettings): Promise<CrmSettings>;
-  updateCrmSettings(id: number, settings: Partial<InsertCrmSettings>): Promise<CrmSettings | undefined>;
-  deleteCrmSettings(id: number): Promise<boolean>;
-  
-  // Equipment Images (with SharePoint integration)
-  getEquipmentImages(projectId: number, equipmentType: string, equipmentId?: number): Promise<EquipmentImage[]>;
-  getEquipmentImage(id: number): Promise<EquipmentImage | undefined>;
-  createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage>;
-  updateEquipmentImage(id: number, image: Partial<InsertEquipmentImage>): Promise<EquipmentImage | undefined>;
-  deleteEquipmentImage(id: number): Promise<boolean>;
-  
-  // KVG Form Data
-  getKvgFormData(projectId: number): Promise<KvgFormData | undefined>;
-  createKvgFormData(formData: InsertKvgFormData): Promise<KvgFormData>;
-  updateKvgFormData(id: number, formData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined>;
-  
-  // KVG Streams
-  getKvgStreams(projectId: number): Promise<KvgStream[]>;
-  getKvgStream(id: number): Promise<KvgStream | undefined>;
-  createKvgStream(stream: InsertKvgStream): Promise<KvgStream>;
-  updateKvgStream(id: number, stream: Partial<InsertKvgStream>): Promise<KvgStream | undefined>;
-  deleteKvgStream(id: number): Promise<boolean>;
-  
-  // Stream Images
-  getStreamImages(streamId: number): Promise<StreamImage[]>;
-  createStreamImage(image: InsertStreamImage): Promise<StreamImage>;
-  deleteStreamImage(id: number): Promise<boolean>;
+  // Feedback
+  getFeedback(): Promise<Feedback[]>;
+  getFeedbackById(id: number): Promise<Feedback | undefined>;
+  createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -127,14 +91,9 @@ export class MemStorage implements IStorage {
   private cameras: Map<number, Camera>;
   private elevators: Map<number, Elevator>;
   private intercoms: Map<number, Intercom>;
-  private images: Map<number, Image>;
   private floorplans: Map<number, Floorplan>;
   private floorplanMarkers: Map<number, FloorplanMarker>;
-  private crmSettings: Map<number, CrmSettings>;
-  private equipmentImages: Map<number, EquipmentImage>;
-  private kvgFormData: Map<number, KvgFormData>;
-  private kvgStreams: Map<number, KvgStream>;
-  private streamImages: Map<number, StreamImage>;
+  private feedback: Map<number, Feedback>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -142,14 +101,55 @@ export class MemStorage implements IStorage {
   private currentCameraId: number;
   private currentElevatorId: number;
   private currentIntercomId: number;
-  private currentImageId: number;
   private currentFloorplanId: number;
   private currentFloorplanMarkerId: number;
-  private currentCrmSettingsId: number;
-  private currentEquipmentImageId: number;
-  private currentKvgFormDataId: number;
-  private currentKvgStreamId: number;
-  private currentStreamImageId: number;
+  private currentFeedbackId: number;
+  
+  // Feedback
+  async getFeedback(): Promise<Feedback[]> {
+    return Array.from(this.feedback.values());
+  }
+
+  async getFeedbackById(id: number): Promise<Feedback | undefined> {
+    return this.feedback.get(id);
+  }
+
+  async createFeedback(insertFeedback: InsertFeedback): Promise<Feedback> {
+    const id = this.currentFeedbackId++;
+    const now = new Date();
+    
+    const feedback: Feedback = {
+      id,
+      title: insertFeedback.title,
+      type: insertFeedback.type,
+      description: insertFeedback.description,
+      priority: insertFeedback.priority,
+      submitter_name: insertFeedback.submitter_name,
+      submitter_email: insertFeedback.submitter_email ?? null,
+      status: "open", // Default status
+      created_at: now,
+      updated_at: now
+    };
+    
+    this.feedback.set(id, feedback);
+    return feedback;
+  }
+
+  async updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined> {
+    const feedback = this.feedback.get(id);
+    if (!feedback) {
+      return undefined;
+    }
+    
+    const updatedFeedback: Feedback = {
+      ...feedback,
+      status: status,
+      updated_at: new Date()
+    };
+    
+    this.feedback.set(id, updatedFeedback);
+    return updatedFeedback;
+  }
 
   constructor() {
     // Initialize session store
@@ -163,14 +163,9 @@ export class MemStorage implements IStorage {
     this.cameras = new Map();
     this.elevators = new Map();
     this.intercoms = new Map();
-    this.images = new Map();
     this.floorplans = new Map();
     this.floorplanMarkers = new Map();
-    this.crmSettings = new Map();
-    this.equipmentImages = new Map();
-    this.kvgFormData = new Map();
-    this.kvgStreams = new Map();
-    this.streamImages = new Map();
+    this.feedback = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -178,14 +173,9 @@ export class MemStorage implements IStorage {
     this.currentCameraId = 1;
     this.currentElevatorId = 1;
     this.currentIntercomId = 1;
-    this.currentImageId = 1;
     this.currentFloorplanId = 1;
     this.currentFloorplanMarkerId = 1;
-    this.currentCrmSettingsId = 1;
-    this.currentEquipmentImageId = 1;
-    this.currentKvgFormDataId = 1;
-    this.currentKvgStreamId = 1;
-    this.currentStreamImageId = 1;
+    this.currentFeedbackId = 1;
     
     // Initialize with sample data
     this.initSampleData();
@@ -1131,8 +1121,7 @@ export class MemStorage implements IStorage {
 import { db } from "./db";
 import {
   projects, users, accessPoints, cameras, elevators, intercoms,
-  images, floorplans, floorplanMarkers, crmSettings, equipmentImages,
-  kvgFormData, kvgStreams, streamImages
+  floorplans, floorplanMarkers, feedback
 } from "@shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 import connectPg from "connect-pg-simple";
@@ -1606,6 +1595,34 @@ export class DatabaseStorage implements IStorage {
   async deleteStreamImage(id: number): Promise<boolean> {
     const result = await db.delete(streamImages).where(eq(streamImages.id, id));
     return result.count > 0;
+  }
+  
+  // Feedback
+  async getFeedback(): Promise<Feedback[]> {
+    return await db.select().from(feedback);
+  }
+
+  async getFeedbackById(id: number): Promise<Feedback | undefined> {
+    const [item] = await db.select().from(feedback).where(eq(feedback.id, id));
+    return item;
+  }
+
+  async createFeedback(insertFeedback: InsertFeedback): Promise<Feedback> {
+    const [item] = await db.insert(feedback).values({
+      ...insertFeedback,
+      status: "open" // Default status
+    }).returning();
+    return item;
+  }
+
+  async updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined> {
+    const now = new Date();
+    const [item] = await db
+      .update(feedback)
+      .set({ status, updated_at: now })
+      .where(eq(feedback.id, id))
+      .returning();
+    return item;
   }
 }
 
