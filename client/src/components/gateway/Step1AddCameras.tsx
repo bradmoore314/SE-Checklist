@@ -24,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -58,7 +59,13 @@ const formSchema = z.object({
   sameAsStreaming: z.boolean().default(true),
 });
 
+const duplicateFormSchema = z.object({
+  quantity: z.coerce.number().int().min(1).max(50),
+  namePrefix: z.string().optional(),
+});
+
 type CameraFormData = z.infer<typeof formSchema>;
+type DuplicateFormData = z.infer<typeof duplicateFormSchema>;
 
 export default function Step1AddCameras({
   cameras,
@@ -68,6 +75,10 @@ export default function Step1AddCameras({
   onCalculate
 }: Step1AddCamerasProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [duplicateIndex, setDuplicateIndex] = useState<number>(-1);
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [duplicateQuantity, setDuplicateQuantity] = useState(1);
+  const [duplicatePrefix, setDuplicatePrefix] = useState("");
   
   const form = useForm<CameraFormData>({
     resolver: zodResolver(formSchema),
@@ -244,13 +255,36 @@ export default function Step1AddCameras({
                           variant="ghost" 
                           size="icon"
                           onClick={() => handleEditCamera(index)}
+                          title="Edit Camera"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          onClick={() => setDuplicateIndex(index)}
+                          title="Duplicate Camera"
+                        >
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          >
+                            <rect x="8" y="8" width="12" height="12" rx="2" />
+                            <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+                          </svg>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
                           onClick={() => handleDeleteCamera(index)}
+                          title="Delete Camera"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -478,6 +512,128 @@ export default function Step1AddCameras({
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Duplicate Camera Modal */}
+      <Dialog open={duplicateIndex !== -1} onOpenChange={(open) => !open && setDuplicateIndex(-1)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Duplicate Camera</DialogTitle>
+            <DialogDescription>
+              Create multiple copies of this camera with optional naming customization.
+            </DialogDescription>
+          </DialogHeader>
+
+          {duplicateIndex !== -1 && (
+            <div className="space-y-4 py-2">
+              <div className="bg-blue-50 border border-blue-100 rounded-md p-3 mb-4">
+                <h4 className="font-medium text-sm mb-1">Original Camera</h4>
+                <p className="text-sm text-blue-800">{cameras[duplicateIndex]?.name}</p>
+                <div className="text-xs text-blue-600 flex gap-3 mt-1">
+                  <span>{getLensTypeText(cameras[duplicateIndex]?.lensCount)}</span>
+                  <span>{cameras[duplicateIndex]?.streamingResolution} MP</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium block mb-1">Number of Copies</label>
+                    <Input 
+                      type="number" 
+                      min={1} 
+                      max={50}
+                      value={duplicateQuantity}
+                      onChange={(e) => setDuplicateQuantity(parseInt(e.target.value) || 1)}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium block mb-1">Name Prefix (Optional)</label>
+                    <Input 
+                      type="text"
+                      placeholder="e.g., Building A -"
+                      value={duplicatePrefix}
+                      onChange={(e) => setDuplicatePrefix(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-2">Naming Preview</label>
+                  <div className="text-sm p-2 bg-slate-50 border rounded-md">
+                    {duplicatePrefix ? `${duplicatePrefix} ${cameras[duplicateIndex]?.name}` : `${cameras[duplicateIndex]?.name} 1`}
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setDuplicateIndex(-1);
+                    setDuplicateQuantity(1);
+                    setDuplicatePrefix("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleDuplicateCamera(duplicateIndex, duplicateQuantity, duplicatePrefix);
+                    // Reset the duplicate values
+                    setDuplicateQuantity(1);
+                    setDuplicatePrefix("");
+                  }}
+                  className="flex items-center"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <rect x="8" y="8" width="12" height="12" rx="2" />
+                    <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+                  </svg>
+                  Duplicate Camera
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
+
+  // Handler for duplicating cameras
+  function handleDuplicateCamera(index: number, quantity: number, prefix: string = "") {
+    if (index < 0 || index >= cameras.length) return;
+    
+    const sourceCam = cameras[index];
+    const newCameras = [...cameras];
+    
+    // Create the specified number of duplicates
+    for (let i = 0; i < quantity; i++) {
+      const cameraCopy = { ...sourceCam };
+      
+      // Update name based on prefix or add a number suffix
+      if (prefix) {
+        cameraCopy.name = `${prefix} ${sourceCam.name}`;
+      } else {
+        cameraCopy.name = `${sourceCam.name} ${i + 1}`;
+      }
+      
+      newCameras.push(cameraCopy);
+    }
+    
+    setCameras(newCameras);
+    setDuplicateIndex(-1); // Close the modal
+  }
 }
