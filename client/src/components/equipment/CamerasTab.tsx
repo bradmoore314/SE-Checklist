@@ -22,6 +22,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   const itemsPerPage = 10;
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   // Fetch cameras
   const { data: cameras = [], isLoading } = useQuery({
@@ -121,7 +122,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
           </div>
           <Button 
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
-            onClick={() => window.location.href = "/camera-stream-gateway"}
+            onClick={() => setLocation("/camera-stream-gateway")}
           >
             <span className="material-icons mr-1">videocam</span>
             Camera Stream Gateway
