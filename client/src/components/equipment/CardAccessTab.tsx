@@ -558,17 +558,137 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             <tbody className="divide-y divide-gray-200">
               {paginatedAccessPoints.map((ap: AccessPoint, idx: number) => (
                 <tr key={ap.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-blue-600">{ap.location || "—"}</td>
-                  <td className="px-4 py-3">{ap.quick_config || "—"}</td>
-                  <td className="px-4 py-3">{ap.reader_type || "—"}</td>
-                  <td className="px-4 py-3">{ap.lock_type || "—"}</td>
-                  <td className="px-4 py-3">{ap.monitoring_type || "—"}</td>
-                  <td className="px-4 py-3">{ap.takeover || "No"}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span className="text-blue-600">{ap.location || "—"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span>{ap.quick_config || "—"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span>{ap.reader_type || "—"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span>{ap.lock_type || "—"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span>{ap.monitoring_type || "—"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <span>{ap.takeover || "No"}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </td>
                   {visibleColumns.lockProvider && (
-                    <td className="px-4 py-3">{ap.lock_provider || "—"}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center">
+                        <span>{ap.lock_provider || "—"}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </td>
                   )}
                   {visibleColumns.interiorPerimeter && (
-                    <td className="px-4 py-3">{ap.interior_perimeter || "—"}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center">
+                        <span>{ap.interior_perimeter || "—"}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </td>
                   )}
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
