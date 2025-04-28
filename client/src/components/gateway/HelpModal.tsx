@@ -81,7 +81,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             
             <ul className="list-disc pl-6 space-y-2 mb-4">
               <li><strong>Total Streams:</strong> The number of video streams across all cameras</li>
-              <li><strong>Total Throughput:</strong> The bandwidth required for all cameras (in Mbps)</li>
+              <li><strong>Total Throughput:</strong> The bandwidth required for all cameras (in MP/s)</li>
               <li><strong>Total Storage:</strong> The storage needed for recorded footage (in GB)</li>
             </ul>
             
@@ -90,8 +90,8 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             </p>
             
             <ul className="list-disc pl-6 space-y-2 mb-4">
-              <li><strong>8-Channel Gateway:</strong> For smaller deployments (≤ 8 streams, ≤ 320 Mbps, ≤ 6 TB)</li>
-              <li><strong>16-Channel Gateway:</strong> For larger deployments (≤ 16 streams, ≤ 640 Mbps, ≤ 12 TB)</li>
+              <li><strong>8-Channel Gateway:</strong> For smaller deployments (≤ 8 streams, ≤ 320 MP/s, ≤ 6 TB)</li>
+              <li><strong>16-Channel Gateway:</strong> For larger deployments (≤ 16 streams, ≤ 640 MP/s, ≤ 12 TB)</li>
             </ul>
             
             <p>
@@ -118,7 +118,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             
             <ul className="list-disc pl-6 space-y-2 mb-4">
               <li>Number of streams (8 or 16 depending on model)</li>
-              <li>Throughput (320 or 640 Mbps)</li>
+              <li>Throughput (320 or 640 MP/s)</li>
               <li>Storage (6 or 12 TB)</li>
             </ul>
             
