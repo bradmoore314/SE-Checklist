@@ -277,8 +277,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/access-points", isAuthenticated, async (req: Request, res: Response) => {
     try {
+      console.log("Creating access point with data:", req.body);
       const result = insertAccessPointSchema.safeParse(req.body);
       if (!result.success) {
+        console.error("Invalid access point data:", result.error.errors);
         return res.status(400).json({ 
           message: "Invalid access point data", 
           errors: result.error.errors 
@@ -288,12 +290,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify project exists
       const project = await storage.getProject(result.data.project_id);
       if (!project) {
+        console.error("Project not found:", result.data.project_id);
         return res.status(404).json({ message: "Project not found" });
       }
 
-      const accessPoint = await storage.createAccessPoint(result.data);
-      res.status(201).json(accessPoint);
+      // Add more detailed logging to diagnose issues
+      try {
+        const accessPoint = await storage.createAccessPoint(result.data);
+        console.log("Successfully created access point:", accessPoint.id);
+        res.status(201).json(accessPoint);
+      } catch (storageError) {
+        console.error("Storage error creating access point:", storageError);
+        throw storageError;
+      }
     } catch (error) {
+      console.error("Failed to create access point:", error);
       res.status(500).json({ 
         message: "Failed to create access point",
         error: (error as Error).message
@@ -1430,7 +1441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Floorplan Marker endpoints
   // Authentication middleware removed for debugging purposes
-  app.get("/api/floorplans/:floorplanId/markers", async (req: Request, res: Response) => {
+  app.get("/api/floorplans/:floorplanId/markers", isAuthenticated, async (req: Request, res: Response) => {
     const floorplanId = parseInt(req.params.floorplanId);
     if (isNaN(floorplanId)) {
       return res.status(400).json({ message: "Invalid floorplan ID" });
@@ -1440,6 +1451,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const floorplan = await storage.getFloorplan(floorplanId);
     if (!floorplan) {
+      console.error(`Floorplan not found with ID: ${floorplanId}`);
       return res.status(404).json({ message: "Floorplan not found" });
     }
 
@@ -1448,20 +1460,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(markers);
   });
 
-  app.post("/api/floorplan-markers", async (req: Request, res: Response) => {
+  app.post("/api/floorplan-markers", isAuthenticated, async (req: Request, res: Response) => {
     console.log("Creating floorplan marker with data:", req.body);
     try {
       const result = insertFloorplanMarkerSchema.safeParse(req.body);
       if (!result.success) {
+        console.error("Invalid marker data:", result.error.errors);
         return res.status(400).json({ 
           message: "Invalid marker data", 
           errors: result.error.errors 
         });
       }
 
+      // Verify that equipment_id is valid
+      if (!result.data.equipment_id && result.data.marker_type !== 'note') {
+        console.error("Invalid equipment ID provided:", result.data.equipment_id);
+        return res.status(400).json({ message: "Invalid equipment ID" });
+      }
+
       // Verify floorplan exists
       const floorplan = await storage.getFloorplan(result.data.floorplan_id);
       if (!floorplan) {
+        console.error("Floorplan not found:", result.data.floorplan_id);
         return res.status(404).json({ message: "Floorplan not found" });
       }
 
@@ -1556,7 +1576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/floorplan-markers/:id", async (req: Request, res: Response) => {
+  app.put("/api/floorplan-markers/:id", isAuthenticated, async (req: Request, res: Response) => {
     console.log(`Updating marker ID ${req.params.id} with data:`, req.body);
     const markerId = parseInt(req.params.id);
     if (isNaN(markerId)) {
@@ -1587,7 +1607,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Add PATCH endpoint for updating marker positions
-  app.patch("/api/floorplan-markers/:id", async (req: Request, res: Response) => {
+  app.patch("/api/floorplan-markers/:id", isAuthenticated, async (req: Request, res: Response) => {
     console.log(`PATCH updating marker ID ${req.params.id} with position data:`, req.body);
     const markerId = parseInt(req.params.id);
     if (isNaN(markerId)) {
@@ -1623,7 +1643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/floorplan-markers/:id", async (req: Request, res: Response) => {
+  app.delete("/api/floorplan-markers/:id", isAuthenticated, async (req: Request, res: Response) => {
     console.log(`Deleting marker ID: ${req.params.id}`);
     const markerId = parseInt(req.params.id);
     if (isNaN(markerId)) {
