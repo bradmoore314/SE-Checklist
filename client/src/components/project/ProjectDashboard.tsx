@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { ProjectCollaborators } from "@/components/ProjectCollaborators";
+import { CollaborationProvider } from "@/contexts/CollaborationContext";
 
 interface SiteWalkDashboardProps {
   project: Project;
@@ -404,6 +406,13 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      {/* Project Collaborators Section */}
+      <div className="mt-6">
+        <CollaborationProvider projectId={project.id}>
+          <ProjectCollaborators projectId={project.id} />
+        </CollaborationProvider>
       </div>
     </div>
   );
