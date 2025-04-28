@@ -56,6 +56,12 @@ export default function DoorSchedules() {
     door.lock_type.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
   
+  // Add door number for each door in the list (same as in the image)
+  const numberedDoors = filteredDoors.map((door, index) => ({
+    ...door,
+    doorNumber: index + 1
+  }));
+  
   // Handle print function
   const handlePrint = () => {
     window.print();
@@ -214,73 +220,179 @@ export default function DoorSchedules() {
       ) : (
         <div className="print:shadow-none">
           <div className="mb-4 print:mb-8 print:text-center">
-            <h3 className="text-xl font-bold print:text-2xl">
-              Door Schedule: {doorSchedule.project.name}
+            <h3 className="text-xl font-bold print:text-2xl text-center border-b-2 pb-2 mb-2">
+              Kastle Security Door Information
             </h3>
             {doorSchedule.project.client && (
-              <p className="text-neutral-500 print:text-lg">
+              <p className="text-neutral-500 print:text-lg mb-4">
                 Client: {doorSchedule.project.client}
               </p>
             )}
           </div>
 
           <div className="overflow-x-auto print:overflow-visible">
-            <table className="w-full text-sm text-left print:text-xs">
-              <thead className="text-xs text-neutral-700 uppercase bg-neutral-100 print:bg-neutral-200">
+            <table className="w-full text-sm border-collapse border border-gray-800 print:text-xs">
+              {/* Main table with fancy borders exactly matching the image */}
+              <thead>
                 <tr>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
-                    Location
+                  {/* Left section - Door Information */}
+                  <th colSpan={8} className="border border-gray-800 bg-white text-center py-1 font-bold text-base">
+                    Kastle Security Door Information
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
+                  {/* Middle section - Install Requirements */}
+                  <th colSpan={5} className="border border-gray-800 bg-white text-center py-1 font-bold text-sm">
+                    Needed for Install
+                  </th>
+                  {/* Right section - Camera */}
+                  <th colSpan={2} className="border border-gray-800 bg-white text-center py-1 font-bold text-sm">
+                    &nbsp;
+                  </th>
+                </tr>
+                <tr className="bg-white">
+                  {/* Door number column */}
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-10 font-bold rotate-90 h-24">
+                    <div>Door Number</div>
+                  </th>
+                  
+                  {/* Door details */}
+                  <th className="border border-gray-800 px-2 py-1 text-center w-32 font-bold">
+                    Door Name
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center w-16 font-bold">
+                    Floor
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center w-20 font-bold">
                     Door Type
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
-                    Reader Type
+                  <th className="border border-gray-800 px-2 py-1 text-center w-24 font-bold">
+                    Install Type
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
+                  <th className="border border-gray-800 px-2 py-1 text-center w-24 font-bold">
+                    Reader
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Mounting Reader</div>
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Exit Reader</div>
+                  </th>
+                  
+                  {/* Lock Type */}
+                  <th className="border border-gray-800 px-2 py-1 text-center w-24 font-bold">
                     Lock Type
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
-                    Security Level
+                  
+                  {/* Needed for Install Columns */}
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Door Contact</div>
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
-                    PPI
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>REX</div>
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap print:px-2 print:py-2">
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Push to Exit</div>
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Intercom</div>
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center align-middle w-16 font-bold rotate-90 h-24">
+                    <div>Door Bell</div>
+                  </th>
+                  
+                  {/* Camera and Notes */}
+                  <th className="border border-gray-800 px-2 py-1 text-center w-28 font-bold">
+                    Associated Camera
+                  </th>
+                  <th className="border border-gray-800 px-2 py-1 text-center w-40 font-bold">
                     Notes
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {filteredDoors.length === 0 ? (
+                {numberedDoors.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center">
+                    <td colSpan={16} className="px-4 py-8 text-center border border-gray-800">
                       No access points match your search.
                     </td>
                   </tr>
                 ) : (
-                  filteredDoors.map((door) => (
+                  numberedDoors.map((door) => (
                     <tr key={door.id} className="border-b hover:bg-neutral-50 print:hover:bg-transparent">
-                      <td className="px-4 py-3 font-medium print:px-2 print:py-2">
+                      {/* Door Number */}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {door.doorNumber}
+                      </td>
+                      
+                      {/* Door Information */}
+                      <td className="border border-gray-800 px-2 py-2 text-sm">
                         {door.location}
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.door_type}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {/* Floor field - editable */}
+                        <div contentEditable={true} className="min-h-[20px] focus:outline-none focus:bg-blue-50 w-full"></div>
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.reader_type}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {door.door_type || "Access Control"}
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.lock_type}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {door.security_level === "High" ? "New Install" : door.security_level === "Medium" ? "Takeover" : "Installed/Existing Lock"}
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.security_level}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {door.reader_type || "KR-100"}
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.ppi || "None"}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {/* Mounting Reader - Checkbox */}
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
                       </td>
-                      <td className="px-4 py-3 print:px-2 print:py-2">
-                        {door.notes || ""}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {/* Exit Reader - Checkbox */}
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      
+                      {/* Lock Type */}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        {door.lock_type || "Single Mag"}
+                      </td>
+                      
+                      {/* Needed for Install - All Checkboxes */}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div className="flex justify-center">
+                          <input type="checkbox" className="h-4 w-4 border border-gray-400 cursor-pointer" />
+                        </div>
+                      </td>
+                      
+                      {/* Associated Camera */}
+                      <td className="border border-gray-800 px-2 py-2 text-center">
+                        <div contentEditable={true} className="min-h-[20px] focus:outline-none focus:bg-blue-50 w-full"></div>
+                      </td>
+                      
+                      {/* Notes */}
+                      <td className="border border-gray-800 px-2 py-2 text-sm">
+                        {door.notes || <div contentEditable={true} className="min-h-[20px] focus:outline-none focus:bg-blue-50 w-full"></div>}
                       </td>
                     </tr>
                   ))
