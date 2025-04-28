@@ -9,7 +9,7 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   password: text("password").notNull(),
   fullName: text("full_name"),
-  role: text("role"),
+  role: text("role"), // admin, user, guest
   microsoftId: text("microsoft_id"),
   refreshToken: text("refresh_token"),
   lastLogin: timestamp("last_login"),
@@ -20,6 +20,41 @@ export const users = pgTable("users", {
 export type User = typeof users.$inferSelect;
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, created_at: true, updated_at: true });
 export type InsertUser = z.infer<typeof insertUserSchema>;
+
+// User roles and permissions
+export const ROLE = {
+  ADMIN: 'admin',
+  USER: 'user',
+  GUEST: 'guest'
+} as const;
+
+export type Role = typeof ROLE[keyof typeof ROLE];
+
+export const PERMISSION = {
+  VIEW: 'view',
+  EDIT: 'edit',
+  ADMIN: 'admin'
+} as const;
+
+export type Permission = typeof PERMISSION[keyof typeof PERMISSION];
+
+// Project Collaborators - tracks who has access to which projects and their permission level
+export const projectCollaborators = pgTable("project_collaborators", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull(),
+  user_id: integer("user_id").notNull(),
+  permission: text("permission").notNull(), // 'view', 'edit', 'admin'
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type ProjectCollaborator = typeof projectCollaborators.$inferSelect;
+export const insertProjectCollaboratorSchema = createInsertSchema(projectCollaborators).omit({ 
+  id: true, 
+  created_at: true, 
+  updated_at: true 
+});
+export type InsertProjectCollaborator = z.infer<typeof insertProjectCollaboratorSchema>;
 
 // Projects
 export const projects = pgTable("projects", {
