@@ -99,10 +99,10 @@ export default function DoorSchedules() {
     if (!doorSchedule) return;
 
     try {
-      // Get template path - we'll use a URL to a static template file
+      // Use the template from the public assets folder
       const templateUrl = '/assets/DoorScheduleTemplate.xlsx';
       
-      // Prepare full door data
+      // Prepare and export door data to the template
       await exportDoorScheduleToTemplate(
         doorSchedule.doors, 
         doorSchedule.project.name,

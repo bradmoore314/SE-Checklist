@@ -1,10 +1,12 @@
 // This script will generate a template Excel file
 import * as XLSX from 'xlsx';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Create a new workbook
 const workbook = XLSX.utils.book_new();
 
-// Create headers
+// Create headers - matches the Kastle template format
 const headers = [
   'Door Number',
   'Door Name',
@@ -53,10 +55,35 @@ const colWidths = [
 
 ws['!cols'] = colWidths;
 
+// Add some sample data to demonstrate formatting
+const sampleData = [
+  [1, 'Main Entry', '1', 'Alarm', 'Takeover', 'KR-100', '', '', 'Single Mag', '', '', '', '', '', '', '', '', ''],
+  [2, 'Loading Dock', '1', 'Prop', 'New Install', 'KR-100', '', '', 'Single Standard', '', '', '', '', '', '', '', '', ''],
+  [3, '1st Floor Stairwell', '1', 'Prop', 'Installed/Existing Lock', 'KR-100', '', '', 'Single Mag', '', '', '', '', '', '', '', '', '']
+];
+
+// Add sample data rows
+sampleData.forEach((row, idx) => {
+  const rowRef = idx + 2; // Start at row 2 (after headers)
+  row.forEach((cell, colIdx) => {
+    const cellRef = XLSX.utils.encode_cell({ r: rowRef - 1, c: colIdx });
+    ws[cellRef] = { t: typeof cell === 'number' ? 'n' : 's', v: cell };
+  });
+});
+
 // Add the worksheet to the workbook
 XLSX.utils.book_append_sheet(workbook, ws, 'Door Schedule');
 
-// Write the workbook to a file
-XLSX.writeFile(workbook, 'public/assets/DoorScheduleTemplate.xlsx');
+// Make sure the directory exists
+const outputDir = path.resolve('public/assets');
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 
-console.log('Template file generated: public/assets/DoorScheduleTemplate.xlsx');
+// Set the output path
+const outputPath = path.join(outputDir, 'DoorScheduleTemplate.xlsx');
+
+// Write the workbook to a file
+XLSX.writeFile(workbook, outputPath);
+
+console.log(`Template file generated at: ${outputPath}`);
