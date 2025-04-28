@@ -38,7 +38,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Check, Pencil, Plus, Trash2, ArrowRight, Download, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, ArrowRight, Download } from "lucide-react";
 import { getLensTypeText } from "@/lib/gateway-calculator";
 import { useQuery } from "@tanstack/react-query";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -118,10 +118,7 @@ export default function Step1AddCameras({
     setCameras([...cameras, ...importedCameras]);
   };
   
-  // Toggle the advanced fields visibility
-  const toggleAdvancedFields = () => {
-    setShowAdvancedFields(!showAdvancedFields);
-  };
+  // Note: We keep the showAdvancedFields state for use in the camera edit modal
 
   const form = useForm<CameraFormData>({
     resolver: zodResolver(formSchema),
@@ -243,20 +240,6 @@ export default function Step1AddCameras({
               <span className="ml-1 font-bold">{totalStreams}</span>
             </div>
           </div>
-          
-          {/* Advanced Fields Toggle */}
-          <Button 
-            onClick={toggleAdvancedFields}
-            variant="link" 
-            className="p-0 h-auto mt-2 text-blue-600"
-            size="sm"
-          >
-            {showAdvancedFields ? (
-              <>Hide Advanced Fields <ChevronUp className="h-3 w-3 ml-1" /></>
-            ) : (
-              <>Show Advanced Fields <ChevronDown className="h-3 w-3 ml-1" /></>
-            )}
-          </Button>
         </div>
         
         <div className="flex items-center gap-2">
