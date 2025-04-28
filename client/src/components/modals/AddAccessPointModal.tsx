@@ -142,17 +142,40 @@ export default function AddAccessPointModal({
   // Remove quick_config references - set to false to make fields always enabled
   const quickConfigEnabled = false;
 
+  const { toast } = useToast();
+  
   // Handle form submission
   const onSubmit = async (values: AccessPointFormValues) => {
     try {
       setIsSubmitting(true);
+      console.log('Submitting access point data:', values);
+      
       const response = await apiRequest("POST", "/api/access-points", values);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('Error response:', response.status, errorData);
+        throw new Error(errorData?.message || 'Failed to create access point');
+      }
+      
       const accessPoint = await response.json();
+      console.log('Created access point with ID:', accessPoint.id);
+      
+      // Show success message
+      toast({
+        title: "Success",
+        description: "Access point created successfully",
+      });
+      
       // Extract just the ID from the created access point before passing it back
       onSave(accessPoint.id);
-      console.log('Created access point with ID:', accessPoint.id);
     } catch (error) {
       console.error("Failed to create access point:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create access point",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
