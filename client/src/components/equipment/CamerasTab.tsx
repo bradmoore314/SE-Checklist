@@ -125,7 +125,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             onClick={() => setLocation("/camera-stream-gateway")}
           >
             <span className="material-icons mr-1">videocam</span>
-            Camera Stream Gateway
+            Gateway Calculator
           </Button>
           <Button 
             className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
