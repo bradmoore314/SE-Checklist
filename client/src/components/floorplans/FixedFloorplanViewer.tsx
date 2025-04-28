@@ -1068,31 +1068,60 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   const handleCreateMarkerWithEquipment = async (equipmentId: number) => {
     if (!selectedFloorplan || !newMarkerPosition) {
       console.error('Missing required data for creating marker');
+      toast({
+        title: "Error",
+        description: "Missing floorplan or position data required for marker creation",
+        variant: "destructive",
+      });
       return;
     }
     
-    // Calculate the next sequential number for this marker type
-    let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
+    if (!equipmentId) {
+      console.error('Invalid equipment ID received:', equipmentId);
+      toast({
+        title: "Error",
+        description: "Invalid equipment ID. Access point creation may have failed.",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Use the sequential number as the label
-    const label = sequentialNumber.toString();
-    
-    console.log(`Creating ${selectedEquipmentType} marker with sequential number: ${sequentialNumber}`);
-    
-    // Create the marker with integer positions
-    await createMarkerMutation.mutateAsync({
-      floorplan_id: selectedFloorplan.id,
-      page: 1, // Default to first page for now
-      marker_type: selectedEquipmentType!,
-      equipment_id: equipmentId,
-      position_x: Math.floor(newMarkerPosition.x),
-      position_y: Math.floor(newMarkerPosition.y),
-      label
-    });
-    
-    // Close the equipment modal
-    setShowAddEquipmentModal(false);
-    setSelectedEquipmentType(null);
+    try {
+      // Calculate the next sequential number for this marker type
+      let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
+      
+      // Use the sequential number as the label
+      const label = sequentialNumber.toString();
+      
+      console.log(`Creating ${selectedEquipmentType} marker with equipment ID ${equipmentId} and sequential number: ${sequentialNumber}`);
+      
+      // Create the marker with integer positions
+      await createMarkerMutation.mutateAsync({
+        floorplan_id: selectedFloorplan.id,
+        page: 1, // Default to first page for now
+        marker_type: selectedEquipmentType!,
+        equipment_id: equipmentId,
+        position_x: Math.floor(newMarkerPosition.x),
+        position_y: Math.floor(newMarkerPosition.y),
+        label
+      });
+      
+      toast({
+        title: "Success",
+        description: `Added ${selectedEquipmentType} marker with ID #${label}`,
+      });
+      
+      // Close the equipment modal
+      setShowAddEquipmentModal(false);
+      setSelectedEquipmentType(null);
+    } catch (error) {
+      console.error('Error creating marker:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create marker on floorplan",
+        variant: "destructive",
+      });
+    }
   };
   
   // Get marker color based on type
