@@ -7,7 +7,9 @@ import {
   Intercom, InsertIntercom,
   Floorplan, InsertFloorplan,
   FloorplanMarker, InsertFloorplanMarker,
-  Feedback, InsertFeedback
+  Feedback, InsertFeedback,
+  ProjectCollaborator, InsertProjectCollaborator,
+  PERMISSION, Permission
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
