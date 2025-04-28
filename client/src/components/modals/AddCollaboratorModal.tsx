@@ -90,6 +90,11 @@ export function AddCollaboratorModal({
         permission: data.permission,
       });
       
+      toast({
+        title: "Success",
+        description: `Added ${user.fullName || user.username} as a collaborator with ${data.permission} permission.`,
+      });
+      
       form.reset();
       onClose();
     } catch (error) {
