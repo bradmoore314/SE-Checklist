@@ -251,6 +251,107 @@ export const generateProjectReport = async (
 };
 
 /**
+ * Export door schedule data to a Kastle Excel template
+ */
+export const exportDoorScheduleToTemplate = async (
+  doors: any[], 
+  projectName: string,
+  templateUrl: string = '/assets/DoorScheduleTemplate.xlsx'
+): Promise<void> => {
+  try {
+    // Fetch the template file
+    const response = await fetch(templateUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to load template file: ${response.statusText}`);
+    }
+    
+    const templateArrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(templateArrayBuffer, { type: 'array' });
+    
+    // Get the first sheet in the workbook
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Fill in the data rows in the template
+    doors.forEach((door, index) => {
+      // Start from row 2 (row index 1) since row 1 is the header in the template
+      const rowIndex = index + 1;
+      
+      // Door Number (column A)
+      worksheet[`A${rowIndex + 1}`] = { t: 'n', v: index + 1 };
+      
+      // Door Name/Location (column B)
+      worksheet[`B${rowIndex + 1}`] = { t: 's', v: door.location || '' };
+      
+      // Floor (column C)
+      worksheet[`C${rowIndex + 1}`] = { t: 's', v: door.floor || '1' };
+      
+      // Monitoring Type (column D)
+      const monitoringType = mapMonitoringType(door.monitoring_type);
+      worksheet[`D${rowIndex + 1}`] = { t: 's', v: monitoringType };
+      
+      // Install Type (column E)
+      const installType = mapInstallType(door.takeover || 'New');
+      worksheet[`E${rowIndex + 1}`] = { t: 's', v: installType };
+      
+      // Reader Type (column F)
+      const readerType = mapReaderType(door.reader_type);
+      worksheet[`F${rowIndex + 1}`] = { t: 's', v: readerType };
+      
+      // Lock Type (column I)
+      const lockType = mapLockType(door.lock_type);
+      worksheet[`I${rowIndex + 1}`] = { t: 's', v: lockType };
+      
+      // Notes (column Q)
+      worksheet[`Q${rowIndex + 1}`] = { t: 's', v: door.notes || '' };
+    });
+    
+    // Generate and download the file
+    XLSX.writeFile(workbook, `${projectName} - Door Schedule.xlsx`);
+  } catch (error) {
+    console.error('Error exporting to template:', error);
+    alert('Failed to export to template. Please try again or contact support.');
+  }
+};
+
+// Helper mapping functions to convert our terms to Kastle template terms
+function mapMonitoringType(type: string): string {
+  switch (type) {
+    case 'Monitored': return 'Alarm';
+    case 'Request to Exit': return 'Prop';
+    case 'None': return '';
+    default: return type || '';
+  }
+}
+
+function mapInstallType(takeover: string): string {
+  switch (takeover) {
+    case 'Yes': return 'Takeover';
+    case 'No': return 'New Install';
+    case 'Existing': return 'Installed/Existing Lock';
+    default: return takeover || '';
+  }
+}
+
+function mapReaderType(type: string): string {
+  switch (type) {
+    case 'Standard HID Reader': return 'KR-100';
+    case 'Mullion Reader': return 'KR-100';
+    case 'Keypad': return 'KR-100';
+    default: return type || '';
+  }
+}
+
+function mapLockType(type: string): string {
+  switch (type) {
+    case 'Mag Lock': return 'Single Mag';
+    case 'Electric Strike': return 'Single Standard';
+    case 'Electric Mortise': return 'Single Standard';
+    default: return type || '';
+  }
+}
+
+/**
  * Export data to the specified format
  */
 export const exportData = async (
