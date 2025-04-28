@@ -20,6 +20,7 @@ import FloorplansPage from "@/pages/floorplans-page";
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
+import CameraStreamGateway from "@/pages/camera-stream-gateway";
 import QuoteReviewPage from "@/pages/quote-review-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
@@ -48,6 +49,7 @@ function Router() {
       <ProtectedRoute path="/elevators" component={Elevators} />
       <ProtectedRoute path="/intercoms" component={Intercoms} />
       <ProtectedRoute path="/kastle-video-guarding" component={KastleVideoGuardingPage} />
+      <ProtectedRoute path="/camera-stream-gateway" component={CameraStreamGateway} />
       
       {/* Report routes */}
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />

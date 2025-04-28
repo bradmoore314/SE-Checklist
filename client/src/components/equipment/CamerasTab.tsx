@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import AddCameraModal from "../modals/AddCameraModal";
 import EditCameraModal from "../modals/EditCameraModal";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface CamerasTabProps {
   project: Project;
@@ -104,7 +105,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium">Cameras</h3>
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <div className="relative mr-2">
             <Input
               type="text"
@@ -118,6 +119,13 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             />
             <span className="material-icons absolute left-3 top-2 text-neutral-400">search</span>
           </div>
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
+            onClick={() => window.location.href = "/camera-stream-gateway"}
+          >
+            <span className="material-icons mr-1">videocam</span>
+            Camera Stream Gateway
+          </Button>
           <Button 
             className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
             onClick={() => setShowAddModal(true)}
