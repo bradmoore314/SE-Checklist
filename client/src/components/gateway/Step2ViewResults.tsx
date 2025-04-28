@@ -219,7 +219,7 @@ export default function Step2ViewResults({
                         {getStatusIndicator(throughputCapacity)}
                       </div>
                       <span className="text-sm font-medium">
-                        {formatThroughput(calculations.totalThroughput / gatewayCount)} / {maxThroughputPerGateway} Mbps
+                        {formatThroughput(calculations.totalThroughput / gatewayCount)} / {maxThroughputPerGateway} MP/s
                       </span>
                     </div>
                     <Slider disabled value={[throughputCapacity]} className="w-full" />

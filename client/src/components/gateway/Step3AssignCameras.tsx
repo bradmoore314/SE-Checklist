@@ -378,7 +378,7 @@ export default function Step3AssignCameras({
                       <div className="flex justify-between mb-1">
                         <span className="text-sm text-neutral-600">Throughput</span>
                         <span className="text-sm font-medium">
-                          {formatThroughput(capacity.throughput)} / {gatewaySpecs[gatewayConfig.type].maxThroughput} Mbps
+                          {formatThroughput(capacity.throughput)} / {gatewaySpecs[gatewayConfig.type].maxThroughput} MP/s
                         </span>
                       </div>
                       <Progress value={capacity.throughputPercent} className="h-2" />

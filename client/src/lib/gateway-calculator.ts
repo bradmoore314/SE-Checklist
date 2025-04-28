@@ -69,7 +69,7 @@ export function formatStorage(storage: number): string {
   }
 }
 
-// Get a human-readable format for throughput (Mbps)
+// Get a human-readable format for throughput (MP/s)
 export function formatThroughput(throughput: number): string {
-  return `${Math.round(throughput)} Mbps`;
+  return `${Math.round(throughput)} MP/s`;
 }
