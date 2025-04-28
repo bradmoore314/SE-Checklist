@@ -107,6 +107,53 @@ export default function Step3AssignCameras({
     setDraggedStream(null);
   };
   
+  // Handle click to assign a stream to the best available gateway
+  const handleClickAssign = (stream: Stream) => {
+    // Find the best gateway that can accommodate this stream
+    let bestGatewayId: string | null = null;
+    let lowestUsage = Infinity;
+    
+    for (let i = 0; i < gatewayConfig.count; i++) {
+      const gatewayId = i.toString();
+      
+      // Skip if gateway can't fit the stream
+      if (!canAddStreamToGateway(gatewayId, stream)) continue;
+      
+      // Calculate current usage percentage
+      const capacity = calculateGatewayCapacity(gatewayAssignments[gatewayId]);
+      const usagePercent = Math.max(
+        capacity.streamsPercent,
+        capacity.throughputPercent,
+        capacity.storagePercent
+      );
+      
+      if (usagePercent < lowestUsage) {
+        bestGatewayId = gatewayId;
+        lowestUsage = usagePercent;
+      }
+    }
+    
+    if (bestGatewayId !== null) {
+      // Check if stream is already assigned to another gateway and remove it
+      Object.keys(gatewayAssignments).forEach(id => {
+        const index = gatewayAssignments[id].findIndex(s => s.id === stream.id);
+        if (index !== -1) {
+          const newAssignments = { ...gatewayAssignments };
+          newAssignments[id] = [
+            ...newAssignments[id].slice(0, index),
+            ...newAssignments[id].slice(index + 1)
+          ];
+          setGatewayAssignments(newAssignments);
+        }
+      });
+      
+      // Add to the best gateway
+      const newAssignments = { ...gatewayAssignments };
+      newAssignments[bestGatewayId] = [...newAssignments[bestGatewayId], stream];
+      setGatewayAssignments(newAssignments);
+    }
+  };
+  
   // Handle clicking on an assigned stream to remove it
   const handleRemoveStream = (gatewayId: string, streamId: string) => {
     const newAssignments = { ...gatewayAssignments };
@@ -250,7 +297,7 @@ export default function Step3AssignCameras({
       <div className="flex flex-col lg:flex-row justify-between items-start mb-4 gap-4">
         <div>
           <p className="text-sm text-neutral-500">
-            Drag and drop camera streams to assign them to gateways
+            Click "Assign" on a stream for automatic assignment, or drag and drop for manual control
           </p>
           <div className="flex gap-6 mt-2">
             <div>
@@ -307,20 +354,38 @@ export default function Step3AssignCameras({
                 {unassignedStreams.map(stream => (
                   <div
                     key={stream.id}
-                    className={`p-3 rounded-md border bg-white shadow-sm cursor-move ${
+                    className={`p-3 rounded-md border bg-white shadow-sm ${
                       draggedStream?.id === stream.id ? 'border-blue-500 opacity-50' : ''
                     }`}
-                    draggable
-                    onDragStart={() => handleDragStart(stream)}
                   >
-                    <div className="font-medium mb-1">{stream.name}</div>
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="font-medium">{stream.name}</div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                        onClick={() => handleClickAssign(stream)}
+                      >
+                        Assign
+                      </Button>
+                    </div>
                     <div className="flex justify-between text-xs text-neutral-500">
                       <span>{stream.lensType}</span>
                       <span>{stream.resolution}</span>
                     </div>
-                    <div className="flex justify-between text-xs text-neutral-500">
+                    <div className="flex justify-between text-xs text-neutral-500 mt-1">
                       <span>{stream.frameRate}</span>
                       <span>{formatThroughput(stream.throughput)}</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-end">
+                      <div 
+                        className="text-xs text-neutral-500 cursor-move ml-auto flex items-center"
+                        draggable
+                        onDragStart={() => handleDragStart(stream)}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                        Drag to assign
+                      </div>
                     </div>
                   </div>
                 ))}
