@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +20,7 @@ const cameraSchema = z.object({
   resolution: z.string().optional().nullable(),
   field_of_view: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  import_to_gateway: z.boolean().default(true),
 });
 
 type CameraFormValues = z.infer<typeof cameraSchema>;
@@ -54,6 +55,7 @@ export default function EditCameraModal({
       resolution: camera.resolution,
       field_of_view: camera.field_of_view,
       notes: camera.notes,
+      import_to_gateway: camera.import_to_gateway !== undefined ? camera.import_to_gateway : true,
     },
   });
 
@@ -216,6 +218,36 @@ export default function EditCameraModal({
                       {...field} 
                       value={field.value || ""}
                     />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            {/* Import to Gateway Calculator */}
+            <FormField
+              control={form.control}
+              name="import_to_gateway"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Import to Gateway Calculator?
+                    </FormLabel>
+                    <FormDescription>
+                      Choose whether to auto-import this camera to the Gateway Calculator
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <div className="flex items-center space-x-2">
+                      <div className={`cursor-pointer px-3 py-1 rounded-md ${field.value ? 'bg-primary text-white' : 'bg-gray-100'}`} 
+                           onClick={() => field.onChange(true)}>
+                        Yes
+                      </div>
+                      <div className={`cursor-pointer px-3 py-1 rounded-md ${!field.value ? 'bg-primary text-white' : 'bg-gray-100'}`}
+                           onClick={() => field.onChange(false)}>
+                        No
+                      </div>
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
