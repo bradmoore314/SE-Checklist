@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FileDown, Printer } from "lucide-react";
+import { exportDoorScheduleToTemplate } from "@/utils/exportUtils";
 
 interface DoorScheduleItem {
   id: number;
@@ -93,6 +94,27 @@ export default function DoorSchedules() {
     document.body.removeChild(link);
   };
 
+  // Handle export to Kastle Excel template
+  const handleExportToTemplate = async () => {
+    if (!doorSchedule) return;
+
+    try {
+      // Get template path - we'll use a URL to a static template file
+      const templateUrl = '/assets/DoorScheduleTemplate.xlsx';
+      
+      // Prepare full door data
+      await exportDoorScheduleToTemplate(
+        doorSchedule.doors, 
+        doorSchedule.project.name,
+        templateUrl
+      );
+      
+    } catch (error) {
+      console.error('Error exporting to template:', error);
+      alert('Failed to export to template. Please ensure the template file is accessible.');
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -115,6 +137,15 @@ export default function DoorSchedules() {
           >
             <FileDown className="mr-2 h-4 w-4" />
             Export CSV
+          </Button>
+          <Button
+            variant="outline"
+            className="flex items-center"
+            onClick={handleExportToTemplate}
+            disabled={!doorSchedule}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Export to Template
           </Button>
         </div>
       </div>
