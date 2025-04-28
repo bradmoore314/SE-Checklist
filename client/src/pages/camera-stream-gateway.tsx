@@ -16,7 +16,7 @@ export default function CameraStreamGateway() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Camera Stream Gateway</h1>
+        <h1 className="text-2xl font-bold">Gateway Calculator</h1>
         <Button 
           variant="outline" 
           onClick={() => setLocation("/cameras")}
