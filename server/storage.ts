@@ -1305,15 +1305,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAccessPoint(insertAccessPoint: InsertAccessPoint): Promise<AccessPoint> {
-    const [accessPoint] = await db.insert(accessPoints).values(insertAccessPoint).returning();
+    // Remove quick_config if it exists in the input, since it's not in our schema
+    const { quick_config, ...cleanedAccessPoint } = insertAccessPoint as any;
+    const [accessPoint] = await db.insert(accessPoints).values(cleanedAccessPoint).returning();
     return accessPoint;
   }
 
   async updateAccessPoint(id: number, updateAccessPoint: Partial<InsertAccessPoint>): Promise<AccessPoint | undefined> {
     const now = new Date();
+    // Remove quick_config if it exists in the input
+    const { quick_config, ...cleanedAccessPoint } = updateAccessPoint as any;
     const [accessPoint] = await db
       .update(accessPoints)
-      .set({ ...updateAccessPoint, updated_at: now })
+      .set({ ...cleanedAccessPoint, updated_at: now })
       .where(eq(accessPoints.id, id))
       .returning();
     return accessPoint;
