@@ -367,7 +367,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // Mutation for uploading a floorplan
   const uploadFloorplanMutation = useMutation({
-    mutationFn: async (data: { name: string, pdf_data: string, project_id: number }) => {
+    mutationFn: async (data: { name: string, pdf_data: string, project_id: number, page_count: number }) => {
       const response = await apiRequest('POST', '/api/floorplans', data);
       if (!response.ok) {
         throw new Error('Failed to upload floorplan');
@@ -607,10 +607,12 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // Extract just the base64 data part
       const base64Content = base64Data.split(',')[1];
       
+      // Using a default page count of 1, which will be updated after the PDF is loaded
       await uploadFloorplanMutation.mutateAsync({
         name: newFloorplanName,
         pdf_data: base64Content,
-        project_id: projectId
+        project_id: projectId,
+        page_count: 1 // Default value, will be updated when the PDF is loaded
       });
     };
     reader.readAsDataURL(pdfFile);
