@@ -80,7 +80,9 @@ export interface IStorage {
   getFeedback(): Promise<Feedback[]>;
   getFeedbackById(id: number): Promise<Feedback | undefined>;
   createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  updateFeedback(id: number, feedback: Partial<InsertFeedback>): Promise<Feedback | undefined>;
   updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined>;
+  deleteFeedback(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -149,6 +151,26 @@ export class MemStorage implements IStorage {
     
     this.feedback.set(id, updatedFeedback);
     return updatedFeedback;
+  }
+
+  async updateFeedback(id: number, updateFeedback: Partial<InsertFeedback>): Promise<Feedback | undefined> {
+    const feedback = this.feedback.get(id);
+    if (!feedback) {
+      return undefined;
+    }
+    
+    const updatedFeedback: Feedback = {
+      ...feedback,
+      ...updateFeedback,
+      updated_at: new Date()
+    };
+    
+    this.feedback.set(id, updatedFeedback);
+    return updatedFeedback;
+  }
+  
+  async deleteFeedback(id: number): Promise<boolean> {
+    return this.feedback.delete(id);
   }
 
   constructor() {

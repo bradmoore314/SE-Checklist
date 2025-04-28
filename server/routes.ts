@@ -2283,6 +2283,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(204).end();
   });
 
+  // Feedback (Bug Report & Feature Request) endpoints
+  app.get("/api/feedback", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const feedbackItems = await storage.getFeedback();
+      res.json(feedbackItems);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to retrieve feedback items",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.post("/api/feedback", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const result = insertFeedbackSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid feedback data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const feedback = await storage.createFeedback(result.data);
+      res.status(201).json(feedback);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to create feedback",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.get("/api/feedback/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const feedbackId = parseInt(req.params.id);
+    if (isNaN(feedbackId)) {
+      return res.status(400).json({ message: "Invalid feedback ID" });
+    }
+
+    const feedback = await storage.getFeedbackById(feedbackId);
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    res.json(feedback);
+  });
+
+  app.put("/api/feedback/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const feedbackId = parseInt(req.params.id);
+    if (isNaN(feedbackId)) {
+      return res.status(400).json({ message: "Invalid feedback ID" });
+    }
+
+    try {
+      const result = insertFeedbackSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid feedback data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const feedback = await storage.updateFeedback(feedbackId, result.data);
+      if (!feedback) {
+        return res.status(404).json({ message: "Feedback not found" });
+      }
+
+      res.json(feedback);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to update feedback",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.delete("/api/feedback/:id", isAuthenticated, async (req: Request, res: Response) => {
+    const feedbackId = parseInt(req.params.id);
+    if (isNaN(feedbackId)) {
+      return res.status(400).json({ message: "Invalid feedback ID" });
+    }
+
+    const success = await storage.deleteFeedback(feedbackId);
+    if (!success) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    res.status(204).end();
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
