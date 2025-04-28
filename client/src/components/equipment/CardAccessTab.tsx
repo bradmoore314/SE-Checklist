@@ -8,7 +8,7 @@ import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -272,23 +272,88 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Type</p>
-                    <p className="text-sm font-medium">{ap.lock_type || "Not specified"}</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium">{ap.lock_type || "Not specified"}</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Monitoring Type</p>
-                    <p className="text-sm font-medium">{ap.monitoring_type || "Not specified"}</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium">{ap.monitoring_type || "Not specified"}</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Provider</p>
-                    <p className="text-sm font-medium">{ap.lock_provider || "Not specified"}</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium">{ap.lock_provider || "Not specified"}</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Interior/Perimeter</p>
-                    <p className="text-sm font-medium">{ap.interior_perimeter || "Not specified"}</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium">{ap.interior_perimeter || "Not specified"}</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Takeover</p>
-                    <p className="text-sm font-medium">{ap.takeover || "Not specified"}</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium">{ap.takeover || "Not specified"}</p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0 ml-1" 
+                        onClick={() => {
+                          setSelectedAccessPoint(ap);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               }
@@ -299,11 +364,37 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-muted-foreground text-xs">Lock Provider</p>
-                      <p className="text-sm">{ap.lock_provider || "Not specified"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.lock_provider || "Not specified"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">Interior/Perimeter</p>
-                      <p className="text-sm">{ap.interior_perimeter || "Not specified"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.interior_perimeter || "Not specified"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -313,27 +404,105 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-muted-foreground text-xs">Existing Panel Location</p>
-                      <p className="text-sm">{ap.exst_panel_location || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.exst_panel_location || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">Existing Panel Type</p>
-                      <p className="text-sm">{ap.exst_panel_type || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.exst_panel_type || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">Existing Reader Type</p>
-                      <p className="text-sm">{ap.exst_reader_type || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.exst_reader_type || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">New Panel Location</p>
-                      <p className="text-sm">{ap.new_panel_location || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.new_panel_location || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">New Panel Type</p>
-                      <p className="text-sm">{ap.new_panel_type || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.new_panel_type || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">New Reader Type</p>
-                      <p className="text-sm">{ap.new_reader_type || "N/A"}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm">{ap.new_reader_type || "N/A"}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 ml-1" 
+                          onClick={() => {
+                            setSelectedAccessPoint(ap);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
