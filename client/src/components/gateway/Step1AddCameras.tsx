@@ -94,8 +94,18 @@ export default function Step1AddCameras({
   const handleImportCameras = () => {
     if (!projectCameras || projectCameras.length === 0) return;
     
+    // Filter cameras based on import_to_gateway flag
+    const camerasToImport = projectCameras.filter((projectCamera: Camera) => 
+      projectCamera.import_to_gateway === undefined || projectCamera.import_to_gateway === true
+    );
+    
+    if (camerasToImport.length === 0) {
+      alert("No cameras are marked for import to Gateway Calculator. You can enable this in the camera settings.");
+      return;
+    }
+    
     // Map project cameras to StreamCamera format
-    const importedCameras: StreamCamera[] = projectCameras.map((projectCamera: Camera) => ({
+    const importedCameras: StreamCamera[] = camerasToImport.map((projectCamera: Camera) => ({
       name: projectCamera.location || `Camera ${projectCamera.id}`,
       lensCount: 1, // Default to single lens
       streamingResolution: 2, // Default to 1080p
