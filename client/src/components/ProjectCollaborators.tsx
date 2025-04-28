@@ -156,9 +156,9 @@ export function ProjectCollaborators({ projectId }: ProjectCollaboratorsProps) {
                 {collaborators.map((collaborator) => (
                   <TableRow key={collaborator.id}>
                     <TableCell className="font-medium">
-                      {collaborator.user_id}
+                      {collaborator.user?.fullName || collaborator.user?.username || `User ${collaborator.user_id}`}
                     </TableCell>
-                    <TableCell>user@example.com</TableCell>
+                    <TableCell>{collaborator.user?.email || "No email available"}</TableCell>
                     <TableCell>
                       {getPermissionBadge(collaborator.permission)}
                     </TableCell>

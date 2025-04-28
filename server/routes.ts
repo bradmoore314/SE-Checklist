@@ -2417,7 +2417,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const collaborators = await storage.getProjectCollaborators(projectId);
-      res.json(collaborators);
+      
+      // Fetch user information for each collaborator
+      const collaboratorsWithUserInfo = await Promise.all(
+        collaborators.map(async (collaborator) => {
+          const user = await storage.getUser(collaborator.user_id);
+          return {
+            ...collaborator,
+            user: user ? {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              fullName: user.fullName
+            } : null
+          };
+        })
+      );
+      
+      res.json(collaboratorsWithUserInfo);
     } catch (error) {
       console.error("Error getting project collaborators:", error);
       res.status(500).json({ 
