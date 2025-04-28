@@ -2612,6 +2612,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Route to look up users by email
+  app.get("/api/lookup/users", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const email = req.query.email as string;
+      if (!email) {
+        return res.status(400).json({ message: "Email query parameter is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return the user without exposing sensitive information
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName
+      });
+    } catch (error) {
+      console.error("Error looking up user by email:", error);
+      res.status(500).json({ 
+        message: "Failed to look up user", 
+        error: (error as Error).message
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
