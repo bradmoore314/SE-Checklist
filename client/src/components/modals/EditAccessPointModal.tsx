@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -126,8 +126,6 @@ export default function EditAccessPointModal({
               )}
             />
             
-
-            
             {/* Reader Type */}
             <FormField
               control={form.control}
@@ -161,12 +159,11 @@ export default function EditAccessPointModal({
               control={form.control}
               name="lock_type"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Lock Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || ""}
-                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -190,12 +187,11 @@ export default function EditAccessPointModal({
               control={form.control}
               name="monitoring_type"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Monitoring Type *</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || ""}
-                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -219,12 +215,11 @@ export default function EditAccessPointModal({
               control={form.control}
               name="lock_provider"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Lock Provider</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || ""}
-                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -248,12 +243,11 @@ export default function EditAccessPointModal({
               control={form.control}
               name="takeover"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Takeover?</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || "No"}
-                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -277,12 +271,11 @@ export default function EditAccessPointModal({
               control={form.control}
               name="interior_perimeter"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Interior/Perimeter</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value || "Interior"}
-                    disabled={quickConfigEnabled}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -321,14 +314,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="exst_panel_location"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>Exst. Panel Location</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter existing panel location" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -339,14 +331,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="exst_panel_type"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>Exst. Panel Type</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter existing panel type" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -357,14 +348,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="exst_reader_type"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>Exst. Reader Type</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter existing reader type" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -375,14 +365,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="new_panel_location"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>New Panel Location</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter new panel location" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -393,14 +382,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="new_panel_type"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>New Panel Type</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter new panel type" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -411,14 +399,13 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="new_reader_type"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>New Reader Type</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter new reader type" 
                           {...field} 
                           value={field.value || ""}
-                          disabled={quickConfigEnabled}
                         />
                       </FormControl>
                     </FormItem>
@@ -429,16 +416,15 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="noisy_prop"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
-                      <FormLabel>Noisy Prop</FormLabel>
+                    <FormItem>
+                      <FormLabel>Noisy Prop?</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         defaultValue={field.value || "No"}
-                        disabled={quickConfigEnabled}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Yes/No" />
+                            <SelectValue placeholder="Select option" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -457,16 +443,15 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="crashbars"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>Crashbars?</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         defaultValue={field.value || "No"}
-                        disabled={quickConfigEnabled}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Yes/No" />
+                            <SelectValue placeholder="Select option" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -485,16 +470,15 @@ export default function EditAccessPointModal({
                   control={form.control}
                   name="real_lock_type"
                   render={({ field }) => (
-                    <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                    <FormItem>
                       <FormLabel>Real Lock Type</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         defaultValue={field.value || "Mortise"}
-                        disabled={quickConfigEnabled}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select lock type" />
+                            <SelectValue placeholder="Select option" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -510,39 +494,39 @@ export default function EditAccessPointModal({
                 />
               </div>
             )}
-            
+
             {/* Notes */}
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
-                <FormItem className={cn(quickConfigEnabled && "opacity-50 pointer-events-none")}>
+                <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Enter any notes about this access point" 
-                      className="resize-none" 
+                      placeholder="Enter notes about this access point" 
                       {...field} 
                       value={field.value || ""}
-                      disabled={quickConfigEnabled}
+                      rows={3}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
-            
-            {/* Form Actions */}
-            <div className="flex justify-end gap-2">
+
+            <div className="flex justify-end gap-2 pt-4">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={onClose}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button 
-                type="submit" 
+                type="submit"
                 disabled={isSubmitting}
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
