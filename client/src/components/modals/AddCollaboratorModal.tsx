@@ -67,15 +67,26 @@ export function AddCollaboratorModal({
 
   const handleSubmit = async (data: FormData) => {
     try {
-      // In a real implementation, this would be replaced with a lookup API call
-      // to get the user_id from the email
+      // Look up the user by email
+      const response = await fetch(`/api/lookup/users?email=${encodeURIComponent(data.email)}`);
       
-      // For now, since we don't have a real user lookup, we're using a mock user ID of 1
-      // This should be replaced with an actual user lookup API
-      const mockUserId = 1;
+      if (!response.ok) {
+        if (response.status === 404) {
+          setUserNotFoundError(true);
+          toast({
+            title: "User not found",
+            description: "No user found with this email address. They must register first.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error("Failed to look up user");
+      }
+      
+      const user = await response.json();
       
       onAddCollaborator({
-        user_id: mockUserId,
+        user_id: user.id,
         permission: data.permission,
       });
       
