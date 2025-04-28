@@ -272,6 +272,13 @@ export interface StreamCamera {
   frameRate: number;
   storageDays: number;
   recordingResolution: number;
+  
+  // Additional fields from the main app
+  camera_type?: string;
+  mounting_type?: string;
+  resolution?: string;
+  field_of_view?: string;
+  notes?: string;
 }
 
 export interface Stream {

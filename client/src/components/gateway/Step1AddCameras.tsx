@@ -59,6 +59,13 @@ const formSchema = z.object({
   storageDays: z.coerce.number().int().min(1).max(365),
   recordingResolution: z.coerce.number().min(0.3).max(12),
   sameAsStreaming: z.boolean().default(true),
+  
+  // Additional fields from the main app
+  camera_type: z.string().optional(),
+  mounting_type: z.string().optional(),
+  resolution: z.string().optional(),
+  field_of_view: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 const duplicateFormSchema = z.object({
@@ -111,7 +118,14 @@ export default function Step1AddCameras({
       streamingResolution: 2, // Default to 1080p
       frameRate: 10, // Default frame rate
       storageDays: 30, // Default storage days
-      recordingResolution: 2, // Default to 1080p
+      recordingResolution: 2, // Default to 1080p,
+      
+      // Copy fields from the main app
+      camera_type: projectCamera.camera_type,
+      mounting_type: projectCamera.mounting_type || undefined,
+      resolution: projectCamera.resolution || undefined,
+      field_of_view: projectCamera.field_of_view || undefined,
+      notes: projectCamera.notes || undefined
     }));
     
     // Add imported cameras to existing cameras
@@ -172,6 +186,19 @@ export default function Step1AddCameras({
     form.setValue("recordingResolution", camera.recordingResolution);
     form.setValue("sameAsStreaming", camera.streamingResolution === camera.recordingResolution);
     
+    // Set additional fields if they exist
+    if (camera.camera_type) form.setValue("camera_type", camera.camera_type);
+    if (camera.mounting_type) form.setValue("mounting_type", camera.mounting_type);
+    if (camera.resolution) form.setValue("resolution", camera.resolution);
+    if (camera.field_of_view) form.setValue("field_of_view", camera.field_of_view);
+    if (camera.notes) form.setValue("notes", camera.notes);
+    
+    // If any of the additional fields are present, expand the advanced section
+    if (camera.camera_type || camera.mounting_type || camera.resolution || 
+        camera.field_of_view || camera.notes) {
+      setShowAdvancedFields(true);
+    }
+    
     setCameraEditIndex(index);
     setIsAddModalOpen(true);
   };
@@ -202,7 +229,14 @@ export default function Step1AddCameras({
       frameRate: 10,
       storageDays: 30,
       recordingResolution: 2,
-      sameAsStreaming: true
+      sameAsStreaming: true,
+      
+      // Reset additional fields
+      camera_type: undefined,
+      mounting_type: undefined,
+      resolution: undefined,
+      field_of_view: undefined,
+      notes: undefined
     });
   };
 
@@ -571,6 +605,86 @@ export default function Step1AddCameras({
                         )}
                       />
                     )}
+                  </div>
+                  
+                  {/* Fields from the main app */}
+                  <div className="rounded-lg border p-2 pb-3 mt-4">
+                    <h4 className="text-sm font-medium mb-2 text-gray-500 px-2">Additional Information</h4>
+                    
+                    <FormField
+                      control={form.control}
+                      name="camera_type"
+                      render={({ field }) => (
+                        <FormItem className="mb-3">
+                          <FormLabel>Camera Type</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., Dome, Bullet, PTZ" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="mounting_type"
+                      render={({ field }) => (
+                        <FormItem className="mb-3">
+                          <FormLabel>Mounting Type</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., Ceiling, Wall, Pole" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="resolution"
+                      render={({ field }) => (
+                        <FormItem className="mb-3">
+                          <FormLabel>Resolution (Description)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., 1080p, 4K" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="field_of_view"
+                      render={({ field }) => (
+                        <FormItem className="mb-3">
+                          <FormLabel>Field of View</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., 90°, 120°" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="notes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Notes</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Additional notes about this camera" 
+                              className="min-h-[80px]" 
+                              {...field} 
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </CollapsibleContent>
               </Collapsible>
