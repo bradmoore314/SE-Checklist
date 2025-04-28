@@ -12,13 +12,16 @@ import {
   insertFloorplanSchema,
   insertFloorplanMarkerSchema,
   insertFeedbackSchema,
+  insertProjectCollaboratorSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
   InsertFloorplan,
   InsertFloorplanMarker,
-  InsertFeedback
+  InsertFeedback,
+  InsertProjectCollaborator,
+  PERMISSION
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -2391,6 +2394,222 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     res.status(204).end();
+  });
+
+  // Project Collaborators endpoints
+  app.get("/api/projects/:projectId/collaborators", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Check if project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Check if the user has permission to view this project's collaborators
+      const permission = await storage.getUserProjectPermission(req.user.id, projectId);
+      if (!permission && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "You don't have permission to view this project's collaborators" });
+      }
+
+      const collaborators = await storage.getProjectCollaborators(projectId);
+      res.json(collaborators);
+    } catch (error) {
+      console.error("Error getting project collaborators:", error);
+      res.status(500).json({ 
+        message: "Failed to get project collaborators",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.post("/api/projects/:projectId/collaborators", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Check if project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Check if the user has admin permission on this project
+      const permission = await storage.getUserProjectPermission(req.user.id, projectId);
+      if (permission !== PERMISSION.ADMIN && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "You don't have permission to add collaborators to this project" });
+      }
+
+      // Validate the request body
+      const result = insertProjectCollaboratorSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid collaborator data", 
+          errors: result.error.errors 
+        });
+      }
+
+      // Check if the user exists
+      const user = await storage.getUser(result.data.user_id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if the collaborator already exists
+      const existingCollaborators = await storage.getProjectCollaborators(projectId);
+      const existingCollaborator = existingCollaborators.find(
+        c => c.user_id === result.data.user_id && c.project_id === projectId
+      );
+
+      if (existingCollaborator) {
+        return res.status(409).json({ message: "User is already a collaborator on this project" });
+      }
+
+      // Add the collaborator
+      const collaborator = await storage.addProjectCollaborator({
+        ...result.data,
+        project_id: projectId
+      });
+
+      res.status(201).json(collaborator);
+    } catch (error) {
+      console.error("Error adding project collaborator:", error);
+      res.status(500).json({ 
+        message: "Failed to add project collaborator",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.put("/api/projects/collaborators/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID" });
+      }
+
+      // Check if the collaborator exists
+      const collaborator = await storage.getProjectCollaborator(collaboratorId);
+      if (!collaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+
+      // Check if the user has admin permission on this project
+      const permission = await storage.getUserProjectPermission(req.user.id, collaborator.project_id);
+      if (permission !== PERMISSION.ADMIN && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "You don't have permission to modify collaborators on this project" });
+      }
+
+      // Validate the request body
+      const result = insertProjectCollaboratorSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid collaborator data", 
+          errors: result.error.errors 
+        });
+      }
+
+      // Update the collaborator
+      const updatedCollaborator = await storage.updateProjectCollaborator(collaboratorId, result.data);
+      if (!updatedCollaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+
+      res.json(updatedCollaborator);
+    } catch (error) {
+      console.error("Error updating project collaborator:", error);
+      res.status(500).json({ 
+        message: "Failed to update project collaborator",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.delete("/api/projects/collaborators/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID" });
+      }
+
+      // Check if the collaborator exists
+      const collaborator = await storage.getProjectCollaborator(collaboratorId);
+      if (!collaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+
+      // Check if the user has admin permission on this project
+      const permission = await storage.getUserProjectPermission(req.user.id, collaborator.project_id);
+      if (permission !== PERMISSION.ADMIN && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "You don't have permission to remove collaborators from this project" });
+      }
+
+      // Remove the collaborator
+      const success = await storage.removeProjectCollaborator(collaboratorId);
+      if (!success) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error removing project collaborator:", error);
+      res.status(500).json({ 
+        message: "Failed to remove project collaborator",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Add API route to get user's projects
+  app.get("/api/user/projects", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projects = await storage.getProjectsForUser(req.user.id);
+      res.json(projects);
+    } catch (error) {
+      console.error("Error getting user's projects:", error);
+      res.status(500).json({ 
+        message: "Failed to get user's projects",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Add API route to check user's permission for a project
+  app.get("/api/projects/:projectId/permission", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Check if project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Get the user's permission for this project
+      let permission = await storage.getUserProjectPermission(req.user.id, projectId);
+      
+      // If the user is an admin, they always have admin permission
+      if (req.user.role === 'admin') {
+        permission = PERMISSION.ADMIN;
+      }
+
+      res.json({ permission });
+    } catch (error) {
+      console.error("Error checking project permission:", error);
+      res.status(500).json({ 
+        message: "Failed to check project permission",
+        error: (error as Error).message
+      });
+    }
   });
 
   const httpServer = createServer(app);

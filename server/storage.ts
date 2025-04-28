@@ -1,20 +1,30 @@
 import { 
-  User, InsertUser, users,
-  Project, InsertProject, projects,
-  AccessPoint, InsertAccessPoint, accessPoints,
-  Camera, InsertCamera, cameras,
-  Elevator, InsertElevator, elevators,
-  Intercom, InsertIntercom, intercoms,
-  Floorplan, InsertFloorplan, floorplans,
-  FloorplanMarker, InsertFloorplanMarker, floorplanMarkers,
-  Feedback, InsertFeedback, feedback,
-  ProjectCollaborator, InsertProjectCollaborator, projectCollaborators,
-  PERMISSION, Permission
+  User, InsertUser,
+  Project, InsertProject,
+  AccessPoint, InsertAccessPoint,
+  Camera, InsertCamera,
+  Elevator, InsertElevator,
+  Intercom, InsertIntercom,
+  Floorplan, InsertFloorplan,
+  FloorplanMarker, InsertFloorplanMarker,
+  Feedback, InsertFeedback,
+  ProjectCollaborator, InsertProjectCollaborator,
+  PERMISSION, Permission,
+  users,
+  projects,
+  accessPoints,
+  cameras,
+  elevators,
+  intercoms,
+  floorplans,
+  floorplanMarkers,
+  feedback,
+  projectCollaborators
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
-import { db } from "./db";
 import { and, eq, inArray } from "drizzle-orm";
+import { db } from "./db";
 
 const MemoryStore = createMemoryStore(session);
 
