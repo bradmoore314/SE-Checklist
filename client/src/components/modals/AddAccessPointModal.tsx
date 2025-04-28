@@ -65,10 +65,10 @@ interface AddAccessPointModalProps {
 const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
-  quick_config: z.string().optional(), // Optional now
-  reader_type: z.string().optional(), // Made optional for Quick Config
-  lock_type: z.string().optional(), // Made optional for Quick Config
-  monitoring_type: z.string().optional(), // Made optional for Quick Config
+  // quick_config field removed as requested
+  reader_type: z.string().min(1, "Reader type is required"),
+  lock_type: z.string().min(1, "Lock type is required"),
+  monitoring_type: z.string().min(1, "Monitoring type is required"),
   lock_provider: z.string().optional(), // Changed from ppi
   takeover: z.string().optional(),
   interior_perimeter: z.string().optional(),
@@ -83,17 +83,6 @@ const accessPointSchema = z.object({
   crashbars: z.string().optional(),
   real_lock_type: z.string().optional(),
   notes: z.string().optional(),
-}).refine((data) => {
-  // If quick_config is selected, we don't need to check other fields
-  if (data.quick_config) {
-    return true;
-  }
-  
-  // Otherwise, these fields are required
-  return !!data.reader_type && !!data.lock_type && !!data.monitoring_type;
-}, {
-  message: "Reader type, Lock type, and Monitoring type are required unless Quick Config is selected",
-  path: ["reader_type"] // Show error on the first field
 });
 
 type AccessPointFormValues = z.infer<typeof accessPointSchema>;
@@ -131,7 +120,6 @@ export default function AddAccessPointModal({
     defaultValues: {
       project_id: projectId,
       location: "",
-      quick_config: "",
       reader_type: "KR-100", // Set default reader type
       lock_type: "Standard", // Set default lock type
       monitoring_type: "Prop Monitoring", // Set default monitoring type
@@ -151,9 +139,8 @@ export default function AddAccessPointModal({
     },
   });
   
-  // Watch for quick_config changes to enable/disable other fields
-  const watchQuickConfig = form.watch("quick_config");
-  const quickConfigEnabled = !!watchQuickConfig;
+  // Remove quick_config references - set to false to make fields always enabled
+  const quickConfigEnabled = false;
 
   // Handle form submission
   const onSubmit = async (values: AccessPointFormValues) => {
@@ -199,44 +186,7 @@ export default function AddAccessPointModal({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="quick_config"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-neutral-700">
-                      Quick Config
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Quick Config" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isLoadingLookups ? (
-                          <SelectItem value="loading">Loading...</SelectItem>
-                        ) : (
-                          getLookupOptions("quickConfigOptions").map((type: string) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    {quickConfigEnabled && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Quick Configuration Enabled
-                      </p>
-                    )}
-                  </FormItem>
-                )}
-              />
+              {/* Quick Config field hidden as requested */}
 
               <FormField
                 control={form.control}
