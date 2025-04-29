@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,16 +42,61 @@ interface EditAccessPointModalProps {
   accessPoint: AccessPoint;
   onSave: () => void;
   onClose: () => void;
+  selectedField?: string | null;
 }
 
 export default function EditAccessPointModal({
   isOpen,
   accessPoint,
   onSave,
-  onClose
+  onClose,
+  selectedField
 }: EditAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  
+  // Use effect to focus on the selected field when the modal opens
+  useEffect(() => {
+    if (isOpen && selectedField) {
+      // Check if the selected field is in the advanced fields section
+      const isAdvancedField = [
+        'exst_panel_location',
+        'exst_panel_type',
+        'exst_reader_type',
+        'new_panel_location',
+        'new_panel_type',
+        'new_reader_type',
+        'noisy_prop',
+        'crashbars',
+        'real_lock_type'
+      ].includes(selectedField);
+      
+      // Show advanced fields if needed
+      if (isAdvancedField) {
+        setShowAdvancedFields(true);
+      }
+      
+      // Set focus on the field (DOM elements will be available after a small delay)
+      setTimeout(() => {
+        // Try to find the field (input or select)
+        const fieldElement = document.querySelector(`[name="${selectedField}"]`);
+        if (fieldElement) {
+          (fieldElement as HTMLElement).focus();
+          
+          // Find the parent FormItem to add a highlight effect
+          const formItem = fieldElement.closest('.form-item');
+          if (formItem) {
+            formItem.classList.add('highlight-field');
+            
+            // Remove the highlight after a few seconds
+            setTimeout(() => {
+              formItem.classList.remove('highlight-field');
+            }, 3000);
+          }
+        }
+      }, 100);
+    }
+  }, [isOpen, selectedField]);
   
   // Toggle the visibility of advanced fields
   const toggleAdvancedFields = () => {

@@ -28,6 +28,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedAccessPoint, setSelectedAccessPoint] = useState<AccessPoint | null>(null);
+  const [selectedField, setSelectedField] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
@@ -281,6 +282,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       <p className="text-sm font-medium hover:underline cursor-pointer"
                          onClick={() => {
                            setSelectedAccessPoint(ap);
+                           setSelectedField("lock_type");
                            setShowEditModal(true);
                          }}
                       >
@@ -294,6 +296,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       <p className="text-sm font-medium hover:underline cursor-pointer"
                          onClick={() => {
                            setSelectedAccessPoint(ap);
+                           setSelectedField("monitoring_type");
                            setShowEditModal(true);
                          }}
                       >
