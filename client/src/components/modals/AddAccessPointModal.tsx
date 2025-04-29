@@ -65,7 +65,7 @@ interface AddAccessPointModalProps {
 const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
-  // quick_config field removed as requested
+  quick_config: z.string().min(1, "Quick config is required"), // Added back as database requires it
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
   monitoring_type: z.string().min(1, "Monitoring type is required"),
@@ -120,6 +120,7 @@ export default function AddAccessPointModal({
     defaultValues: {
       project_id: projectId,
       location: "",
+      quick_config: "Custom", // Added back with a default value
       reader_type: "KR-100", // Set default reader type
       lock_type: "Standard", // Set default lock type
       monitoring_type: "Prop Monitoring", // Set default monitoring type
@@ -209,7 +210,18 @@ export default function AddAccessPointModal({
                 )}
               />
 
-              {/* Quick Config field hidden as requested */}
+              {/* Quick Config field - hidden but included for database compatibility */}
+              <FormField
+                control={form.control}
+                name="quick_config"
+                render={({ field }) => (
+                  <FormItem className="hidden">
+                    <FormControl>
+                      <Input type="hidden" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
