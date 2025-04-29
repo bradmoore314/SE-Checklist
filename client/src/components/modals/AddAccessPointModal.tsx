@@ -64,6 +64,7 @@ interface AddAccessPointModalProps {
 const accessPointSchema = z.object({
   project_id: z.number(),
   location: z.string().min(1, "Location is required"),
+  quick_config: z.string().default(""), // Legacy field required for database compatibility
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
   monitoring_type: z.string().min(1, "Monitoring type is required"),
@@ -118,6 +119,7 @@ export default function AddAccessPointModal({
     defaultValues: {
       project_id: projectId,
       location: "",
+      quick_config: "", // Legacy field required for database compatibility
       reader_type: "KR-100", // Set default reader type
       lock_type: "Standard", // Set default lock type
       monitoring_type: "Prop Monitoring", // Set default monitoring type
@@ -137,7 +139,7 @@ export default function AddAccessPointModal({
     },
   });
   
-  // All fields are always enabled - quick_config field has been removed completely
+  // All fields are always enabled - quick_config field is hidden but still required by database
   const disableFields = false;
 
   const { toast } = useToast();
