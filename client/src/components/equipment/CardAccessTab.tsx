@@ -724,6 +724,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
 
       {showEditModal && selectedAccessPoint && (
         <EditAccessPointModal
+          isOpen={showEditModal}
           accessPoint={selectedAccessPoint}
           onClose={() => {
             setShowEditModal(false);
@@ -746,10 +747,6 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             <ImageGallery
               equipmentId={selectedAccessPoint.id}
               equipmentType="access_point"
-              onClose={() => {
-                setShowImageModal(false);
-                setSelectedAccessPoint(null);
-              }}
             />
           </DialogContent>
         </Dialog>
