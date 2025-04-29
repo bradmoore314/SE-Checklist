@@ -62,16 +62,18 @@ export async function generateSiteWalkAnalysis(projectData: any): Promise<Analys
           
           ${prompt}
           
+          IMPORTANT: Your analysis MUST accurately describe ONLY the equipment that is actually listed in the data above. If the data shows specific access points, cameras, or other equipment, acknowledge their presence and analyze them accordingly.
+          
           Structure your response as a JSON object with the following keys:
           {
-            "summary": "A concise executive summary of the security system setup",
-            "detailedAnalysis": "Detailed technical analysis of the system components and integration",
+            "summary": "A concise executive summary of the security system setup that accurately reflects the equipment shown in the data",
+            "detailedAnalysis": "Detailed technical analysis of the existing system components and integration",
             "recommendations": ["A list of key recommendations for improving the system"], 
             "risks": ["A list of potential risks or vulnerabilities"],
             "timeline": "A suggested implementation timeline"
           }
           
-          Be thorough but concise in your analysis.`
+          Be thorough but concise in your analysis. Ensure you mention exactly how many access points, cameras, elevators, and intercoms are in the data.`
         }]
       }],
       generationConfig: {
@@ -129,14 +131,30 @@ export async function generateSiteWalkAnalysis(projectData: any): Promise<Analys
 
 // Helper function to create a structured prompt for site walk analysis
 function createSiteWalkAnalysisPrompt(projectData: any): string {
+  // Log the structure of the data to help debug
+  console.log("Gemini API: Analyzing project data structure", {
+    hasProject: !!projectData.project,
+    hasEquipment: !!projectData.equipment,
+    hasSummary: !!projectData.summary,
+    accessPointCount: projectData.summary?.accessPointCount,
+    cameraCount: projectData.summary?.cameraCount
+  });
+  
   return `
     Project Information:
     - Project Name: ${projectData.project?.name || 'Not specified'}
     - Client: ${projectData.project?.client || 'Not specified'}
-    - Location: ${projectData.project?.location || 'Not specified'}
+    - Location: ${projectData.project?.site_address || 'Not specified'}
     
-    Access Points: ${projectData.accessPoints?.length || 0}
-    ${projectData.accessPoints?.map((ap: any, index: number) => `
+    Equipment Summary:
+    - Access Points: ${projectData.summary?.accessPointCount || 0} (Interior: ${projectData.summary?.interiorAccessPointCount || 0}, Perimeter: ${projectData.summary?.perimeterAccessPointCount || 0})
+    - Cameras: ${projectData.summary?.cameraCount || 0} (Indoor: ${projectData.summary?.indoorCameraCount || 0}, Outdoor: ${projectData.summary?.outdoorCameraCount || 0})
+    - Elevators/Turnstiles: ${projectData.summary?.elevatorCount || 0}
+    - Intercoms: ${projectData.summary?.intercomCount || 0}
+    - Total Equipment: ${projectData.summary?.totalEquipmentCount || 0}
+    
+    Access Points: ${projectData.equipment?.accessPoints?.length || 0}
+    ${projectData.equipment?.accessPoints?.map((ap: any, index: number) => `
       ${index + 1}. ${ap.location || 'Unknown location'}
       - Reader Type: ${ap.reader_type || 'Not specified'}
       - Lock Type: ${ap.lock_type || 'Not specified'}
@@ -144,23 +162,23 @@ function createSiteWalkAnalysisPrompt(projectData: any): string {
       - Takeover: ${ap.takeover || 'No'}
     `).join('') || 'No access points specified'}
     
-    Cameras: ${projectData.cameras?.length || 0}
-    ${projectData.cameras?.map((cam: any, index: number) => `
+    Cameras: ${projectData.equipment?.cameras?.length || 0}
+    ${projectData.equipment?.cameras?.map((cam: any, index: number) => `
       ${index + 1}. ${cam.location || 'Unknown location'}
       - Camera Type: ${cam.camera_type || 'Not specified'}
       - Resolution: ${cam.resolution || 'Not specified'}
       - Mounting: ${cam.mounting || 'Not specified'}
     `).join('') || 'No cameras specified'}
     
-    Elevators: ${projectData.elevators?.length || 0}
-    ${projectData.elevators?.map((el: any, index: number) => `
+    Elevators: ${projectData.equipment?.elevators?.length || 0}
+    ${projectData.equipment?.elevators?.map((el: any, index: number) => `
       ${index + 1}. ${el.location || 'Unknown location'}
       - Elevator Type: ${el.elevator_type || 'Not specified'}
       - Floor Count: ${el.floor_count || 'Not specified'}
     `).join('') || 'No elevators specified'}
     
-    Intercoms: ${projectData.intercoms?.length || 0}
-    ${projectData.intercoms?.map((ic: any, index: number) => `
+    Intercoms: ${projectData.equipment?.intercoms?.length || 0}
+    ${projectData.equipment?.intercoms?.map((ic: any, index: number) => `
       ${index + 1}. ${ic.location || 'Unknown location'}
       - Intercom Type: ${ic.intercom_type || 'Not specified'}
     `).join('') || 'No intercoms specified'}
