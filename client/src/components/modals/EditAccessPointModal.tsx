@@ -6,12 +6,17 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem as BaseFormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AccessPoint } from "@shared/schema";
+
+// Create a custom FormItem with the form-item class for highlighting
+const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
+  <BaseFormItem className={cn("form-item", className)} {...props} />
+);
 
 // Define the access point form schema
 const accessPointSchema = z.object({
@@ -84,7 +89,7 @@ export default function EditAccessPointModal({
           (fieldElement as HTMLElement).focus();
           
           // Find the parent FormItem to add a highlight effect
-          const formItem = fieldElement.closest('.form-item');
+          const formItem = fieldElement.closest('[class*="form-item"]');
           if (formItem) {
             formItem.classList.add('highlight-field');
             
