@@ -841,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const doorSchedule = accessPoints.map(ap => ({
       id: ap.id,
       location: ap.location,
-      door_type: ap.quick_config,
+      door_type: ap.lock_type,
       reader_type: ap.reader_type,
       lock_type: ap.lock_type,
       security_level: ap.monitoring_type,
@@ -1504,7 +1504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const newAccessPoint = await storage.createAccessPoint({
             project_id: floorplan.project_id,
             location: locationName,
-            quick_config: 'N/A',
+            // quick_config field removed
             reader_type: 'KR-RP40',
             lock_type: 'Magnetic Lock',
             monitoring_type: 'Standard'
@@ -1748,8 +1748,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         equipment: {
           accessPoints: [
-            { id: 1, project_id: 1, location: "Main Door", quick_config: "Standard" },
-            { id: 2, project_id: 1, location: "Side Door", quick_config: "Standard" }
+            { id: 1, project_id: 1, location: "Main Door", reader_type: "KR-RP40", lock_type: "Magnetic" },
+            { id: 2, project_id: 1, location: "Side Door", reader_type: "KR-RP40", lock_type: "Electric Strike" }
           ],
           cameras: [
             { id: 1, project_id: 1, location: "Entrance", camera_type: "Fixed Dome" },
