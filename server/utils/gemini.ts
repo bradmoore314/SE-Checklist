@@ -36,6 +36,137 @@ interface TurnoverCallAgendaResult {
   questionsToAddress: string[];
 }
 
+// Generate site walk analysis
+export async function generateSiteWalkAnalysis(projectData: any): Promise<AnalysisResult> {
+  try {
+    // Create a structured prompt with project data
+    const prompt = createSiteWalkAnalysisPrompt(projectData);
+    console.log("Gemini API: Created site walk analysis prompt");
+    
+    // Initialize the Gemini client with API key check
+    if (!API_KEY) {
+      console.error("Gemini API key is missing or undefined");
+      throw new Error("Gemini API key is not configured");
+    }
+    
+    // Create the API request with the provided URL and API key
+    const url = `${API_ENDPOINT}?key=${API_KEY}`;
+    
+    // Build the request payload
+    const payload = {
+      contents: [{
+        parts: [{
+          text: `You are an expert security system consultant specializing in analyzing site walk data.
+          
+          Please provide a comprehensive analysis of the following project data:
+          
+          ${prompt}
+          
+          Structure your response as a JSON object with the following keys:
+          {
+            "summary": "A concise executive summary of the security system setup",
+            "detailedAnalysis": "Detailed technical analysis of the system components and integration",
+            "recommendations": ["A list of key recommendations for improving the system"], 
+            "risks": ["A list of potential risks or vulnerabilities"],
+            "timeline": "A suggested implementation timeline"
+          }
+          
+          Be thorough but concise in your analysis.`
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 8192
+      }
+    };
+    
+    console.log("Gemini API: Sending site walk analysis request");
+    
+    // Make the API request
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    // Process the response
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Gemini API error:", errorData);
+      throw new Error(`Failed to generate site walk analysis: Gemini API returned status ${response.status}`);
+    }
+    
+    const responseData = await response.json();
+    console.log("Gemini API: Received site walk analysis response");
+    
+    // Extract and parse the JSON content from the response
+    const content = responseData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    if (!content) {
+      throw new Error("Empty response from Gemini API");
+    }
+    
+    // Try to parse the JSON response
+    try {
+      // Find JSON content in the response (it might be embedded in other text)
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error("No JSON content found in the response");
+      }
+      
+      const jsonContent = jsonMatch[0];
+      return JSON.parse(jsonContent);
+    } catch (parseError) {
+      console.error("Error parsing Gemini response:", parseError);
+      throw new Error("Failed to parse Gemini response as JSON");
+    }
+  } catch (error) {
+    console.error("Error generating site walk analysis:", error);
+    throw error;
+  }
+}
+
+// Helper function to create a structured prompt for site walk analysis
+function createSiteWalkAnalysisPrompt(projectData: any): string {
+  return `
+    Project Information:
+    - Project Name: ${projectData.project?.name || 'Not specified'}
+    - Client: ${projectData.project?.client || 'Not specified'}
+    - Location: ${projectData.project?.location || 'Not specified'}
+    
+    Access Points: ${projectData.accessPoints?.length || 0}
+    ${projectData.accessPoints?.map((ap: any, index: number) => `
+      ${index + 1}. ${ap.location || 'Unknown location'}
+      - Reader Type: ${ap.reader_type || 'Not specified'}
+      - Lock Type: ${ap.lock_type || 'Not specified'}
+      - Monitoring Type: ${ap.monitoring_type || 'Not specified'}
+      - Takeover: ${ap.takeover || 'No'}
+    `).join('') || 'No access points specified'}
+    
+    Cameras: ${projectData.cameras?.length || 0}
+    ${projectData.cameras?.map((cam: any, index: number) => `
+      ${index + 1}. ${cam.location || 'Unknown location'}
+      - Camera Type: ${cam.camera_type || 'Not specified'}
+      - Resolution: ${cam.resolution || 'Not specified'}
+      - Mounting: ${cam.mounting || 'Not specified'}
+    `).join('') || 'No cameras specified'}
+    
+    Elevators: ${projectData.elevators?.length || 0}
+    ${projectData.elevators?.map((el: any, index: number) => `
+      ${index + 1}. ${el.location || 'Unknown location'}
+      - Elevator Type: ${el.elevator_type || 'Not specified'}
+      - Floor Count: ${el.floor_count || 'Not specified'}
+    `).join('') || 'No elevators specified'}
+    
+    Intercoms: ${projectData.intercoms?.length || 0}
+    ${projectData.intercoms?.map((ic: any, index: number) => `
+      ${index + 1}. ${ic.location || 'Unknown location'}
+      - Intercom Type: ${ic.intercom_type || 'Not specified'}
+    `).join('') || 'No intercoms specified'}
+  `;
+}
+
 // Generate quote review meeting agenda
 export async function generateQuoteReviewAgenda(projectData: any): Promise<QuoteReviewAgendaResult> {
   try {
@@ -83,7 +214,7 @@ Format your response using clear headings, bullet points, and organized structur
         temperature: 0.2,
         topP: 0.9,
         topK: 40,
-        maxOutputTokens: 4096,
+        maxOutputTokens: 4096
       }
     };
     
@@ -92,9 +223,9 @@ Format your response using clear headings, bullet points, and organized structur
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
     
     if (!response.ok) {
@@ -239,27 +370,27 @@ export async function generateTurnoverCallAgenda(projectData: any): Promise<Turn
     const payload = {
       contents: [{
         parts: [{
-          text: `You are an expert security system consultant specializing in creating professional turnover call meeting agendas for completed security projects.
+          text: `You are an expert security system consultant specializing in creating professional turnover call meeting agendas.
           
 ${prompt}
-          
+            
 Please create a comprehensive turnover call meeting agenda with the following sections:
 
-1. INTRODUCTION: A brief, professional opening paragraph for the meeting.
+1. INTRODUCTION: A brief, professional opening paragraph for the meeting that sets the tone.
 
-2. PROJECT OVERVIEW: A concise recap of the completed security project.
+2. PROJECT OVERVIEW: A concise overview of the completed security project.
 
-3. KEY DELIVERABLES: List 3-5 major deliverables that have been completed.
+3. KEY DELIVERABLES: List 3-5 key deliverables that have been installed or configured.
 
-4. SYSTEM COMPONENTS: List 4-6 key components of the installed system that the client should be aware of.
+4. SYSTEM COMPONENTS: List 3-5 main components of the security system to discuss.
 
-5. TRAINING ITEMS: List 3-5 training points that will be covered during the meeting.
+5. TRAINING ITEMS: List 3-5 specific training topics to cover during the call.
 
-6. SUPPORT INFORMATION: A brief description of ongoing support, including contact information and procedures.
+6. SUPPORT INFORMATION: Provide contact information and hours for support.
 
-7. CLIENT RESPONSIBILITIES: List 3-5 maintenance or operational tasks that will be the client's responsibility.
+7. CLIENT RESPONSIBILITIES: List 3-5 ongoing responsibilities for the client.
 
-8. QUESTIONS TO ADDRESS: List 3-5 common questions to discuss during the meeting.
+8. QUESTIONS TO ADDRESS: List 4-6 common questions to proactively address with the client.
 
 Format your response using clear headings, bullet points, and organized structure.`
         }]
@@ -268,7 +399,7 @@ Format your response using clear headings, bullet points, and organized structur
         temperature: 0.2,
         topP: 0.9,
         topK: 40,
-        maxOutputTokens: 4096,
+        maxOutputTokens: 4096
       }
     };
     
@@ -277,9 +408,9 @@ Format your response using clear headings, bullet points, and organized structur
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
     
     if (!response.ok) {
@@ -317,7 +448,7 @@ Format your response using clear headings, bullet points, and organized structur
         if (lowerLine.includes('introduction') || lowerLine.includes('opening')) {
           currentSection = 'introduction';
           continue;
-        } else if (lowerLine.includes('project overview') || lowerLine.includes('project recap')) {
+        } else if (lowerLine.includes('project overview') || lowerLine.match(/overview\s+of\s+project/)) {
           currentSection = 'projectOverview';
           continue;
         } else if (lowerLine.includes('key deliverables') || lowerLine.includes('deliverables')) {
@@ -326,16 +457,16 @@ Format your response using clear headings, bullet points, and organized structur
         } else if (lowerLine.includes('system components') || lowerLine.includes('components')) {
           currentSection = 'systemComponents';
           continue;
-        } else if (lowerLine.includes('training') || lowerLine.includes('instruction')) {
+        } else if (lowerLine.includes('training')) {
           currentSection = 'trainingItems';
           continue;
-        } else if (lowerLine.includes('support') || lowerLine.includes('assistance')) {
+        } else if (lowerLine.includes('support')) {
           currentSection = 'supportInformation';
           continue;
-        } else if (lowerLine.includes('client responsibilities') || lowerLine.includes('customer responsibilities')) {
+        } else if (lowerLine.includes('client responsibilities') || lowerLine.includes('responsibilities')) {
           currentSection = 'clientResponsibilities';
           continue;
-        } else if (lowerLine.includes('questions') || lowerLine.includes('q&a')) {
+        } else if (lowerLine.includes('questions') || lowerLine.includes('address')) {
           currentSection = 'questionsToAddress';
           continue;
         }
@@ -389,250 +520,32 @@ Format your response using clear headings, bullet points, and organized structur
         sections.questionsToAddress.join('\n').split('?').filter(s => s.trim().length > 10).map(s => s.trim() + '?');
       
       return {
-        introduction: sections.introduction.join('\n').trim() || "Welcome to our project turnover call. Today we'll review the completed security installation, cover system operation, and ensure you're fully prepared to utilize your new security system.",
-        projectOverview: sections.projectOverview.join('\n').trim() || "We'll provide a brief overview of the completed security project, including scope, objectives, and key accomplishments.",
-        keyDeliverables: finalKeyDeliverables.length > 0 ? finalKeyDeliverables : ["Fully operational access control system", "Integrated video surveillance system", "Customized security protocols", "System documentation and manuals"],
-        systemComponents: finalSystemComponents.length > 0 ? finalSystemComponents : ["Access control readers and controllers", "Security cameras and recording equipment", "Door hardware and locking mechanisms", "System management software", "Reporting and alert systems"],
-        trainingItems: finalTrainingItems.length > 0 ? finalTrainingItems : ["System administration basics", "Daily operation procedures", "User management", "Troubleshooting common issues"],
-        supportInformation: sections.supportInformation.join('\n').trim() || "We'll provide details on our support services, including emergency contact information, support hours, and the escalation process for technical issues.",
-        clientResponsibilities: finalClientResponsibilities.length > 0 ? finalClientResponsibilities : ["Regular system testing", "User account management", "Basic troubleshooting", "Scheduled maintenance coordination"],
-        questionsToAddress: finalQuestionsToAddress.length > 0 ? finalQuestionsToAddress : ["How do I add or remove users from the system?", "What should I do if a door isn't working properly?", "How can I access historical reports?", "What's the process for requesting service or support?"]
+        introduction: sections.introduction.join('\n').trim() || "Welcome to our turnover call. Today we'll review the completed security system installation, provide training on key components, and answer any questions you may have.",
+        projectOverview: sections.projectOverview.join('\n').trim() || "We have successfully completed the installation of your security system according to the agreed specifications.",
+        keyDeliverables: finalKeyDeliverables.length > 0 ? finalKeyDeliverables : ["Access control system", "Video surveillance system", "Intercom system", "System documentation and user guides"],
+        systemComponents: finalSystemComponents.length > 0 ? finalSystemComponents : ["Card readers and electronic locks", "IP cameras and NVR", "Control panels and processors", "Management software"],
+        trainingItems: finalTrainingItems.length > 0 ? finalTrainingItems : ["User management and access levels", "Video footage review and export", "System administration", "Routine maintenance procedures"],
+        supportInformation: sections.supportInformation.join('\n').trim() || "Our technical support team is available 24/7. Please contact us at support@example.com or call 1-800-555-0123 for assistance.",
+        clientResponsibilities: finalClientResponsibilities.length > 0 ? finalClientResponsibilities : ["Regular system testing", "User management", "Backup procedures", "Reporting issues promptly"],
+        questionsToAddress: finalQuestionsToAddress.length > 0 ? finalQuestionsToAddress : ["What happens if there's a power outage?", "How do we add or remove users?", "What maintenance is required?", "How do we request service or support?"]
       };
     } catch (e) {
       console.error("Error parsing Gemini response for turnover call agenda:", e);
       // Return default structure if parsing fails
       return {
-        introduction: "Welcome to our project turnover call. Today we'll review the completed security installation, cover system operation, and ensure you're fully prepared to utilize your new security system.",
-        projectOverview: "We'll provide a brief overview of the completed security project, including scope, objectives, and key accomplishments.",
-        keyDeliverables: ["Fully operational access control system", "Integrated video surveillance system", "Customized security protocols", "System documentation and manuals"],
-        systemComponents: ["Access control readers and controllers", "Security cameras and recording equipment", "Door hardware and locking mechanisms", "System management software", "Reporting and alert systems"],
-        trainingItems: ["System administration basics", "Daily operation procedures", "User management", "Troubleshooting common issues"],
-        supportInformation: "We'll provide details on our support services, including emergency contact information, support hours, and the escalation process for technical issues.",
-        clientResponsibilities: ["Regular system testing", "User account management", "Basic troubleshooting", "Scheduled maintenance coordination"],
-        questionsToAddress: ["How do I add or remove users from the system?", "What should I do if a door isn't working properly?", "How can I access historical reports?", "What's the process for requesting service or support?"]
+        introduction: "Welcome to our turnover call. Today we'll review the completed security system installation, provide training on key components, and answer any questions you may have.",
+        projectOverview: "We have successfully completed the installation of your security system according to the agreed specifications.",
+        keyDeliverables: ["Access control system", "Video surveillance system", "Intercom system", "System documentation and user guides"],
+        systemComponents: ["Card readers and electronic locks", "IP cameras and NVR", "Control panels and processors", "Management software"],
+        trainingItems: ["User management and access levels", "Video footage review and export", "System administration", "Routine maintenance procedures"],
+        supportInformation: "Our technical support team is available 24/7. Please contact us at support@example.com or call 1-800-555-0123 for assistance.",
+        clientResponsibilities: ["Regular system testing", "User management", "Backup procedures", "Reporting issues promptly"],
+        questionsToAddress: ["What happens if there's a power outage?", "How do we add or remove users?", "What maintenance is required?", "How do we request service or support?"]
       };
     }
   } catch (error) {
     console.error("Error calling Gemini API for turnover call agenda:", error);
     throw new Error(`Failed to generate turnover call agenda: ${(error as Error).message}`);
-  }
-}
-
-// Configure the model - using Gemini for site walk analysis
-export async function generateSiteWalkAnalysis(siteWalkData: any): Promise<AnalysisResult> {
-  try {
-    // Create a structured prompt with all the site walk data
-    const prompt = createAnalysisPrompt(siteWalkData);
-    console.log("Gemini API: Created analysis prompt");
-    
-    // Initialize the Gemini client with API key check
-    if (!API_KEY) {
-      console.error("Gemini API key is missing or undefined");
-      throw new Error("Gemini API key is not configured");
-    }
-    console.log("Gemini API: API key is configured");
-    
-    // Create the API request with the provided URL and API key
-    const url = `${API_ENDPOINT}?key=${API_KEY}`;
-    
-    // Build the request payload
-    const payload = {
-      contents: [{
-        parts: [{
-          text: `You are an expert security system consultant with years of specialized experience in designing and deploying security solutions. You analyze data comprehensively and provide detailed guidance for security projects.
-          
-${prompt}
-
-I need a complete security analysis with these sections:
-
-1. EXECUTIVE SUMMARY: A professional 150-200 word summary of the security project scope, highlighting business value.
-
-2. TECHNICAL ANALYSIS: Detailed technical specifications for installation teams, including requirements, compliance considerations, and best practices. Use sections and bullet points for readability.
-
-3. KEY RECOMMENDATIONS: List 4-6 specific, actionable recommendations to ensure project success.
-
-4. RISK ASSESSMENT: Identify 3-5 potential risks or challenges specific to this project, with detailed mitigation strategies for each.
-
-5. IMPLEMENTATION TIMELINE: A high-level timeline or phasing approach for project execution.
-
-Format your response using clear headings, bullet points, and organized structure.`
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.2,
-        topP: 0.9,
-        topK: 40,
-        maxOutputTokens: 4096,
-      }
-    };
-    
-    // Make the API request
-    console.log("Calling Gemini API endpoint:", API_ENDPOINT);
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Gemini API error:", errorData);
-      throw new Error(`Gemini API returned status ${response.status}: ${errorData}`);
-    }
-    
-    const result = await response.json();
-    
-    console.log("Gemini API: Successfully received response");
-    
-    // Extract the text from the response
-    const text = result.candidates[0].content.parts[0].text;
-    console.log("Gemini API: Response text length:", text.length);
-    
-    // Print the first 200 characters of the response for debugging
-    console.log("Gemini API: Response preview:", text.substring(0, 200));
-    
-    try {
-      // Use a simpler approach to extract sections by looking for keywords
-      const lines = text.split('\n');
-      let sections: Record<string, string[]> = {
-        summary: [],
-        technical: [],
-        recommendations: [],
-        risks: [],
-        timeline: []
-      };
-      
-      let currentSection = '';
-      
-      for (const line of lines) {
-        const lowerLine = line.toLowerCase();
-        
-        if (lowerLine.includes('executive summary') || lowerLine.includes('executive overview')) {
-          currentSection = 'summary';
-          continue;
-        } else if (lowerLine.includes('technical analysis') || lowerLine.includes('technical details')) {
-          currentSection = 'technical';
-          continue;
-        } else if (lowerLine.includes('key recommendations') || lowerLine.includes('recommendations')) {
-          currentSection = 'recommendations';
-          continue;
-        } else if (lowerLine.includes('risk assessment') || lowerLine.includes('risks')) {
-          currentSection = 'risks';
-          continue;
-        } else if (lowerLine.includes('implementation timeline') || lowerLine.includes('timeline')) {
-          currentSection = 'timeline';
-          continue;
-        }
-        
-        // If we're in a section, add the line to it
-        if (currentSection && currentSection in sections) {
-          sections[currentSection].push(line);
-        } else if (!currentSection && lowerLine.includes('summary')) {
-          // If we're not in a section yet but line contains "summary", assume it's part of the executive summary
-          currentSection = 'summary';
-          sections[currentSection].push(line);
-        }
-      }
-      
-      console.log("Gemini API: Parsed sections", {
-        summary: sections.summary.length > 0,
-        technical: sections.technical.length > 0,
-        recommendations: sections.recommendations.length > 0,
-        risks: sections.risks.length > 0,
-        timeline: sections.timeline.length > 0
-      });
-      
-      // Extract all bullet points from recommendations section
-      const recommendations = sections.recommendations
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().match(/^\d+\./))
-        .map(line => line.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').trim());
-      
-      // Extract all bullet points from risks section
-      const risks = sections.risks
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().match(/^\d+\./))
-        .map(line => line.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').trim());
-      
-      // If no bullet points found, take everything
-      const finalRecommendations = recommendations.length > 0 ? 
-        recommendations : 
-        sections.recommendations.join('\n').split('.').filter(s => s.trim().length > 10).map(s => s.trim());
-      
-      const finalRisks = risks.length > 0 ? 
-        risks : 
-        sections.risks.join('\n').split('.').filter(s => s.trim().length > 10).map(s => s.trim());
-      
-      return {
-        summary: sections.summary.join('\n').trim() || "Executive summary not available",
-        detailedAnalysis: sections.technical.join('\n').trim() || "Technical analysis not available",
-        recommendations: finalRecommendations.length > 0 ? finalRecommendations : ["No specific recommendations available"],
-        risks: finalRisks.length > 0 ? finalRisks : ["No specific risks identified"],
-        timeline: sections.timeline.join('\n').trim() || "Timeline information not available"
-      };
-    } catch (e) {
-      console.error("Error parsing Gemini response:", e);
-      
-      // More sophisticated fallback that attempts to divide the text into relevant sections
-      console.log("Gemini API: Using fallback parser");
-      const lines = text.split("\n");
-      let sections: {
-        summary: string[];
-        technical: string[];
-        recommendations: string[];
-        risks: string[];
-        timeline: string[];
-      } = {
-        summary: [],
-        technical: [],
-        recommendations: [],
-        risks: [],
-        timeline: []
-      };
-      
-      let currentSection: keyof typeof sections = "summary";
-      
-      for (const line of lines) {
-        if (line.match(/executive\s*summary/i)) {
-          currentSection = "summary";
-          continue;
-        } else if (line.match(/technical\s*analysis/i)) {
-          currentSection = "technical";
-          continue;
-        } else if (line.match(/key\s*recommendations/i)) {
-          currentSection = "recommendations";
-          continue;
-        } else if (line.match(/risk\s*assessment/i)) {
-          currentSection = "risks";
-          continue;
-        } else if (line.match(/implementation\s*timeline/i)) {
-          currentSection = "timeline";
-          continue;
-        }
-        
-        sections[currentSection].push(line);
-      }
-      
-      // Extract bullet points from recommendations and risks
-      const recommendationBullets = sections.recommendations
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*'))
-        .map(line => line.replace(/^[-*]\s*/, '').trim());
-      
-      const riskBullets = sections.risks
-        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*'))
-        .map(line => line.replace(/^[-*]\s*/, '').trim());
-      
-      return {
-        summary: sections.summary.join("\n").trim() || "Executive summary not available",
-        detailedAnalysis: sections.technical.join("\n").trim() || "Technical analysis not available",
-        recommendations: recommendationBullets.length > 0 ? recommendationBullets : ["No specific recommendations available"],
-        risks: riskBullets.length > 0 ? riskBullets : ["No specific risks identified"],
-        timeline: sections.timeline.join("\n").trim() || "Timeline information not available"
-      };
-    }
-  } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    throw new Error(`Failed to generate site walk analysis: ${(error as Error).message}`);
   }
 }
 
@@ -709,7 +622,6 @@ function createQuoteReviewPrompt(data: any): string {
   prompt += "\n### Estimated Pricing Information\n";
   prompt += "- Base System: Approximately $" + (summary.accessPointCount * 1500 + summary.cameraCount * 1200 + summary.elevatorCount * 3000 + summary.intercomCount * 1000).toLocaleString() + "\n";
   prompt += "- Installation: Approximately $" + (summary.accessPointCount * 500 + summary.cameraCount * 350 + summary.elevatorCount * 1000 + summary.intercomCount * 400).toLocaleString() + "\n";
-  prompt += "- Monitoring (Annual): Approximately $" + (summary.accessPointCount * 120 + summary.cameraCount * 180).toLocaleString() + "\n";
   
   return prompt;
 }
@@ -737,77 +649,12 @@ function createTurnoverCallPrompt(data: any): string {
 - Total Elevators/Turnstiles: ${summary.elevatorCount} (Banks: ${summary.elevatorBankCount})
 - Total Intercoms: ${summary.intercomCount}
 
-## System Features
-`;
-
-  // Add configuration options
-  if (project.replace_readers) {
-    prompt += `- New Readers: ${tooltips.replace_readers}\n`;
-  }
-  
-  if (project.wireless_locks) {
-    prompt += `- Wireless Locks: ${tooltips.wireless_locks}\n`;
-  }
-  
-  if (project.need_credentials) {
-    prompt += `- Credentials System: ${tooltips.need_credentials}\n`;
-  }
-  
-  if (project.photo_id) {
-    prompt += `- Photo ID System: ${tooltips.photo_id}\n`;
-  }
-  
-  if (project.photo_badging) {
-    prompt += `- Photo Badging: ${tooltips.photo_badging}\n`;
-  }
-  
-  if (project.ble) {
-    prompt += `- Mobile Credentials: ${tooltips.ble}\n`;
-  }
-  
-  if (project.visitor) {
-    prompt += `- Visitor Management: ${tooltips.visitor}\n`;
-  }
-  
-  // Support Information
-  prompt += "\n### Support Information\n";
-  prompt += "- Support Contact: Security Systems Support Team\n";
-  prompt += "- Support Phone: (800) 555-1234\n";
-  prompt += "- Support Email: support@securitysystem.com\n";
-  prompt += "- Support Hours: 24/7 for emergencies, 8am-6pm ET for non-emergency support\n";
-  
-  return prompt;
-}
-
-// Helper function to create a comprehensive prompt with all site walk data
-function createAnalysisPrompt(data: any): string {
-  const { project, summary, equipment, tooltips } = data;
-  
-  let prompt = `
-# Site Walk Analysis Request
-
-## Project Information
-- Project Name: ${project.name || "Unnamed Project"}
-- Client: ${project.client || "N/A"}
-- Site Address: ${project.site_address || "N/A"}
-- Building Count: ${project.building_count || 1}
-- SE Name: ${project.se_name || "N/A"}
-- BDM Name: ${project.bdm_name || "N/A"}
-- Progress: ${project.progress_percentage || 0}%
-- Notes: ${project.progress_notes || "N/A"}
-
-## Equipment Summary
-- Total Access Points: ${summary.accessPointCount} (Interior: ${summary.interiorAccessPointCount}, Perimeter: ${summary.perimeterAccessPointCount})
-- Total Cameras: ${summary.cameraCount} (Indoor: ${summary.indoorCameraCount}, Outdoor: ${summary.outdoorCameraCount})
-- Total Elevators/Turnstiles: ${summary.elevatorCount} (Banks: ${summary.elevatorBankCount})
-- Total Intercoms: ${summary.intercomCount}
-
-## Scope Information
+## Configuration Information
 `;
 
   // Add configuration options
   // Installation/Hardware Scope
-  prompt += "\n### Installation/Hardware Scope\n";
+  prompt += "\n### Installation/Hardware Details\n";
   
   if (project.replace_readers) {
     prompt += `- Replace Readers: Yes - ${tooltips.replace_readers}\n`;
@@ -823,10 +670,6 @@ function createAnalysisPrompt(data: any): string {
   
   if (project.wireless_locks) {
     prompt += `- Wireless Locks: Yes - ${tooltips.wireless_locks}\n`;
-  }
-  
-  if (project.conduit_drawings) {
-    prompt += `- Conduit Drawings: Yes - ${tooltips.conduit_drawings}\n`;
   }
   
   // Access Control/Identity Management
@@ -848,28 +691,8 @@ function createAnalysisPrompt(data: any): string {
     prompt += `- BLE (Mobile Credentials): Yes - ${tooltips.ble}\n`;
   }
   
-  if (project.test_card) {
-    prompt += `- Test Card: Yes - ${tooltips.test_card}\n`;
-  }
-  
-  if (project.visitor) {
-    prompt += `- Visitor Management: Yes - ${tooltips.visitor}\n`;
-  }
-  
-  if (project.guard_controls) {
-    prompt += `- Guard Controls: Yes - ${tooltips.guard_controls}\n`;
-  }
-  
-  // Site Conditions/Project Planning
-  prompt += "\n### Site Conditions/Project Planning\n";
-  
-  if (project.floorplan) {
-    prompt += `- Floorplan Available: Yes - ${tooltips.floorplan}\n`;
-  }
-  
-  if (project.reports_available) {
-    prompt += `- Reports Available: Yes - ${tooltips.reports_available}\n`;
-  }
+  // Site Conditions
+  prompt += "\n### Site Conditions & Special Considerations\n";
   
   if (project.kastle_connect) {
     prompt += `- Kastle Connect: Yes - ${tooltips.kastle_connect}\n`;
@@ -883,87 +706,5 @@ function createAnalysisPrompt(data: any): string {
     prompt += `- Takeover Project: Yes - ${tooltips.takeover}\n`;
   }
   
-  if (project.rush) {
-    prompt += `- Rush Project: Yes - ${tooltips.rush}\n`;
-  }
-  
-  if (project.ppi_quote_needed) {
-    prompt += `- PPI Quote Needed: Yes - ${tooltips.ppi_quote_needed}\n`;
-  }
-  
-  // Detailed equipment information
-  if (equipment?.accessPoints?.length > 0) {
-    prompt += "\n## Access Points Details\n";
-    equipment.accessPoints.forEach((ap: any, index: number) => {
-      prompt += `
-### Access Point ${index + 1}: ${ap.location}
-- Quick Config: ${ap.quick_config || "N/A"}
-- Reader Type: ${ap.reader_type || "N/A"}
-- Lock Type: ${ap.lock_type || "N/A"}
-- Monitoring Type: ${ap.monitoring_type || "N/A"}
-- Lock Provider: ${ap.lock_provider || "N/A"}
-- Takeover: ${ap.takeover || "N/A"}
-- Interior/Perimeter: ${ap.interior_perimeter || "N/A"}
-- Noisy Prop: ${ap.noisy_prop || "N/A"}
-- Crashbars: ${ap.crashbars || "N/A"}
-- Real Lock Type: ${ap.real_lock_type || "N/A"}
-- Existing Panel Location: ${ap.exst_panel_location || "N/A"}
-- Existing Panel Type: ${ap.exst_panel_type || "N/A"}
-- Existing Reader Type: ${ap.exst_reader_type || "N/A"}
-- New Panel Location: ${ap.new_panel_location || "N/A"}
-- New Panel Type: ${ap.new_panel_type || "N/A"}
-- New Reader Type: ${ap.new_reader_type || "N/A"}
-- Notes: ${ap.notes || "N/A"}
-`;
-    });
-  }
-  
-  if (equipment?.cameras?.length > 0) {
-    prompt += "\n## Cameras Details\n";
-    equipment.cameras.forEach((camera: any, index: number) => {
-      prompt += `
-### Camera ${index + 1}: ${camera.location}
-- Camera Type: ${camera.camera_type || "N/A"}
-- Mounting Type: ${camera.mounting_type || "N/A"}
-- Resolution: ${camera.resolution || "N/A"}
-- Field of View: ${camera.field_of_view || "N/A"}
-- Notes: ${camera.notes || "N/A"}
-`;
-    });
-  }
-  
-  if (equipment?.elevators?.length > 0) {
-    prompt += "\n## Elevators & Turnstiles Details\n";
-    equipment.elevators.forEach((elevator: any, index: number) => {
-      prompt += `
-### Elevator/Turnstile ${index + 1}: ${elevator.location}
-- Type: ${elevator.elevator_type || "N/A"}
-- Floor Count: ${elevator.floor_count || "N/A"}
-- Notes: ${elevator.notes || "N/A"}
-`;
-    });
-  }
-  
-  if (equipment?.intercoms?.length > 0) {
-    prompt += "\n## Intercoms Details\n";
-    equipment.intercoms.forEach((intercom: any, index: number) => {
-      prompt += `
-### Intercom ${index + 1}: ${intercom.location}
-- Type: ${intercom.intercom_type || "N/A"}
-- Notes: ${intercom.notes || "N/A"}
-`;
-    });
-  }
-  
-  // Instructions for the AI
-  prompt += `
-## Analysis Instructions
-1. Analyze this security installation project and provide insights
-2. Consider the scope, equipment types, and specific configuration requirements
-3. Identify potential challenges based on the site conditions
-4. Provide installation guidance and recommendations for the technician team
-5. Highlight any special requirements based on configuration options
-`;
-
   return prompt;
 }

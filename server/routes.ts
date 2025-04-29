@@ -3,7 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
-import { proxyGeminiRequest } from './gemini-proxy';
+import { proxyTestGemini } from './gemini-proxy';
+import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -57,11 +58,6 @@ const insertStreamImageSchema = z.object({
 });
 type InsertStreamImage = z.infer<typeof insertStreamImageSchema>;
 import { setupAuth } from "./auth";
-import { 
-  generateSiteWalkAnalysis,
-  generateQuoteReviewAgenda,
-  generateTurnoverCallAgenda
-} from "./utils/gemini";
 import { translateText } from "./services/gemini-translation";
 import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
 import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
@@ -2660,7 +2656,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Gemini AI API Proxy
-  app.post("/api/gemini/:model?/:endpoint?", isAuthenticated, proxyGeminiRequest);
+  // Test endpoint for Gemini API
+app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
 
   // Check Gemini API configuration
   app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
