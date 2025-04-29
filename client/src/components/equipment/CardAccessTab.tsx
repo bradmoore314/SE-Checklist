@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ViewModeToggle, type ViewMode } from "@/components/ViewModeToggle";
 import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -71,6 +72,11 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const { data: accessPoints = [], isLoading } = useQuery<AccessPoint[]>({
     queryKey: [`/api/projects/${project.id}/access-points`],
     enabled: !!project.id,
+  });
+  
+  // Fetch lookup data for dropdown options
+  const { data: lookupData } = useQuery({
+    queryKey: ["/api/lookup"],
   });
 
   // Filter access points based on search term
@@ -272,37 +278,81 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Type</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium">{ap.lock_type || "Not specified"}</p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-6 w-6 p-0 ml-1" 
-                        onClick={() => {
-                          setSelectedAccessPoint(ap);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Select 
+                      defaultValue={ap.lock_type || ""} 
+                      onValueChange={async (value) => {
+                        try {
+                          await apiRequest("PATCH", `/api/access-points/${ap.id}`, {
+                            ...ap,
+                            lock_type: value
+                          });
+                          
+                          // Invalidate and refetch access points
+                          queryClient.invalidateQueries({ 
+                            queryKey: [`/api/projects/${project.id}/access-points`]
+                          });
+                          
+                          toast({
+                            title: "Updated",
+                            description: "Lock type has been updated.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Update Failed",
+                            description: (error as Error).message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="h-8 text-sm border-none hover:bg-gray-100 focus:ring-0">
+                        <SelectValue placeholder="Select lock type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lookupData?.lockTypes?.map((type: string) => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Monitoring Type</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium">{ap.monitoring_type || "Not specified"}</p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-6 w-6 p-0 ml-1" 
-                        onClick={() => {
-                          setSelectedAccessPoint(ap);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Select 
+                      defaultValue={ap.monitoring_type || ""} 
+                      onValueChange={async (value) => {
+                        try {
+                          await apiRequest("PATCH", `/api/access-points/${ap.id}`, {
+                            ...ap,
+                            monitoring_type: value
+                          });
+                          
+                          // Invalidate and refetch access points
+                          queryClient.invalidateQueries({ 
+                            queryKey: [`/api/projects/${project.id}/access-points`]
+                          });
+                          
+                          toast({
+                            title: "Updated",
+                            description: "Monitoring type has been updated.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Update Failed",
+                            description: (error as Error).message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="h-8 text-sm border-none hover:bg-gray-100 focus:ring-0">
+                        <SelectValue placeholder="Select monitoring type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lookupData?.monitoringTypes?.map((type: string) => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Provider</p>
