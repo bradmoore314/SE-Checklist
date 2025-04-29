@@ -329,6 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const duplicateData: InsertAccessPoint = {
         project_id: existingAccessPoint.project_id,
         location: `${existingAccessPoint.location} (Copy)`,
+        quick_config: existingAccessPoint.quick_config || 'Standard', // Include quick_config with a fallback
         reader_type: existingAccessPoint.reader_type,
         lock_type: existingAccessPoint.lock_type,
         monitoring_type: existingAccessPoint.monitoring_type,
@@ -1504,7 +1505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const newAccessPoint = await storage.createAccessPoint({
             project_id: floorplan.project_id,
             location: locationName,
-            // quick_config field removed
+            quick_config: 'Standard', // Include required field
             reader_type: 'KR-RP40',
             lock_type: 'Magnetic Lock',
             monitoring_type: 'Standard'

@@ -1509,19 +1509,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAccessPoint(insertAccessPoint: InsertAccessPoint): Promise<AccessPoint> {
-    // Remove quick_config if it exists in the input, since it's not in our schema
-    const { quick_config, ...cleanedAccessPoint } = insertAccessPoint as any;
-    const [accessPoint] = await db.insert(accessPoints).values(cleanedAccessPoint).returning();
+    // Don't remove quick_config since it's required by the database
+    // If quick_config is empty, provide a default value to satisfy the NOT NULL constraint
+    const inputData = { ...insertAccessPoint };
+    
+    if (!inputData.quick_config || inputData.quick_config.trim() === '') {
+      // Set a default value to satisfy the NOT NULL constraint
+      inputData.quick_config = 'Standard';
+    }
+    
+    const [accessPoint] = await db.insert(accessPoints).values(inputData).returning();
     return accessPoint;
   }
 
   async updateAccessPoint(id: number, updateAccessPoint: Partial<InsertAccessPoint>): Promise<AccessPoint | undefined> {
     const now = new Date();
-    // Remove quick_config if it exists in the input
-    const { quick_config, ...cleanedAccessPoint } = updateAccessPoint as any;
+    // Don't remove quick_config since it's required by the database
+    // Only update quick_config if it's provided and not empty
+    const inputData = { ...updateAccessPoint };
+    
+    if (inputData.quick_config === '') {
+      // If empty string is provided, use a default to satisfy NOT NULL constraint
+      inputData.quick_config = 'Standard';
+    }
+    
     const [accessPoint] = await db
       .update(accessPoints)
-      .set({ ...cleanedAccessPoint, updated_at: now })
+      .set({ ...inputData, updated_at: now })
       .where(eq(accessPoints.id, id))
       .returning();
     return accessPoint;
