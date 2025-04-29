@@ -939,8 +939,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const interiorAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Interior').length;
     const perimeterAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Perimeter').length;
     
-    const indoorCameras = cameras.filter(cam => cam.camera_type?.includes('Indoor')).length;
-    const outdoorCameras = cameras.filter(cam => cam.camera_type?.includes('Outdoor')).length;
+    const indoorCameras = cameras.filter(cam => cam.is_indoor === true).length;
+    const outdoorCameras = cameras.filter(cam => cam.is_indoor === false).length;
     
     // For elevators, count groups by location prefix (a bank is typically named like "Elevator Bank A")
     const elevatorLocations = new Set();
@@ -1038,8 +1038,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const interiorAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Interior').length;
       const perimeterAccessPoints = accessPoints.filter(ap => ap.interior_perimeter === 'Perimeter').length;
       
-      const indoorCameras = cameras.filter(cam => cam.camera_type?.includes('Indoor')).length;
-      const outdoorCameras = cameras.filter(cam => cam.camera_type?.includes('Outdoor')).length;
+      const indoorCameras = cameras.filter(cam => cam.is_indoor === true).length;
+      const outdoorCameras = cameras.filter(cam => cam.is_indoor === false).length;
       
       // For elevators, count groups by location prefix (a bank is typically named like "Elevator Bank A")
       const elevatorLocations = new Set();
@@ -1146,8 +1146,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate summary stats
       const interiorAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Interior").length;
       const perimeterAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Perimeter").length;
-      const indoorCameraCount = cameras.filter(cam => cam.camera_type?.includes("Indoor")).length;
-      const outdoorCameraCount = cameras.filter(cam => cam.camera_type?.includes("Outdoor")).length;
+      const indoorCameraCount = cameras.filter(cam => cam.is_indoor === true).length;
+      const outdoorCameraCount = cameras.filter(cam => cam.is_indoor === false).length;
       
       // Get unique elevator banks by counting distinct floor counts
       const elevatorBankCount = new Set(elevators.map(el => el.floor_count)).size;
@@ -1233,8 +1233,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate summary stats
       const interiorAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Interior").length;
       const perimeterAccessPointCount = accessPoints.filter(ap => ap.interior_perimeter === "Perimeter").length;
-      const indoorCameraCount = cameras.filter(cam => cam.camera_type?.includes("Indoor")).length;
-      const outdoorCameraCount = cameras.filter(cam => cam.camera_type?.includes("Outdoor")).length;
+      const indoorCameraCount = cameras.filter(cam => cam.is_indoor === true).length;
+      const outdoorCameraCount = cameras.filter(cam => cam.is_indoor === false).length;
       
       // Get unique elevator banks by counting distinct floor counts
       const elevatorBankCount = new Set(elevators.map(el => el.floor_count)).size;
