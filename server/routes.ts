@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
+import { proxyGeminiRequest } from './gemini-proxy';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2656,6 +2657,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: (error as Error).message
       });
     }
+  });
+
+  // Gemini AI API Proxy
+  app.post("/api/gemini/:model?/:endpoint?", isAuthenticated, proxyGeminiRequest);
+
+  // Check Gemini API configuration
+  app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
+    const isConfigured = !!process.env.GEMINI_API_KEY;
+    res.json({ 
+      configured: isConfigured,
+      model: isConfigured ? "gemini-2.0-flash" : null 
+    });
   });
 
   const httpServer = createServer(app);

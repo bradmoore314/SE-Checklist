@@ -18,6 +18,8 @@ export async function proxyGeminiRequest(req: Request, res: Response) {
     // Construct the URL for the Gemini API
     const url = `${GEMINI_BASE_URL}/models/${model}:${endpoint}?key=${GEMINI_API_KEY}`;
     
+    console.log(`Proxying request to Gemini API: ${model}:${endpoint}`);
+    
     // Forward the request to Gemini API
     const response = await fetch(url, {
       method: 'POST',
@@ -28,7 +30,7 @@ export async function proxyGeminiRequest(req: Request, res: Response) {
     });
     
     // Get the response data
-    const data = await response.json();
+    const data = await response.json() as Record<string, unknown>;
     
     // If the response is not OK, return an error
     if (!response.ok) {
@@ -39,13 +41,16 @@ export async function proxyGeminiRequest(req: Request, res: Response) {
       });
     }
     
+    console.log('Successfully received response from Gemini API');
+    
     // Return the response from Gemini
     return res.json(data);
   } catch (error) {
-    console.error('Error proxying request to Gemini:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error proxying request to Gemini:', errorMessage);
     return res.status(500).json({ 
       error: 'Failed to proxy request to Gemini API',
-      message: error.message
+      message: errorMessage
     });
   }
 }
