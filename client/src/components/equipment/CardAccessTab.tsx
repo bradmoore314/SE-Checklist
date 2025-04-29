@@ -506,7 +506,6 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             <thead>
               <tr className="bg-gradient-to-r from-red-500 to-rose-600">
                 <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCATION</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">QUICK CONFIG</th>
                 <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">READER TYPE</th>
                 <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK TYPE</th>
                 <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">MONITORING</th>
@@ -539,22 +538,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                       </Button>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center">
-                      <span>{ap.quick_config || "—"}</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-6 w-6 p-0 ml-1" 
-                        onClick={() => {
-                          setSelectedAccessPoint(ap);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </td>
+
                   <td className="px-4 py-3">
                     <div className="flex items-center">
                       <span>{ap.reader_type || "—"}</span>
