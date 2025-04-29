@@ -25,6 +25,7 @@ import QuoteReviewPage from "@/pages/quote-review-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
+import GeminiTestPage from "@/pages/gemini-test-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
@@ -71,6 +72,9 @@ function Router() {
       {/* Documentation and Feedback */}
       <ProtectedRoute path="/documentation" component={DocumentationPage} />
       <ProtectedRoute path="/feedback" component={FeedbackPage} />
+      
+      {/* AI Testing */}
+      <ProtectedRoute path="/gemini-test" component={GeminiTestPage} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
