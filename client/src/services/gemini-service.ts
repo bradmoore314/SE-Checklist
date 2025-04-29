@@ -1,200 +1,88 @@
-/**
- * Service for interacting with the Gemini AI API through our server proxy
- */
-
-export interface GeminiRequestContent {
-  parts: Array<{
-    text?: string;
-    image?: {
-      data: string;
-      mimeType: string;
-    };
-  }>;
-}
-
-export interface GeminiRequest {
-  contents: GeminiRequestContent[];
-  safetySettings?: Array<{
-    category: string;
-    threshold: string;
-  }>;
-  generationConfig?: {
-    temperature?: number;
-    topP?: number;
-    topK?: number;
-    maxOutputTokens?: number;
-    stopSequences?: string[];
-  };
-}
-
-export interface GeminiResponse {
-  candidates: Array<{
-    content: {
-      parts: Array<{
-        text: string;
-      }>;
-    };
-    finishReason: string;
-    safetyRatings: Array<{
-      category: string;
-      probability: string;
-    }>;
-  }>;
-  promptFeedback?: {
-    safetyRatings: Array<{
-      category: string;
-      probability: string;
-    }>;
-  };
-}
+import { apiRequest } from "@/lib/queryClient";
 
 /**
- * Check if the Gemini API is configured
- * @returns True if the API is configured, false otherwise
+ * Sends a test prompt to the Gemini API through our server proxy
+ * @param prompt The prompt to send to Gemini
+ * @returns The response text from Gemini
  */
-export async function isGeminiConfigured(): Promise<boolean> {
+export async function testGeminiApi(prompt: string): Promise<string> {
   try {
-    const response = await fetch('/api/gemini/status');
+    const response = await apiRequest("POST", "/api/gemini/test", { prompt });
+    
     if (!response.ok) {
-      return false;
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to get response from Gemini API");
     }
     
     const data = await response.json();
-    return data.configured === true;
+    return data.content;
   } catch (error) {
-    console.error('Error checking Gemini API status:', error);
-    return false;
-  }
-}
-
-/**
- * Generate content using the Gemini API
- * @param prompt The text prompt to send to Gemini
- * @param options Additional options for the request
- * @returns The generated response as a string
- */
-export async function generateContent(
-  prompt: string,
-  options: {
-    temperature?: number;
-    maxOutputTokens?: number;
-  } = {}
-): Promise<string> {
-  try {
-    // First check if API is configured
-    const isConfigured = await isGeminiConfigured();
-    if (!isConfigured) {
-      throw new Error('Gemini API is not configured');
-    }
-    
-    // Use our server proxy instead of calling the API directly
-    const response = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: options.temperature || 0.7,
-          maxOutputTokens: options.maxOutputTokens || 1024,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(errorData)}`);
-    }
-
-    const data: GeminiResponse = await response.json();
-    
-    if (!data.candidates || data.candidates.length === 0) {
-      throw new Error('No response generated from Gemini AI');
-    }
-    
-    return data.candidates[0].content.parts[0].text;
-  } catch (error) {
-    console.error('Error generating content with Gemini:', error);
+    console.error("Error in Gemini API request:", error);
     throw error;
   }
 }
 
 /**
- * Generate content with an image using the Gemini API
- * @param prompt The text prompt
- * @param imageBase64 The base64 encoded image data
- * @param mimeType The mime type of the image
- * @param options Additional options
- * @returns The generated response
+ * Generates an AI analysis of the site walk data for a specific project
+ * @param projectId The ID of the project to analyze
+ * @returns The analysis object with summary, technical details, recommendations, and risks
  */
-export async function generateContentWithImage(
-  prompt: string,
-  imageBase64: string,
-  mimeType: string = 'image/jpeg',
-  options: {
-    temperature?: number;
-    maxOutputTokens?: number;
-  } = {}
-): Promise<string> {
+export async function generateSiteWalkAnalysis(projectId: number) {
   try {
-    // First check if API is configured
-    const isConfigured = await isGeminiConfigured();
-    if (!isConfigured) {
-      throw new Error('Gemini API is not configured');
-    }
+    const response = await apiRequest("POST", `/api/projects/${projectId}/ai-analysis`);
     
-    // Use our server proxy
-    const response = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-              {
-                image: {
-                  data: imageBase64,
-                  mimeType,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: options.temperature || 0.7,
-          maxOutputTokens: options.maxOutputTokens || 1024,
-        },
-      }),
-    });
-
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(errorData)}`);
-    }
-
-    const data: GeminiResponse = await response.json();
-    
-    if (!data.candidates || data.candidates.length === 0) {
-      throw new Error('No response generated from Gemini AI');
+      throw new Error(errorData.message || "Failed to generate site walk analysis");
     }
     
-    return data.candidates[0].content.parts[0].text;
+    return await response.json();
   } catch (error) {
-    console.error('Error generating content with image using Gemini:', error);
+    console.error("Error generating AI analysis:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates a quote review meeting agenda for a specific project
+ * @param projectId The ID of the project
+ * @returns The meeting agenda text
+ */
+export async function generateQuoteReviewAgenda(projectId: number) {
+  try {
+    const response = await apiRequest("POST", `/api/projects/${projectId}/quote-review-agenda`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to generate quote review agenda");
+    }
+    
+    const data = await response.json();
+    return data.agenda;
+  } catch (error) {
+    console.error("Error generating quote review agenda:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates a turnover call meeting agenda for a specific project
+ * @param projectId The ID of the project
+ * @returns The meeting agenda text
+ */
+export async function generateTurnoverCallAgenda(projectId: number) {
+  try {
+    const response = await apiRequest("POST", `/api/projects/${projectId}/turnover-call-agenda`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to generate turnover call agenda");
+    }
+    
+    const data = await response.json();
+    return data.agenda;
+  } catch (error) {
+    console.error("Error generating turnover call agenda:", error);
     throw error;
   }
 }

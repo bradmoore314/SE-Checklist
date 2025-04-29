@@ -1,142 +1,101 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
-import { generateContent, isGeminiConfigured } from '@/services/gemini-service';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Send } from "lucide-react";
+import { testGeminiApi } from "@/services/gemini-service";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
-export function GeminiTest() {
-  const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+export default function GeminiTest() {
+  const [prompt, setPrompt] = useState("");
+  const [response, setResponse] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [apiStatus, setApiStatus] = useState<'checking' | 'configured' | 'not-configured'>('checking');
-
-  // Check if the Gemini API is configured
-  React.useEffect(() => {
-    async function checkApiStatus() {
-      try {
-        setApiStatus('checking');
-        const configured = await isGeminiConfigured();
-        setApiStatus(configured ? 'configured' : 'not-configured');
-      } catch (err) {
-        console.error('Error checking Gemini API status:', err);
-        setApiStatus('not-configured');
-      }
-    }
-    
-    checkApiStatus();
-  }, []);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!prompt.trim()) {
-      setError('Please enter a prompt');
+      toast({
+        title: "Empty prompt",
+        description: "Please enter a prompt to get a response from Gemini AI.",
+        variant: "destructive",
+      });
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
-    setResponse('');
-
+    
     try {
-      const result = await generateContent(prompt);
+      const result = await testGeminiApi(prompt);
       setResponse(result);
     } catch (err) {
-      console.error('Error generating content:', err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      console.error("Error testing Gemini API:", err);
+      setError(err instanceof Error ? err.message : "Failed to get response from Gemini AI.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle>Gemini AI Test</CardTitle>
-        <CardDescription>
-          Test the Gemini AI integration by sending a prompt and getting a response.
-        </CardDescription>
-        
-        {apiStatus === 'checking' && (
-          <Alert className="bg-yellow-50 text-yellow-800 border-yellow-200">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            <AlertTitle>Checking Gemini API status...</AlertTitle>
-          </Alert>
-        )}
-        
-        {apiStatus === 'configured' && (
-          <Alert className="bg-green-50 text-green-800 border-green-200">
-            <CheckCircle className="h-4 w-4 mr-2" />
-            <AlertTitle>Gemini API is properly configured</AlertTitle>
-            <AlertDescription>You can now test the AI integration below.</AlertDescription>
-          </Alert>
-        )}
-        
-        {apiStatus === 'not-configured' && (
-          <Alert className="bg-red-50 text-red-800 border-red-200">
-            <AlertCircle className="h-4 w-4 mr-2" />
-            <AlertTitle>Gemini API is not configured</AlertTitle>
-            <AlertDescription>
-              The GEMINI_API_KEY environment variable may be missing or invalid.
-            </AlertDescription>
-          </Alert>
-        )}
-      </CardHeader>
-      
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 mb-1">
-                Your prompt
-              </label>
-              <Textarea
-                id="prompt"
-                placeholder="Enter your prompt here..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-32"
-                disabled={isLoading || apiStatus !== 'configured'}
-              />
-            </div>
-            
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            
-            {response && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Response
-                </label>
-                <div className="bg-slate-50 p-4 rounded-md border border-slate-200 whitespace-pre-wrap">
-                  {response}
-                </div>
-              </div>
-            )}
-          </div>
-        </form>
-      </CardContent>
-      
-      <CardFooter className="flex justify-end">
-        <Button onClick={handleSubmit} disabled={isLoading || apiStatus !== 'configured'}>
-          {isLoading ? (
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Enter your prompt here... (e.g., 'Tell me about security systems')"
+            className="min-h-[120px] resize-none"
+            disabled={loading}
+          />
+        </div>
+        <Button 
+          type="submit" 
+          disabled={loading || !prompt.trim()} 
+          className="w-full flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 border-0 text-white"
+        >
+          {loading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              Generating...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Processing...
             </>
           ) : (
-            'Generate Response'
+            <>
+              <Send className="h-4 w-4" />
+              Send to Gemini AI
+            </>
           )}
         </Button>
-      </CardFooter>
-    </Card>
+      </form>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {response && !error && (
+        <>
+          <Separator />
+          <Card className="border-blue-100 bg-blue-50">
+            <CardContent className="pt-6">
+              <h3 className="text-lg font-semibold mb-2 text-blue-700">Gemini AI Response:</h3>
+              <div className="whitespace-pre-wrap prose max-w-none">
+                {response}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      <div className="text-sm text-gray-500 mt-4">
+        <h4 className="font-medium mb-1">About this test:</h4>
+        <p>This page helps test the integration with Google's Gemini AI API. It sends your prompt directly to the Gemini model and displays the raw response.</p>
+      </div>
+    </div>
   );
 }
