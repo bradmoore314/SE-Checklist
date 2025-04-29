@@ -119,7 +119,7 @@ export default function AddAccessPointModal({
     defaultValues: {
       project_id: projectId,
       location: "",
-      quick_config: "", // Legacy field required for database compatibility
+      quick_config: "Standard", // Legacy field required for database compatibility - set a valid default
       reader_type: "KR-100", // Set default reader type
       lock_type: "Standard", // Set default lock type
       monitoring_type: "Prop Monitoring", // Set default monitoring type
