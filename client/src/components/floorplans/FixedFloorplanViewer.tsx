@@ -176,27 +176,48 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // Get marker number (index + 1) for a specific marker type
   const getMarkerNumber = (markerId: number): number => {
-    const marker = (markers as FloorplanMarker[]).find(m => m.id === markerId);
-    if (!marker) return 0;
-    
-    // For notes, use the label text directly
-    if (marker.marker_type === 'note') {
-      return 0; // Notes don't get numbers
+    try {
+      // Safety check - make sure markers array exists
+      if (!markers || !Array.isArray(markers) || markers.length === 0) {
+        console.log("No markers available to determine number");
+        return 1; // Default to 1 if no markers
+      }
+      
+      const marker = markers.find(m => m.id === markerId);
+      if (!marker) {
+        console.log(`Marker with ID ${markerId} not found, defaulting to 1`);
+        return 1;
+      }
+      
+      // For notes, use the label text directly
+      if (marker.marker_type === 'note') {
+        return 0; // Notes don't get numbers
+      }
+      
+      // Get all markers of the same type
+      const typeMarkers = markers.filter(m => m.marker_type === marker.marker_type);
+      
+      if (typeMarkers.length === 0) {
+        console.log(`No markers of type ${marker.marker_type} found, defaulting to 1`);
+        return 1;
+      }
+      
+      // Sort by creation date with defensive programming against missing dates
+      typeMarkers.sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return dateA - dateB;
+      });
+      
+      // Find index of this marker and use its position for the number
+      const index = typeMarkers.findIndex(m => m.id === markerId);
+      
+      // Return 1-based index with safety check
+      return index >= 0 ? index + 1 : 1;
+    } catch (error) {
+      console.error("Error in getMarkerNumber:", error);
+      return 1; // Default to 1 on error
     }
-    
-    // Get all markers of the same type
-    const typeMarkers = (markers as FloorplanMarker[]).filter(m => m.marker_type === marker.marker_type);
-    
-    // Sort by creation date
-    typeMarkers.sort((a, b) => {
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    });
-    
-    // Find index of this marker and use its position for the number
-    const index = typeMarkers.findIndex(m => m.id === markerId);
-    
-    // Return 1-based index
-    return index >= 0 ? index + 1 : 1;
   };
   
   // Zoom control functions with safety limits to prevent PDF.js errors
@@ -327,30 +348,87 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
   
   // Force the markers to refresh with sequential numbers when markers list changes
   useEffect(() => {
-    if (!markers || markers.length === 0) return;
+    // Safety check for markers
+    if (!markers || !Array.isArray(markers) || markers.length === 0) {
+      console.log("No markers available for numbering");
+      return;
+    }
     
-    // Wait for DOM to update with new markers
+    // Wait for DOM to update with new markers, using a longer delay to ensure DOM is ready
     const timer = setTimeout(() => {
-      const markerElements = document.querySelectorAll('[id^="marker-"]');
-      
-      markerElements.forEach((element) => {
-        const markerId = parseInt(element.id.replace('marker-', ''));
-        const marker = markers.find(m => m.id === markerId);
+      try {
+        // Get all marker elements from the DOM
+        const markerElements = document.querySelectorAll('[id^="marker-"]');
+        console.log(`Found ${markerElements.length} marker elements in DOM`);
         
-        if (marker && marker.marker_type !== 'note') {
-          // Find position in same-type markers (sorted by creation date)
-          const sameTypeMarkers = markers
-            .filter(m => m.marker_type === marker.marker_type)
-            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-          
-          const position = sameTypeMarkers.findIndex(m => m.id === markerId);
-          
-          if (position >= 0 && element.textContent !== (position + 1).toString()) {
-            element.textContent = (position + 1).toString();
-          }
+        if (markerElements.length === 0) {
+          console.log("No marker elements found in DOM yet, may need another render cycle");
+          return;
         }
-      });
-    }, 100);
+        
+        // Group markers by type for more efficient processing
+        const markersByType = markers.reduce((groups, marker) => {
+          if (!groups[marker.marker_type]) {
+            groups[marker.marker_type] = [];
+          }
+          groups[marker.marker_type].push(marker);
+          return groups;
+        }, {} as Record<string, FloorplanMarker[]>);
+        
+        // Pre-sort each type group by creation date
+        Object.keys(markersByType).forEach(type => {
+          markersByType[type].sort((a, b) => {
+            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return dateA - dateB;
+          });
+        });
+        
+        // Update each marker element
+        markerElements.forEach((element) => {
+          try {
+            // Extract the ID from the element
+            const idPart = element.id.replace('marker-', '');
+            const markerId = parseInt(idPart);
+            
+            if (isNaN(markerId)) {
+              console.warn(`Invalid marker ID format: ${element.id}`);
+              return;
+            }
+            
+            // Find the marker data
+            const marker = markers.find(m => m.id === markerId);
+            if (!marker) {
+              console.warn(`Marker with ID ${markerId} not found in data`);
+              return;
+            }
+            
+            // Skip notes, they don't get numbers
+            if (marker.marker_type === 'note') {
+              return;
+            }
+            
+            // Get the type group this marker belongs to
+            const typeGroup = markersByType[marker.marker_type] || [];
+            
+            // Find position in the pre-sorted group
+            const position = typeGroup.findIndex(m => m.id === markerId);
+            
+            // Only update if necessary and if we have a valid position
+            if (position >= 0) {
+              const newNumber = (position + 1).toString();
+              if (element.textContent !== newNumber) {
+                element.textContent = newNumber;
+              }
+            }
+          } catch (elemError) {
+            console.error("Error processing marker element:", elemError);
+          }
+        });
+      } catch (error) {
+        console.error("Error in marker numbering effect:", error);
+      }
+    }, 150); // Increased delay to ensure DOM is ready
     
     return () => clearTimeout(timer);
   }, [markers]);
@@ -1779,7 +1857,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                               marker.label
                             )
                           ) : (
-                            getMarkerNumber(marker.id)
+                            // Direct string conversion to ensure we always render a string not a number
+                            getMarkerNumber(marker.id).toString()
                           )}
                           
                           {/* Tooltip with marker context menu - only visible on hover */}
