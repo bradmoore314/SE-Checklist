@@ -149,6 +149,7 @@ export const accessPoints = pgTable("access_points", {
   id: serial("id").primaryKey(),
   project_id: integer("project_id").notNull(),
   location: text("location").notNull(),
+  quick_config: text("quick_config").notNull(), // NOTE: Legacy field - needed for database compatibility
   reader_type: text("reader_type").notNull(),
   lock_type: text("lock_type").notNull(),
   monitoring_type: text("monitoring_type").notNull(),
