@@ -258,6 +258,45 @@ export default function ProjectConfiguration({
         <h3 className="text-lg font-medium text-gray-800">Scope Info</h3>
       </CardHeader>
       <CardContent className="p-6">
+        {/* Site Conditions / Project Planning - Moved to top */}
+        <div className="mb-6">
+          <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
+            <span className="mr-2">🏗️</span>
+            Site Conditions / Project Planning
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {categories.site_conditions.map((option) => {
+              const emoji = getOptionEmoji(option);
+              return (
+                <div className="flex items-center" key={option}>
+                  <Toggle
+                    pressed={configOptions[option as keyof typeof configOptions]}
+                    onPressedChange={(pressed) => 
+                      handleConfigChange(option as keyof typeof configOptions, pressed)
+                    }
+                    variant="amber"
+                    className="w-full justify-start text-sm"
+                  >
+                    <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help">
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs p-3 text-sm">
+                          {tooltips[option]}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Toggle>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
         {/* Building Count */}
         <div className="mb-6">
           <Label htmlFor="building_count" className="text-sm font-medium text-gray-700 mb-2 block flex items-center">
@@ -317,7 +356,7 @@ export default function ProjectConfiguration({
         </div>
 
         {/* Access Control/Identity Management */}
-        <div className="mb-6">
+        <div>
           <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
             <span className="mr-2">🔐</span>
             Access Control/Identity Management
@@ -333,45 +372,6 @@ export default function ProjectConfiguration({
                       handleConfigChange(option as keyof typeof configOptions, pressed)
                     }
                     variant="blue"
-                    className="w-full justify-start text-sm"
-                  >
-                    <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help">
-                            <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs p-3 text-sm">
-                          {tooltips[option]}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </Toggle>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Site Conditions / Project Planning */}
-        <div>
-          <h4 className="text-md font-medium text-red-700 mb-3 flex items-center">
-            <span className="mr-2">🏗️</span>
-            Site Conditions / Project Planning
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {categories.site_conditions.map((option) => {
-              const emoji = getOptionEmoji(option);
-              return (
-                <div className="flex items-center" key={option}>
-                  <Toggle
-                    pressed={configOptions[option as keyof typeof configOptions]}
-                    onPressedChange={(pressed) => 
-                      handleConfigChange(option as keyof typeof configOptions, pressed)
-                    }
-                    variant="amber"
                     className="w-full justify-start text-sm"
                   >
                     <span className="mr-2">{emoji} {formatOptionName(option)}?</span>
