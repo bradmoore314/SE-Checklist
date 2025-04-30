@@ -41,23 +41,6 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <div>
-          <Link href="/">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-              isActive("/") 
-                ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-gray-100"
-            } cursor-pointer`}
-               style={isActive("/") ? { 
-                 backgroundColor: 'var(--red-accent)', 
-                 borderColor: 'var(--red-accent)' 
-               } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/") ? "text-white" : "text-gray-600"}`}>dashboard</span>
-              {!collapsed && <span className={isActive("/") ? "text-white" : "text-gray-800 font-medium"}>Dashboard</span>}
-            </div>
-          </Link>
-        </div>
-        
-        <div>
           <Link href="/projects">
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/projects") 
@@ -70,6 +53,23 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                } : {}}>
               <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/projects") ? "text-white" : "text-gray-600"}`}>folder</span>
               {!collapsed && <span className={isActive("/projects") ? "text-white" : "text-gray-800 font-medium"}>My Site Walks</span>}
+            </div>
+          </Link>
+        </div>
+        
+        <div>
+          <Link href="/">
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
+              isActive("/") 
+                ? "border-r-4 nav-item active" 
+                : "nav-item hover:bg-gray-100"
+            } cursor-pointer`}
+               style={isActive("/") ? { 
+                 backgroundColor: 'var(--red-accent)', 
+                 borderColor: 'var(--red-accent)' 
+               } : {}}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/") ? "text-white" : "text-gray-600"}`}>dashboard</span>
+              {!collapsed && <span className={isActive("/") ? "text-white" : "text-gray-800 font-medium"}>Dashboard</span>}
             </div>
           </Link>
         </div>
