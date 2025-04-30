@@ -5,7 +5,7 @@ import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { proxyTestGemini } from './gemini-proxy';
 import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
-import { geocodeAddress, getWeatherData, getStaticMapUrl, getMapEmbedUrl } from './services/location-services';
+import { geocodeAddress, getWeatherData, getStaticMapUrl, getMapEmbedUrl, parseCoordinatesFromAddress } from './services/location-services';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2678,11 +2678,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      // First try the Google Maps Geocoding API
       const result = await geocodeAddress(address);
-      if (!result) {
-        return res.status(404).json({ message: "Unable to geocode address" });
+      
+      if (result) {
+        return res.json(result);
       }
-      res.json(result);
+      
+      // If geocoding fails, try our fallback method
+      console.log("Geocoding API failed, using fallback coordinate parser");
+      const fallbackCoords = parseCoordinatesFromAddress(address);
+      
+      if (fallbackCoords) {
+        return res.json({
+          lat: fallbackCoords.lat,
+          lng: fallbackCoords.lng,
+          formattedAddress: address
+        });
+      }
+      
+      return res.status(404).json({ message: "Unable to geocode address" });
     } catch (error) {
       res.status(500).json({ 
         message: "Failed to geocode address",

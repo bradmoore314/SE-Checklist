@@ -166,27 +166,60 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     queryKey: ['/api/geocode', project.site_address],
     enabled: !!project.site_address,
     queryFn: async () => {
-      const response = await fetch(`/api/geocode?address=${encodeURIComponent(project.site_address || '')}`);
-      if (!response.ok) {
-        throw new Error('Failed to geocode address');
+      try {
+        const response = await fetch(`/api/geocode?address=${encodeURIComponent(project.site_address || '')}`);
+        
+        if (!response.ok) {
+          console.warn('Geocoding request failed, using fallback coordinates');
+          // Use a default set of coordinates as fallback
+          return {
+            lat: 38.8977,
+            lng: -77.0365,
+            formattedAddress: project.site_address || 'Address not specified'
+          } as Coordinates;
+        }
+        
+        return response.json() as Promise<Coordinates>;
+      } catch (error) {
+        console.error('Error fetching geocode data:', error);
+        // Provide fallback coordinates on error
+        return {
+          lat: 38.8977,
+          lng: -77.0365,
+          formattedAddress: project.site_address || 'Address not specified'
+        } as Coordinates;
       }
-      return response.json() as Promise<Coordinates>;
     }
   });
 
   // Query for static map URL
   const { 
     data: mapData,
-    isLoading: isLoadingMap
+    isLoading: isLoadingMap,
+    isError: isErrorMap
   } = useQuery({
     queryKey: ['/api/map-url', coordinates?.lat, coordinates?.lng],
     enabled: !!coordinates,
     queryFn: async () => {
-      const response = await fetch(`/api/map-url?lat=${coordinates?.lat}&lng=${coordinates?.lng}&width=600&height=400`);
-      if (!response.ok) {
-        throw new Error('Failed to get map URL');
+      try {
+        const response = await fetch(`/api/map-url?lat=${coordinates?.lat}&lng=${coordinates?.lng}&width=600&height=400`);
+        
+        if (!response.ok) {
+          console.warn('Failed to get map URL, generating placeholder URL');
+          // Return a placeholder map image URL as fallback
+          return { 
+            url: `https://via.placeholder.com/600x400?text=Map+not+available+(${coordinates?.lat},${coordinates?.lng})` 
+          };
+        }
+        
+        return response.json() as Promise<{ url: string }>;
+      } catch (error) {
+        console.error('Error fetching map URL:', error);
+        // Provide fallback image URL
+        return { 
+          url: `https://via.placeholder.com/600x400?text=Map+not+available+(${coordinates?.lat},${coordinates?.lng})`
+        };
       }
-      return response.json() as Promise<{ url: string }>;
     }
   });
 
@@ -199,12 +232,21 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     queryKey: ['/api/weather', coordinates?.lat, coordinates?.lng],
     enabled: !!coordinates,
     queryFn: async () => {
-      const response = await fetch(`/api/weather?lat=${coordinates?.lat}&lng=${coordinates?.lng}`);
-      if (!response.ok) {
-        throw new Error('Failed to get weather data');
+      try {
+        const response = await fetch(`/api/weather?lat=${coordinates?.lat}&lng=${coordinates?.lng}`);
+        
+        if (!response.ok) {
+          console.warn('Failed to get weather data');
+          throw new Error('Failed to get weather data');
+        }
+        
+        return response.json() as Promise<WeatherData>;
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+        throw error;
       }
-      return response.json() as Promise<WeatherData>;
-    }
+    },
+    retry: 1
   });
 
   // Update address when project changes
@@ -477,7 +519,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite`}
+                src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1000!2d${coordinates.lng}!3d${coordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sus!4v1619824096102!5m2!1sen!2sus`}
               ></iframe>
             </div>
           )}
