@@ -5,6 +5,7 @@ import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { proxyTestGemini } from './gemini-proxy';
 import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
+import { geocodeAddress, getWeatherData, getStaticMapUrl, getMapEmbedUrl } from './services/location-services';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2658,7 +2659,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Gemini AI API Proxy
   // Test endpoint for Gemini API
-app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
+  app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
 
   // Check Gemini API configuration
   app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
@@ -2667,6 +2668,90 @@ app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
       configured: isConfigured,
       model: isConfigured ? "gemini-2.0-flash" : null 
     });
+  });
+
+  // Location-based endpoints
+  app.get("/api/geocode", isAuthenticated, async (req: Request, res: Response) => {
+    const address = req.query.address as string;
+    if (!address) {
+      return res.status(400).json({ message: "Address is required" });
+    }
+
+    try {
+      const result = await geocodeAddress(address);
+      if (!result) {
+        return res.status(404).json({ message: "Unable to geocode address" });
+      }
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to geocode address",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.get("/api/weather", isAuthenticated, async (req: Request, res: Response) => {
+    const lat = parseFloat(req.query.lat as string);
+    const lng = parseFloat(req.query.lng as string);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ message: "Valid lat and lng coordinates are required" });
+    }
+
+    try {
+      const weatherData = await getWeatherData(lat, lng);
+      if (!weatherData) {
+        return res.status(404).json({ message: "Unable to fetch weather data" });
+      }
+      res.json(weatherData);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to fetch weather data",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.get("/api/map-url", isAuthenticated, (req: Request, res: Response) => {
+    const lat = parseFloat(req.query.lat as string);
+    const lng = parseFloat(req.query.lng as string);
+    const zoom = parseInt(req.query.zoom as string) || 18;
+    const width = parseInt(req.query.width as string) || 600;
+    const height = parseInt(req.query.height as string) || 400;
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ message: "Valid lat and lng coordinates are required" });
+    }
+
+    try {
+      const mapUrl = getStaticMapUrl(lat, lng, zoom, width, height);
+      res.json({ url: mapUrl });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to generate map URL",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  app.get("/api/map-embed-url", isAuthenticated, (req: Request, res: Response) => {
+    const lat = parseFloat(req.query.lat as string);
+    const lng = parseFloat(req.query.lng as string);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ message: "Valid lat and lng coordinates are required" });
+    }
+
+    try {
+      const embedUrl = getMapEmbedUrl(lat, lng);
+      res.json({ url: embedUrl });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to generate map embed URL",
+        error: (error as Error).message
+      });
+    }
   });
 
   const httpServer = createServer(app);
