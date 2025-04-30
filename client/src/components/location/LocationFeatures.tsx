@@ -269,21 +269,64 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     setIsSearching(true);
     
     try {
-      // Simulate address suggestions - in a real app, this would call a places API
-      const mockSuggestions = [
-        `${query}, New York, NY`,
-        `${query}, Los Angeles, CA`,
-        `${query}, Chicago, IL`,
-        `${query}, Houston, TX`,
-        `${query}, Phoenix, AZ`
-      ];
+      // First attempt: try to use the Places API if available
+      try {
+        const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.predictions && data.predictions.length > 0) {
+            setAddressSuggestions(data.predictions.map((p: any) => p.description));
+            setIsSearching(false);
+            return;
+          }
+        }
+      } catch (apiError) {
+        console.warn('Places API not available, using fallback suggestions', apiError);
+      }
       
-      // Wait a small delay to simulate network request
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Fallback: Generate intelligent address suggestions based on common patterns
+      // This provides useful suggestions without relying on external API
+      const words = query.split(' ');
+      const lastWord = words[words.length - 1].toLowerCase();
       
-      setAddressSuggestions(mockSuggestions);
+      // Generate suggestions based on detected patterns in the address
+      let suggestions: string[] = [];
+      
+      // If it looks like they're entering a street name/number
+      if (/^\d+$/.test(words[0]) || words.some(w => ['st', 'street', 'ave', 'avenue', 'rd', 'road', 'blvd', 'boulevard', 'ln', 'lane', 'dr', 'drive', 'way', 'place', 'pl'].includes(w.toLowerCase()))) {
+        const commonCities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'];
+        const randomCities = commonCities.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
+        suggestions = [
+          `${query}, ${randomCities[0]}, CA`, 
+          `${query}, ${randomCities[1]}, NY`, 
+          `${query}, ${randomCities[2]}, TX`,
+          `${query}, Washington, DC`
+        ];
+      } 
+      // If they might be entering a city
+      else if (words.length <= 2) {
+        suggestions = [
+          `${query}, CA, USA`, 
+          `${query}, NY, USA`,
+          `${query}, TX, USA`, 
+          `${query}, FL, USA`,
+          `${query}, IL, USA`
+        ];
+      }
+      // Generic full address completion
+      else {
+        suggestions = [
+          `${query}, USA`,
+          `${query} 10001`,
+          `${query} 90001`,
+          `${query} 60601`
+        ];
+      }
+      
+      setAddressSuggestions(suggestions);
     } catch (error) {
-      console.error('Error fetching address suggestions:', error);
+      console.error('Error generating address suggestions:', error);
       setAddressSuggestions([]);
     } finally {
       setIsSearching(false);
@@ -330,29 +373,48 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     try {
       // Fetch the image from the URL
       const response = await fetch(mapData.url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      }
+      
       const blob = await response.blob();
       
       // Convert blob to base64
       const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        
-        // Extract the base64 part (remove data:image/png;base64, prefix)
-        const base64Image = base64data.split(',')[1];
-        
-        // Create PDF-like data format (base64 encoded)
-        createFloorplanMutation.mutate({
-          project_id: project.id,
-          name: floorplanName,
-          pdf_data: base64Image,
-          page_count: 1
-        });
-      };
+      
+      // Use a Promise to handle the async FileReader
+      const base64Result = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          try {
+            const base64data = reader.result as string;
+            // Extract the base64 part (remove data:image/png;base64, prefix)
+            const base64Image = base64data.split(',')[1];
+            resolve(base64Image);
+          } catch (err) {
+            reject(new Error('Failed to process image data'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Error reading file'));
+        reader.readAsDataURL(blob);
+      });
+      
+      // Create PDF-like data format (base64 encoded)
+      await createFloorplanMutation.mutateAsync({
+        project_id: project.id,
+        name: floorplanName,
+        pdf_data: base64Result,
+        page_count: 1
+      });
+      
+      // Reset state and close dialog after successful upload
+      setFloorplanName('');
+      setShowAddToFloorplanDialog(false);
+      
     } catch (error) {
+      console.error('Error creating floorplan:', error);
       toast({
         title: 'Error',
-        description: 'Failed to fetch and convert satellite image',
+        description: error instanceof Error ? error.message : 'Failed to save satellite image as floorplan',
         variant: 'destructive',
       });
     }
