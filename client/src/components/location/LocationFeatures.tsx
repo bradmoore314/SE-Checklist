@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,10 +18,18 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Project } from '@shared/schema';
-import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle } from 'lucide-react';
+import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle, Check } from 'lucide-react';
 
 interface LocationFeaturesProps {
   project: Project;
@@ -88,6 +96,8 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
   const [showMapFullscreen, setShowMapFullscreen] = useState(false);
   const [showAddToFloorplanDialog, setShowAddToFloorplanDialog] = useState(false);
   const [floorplanName, setFloorplanName] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
   // Mutation for updating the project
@@ -249,11 +259,60 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     retry: 1
   });
 
+  // Function to search for address suggestions
+  const searchAddresses = async (query: string) => {
+    if (!query || query.length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    
+    try {
+      // Simulate address suggestions - in a real app, this would call a places API
+      const mockSuggestions = [
+        `${query}, New York, NY`,
+        `${query}, Los Angeles, CA`,
+        `${query}, Chicago, IL`,
+        `${query}, Houston, TX`,
+        `${query}, Phoenix, AZ`
+      ];
+      
+      // Wait a small delay to simulate network request
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setAddressSuggestions(mockSuggestions);
+    } catch (error) {
+      console.error('Error fetching address suggestions:', error);
+      setAddressSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+  
+  // Debounced address search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (pendingAddress) {
+        searchAddresses(pendingAddress);
+      }
+    }, 500);
+    
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [pendingAddress]);
+
   // Update address when project changes
   useEffect(() => {
     setAddress(project.site_address || '');
     setPendingAddress(project.site_address || '');
   }, [project]);
+
+  // Handle address selection
+  const handleAddressSelect = (selectedAddress: string) => {
+    setPendingAddress(selectedAddress);
+  };
 
   // Handle address update
   const handleAddressUpdate = () => {
@@ -474,13 +533,42 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               <label htmlFor="address" className="text-sm font-medium text-gray-700">
                 Site Address
               </label>
-              <Input
-                id="address"
-                placeholder="Enter complete address"
-                value={pendingAddress}
-                onChange={(e) => setPendingAddress(e.target.value)}
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  id="address"
+                  placeholder="Start typing an address..."
+                  value={pendingAddress}
+                  onChange={(e) => setPendingAddress(e.target.value)}
+                  className="w-full"
+                />
+                {isSearching && (
+                  <div className="absolute right-2 top-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                  </div>
+                )}
+              </div>
+              
+              {addressSuggestions.length > 0 && (
+                <Command className="border rounded-md shadow-md mt-1">
+                  <CommandList>
+                    <CommandGroup heading="Suggestions">
+                      {addressSuggestions.map((suggestion, index) => (
+                        <CommandItem 
+                          key={index} 
+                          onSelect={() => handleAddressSelect(suggestion)}
+                          className="flex items-center cursor-pointer hover:bg-gray-100 p-2"
+                        >
+                          <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                          <span>{suggestion}</span>
+                          {pendingAddress === suggestion && (
+                            <Check className="h-4 w-4 ml-auto text-green-500" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              )}
             </div>
           </div>
           
