@@ -269,64 +269,24 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     setIsSearching(true);
     
     try {
-      // First attempt: try to use the Places API if available
-      try {
-        const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.predictions && data.predictions.length > 0) {
-            setAddressSuggestions(data.predictions.map((p: any) => p.description));
-            setIsSearching(false);
-            return;
-          }
-        }
-      } catch (apiError) {
-        console.warn('Places API not available, using fallback suggestions', apiError);
-      }
-      
-      // Fallback: Generate intelligent address suggestions based on common patterns
-      // This provides useful suggestions without relying on external API
-      const words = query.split(' ');
-      const lastWord = words[words.length - 1].toLowerCase();
-      
-      // Generate suggestions based on detected patterns in the address
-      let suggestions: string[] = [];
-      
-      // If it looks like they're entering a street name/number
-      if (/^\d+$/.test(words[0]) || words.some(w => ['st', 'street', 'ave', 'avenue', 'rd', 'road', 'blvd', 'boulevard', 'ln', 'lane', 'dr', 'drive', 'way', 'place', 'pl'].includes(w.toLowerCase()))) {
-        const commonCities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'];
-        const randomCities = commonCities.sort(() => 0.5 - Math.random()).slice(0, 3);
+      // Call our server's Places API endpoint, which handles fallbacks internally
+      const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
         
-        suggestions = [
-          `${query}, ${randomCities[0]}, CA`, 
-          `${query}, ${randomCities[1]}, NY`, 
-          `${query}, ${randomCities[2]}, TX`,
-          `${query}, Washington, DC`
-        ];
-      } 
-      // If they might be entering a city
-      else if (words.length <= 2) {
-        suggestions = [
-          `${query}, CA, USA`, 
-          `${query}, NY, USA`,
-          `${query}, TX, USA`, 
-          `${query}, FL, USA`,
-          `${query}, IL, USA`
-        ];
+        if (data.predictions && data.predictions.length > 0) {
+          // Extract address descriptions from predictions
+          const suggestions = data.predictions.map((p: any) => p.description);
+          setAddressSuggestions(suggestions);
+        } else {
+          setAddressSuggestions([]);
+        }
+      } else {
+        console.warn('Place autocomplete API request failed:', response.status);
+        setAddressSuggestions([]);
       }
-      // Generic full address completion
-      else {
-        suggestions = [
-          `${query}, USA`,
-          `${query} 10001`,
-          `${query} 90001`,
-          `${query} 60601`
-        ];
-      }
-      
-      setAddressSuggestions(suggestions);
     } catch (error) {
-      console.error('Error generating address suggestions:', error);
+      console.error('Error fetching address suggestions:', error);
       setAddressSuggestions([]);
     } finally {
       setIsSearching(false);

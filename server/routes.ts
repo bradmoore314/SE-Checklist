@@ -2734,6 +2734,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  app.get("/api/places/autocomplete", isAuthenticated, async (req: Request, res: Response) => {
+    const input = req.query.input as string;
+    
+    if (!input || input.length < 3) {
+      return res.json({ predictions: [] });
+    }
+
+    try {
+      const suggestions = await getPlaceAutocomplete(input);
+      res.json(suggestions);
+    } catch (error) {
+      console.error("Error with place autocomplete:", error);
+      // Even in case of error, return a valid response with fallback suggestions
+      res.json({ 
+        status: 'FALLBACK_ERROR', 
+        predictions: [] 
+      });
+    }
+  });
 
   app.get("/api/map-url", isAuthenticated, (req: Request, res: Response) => {
     const lat = parseFloat(req.query.lat as string);
