@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { ProjectCollaborators } from "@/components/ProjectCollaborators";
 import { CollaborationProvider } from "@/contexts/CollaborationContext";
+import LocationFeatures from "@/components/location/LocationFeatures";
 
 interface SiteWalkDashboardProps {
   project: Project;
@@ -411,8 +412,15 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         
       </div>
       
+      {/* Location Features Section */}
+      <div className="mt-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Location Information</h3>
+        <LocationFeatures project={project} onProjectUpdate={onProjectUpdate} />
+      </div>
+      
       {/* Project Collaborators Section - Moved to the bottom */}
       <div className="mt-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Project Collaborators</h3>
         <CollaborationProvider projectId={project.id}>
           <ProjectCollaborators projectId={project.id} />
         </CollaborationProvider>
