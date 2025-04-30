@@ -1,27 +1,21 @@
-import { useState, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -29,32 +23,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Camera, Upload, X, Image as ImageIcon } from "lucide-react";
 import {
-  Card,
-  CardContent
-} from "@/components/ui/card";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from '@/components/ui/card';
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { toast } from '@/hooks/use-toast';
+import { Camera, Upload, X, ChevronDown, ChevronRight, Sliders } from 'lucide-react';
 
-interface LookupData {
-  cameraTypes?: string[];
-  mountingTypes?: string[];
-  resolutions?: string[];
-}
-
-interface AddCameraModalProps {
-  isOpen?: boolean;
-  open?: boolean;
-  projectId: number;
-  onSave: (camera: any) => void;
-  onClose?: () => void;
-  onCancel?: () => void;
-  onOpenChange?: (open: boolean) => void;
-}
-
-// Create schema based on shared schema but with validation
+// Define the schema for camera data
 const cameraSchema = z.object({
-  project_id: z.number(),
   location: z.string().min(1, "Location is required"),
   camera_type: z.string().min(1, "Camera type is required"),
   mounting_type: z.string().optional(),
@@ -63,40 +52,61 @@ const cameraSchema = z.object({
   notes: z.string().optional(),
   is_indoor: z.boolean().default(true),
   import_to_gateway: z.boolean().default(true),
+  
+  // Gateway Calculator fields
+  lensCount: z.coerce.number().int().min(1).max(4).default(1),
+  streamingResolution: z.coerce.number().min(0.3).max(12).default(2),
+  frameRate: z.coerce.number().int().min(1).max(60).default(10),
+  storageDays: z.coerce.number().int().min(1).max(365).default(30),
+  recordingResolution: z.coerce.number().min(0.3).max(12).default(2),
+  sameAsStreaming: z.boolean().default(true)
 });
 
-type CameraFormValues = z.infer<typeof cameraSchema>;
+type CameraData = z.infer<typeof cameraSchema>;
+
+interface AddCameraModalProps {
+  projectId: number;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
+  onSave?: (data: any) => void;
+  onCancel?: () => void;
+}
 
 export default function AddCameraModal({
-  isOpen,
-  open,
   projectId,
-  onSave,
-  onClose,
-  onCancel,
+  open,
+  isOpen,
   onOpenChange,
+  onClose,
+  onSave,
+  onCancel
 }: AddCameraModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
 
-  // Fetch lookup data for dropdowns
-  const { data: lookupData, isLoading: isLoadingLookups } = useQuery<LookupData>({
-    queryKey: ["/api/lookup"],
+  // Fetch lookup data for the form
+  const { data: lookupData, isLoading: isLoadingLookups } = useQuery({
+    queryKey: ['/api/lookup'],
+    queryFn: async () => {
+      const response = await fetch('/api/lookup');
+      return response.json();
+    }
   });
-  
-  // Helper function to safely access lookup data
-  const getLookupOptions = (key: keyof LookupData) => {
-    return lookupData && lookupData[key] ? lookupData[key] || [] : [];
+
+  const getLookupOptions = (category: string) => {
+    if (!lookupData) return [];
+    return lookupData[category] || [];
   };
 
-  // Initialize form with default values
-  const form = useForm<CameraFormValues>({
+  const form = useForm<CameraData>({
     resolver: zodResolver(cameraSchema),
     defaultValues: {
-      project_id: projectId,
       location: "",
       camera_type: "",
       mounting_type: "",
@@ -105,26 +115,91 @@ export default function AddCameraModal({
       notes: "",
       is_indoor: true,
       import_to_gateway: true,
+      
+      // Gateway Calculator defaults
+      lensCount: 1,
+      streamingResolution: 2,
+      frameRate: 10,
+      storageDays: 30,
+      recordingResolution: 2,
+      sameAsStreaming: true
     },
   });
 
-  // Function to start camera
+  // Watch for changes to streaming resolution and sameAsStreaming
+  const streamingResolution = form.watch("streamingResolution");
+  const sameAsStreaming = form.watch("sameAsStreaming");
+  
+  // Update recording resolution when streamingResolution changes and sameAsStreaming is true
+  useEffect(() => {
+    if (sameAsStreaming && streamingResolution) {
+      form.setValue("recordingResolution", streamingResolution);
+    }
+  }, [sameAsStreaming, streamingResolution, form]);
+
+  const resolutionOptions = [
+    { value: 0.3, label: "0.3 MP (480p)" },
+    { value: 1, label: "1 MP (720p)" },
+    { value: 2, label: "2 MP (1080p)" },
+    { value: 4, label: "4 MP (1440p)" },
+    { value: 5, label: "5 MP" },
+    { value: 6, label: "6 MP" },
+    { value: 8, label: "8 MP (4K)" },
+    { value: 12, label: "12 MP" }
+  ];
+
+  const addCameraMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest('POST', `/api/projects/${projectId}/cameras`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/cameras`] });
+      toast({
+        title: "Success",
+        description: "Camera added successfully",
+      });
+      if (onSave) {
+        onSave({});
+      }
+      if (onOpenChange) {
+        onOpenChange(false);
+      }
+      if (onClose) {
+        onClose();
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to add camera: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
+
   const startCamera = async () => {
-    setIsTakingPicture(true);
     try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
+      
       if (videoRef.current) {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: "environment" } 
-        });
         videoRef.current.srcObject = stream;
       }
+      
+      setIsTakingPicture(true);
     } catch (err) {
-      console.error("Error accessing camera:", err);
-      setIsTakingPicture(false);
+      console.error('Error accessing camera:', err);
+      toast({
+        title: "Camera Error",
+        description: "Could not access the camera. Please check your permissions.",
+        variant: "destructive",
+      });
     }
   };
 
-  // Function to take picture
   const takePicture = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -134,19 +209,21 @@ export default function AddCameraModal({
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
-      // Draw the video frame on the canvas
-      const context = canvas.getContext('2d');
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Draw the video frame to the canvas
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
         // Convert to base64 data URL
-        const dataUrl = canvas.toDataURL('image/jpeg');
-        setImage(dataUrl);
+        const dataURL = canvas.toDataURL('image/jpeg');
+        setImage(dataURL);
         
-        // Stop all video tracks
+        // Stop the camera stream
         const stream = video.srcObject as MediaStream;
         if (stream) {
-          stream.getTracks().forEach(track => track.stop());
+          const tracks = stream.getTracks();
+          tracks.forEach(track => track.stop());
+          video.srcObject = null;
         }
         
         setIsTakingPicture(false);
@@ -154,54 +231,60 @@ export default function AddCameraModal({
     }
   };
 
-  // Function to cancel camera
   const cancelCamera = () => {
     if (videoRef.current) {
       const stream = videoRef.current.srcObject as MediaStream;
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+        videoRef.current.srcObject = null;
       }
     }
     setIsTakingPicture(false);
   };
 
-  // Function to handle file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result as string);
+      reader.onload = () => {
+        setImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Function to remove the current image
   const removeImage = () => {
     setImage(null);
   };
 
-  // Handle form submission
-  const onSubmit = async (values: CameraFormValues) => {
+  const onSubmit = async (data: CameraData) => {
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
+      // Extract the base64 part of the image data if it exists
+      let imageData = null;
+      if (image) {
+        const base64Data = image.split(',')[1];
+        imageData = base64Data;
+      }
       
-      // Add image data to the values if available
-      const dataToSubmit = {
-        ...values,
-        image_data: image,
+      // Create the payload
+      const payload = {
+        ...data,
+        project_id: projectId,
+        image_data: imageData
       };
       
-      const response = await apiRequest("POST", "/api/cameras", dataToSubmit);
-      const camera = await response.json();
-      // Extract just the ID from the created camera before passing it back
-      onSave(camera.id);
-      console.log('Created camera with ID:', camera.id);
-    } catch (error) {
-      console.error("Failed to create camera:", error);
-    } finally {
+      await addCameraMutation.mutateAsync(payload);
+      
+      // Clear the form and image
+      form.reset();
+      setImage(null);
       setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error('Error submitting form:', error);
     }
   };
 
@@ -438,6 +521,199 @@ export default function AddCameraModal({
                 )}
               />
             </div>
+
+            {/* Advanced fields from Gateway Calculator */}
+            <Accordion 
+              type="single" 
+              collapsible
+              className="border rounded-md"
+              value={showAdvancedFields ? "advanced" : ""}
+              onValueChange={(value) => setShowAdvancedFields(value === "advanced")}
+            >
+              <AccordionItem value="advanced" className="border-none">
+                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-all">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="h-4 w-4" />
+                    <span className="font-medium">Advanced Gateway Settings</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 py-4 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="lensCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Lens Count
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value.toString()}
+                              onValueChange={(value) => field.onChange(parseInt(value))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">1 (Single Lens)</SelectItem>
+                                <SelectItem value="2">2 (Dual Lens / 180°)</SelectItem>
+                                <SelectItem value="3">3 (Triple Lens)</SelectItem>
+                                <SelectItem value="4">4 (Quad Lens / 360°)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormDescription>
+                            Number of camera lenses or streams
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="streamingResolution"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Streaming Resolution
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value.toString()}
+                              onValueChange={(value) => field.onChange(parseFloat(value))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {resolutionOptions.map(option => (
+                                  <SelectItem key={option.value} value={option.value.toString()}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormDescription>
+                            Resolution for live streaming
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="frameRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Frame Rate (fps)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={60}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Frames per second (1-60)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="storageDays"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Storage Days
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={365}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Days to retain recordings (1-365)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="sameAsStreaming"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Same resolution for recording
+                            </FormLabel>
+                            <FormDescription>
+                              Use streaming resolution for recording
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {!sameAsStreaming && (
+                      <FormField
+                        control={form.control}
+                        name="recordingResolution"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-neutral-700">
+                              Recording Resolution
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                value={field.value.toString()}
+                                onValueChange={(value) => field.onChange(parseFloat(value))}
+                                disabled={sameAsStreaming}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {resolutionOptions.map(option => (
+                                    <SelectItem key={option.value} value={option.value.toString()}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormDescription>
+                              Resolution for recordings
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             <div className="space-y-4">
               <FormLabel className="text-sm font-medium text-neutral-700">
