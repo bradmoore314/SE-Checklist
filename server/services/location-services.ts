@@ -195,9 +195,11 @@ export function getMapEmbedUrl(lat: number, lng: number): string {
  * Get place autocomplete suggestions
  */
 export async function getPlaceAutocomplete(input: string): Promise<any> {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
-    console.warn('Google Maps API key is not configured');
-    // Return empty results instead of fallbacks if no API key exists
+  // Use dedicated Places API key if available, otherwise fall back to the general Maps key
+  const apiKey = process.env.PLACES_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('No Places API key is configured');
     return { 
       status: 'NO_API_KEY', 
       predictions: [] 
@@ -217,7 +219,7 @@ export async function getPlaceAutocomplete(input: string): Promise<any> {
       `input=${encodeURIComponent(input)}` +
       `&types=address` +
       `&sessiontoken=${sessionToken}` +
-      `&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+      `&key=${apiKey}`;
     
     console.log(`Calling Places API with input: ${input}`);
     const response = await fetch(url);
