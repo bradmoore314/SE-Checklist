@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Command,
   CommandEmpty,
@@ -98,6 +99,9 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
   const [floorplanName, setFloorplanName] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [customFloorplanData, setCustomFloorplanData] = useState<string | null>(null);
+  const [customFloorplanType, setCustomFloorplanType] = useState<string | null>(null);
+  const [customFloorplanPreview, setCustomFloorplanPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Mutation for updating the project
@@ -367,55 +371,92 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     }
   };
 
-  // Handle adding satellite image as floorplan
+  // Handle adding satellite image or custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
-    if (!mapData?.url || !floorplanName) return;
+    if ((!mapData?.url && !customFloorplanData) || !floorplanName) return;
     
     try {
-      // Fetch the image from the URL
-      const response = await fetch(mapData.url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      let base64Result;
+      
+      // Handle based on source - either satellite image or custom upload
+      if (customFloorplanData) {
+        // Custom uploaded file - already processed to base64
+        base64Result = customFloorplanData;
+        
+        // Create success message with file type
+        const successMessage = customFloorplanType 
+          ? `${customFloorplanType.split('/')[1].toUpperCase()} file saved as floorplan.`
+          : 'File saved as floorplan.';
+            
+        // Create floorplan with the uploaded data
+        await createFloorplanMutation.mutateAsync({
+          project_id: project.id,
+          name: floorplanName,
+          pdf_data: base64Result,
+          page_count: 1
+        });
+        
+        // Show success toast with specific message
+        toast({
+          title: 'Floorplan Created',
+          description: successMessage,
+        });
+      } 
+      else if (mapData?.url) {
+        // Satellite image - need to fetch and process
+        const response = await fetch(mapData.url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+        }
+        
+        const blob = await response.blob();
+        
+        // Convert blob to base64
+        const reader = new FileReader();
+        
+        // Use a Promise to handle the async FileReader
+        base64Result = await new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => {
+            try {
+              const base64data = reader.result as string;
+              // Extract the base64 part (remove data:image/png;base64, prefix)
+              const base64Image = base64data.split(',')[1];
+              resolve(base64Image);
+            } catch (err) {
+              reject(new Error('Failed to process image data'));
+            }
+          };
+          reader.onerror = () => reject(new Error('Error reading file'));
+          reader.readAsDataURL(blob);
+        });
+        
+        // Create floorplan with the satellite image
+        await createFloorplanMutation.mutateAsync({
+          project_id: project.id,
+          name: floorplanName,
+          pdf_data: base64Result,
+          page_count: 1
+        });
+        
+        // Show success toast for satellite image
+        toast({
+          title: 'Floorplan Created',
+          description: 'Satellite image has been saved as a floorplan.',
+        });
       }
       
-      const blob = await response.blob();
-      
-      // Convert blob to base64
-      const reader = new FileReader();
-      
-      // Use a Promise to handle the async FileReader
-      const base64Result = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          try {
-            const base64data = reader.result as string;
-            // Extract the base64 part (remove data:image/png;base64, prefix)
-            const base64Image = base64data.split(',')[1];
-            resolve(base64Image);
-          } catch (err) {
-            reject(new Error('Failed to process image data'));
-          }
-        };
-        reader.onerror = () => reject(new Error('Error reading file'));
-        reader.readAsDataURL(blob);
-      });
-      
-      // Create PDF-like data format (base64 encoded)
-      await createFloorplanMutation.mutateAsync({
-        project_id: project.id,
-        name: floorplanName,
-        pdf_data: base64Result,
-        page_count: 1
-      });
-      
-      // Reset state and close dialog after successful upload
+      // Reset all state and close dialog after successful upload
       setFloorplanName('');
+      setCustomFloorplanData(null);
+      setCustomFloorplanType(null);
+      setCustomFloorplanPreview(null);
       setShowAddToFloorplanDialog(false);
       
     } catch (error) {
       console.error('Error creating floorplan:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to save satellite image as floorplan',
+        description: error instanceof Error ? error.message : 'Failed to save image as floorplan',
         variant: 'destructive',
       });
     }
@@ -423,76 +464,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
 
   return (
     <div className="space-y-6">
-      {/* Location Information Card */}
-      <Card className="border rounded-lg shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Location Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2 text-gray-500" />
-              <span className="font-medium">Site Address:</span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-gray-700 mr-2">
-                {project.site_address || 'No address specified'}
-              </span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowAddressEditDialog(true)}
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          
-          {isErrorCoordinates && project.site_address && (
-            <div className="text-sm text-red-500">
-              Unable to locate address on map. Please check the address format.
-            </div>
-          )}
-          
-          {/* Map Section */}
-          {coordinates && mapData && (
-            <div className="mt-4 space-y-2">
-              <div className="relative">
-                <img 
-                  src={mapData.url} 
-                  alt="Map of site location" 
-                  className="w-full h-64 object-cover rounded-md border cursor-pointer" 
-                  onClick={() => setShowMapFullscreen(true)}
-                />
-                <div className="absolute bottom-3 right-3 flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    variant="secondary" 
-                    className="bg-white/70 hover:bg-white/90"
-                    onClick={() => setShowAddToFloorplanDialog(true)}
-                  >
-                    <PlusCircle className="h-4 w-4 mr-1" />
-                    Add to Floorplans
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="text-sm text-gray-500">
-                {coordinates.formattedAddress}
-              </div>
-            </div>
-          )}
-          
-          {/* Loading State for Map */}
-          {isLoadingCoordinates && project.site_address && (
-            <div className="flex justify-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      {/* Weather Widget Card */}
+      {/* Weather Widget Card - Moved to top */}
       {coordinates && (
         <Card className="border rounded-lg shadow-sm overflow-hidden">
           <CardHeader className="pb-2">
@@ -580,6 +552,75 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           )}
         </Card>
       )}
+      
+      {/* Location Information Card - Moved below weather */}
+      <Card className="border rounded-lg shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl">Location Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <MapPin className="h-5 w-5 mr-2 text-gray-500" />
+              <span className="font-medium">Site Address:</span>
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-700 mr-2">
+                {project.site_address || 'No address specified'}
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowAddressEditDialog(true)}
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          
+          {isErrorCoordinates && project.site_address && (
+            <div className="text-sm text-red-500">
+              Unable to locate address on map. Please check the address format.
+            </div>
+          )}
+          
+          {/* Map Section - Made square and taller */}
+          {coordinates && mapData && (
+            <div className="mt-4 space-y-2">
+              <div className="relative aspect-square overflow-hidden">
+                <img 
+                  src={mapData.url} 
+                  alt="Map of site location" 
+                  className="w-full h-full object-cover rounded-md border cursor-pointer" 
+                  onClick={() => setShowMapFullscreen(true)}
+                />
+                <div className="absolute bottom-3 right-3 flex space-x-2">
+                  <Button 
+                    size="sm" 
+                    variant="secondary" 
+                    className="bg-white/70 hover:bg-white/90"
+                    onClick={() => setShowAddToFloorplanDialog(true)}
+                  >
+                    <PlusCircle className="h-4 w-4 mr-1" />
+                    Add to Floorplans
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-500">
+                {coordinates.formattedAddress}
+              </div>
+            </div>
+          )}
+          
+          {/* Loading State for Map */}
+          {isLoadingCoordinates && project.site_address && (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
       
       {/* Address Edit Dialog */}
       <Dialog open={showAddressEditDialog} onOpenChange={setShowAddressEditDialog}>
@@ -717,13 +758,13 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
       <Dialog open={showAddToFloorplanDialog} onOpenChange={setShowAddToFloorplanDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Save Satellite Image as Floorplan</DialogTitle>
+            <DialogTitle>Add Floorplan</DialogTitle>
             <DialogDescription>
-              This will save the current satellite view as a floorplan for marking equipment locations.
+              Add the satellite view or upload your own image file as a floorplan for marking equipment locations.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="space-y-6 py-4">
             <div className="space-y-2">
               <label htmlFor="floorplan-name" className="text-sm font-medium text-gray-700">
                 Floorplan Name
@@ -737,24 +778,123 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               />
             </div>
             
-            {mapData && (
-              <div className="border rounded overflow-hidden">
-                <img 
-                  src={mapData.url} 
-                  alt="Satellite view preview" 
-                  className="w-full h-auto"
-                />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">Floorplan Source</label>
               </div>
-            )}
+              
+              <Tabs defaultValue="satellite" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="satellite">Use Satellite View</TabsTrigger>
+                  <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                </TabsList>
+                <TabsContent value="satellite" className="mt-4">
+                  {mapData && (
+                    <div className="border rounded overflow-hidden">
+                      <img 
+                        src={mapData.url} 
+                        alt="Satellite view preview" 
+                        className="w-full h-auto"
+                      />
+                      <div className="p-2 bg-gray-50 text-xs text-gray-500">
+                        Satellite image will be saved as a floorplan for this location
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+                <TabsContent value="upload" className="mt-4 space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center">
+                    <input
+                      type="file"
+                      id="floorplan-file"
+                      className="hidden"
+                      accept="image/jpeg,image/png,image/gif,application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const base64data = reader.result as string;
+                            const base64Content = base64data.split(',')[1];
+                            
+                            // Save the content for later use in handleAddToFloorplan
+                            setCustomFloorplanData(base64Content);
+                            setCustomFloorplanType(file.type);
+                            setCustomFloorplanPreview(base64data);
+                          };
+                          reader.readAsDataURL(file);
+                          
+                          // Auto-fill floorplan name if it's empty
+                          if (!floorplanName) {
+                            const fileName = file.name.split('.')[0];
+                            setFloorplanName(fileName);
+                          }
+                        }
+                      }}
+                    />
+                    {!customFloorplanPreview ? (
+                      <div className="text-center">
+                        <div className="mt-2">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => document.getElementById('floorplan-file')?.click()}
+                          >
+                            Choose File
+                          </Button>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-500">
+                          Supported formats: JPEG, PNG, GIF, PDF
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="w-full">
+                        <div className="relative">
+                          <img 
+                            src={customFloorplanPreview} 
+                            alt="Uploaded preview" 
+                            className="max-h-64 mx-auto object-contain"
+                          />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-2 right-2"
+                            onClick={() => {
+                              setCustomFloorplanData(null);
+                              setCustomFloorplanType(null);
+                              setCustomFloorplanPreview(null);
+                              // Reset the input
+                              const fileInput = document.getElementById('floorplan-file') as HTMLInputElement;
+                              if (fileInput) fileInput.value = '';
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                        <p className="mt-2 text-sm text-center text-gray-500">
+                          {customFloorplanType?.split('/')[1].toUpperCase()} file selected
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddToFloorplanDialog(false)}>
+            <Button variant="outline" onClick={() => {
+              setShowAddToFloorplanDialog(false);
+              // Reset uploaded file data when closing
+              setCustomFloorplanData(null);
+              setCustomFloorplanType(null);
+              setCustomFloorplanPreview(null);
+            }}>
               Cancel
             </Button>
             <Button 
               onClick={handleAddToFloorplan}
-              disabled={createFloorplanMutation.isPending || !floorplanName}
+              disabled={createFloorplanMutation.isPending || !floorplanName || 
+                       (!mapData && !customFloorplanData)}
             >
               {createFloorplanMutation.isPending ? (
                 <>
