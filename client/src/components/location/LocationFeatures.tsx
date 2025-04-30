@@ -29,7 +29,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Project } from '@shared/schema';
-import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle, Check } from 'lucide-react';
+import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle, Check, AlertTriangle, AlertOctagon } from 'lucide-react';
 
 interface LocationFeaturesProps {
   project: Project;
@@ -259,35 +259,70 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     retry: 1
   });
 
+  // State for tracking address search API status
+  const [addressApiStatus, setAddressApiStatus] = useState<{
+    status: 'idle' | 'error' | 'unauthorized';
+    message?: string;
+  }>({
+    status: 'idle'
+  });
+
   // Function to search for address suggestions
   const searchAddresses = async (query: string) => {
     if (!query || query.length < 3) {
       setAddressSuggestions([]);
+      setAddressApiStatus({ status: 'idle' });
       return;
     }
     
     setIsSearching(true);
+    setAddressApiStatus({ status: 'idle' });
     
     try {
-      // Call our server's Places API endpoint, which handles fallbacks internally
+      // Call our server's Places API endpoint
       const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`);
+      
       if (response.ok) {
         const data = await response.json();
         
-        if (data.predictions && data.predictions.length > 0) {
-          // Extract address descriptions from predictions
+        // Handle potential API errors based on the status field
+        if (data.status === 'OK' && data.predictions && data.predictions.length > 0) {
+          // Success - extract real address suggestions from Google
           const suggestions = data.predictions.map((p: any) => p.description);
           setAddressSuggestions(suggestions);
-        } else {
+          setAddressApiStatus({ status: 'idle' });
+        } 
+        else if (data.status === 'REQUEST_DENIED' || data.status === 'INVALID_REQUEST' || 
+                 data.status === 'FALLBACK' || data.status === 'ERROR') {
+          // API access issues - show error message
+          console.error('Places API error:', data.error_message || data.status);
           setAddressSuggestions([]);
+          setAddressApiStatus({
+            status: 'unauthorized',
+            message: data.error_message || 'Google Maps API access denied. Please check API key permissions.'
+          });
+        }
+        else {
+          // No suggestions found
+          console.log('No address suggestions found');
+          setAddressSuggestions([]);
+          setAddressApiStatus({ status: 'idle' });
         }
       } else {
         console.warn('Place autocomplete API request failed:', response.status);
         setAddressSuggestions([]);
+        setAddressApiStatus({
+          status: 'error',
+          message: `Request failed with status: ${response.status}`
+        });
       }
     } catch (error) {
       console.error('Error fetching address suggestions:', error);
       setAddressSuggestions([]);
+      setAddressApiStatus({
+        status: 'error',
+        message: (error as Error).message || 'Unknown error occurred'
+      });
     } finally {
       setIsSearching(false);
     }
@@ -569,6 +604,27 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                   </div>
                 )}
               </div>
+              
+              {/* API Status Information */}
+              {addressApiStatus.status === 'unauthorized' && (
+                <div className="mt-2 text-sm flex items-center p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
+                  <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">API Authentication Required</p>
+                    <p>Google Places API needs proper authentication for address suggestions.</p>
+                  </div>
+                </div>
+              )}
+              
+              {addressApiStatus.status === 'error' && (
+                <div className="mt-2 text-sm flex items-center p-2 bg-red-50 text-red-700 rounded border border-red-200">
+                  <AlertOctagon className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Error retrieving address suggestions</p>
+                    <p>{addressApiStatus.message || 'Please try again later'}</p>
+                  </div>
+                </div>
+              )}
               
               {addressSuggestions.length > 0 && (
                 <Command className="border rounded-md shadow-md mt-1">

@@ -196,7 +196,12 @@ export function getMapEmbedUrl(lat: number, lng: number): string {
  */
 export async function getPlaceAutocomplete(input: string): Promise<any> {
   if (!process.env.GOOGLE_MAPS_API_KEY) {
-    throw new Error('Google Maps API key is not configured');
+    console.warn('Google Maps API key is not configured');
+    // Return empty results instead of fallbacks if no API key exists
+    return { 
+      status: 'NO_API_KEY', 
+      predictions: [] 
+    };
   }
   
   if (!input || input.length < 3) {
@@ -204,35 +209,44 @@ export async function getPlaceAutocomplete(input: string): Promise<any> {
   }
   
   try {
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=address&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    // Use the Places API endpoint with proper parameters
+    // The API requires sessiontoken to group related requests for billing
+    const sessionToken = Math.random().toString(36).substring(2, 15);
+    
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?` + 
+      `input=${encodeURIComponent(input)}` +
+      `&types=address` +
+      `&sessiontoken=${sessionToken}` +
+      `&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    
+    console.log(`Calling Places API with input: ${input}`);
     const response = await fetch(url);
     const data = await response.json() as any;
     
-    // For debugging
+    // Detailed logging for debugging
     if (data.error_message) {
       console.error('Places API error:', data.error_message);
     }
     
-    if (data.status !== 'OK') {
-      console.warn(`Places API returned status: ${data.status}`);
+    if (data.status === 'OK') {
+      console.log(`Places API returned ${data.predictions.length} suggestions`);
+      return data;
+    } else {
+      console.error(`Places API returned status: ${data.status}`);
       
-      // If API fails with REQUEST_DENIED or other error, return empty predictions
-      if (data.status === 'REQUEST_DENIED' || data.status === 'INVALID_REQUEST') {
-        console.warn('Places API request denied, using fallback suggestions');
-        return { 
-          status: 'FALLBACK', 
-          predictions: generateAddressSuggestions(input)
-        };
-      }
+      // Return actual error to client - no fallbacks
+      return { 
+        status: data.status || 'ERROR',
+        error_message: data.error_message || 'Unable to retrieve address suggestions',
+        predictions: []
+      };
     }
-    
-    return data;
   } catch (error) {
     console.error('Error getting place autocomplete', error);
-    // Return fallback suggestions on error
     return { 
-      status: 'FALLBACK', 
-      predictions: generateAddressSuggestions(input)
+      status: 'API_ERROR',
+      error_message: (error as Error).message,
+      predictions: []
     };
   }
 }
