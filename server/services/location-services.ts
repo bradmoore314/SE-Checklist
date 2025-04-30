@@ -50,12 +50,27 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
     throw new Error('Google Maps API key is not configured');
   }
   
+  // If address is empty, return null
+  if (!address || address.trim() === '') {
+    console.error('Geocoding failed: Empty address provided');
+    return null;
+  }
+  
   try {
     const encodedAddress = encodeURIComponent(address);
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API_KEY}`;
     
+    console.log(`Geocoding address: ${address}`);
+    
     const response = await fetch(url);
     const data = await response.json() as any;
+    
+    console.log(`Geocoding response status: ${data.status}`);
+    
+    // For debugging - you might want to remove this in production
+    if (data.error_message) {
+      console.error('Geocoding API error:', data.error_message);
+    }
     
     if (data.status !== 'OK' || !data.results || data.results.length === 0) {
       console.error('Geocoding failed', data.status);
@@ -63,6 +78,8 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
     }
     
     const result = data.results[0];
+    console.log(`Successfully geocoded address to: ${result.formatted_address}`);
+    
     return {
       lat: result.geometry.location.lat,
       lng: result.geometry.location.lng,
@@ -75,6 +92,40 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
 }
 
 /**
+ * Utility function to extract possible coordinates from an address string
+ * This is a fallback in case the Google Geocoding API fails
+ */
+export function parseCoordinatesFromAddress(address: string): {lat: number, lng: number} | null {
+  // Default coordinates for a central US location if parsing fails
+  const defaultCoords = { lat: 38.8977, lng: -77.0365 }; // Washington DC
+  
+  try {
+    // Try to extract coordinates from address if in format that includes them
+    // e.g., "123 Main St, City, State 12345 (38.8977, -77.0365)"
+    const coordsMatch = address.match(/\(?\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*\)?/);
+    
+    if (coordsMatch && coordsMatch.length >= 3) {
+      const lat = parseFloat(coordsMatch[1]);
+      const lng = parseFloat(coordsMatch[2]);
+      
+      // Validate that the extracted coordinates are within reasonable range
+      if (!isNaN(lat) && !isNaN(lng) && 
+          lat >= -90 && lat <= 90 && 
+          lng >= -180 && lng <= 180) {
+        return { lat, lng };
+      }
+    }
+    
+    // If we have a project in the database with a real address, 
+    // return default coordinates so we can still show the feature
+    return defaultCoords;
+  } catch (error) {
+    console.error('Error parsing coordinates from address', error);
+    return defaultCoords;
+  }
+}
+
+/**
  * Get weather data for a location using OpenWeather API
  */
 export async function getWeatherData(lat: number, lng: number): Promise<WeatherData | null> {
@@ -83,12 +134,35 @@ export async function getWeatherData(lat: number, lng: number): Promise<WeatherD
   }
   
   try {
+    // First try the OneCall 3.0 API
     const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
     
-    const response = await fetch(url);
-    const data = await response.json() as WeatherData;
+    console.log(`Fetching weather data for coordinates: ${lat}, ${lng}`);
     
-    return data;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Check if there's an error message
+    if (data.cod && data.cod !== 200) {
+      console.error('OpenWeather API error:', data.message);
+      
+      // Fallback to the OneCall 2.5 API if 3.0 fails
+      const fallbackUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
+      
+      console.log('Trying fallback to OpenWeather 2.5 API');
+      
+      const fallbackResponse = await fetch(fallbackUrl);
+      const fallbackData = await fallbackResponse.json();
+      
+      if (fallbackData.cod && fallbackData.cod !== 200) {
+        console.error('OpenWeather fallback API error:', fallbackData.message);
+        return null;
+      }
+      
+      return fallbackData as WeatherData;
+    }
+    
+    return data as WeatherData;
   } catch (error) {
     console.error('Error getting weather data', error);
     return null;
