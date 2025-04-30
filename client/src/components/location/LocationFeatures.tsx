@@ -302,8 +302,14 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             message: data.error_message || 'Google Maps API access denied. Please check API key permissions.'
           });
         }
+        else if (data.status === 'ZERO_RESULTS') {
+          // No matching addresses found - this is a normal case
+          console.log('No matching addresses found for query:', query);
+          setAddressSuggestions([]);
+          setAddressApiStatus({ status: 'idle' });
+        }
         else {
-          // No suggestions found
+          // No suggestions found - other case
           console.log('No address suggestions found');
           setAddressSuggestions([]);
           setAddressApiStatus({ status: 'idle' });
@@ -611,7 +617,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                   <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
                   <div>
                     <p className="font-medium">API Authentication Required</p>
-                    <p>Google Places API needs proper authentication for address suggestions.</p>
+                    <p>{addressApiStatus.message || 'Google Places API needs proper authentication for address suggestions.'}</p>
                   </div>
                 </div>
               )}
