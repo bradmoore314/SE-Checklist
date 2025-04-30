@@ -5,7 +5,14 @@ import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { proxyTestGemini } from './gemini-proxy';
 import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
-import { geocodeAddress, getWeatherData, getStaticMapUrl, getMapEmbedUrl, parseCoordinatesFromAddress } from './services/location-services';
+import { 
+  geocodeAddress, 
+  getWeatherData, 
+  getStaticMapUrl, 
+  getMapEmbedUrl, 
+  parseCoordinatesFromAddress,
+  getPlaceAutocomplete
+} from './services/location-services';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
