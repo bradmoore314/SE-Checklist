@@ -1307,105 +1307,140 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       const html2canvasModule = await import('html2canvas');
       const html2canvas = html2canvasModule.default;
       const { jsPDF } = await import('jspdf');
+
+      // First, we'll get the PDF canvas directly - this is the rendered PDF content
+      const pdfCanvas = containerRef.current.querySelector('.pdf-page canvas') as HTMLCanvasElement;
+      if (!pdfCanvas) {
+        throw new Error('PDF canvas not found');
+      }
+
+      // Get the dimensions of the PDF canvas
+      const pdfWidth = pdfCanvas.width;
+      const pdfHeight = pdfCanvas.height;
       
-      // Find the PDF viewer container
-      const pdfViewerContainer = containerRef.current.querySelector('[data-testid="pdf-container"]') || 
-                               containerRef.current.querySelector('.pdf-container');
-      if (!pdfViewerContainer) {
-        throw new Error('PDF viewer container not found');
+      // Create a new canvas to combine the PDF and markers
+      const combinedCanvas = document.createElement('canvas');
+      combinedCanvas.width = pdfWidth;
+      combinedCanvas.height = pdfHeight;
+      const ctx = combinedCanvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('Failed to get canvas context');
       }
       
-      // Get the actual PDF document element 
-      const pdfDocument = pdfViewerContainer.querySelector('.react-pdf__Document');
-      if (!pdfDocument) {
-        throw new Error('PDF document element not found');
+      // First draw the PDF canvas to our combined canvas
+      ctx.drawImage(pdfCanvas, 0, 0);
+      
+      // Now manually draw each marker at its correct position
+      for (const marker of markers) {
+        // Get marker styling
+        const isNote = marker.marker_type === 'note';
+        const markerNumber = marker.label || getMarkerNumber(marker.id).toString();
+        const backgroundColor = getMarkerColor(marker.marker_type);
+        const textColor = getMarkerTextColor(marker.marker_type);
+        const borderColor = getMarkerBorderColor(marker.marker_type);
+        
+        // Get the marker size from our defaults
+        const defaultSize = defaultMarkerSizes[marker.marker_type];
+        let width, height;
+        
+        if (isNote) {
+          const customSize = markerSize[marker.id];
+          if (customSize) {
+            width = customSize.width;
+            height = customSize.height;
+          } else if (typeof defaultSize === 'object') {
+            width = defaultSize.width;
+            height = defaultSize.height;
+          } else {
+            width = defaultSize as number;
+            height = defaultSize as number;
+          }
+        } else {
+          const size = typeof defaultSize === 'number' ? defaultSize : defaultSize.width;
+          width = size * equipmentMarkerScale;
+          height = size * equipmentMarkerScale;
+        }
+        
+        // Calculate position (adjusted for the marker being centered)
+        const x = marker.position_x * pdfScale;
+        const y = marker.position_y * pdfScale;
+
+        // Draw the marker
+        ctx.save();
+        
+        if (isNote) {
+          // Draw note rectangle
+          ctx.fillStyle = backgroundColor;
+          ctx.strokeStyle = borderColor;
+          ctx.lineWidth = 2;
+          const rectX = x - width/2;
+          const rectY = y - height/2;
+          
+          // Draw rectangle with rounded corners
+          ctx.beginPath();
+          ctx.roundRect(rectX, rectY, width, height, 4);
+          ctx.fill();
+          ctx.stroke();
+          
+          // Draw the text
+          ctx.fillStyle = textColor;
+          ctx.font = '12px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Wrap text if needed
+          if (marker.label) {
+            const maxWidth = width - 10;
+            const lineHeight = 14;
+            const words = marker.label.split(' ');
+            let line = '';
+            let yPos = rectY + 15;
+            
+            for (let i = 0; i < words.length; i++) {
+              const testLine = line + words[i] + ' ';
+              const metrics = ctx.measureText(testLine);
+              
+              if (metrics.width > maxWidth && i > 0) {
+                ctx.fillText(line, x, yPos);
+                line = words[i] + ' ';
+                yPos += lineHeight;
+              } else {
+                line = testLine;
+              }
+            }
+            
+            ctx.fillText(line, x, yPos);
+          }
+        } else {
+          // Draw circular marker
+          ctx.beginPath();
+          ctx.arc(x, y, width/2, 0, Math.PI * 2);
+          ctx.fillStyle = backgroundColor;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = borderColor;
+          ctx.stroke();
+          
+          // Draw the marker number/label
+          ctx.fillStyle = textColor;
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(markerNumber, x, y);
+        }
+        
+        ctx.restore();
       }
       
-      // Create a temporary container for the export that includes both PDF and markers
-      const exportContainer = document.createElement('div');
-      exportContainer.style.position = 'fixed';
-      exportContainer.style.left = '-9999px';
-      exportContainer.style.top = '-9999px';
-      exportContainer.style.background = 'white';
-      document.body.appendChild(exportContainer);
+      // Create a PDF with the combined canvas
+      const imgData = combinedCanvas.toDataURL('image/png');
       
-      // Clone the PDF document with the page and markers
-      const pdfClone = pdfDocument.cloneNode(true) as HTMLElement;
-      exportContainer.appendChild(pdfClone);
-      
-      // Make sure the container is properly sized
-      const originalRect = pdfDocument.getBoundingClientRect();
-      exportContainer.style.width = `${originalRect.width}px`;
-      exportContainer.style.height = `${originalRect.height}px`;
-      pdfClone.style.width = `${originalRect.width}px`;
-      pdfClone.style.height = `${originalRect.height}px`;
-      
-      // Apply the correct scaling to match the original document
-      const pdfDocumentWrapper = pdfClone.querySelector('[data-page-number="1"]')?.parentElement;
-      if (pdfDocumentWrapper) {
-        pdfDocumentWrapper.style.transform = `scale(${pdfScale})`;
-        pdfDocumentWrapper.style.transformOrigin = 'top left';
-      }
-      
-      // Clone all marker elements 
-      const markers = pdfViewerContainer.querySelectorAll('[id^="marker-"]');
-      const markerContainer = document.createElement('div');
-      markerContainer.style.position = 'absolute';
-      markerContainer.style.top = '0';
-      markerContainer.style.left = '0';
-      markerContainer.style.width = '100%';
-      markerContainer.style.height = '100%';
-      markerContainer.style.pointerEvents = 'none';
-      exportContainer.appendChild(markerContainer);
-      
-      // Add all markers to our export container
-      markers.forEach(marker => {
-        const clone = marker.cloneNode(true) as HTMLElement;
-        
-        // Remove any tooltip/dropdown menus from the clone
-        const dropdowns = clone.querySelectorAll('[role="menu"]');
-        dropdowns.forEach(dropdown => dropdown.parentNode?.removeChild(dropdown));
-        
-        // Position marker correctly
-        const rect = (marker as HTMLElement).getBoundingClientRect();
-        const pdfRect = pdfDocument.getBoundingClientRect();
-        
-        // Calculate position relative to the PDF
-        const x = rect.left - pdfRect.left;
-        const y = rect.top - pdfRect.top;
-        
-        // Apply positioning
-        clone.style.position = 'absolute';
-        clone.style.left = `${x}px`;
-        clone.style.top = `${y}px`;
-        clone.style.transform = 'translate(0, 0)'; // Reset any transform
-        clone.style.zIndex = '1000'; // Ensure markers are on top
-        
-        markerContainer.appendChild(clone);
-      });
-      
-      // Force layout calculation
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      // Use html2canvas to capture everything
-      const canvas = await html2canvas(exportContainer, {
-        scale: 2, // Higher resolution
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: 'white',
-        logging: false
-      });
-      
-      // Convert to image data
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Create PDF with appropriate dimensions
-      const width = canvas.width;
-      const height = canvas.height;
+      // Calculate PDF dimensions (keeping aspect ratio)
       const pdf = new jsPDF({
-        orientation: width > height ? 'landscape' : 'portrait',
+        orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
         unit: 'mm',
-        format: [width * 0.264583, height * 0.264583] // Convert pixels to mm
+        format: [pdfWidth * 0.264583, pdfHeight * 0.264583] // Convert pixels to mm
       });
       
       // Add the image to the PDF
@@ -1417,9 +1452,6 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         pdf.internal.pageSize.getWidth(), 
         pdf.internal.pageSize.getHeight()
       );
-      
-      // Clean up
-      document.body.removeChild(exportContainer);
       
       // Download the PDF
       const filename = `${selectedFloorplan.name}_with_markers.pdf`;
@@ -1899,7 +1931,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             cursor: 'move',
                             fontSize: isNote ? '12px' : '14px',
                             fontWeight: 'bold',
-                            transform: `translate(-50%, -50%) scale(${1/pdfScale})`,
+                            transform: `translate(-50%, -50%)`,
                             transformOrigin: 'center',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                           }}
