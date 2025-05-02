@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
 import { pgTable, serial, text, timestamp, integer, boolean, json, real, uuid, jsonb } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // Users
 export const users = pgTable("users", {
