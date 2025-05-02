@@ -1,286 +1,262 @@
-import type { Express, Request, Response } from 'express';
-import { eq, and } from 'drizzle-orm';
+import { Express, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { 
-  floorplanLayers,
-  floorplanCalibrations,
-  markerComments,
-  InsertFloorplanLayer,
-  InsertFloorplanCalibration,
-  InsertMarkerComment,
-  insertFloorplanLayerSchema,
-  insertFloorplanCalibrationSchema,
-  insertMarkerCommentSchema
-} from '@shared/schema';
+import { floorplanMarkers, floorplanLayers, floorplanCalibrations, insertFloorplanMarkerSchema, insertFloorplanLayerSchema, insertFloorplanCalibrationSchema } from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 
 /**
- * Register enhanced floorplan routes for Bluebeam-like functionality
- * 
- * These routes handle advanced PDF coordinate system features:
- * - Layers for organizing markers by type
- * - Calibration data for scale measurements
- * - Comments for marker collaboration
+ * Register enhanced floorplan routes
+ * These routes handle the professional PDF annotation features
  */
-export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: any) {
-  
-  /**
-   * Layers API Endpoints
-   */
-  
-  // Get all layers for a floorplan
-  app.get('/api/floorplans/:floorplanId/layers', isAuthenticated, async (req: Request, res: Response) => {
+export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (req: Request, res: Response, next: NextFunction) => void) {
+  // Get all markers for a floorplan page
+  app.get('/api/enhanced-floorplan/:floorplanId/markers', async (req: Request, res: Response) => {
     try {
-      const floorplanId = parseInt(req.params.floorplanId);
-      const layers = await db.select().from(floorplanLayers).where(eq(floorplanLayers.floorplan_id, floorplanId));
+      const { floorplanId } = req.params;
+      const { page } = req.query;
       
-      res.json(layers);
+      // Parse page number
+      const pageNumber = page ? parseInt(page as string) : 1;
+      
+      // Query all markers for the specified floorplan and page
+      const markers = await db
+        .select()
+        .from(floorplanMarkers)
+        .where(
+          and(
+            eq(floorplanMarkers.floorplan_id, parseInt(floorplanId)),
+            eq(floorplanMarkers.page, pageNumber)
+          )
+        );
+      
+      res.status(200).json(markers);
     } catch (error) {
-      console.error('Error fetching floorplan layers:', error);
-      res.status(500).json({ message: 'Error fetching floorplan layers' });
+      console.error('Error fetching floorplan markers:', error);
+      res.status(500).json({ error: 'Failed to fetch floorplan markers' });
     }
   });
   
-  // Create a new layer for a floorplan
-  app.post('/api/floorplans/:floorplanId/layers', isAuthenticated, async (req: Request, res: Response) => {
+  // Create a new marker
+  app.post('/api/enhanced-floorplan/:floorplanId/markers', async (req: Request, res: Response) => {
     try {
-      const floorplanId = parseInt(req.params.floorplanId);
-      
-      // Validate layer data
-      const result = insertFloorplanLayerSchema.safeParse({
+      const { floorplanId } = req.params;
+      const markerData = {
         ...req.body,
-        floorplan_id: floorplanId
-      });
-      
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: 'Invalid layer data', 
-          errors: result.error.errors
-        });
-      }
-      
-      // Insert layer
-      const [newLayer] = await db.insert(floorplanLayers)
-        .values(result.data as InsertFloorplanLayer)
-        .returning();
-      
-      res.status(201).json(newLayer);
-    } catch (error) {
-      console.error('Error creating floorplan layer:', error);
-      res.status(500).json({ message: 'Error creating floorplan layer' });
-    }
-  });
-  
-  // Update layer properties (visibility, color, name)
-  app.patch('/api/floorplan-layers/:layerId', isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const layerId = parseInt(req.params.layerId);
-      
-      // Get current layer data
-      const [currentLayer] = await db.select().from(floorplanLayers).where(eq(floorplanLayers.id, layerId));
-      
-      if (!currentLayer) {
-        return res.status(404).json({ message: 'Layer not found' });
-      }
-      
-      // Update only provided fields
-      const updatedData = {
-        ...currentLayer,
-        ...req.body,
-        updated_at: new Date()
+        floorplan_id: parseInt(floorplanId),
+        version: 1,
+        unique_id: `marker_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       };
       
-      const [updatedLayer] = await db.update(floorplanLayers)
-        .set(updatedData)
-        .where(eq(floorplanLayers.id, layerId))
+      // Validate the marker data
+      const validatedData = insertFloorplanMarkerSchema.parse(markerData);
+      
+      // Insert the marker
+      const [marker] = await db
+        .insert(floorplanMarkers)
+        .values(validatedData)
         .returning();
       
-      res.json(updatedLayer);
+      res.status(201).json(marker);
+    } catch (error) {
+      console.error('Error creating floorplan marker:', error);
+      res.status(500).json({ error: 'Failed to create floorplan marker' });
+    }
+  });
+  
+  // Update a marker
+  app.put('/api/enhanced-floorplan/markers/:markerId', async (req: Request, res: Response) => {
+    try {
+      const { markerId } = req.params;
+      
+      // Get the current marker to increment version
+      const [currentMarker] = await db
+        .select()
+        .from(floorplanMarkers)
+        .where(eq(floorplanMarkers.id, parseInt(markerId)));
+      
+      if (!currentMarker) {
+        return res.status(404).json({ error: 'Marker not found' });
+      }
+      
+      // Update the marker with incremented version
+      const [updatedMarker] = await db
+        .update(floorplanMarkers)
+        .set({
+          ...req.body,
+          version: (currentMarker.version || 1) + 1
+        })
+        .where(eq(floorplanMarkers.id, parseInt(markerId)))
+        .returning();
+      
+      res.status(200).json(updatedMarker);
+    } catch (error) {
+      console.error('Error updating floorplan marker:', error);
+      res.status(500).json({ error: 'Failed to update floorplan marker' });
+    }
+  });
+  
+  // Delete a marker
+  app.delete('/api/enhanced-floorplan/markers/:markerId', async (req: Request, res: Response) => {
+    try {
+      const { markerId } = req.params;
+      
+      await db
+        .delete(floorplanMarkers)
+        .where(eq(floorplanMarkers.id, parseInt(markerId)));
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting floorplan marker:', error);
+      res.status(500).json({ error: 'Failed to delete floorplan marker' });
+    }
+  });
+  
+  // Get all layers for a floorplan
+  app.get('/api/enhanced-floorplan/:floorplanId/layers', async (req: Request, res: Response) => {
+    try {
+      const { floorplanId } = req.params;
+      
+      const layers = await db
+        .select()
+        .from(floorplanLayers)
+        .where(eq(floorplanLayers.floorplan_id, parseInt(floorplanId)));
+      
+      res.status(200).json(layers);
+    } catch (error) {
+      console.error('Error fetching floorplan layers:', error);
+      res.status(500).json({ error: 'Failed to fetch floorplan layers' });
+    }
+  });
+  
+  // Create a new layer
+  app.post('/api/enhanced-floorplan/:floorplanId/layers', async (req: Request, res: Response) => {
+    try {
+      const { floorplanId } = req.params;
+      const layerData = {
+        ...req.body,
+        floorplan_id: parseInt(floorplanId)
+      };
+      
+      // Validate the layer data
+      const validatedData = insertFloorplanLayerSchema.parse(layerData);
+      
+      // Insert the layer
+      const [layer] = await db
+        .insert(floorplanLayers)
+        .values(validatedData)
+        .returning();
+      
+      res.status(201).json(layer);
+    } catch (error) {
+      console.error('Error creating floorplan layer:', error);
+      res.status(500).json({ error: 'Failed to create floorplan layer' });
+    }
+  });
+  
+  // Update a layer
+  app.put('/api/enhanced-floorplan/layers/:layerId', async (req: Request, res: Response) => {
+    try {
+      const { layerId } = req.params;
+      
+      const [updatedLayer] = await db
+        .update(floorplanLayers)
+        .set(req.body)
+        .where(eq(floorplanLayers.id, parseInt(layerId)))
+        .returning();
+      
+      res.status(200).json(updatedLayer);
     } catch (error) {
       console.error('Error updating floorplan layer:', error);
-      res.status(500).json({ message: 'Error updating floorplan layer' });
+      res.status(500).json({ error: 'Failed to update floorplan layer' });
     }
   });
   
   // Delete a layer
-  app.delete('/api/floorplan-layers/:layerId', isAuthenticated, async (req: Request, res: Response) => {
+  app.delete('/api/enhanced-floorplan/layers/:layerId', async (req: Request, res: Response) => {
     try {
-      const layerId = parseInt(req.params.layerId);
+      const { layerId } = req.params;
       
-      const [deletedLayer] = await db.delete(floorplanLayers)
-        .where(eq(floorplanLayers.id, layerId))
-        .returning();
+      await db
+        .delete(floorplanLayers)
+        .where(eq(floorplanLayers.id, parseInt(layerId)));
       
-      if (!deletedLayer) {
-        return res.status(404).json({ message: 'Layer not found' });
-      }
-      
-      res.json({ message: 'Layer deleted', layer: deletedLayer });
+      res.status(204).send();
     } catch (error) {
       console.error('Error deleting floorplan layer:', error);
-      res.status(500).json({ message: 'Error deleting floorplan layer' });
+      res.status(500).json({ error: 'Failed to delete floorplan layer' });
     }
   });
-  
-  /**
-   * Calibration API Endpoints
-   */
   
   // Get calibration for a floorplan page
-  app.get('/api/floorplans/:floorplanId/calibrations/:page', isAuthenticated, async (req: Request, res: Response) => {
+  app.get('/api/floorplans/:floorplanId/calibrations/:page', async (req: Request, res: Response) => {
     try {
-      const floorplanId = parseInt(req.params.floorplanId);
-      const page = parseInt(req.params.page);
+      const { floorplanId, page } = req.params;
       
-      const [calibration] = await db.select().from(floorplanCalibrations)
-        .where(and(
-          eq(floorplanCalibrations.floorplan_id, floorplanId),
-          eq(floorplanCalibrations.page, page)
-        ));
+      const [calibration] = await db
+        .select()
+        .from(floorplanCalibrations)
+        .where(
+          and(
+            eq(floorplanCalibrations.floorplan_id, parseInt(floorplanId)),
+            eq(floorplanCalibrations.page, parseInt(page))
+          )
+        );
       
       if (!calibration) {
-        return res.status(404).json({ message: 'Calibration not found' });
+        return res.status(404).json({ error: 'Calibration not found' });
       }
       
-      res.json(calibration);
+      res.status(200).json(calibration);
     } catch (error) {
-      console.error('Error fetching calibration:', error);
-      res.status(500).json({ message: 'Error fetching calibration' });
+      console.error('Error fetching floorplan calibration:', error);
+      res.status(500).json({ error: 'Failed to fetch floorplan calibration' });
     }
   });
   
-  // Create or update calibration for a floorplan page
-  app.post('/api/floorplans/:floorplanId/calibrations/:page', isAuthenticated, async (req: Request, res: Response) => {
+  // Create/update calibration for a floorplan page
+  app.post('/api/floorplans/:floorplanId/calibrations/:page', async (req: Request, res: Response) => {
     try {
-      const floorplanId = parseInt(req.params.floorplanId);
-      const page = parseInt(req.params.page);
-      
-      // Validate calibration data
-      const result = insertFloorplanCalibrationSchema.safeParse({
+      const { floorplanId, page } = req.params;
+      const calibrationData = {
         ...req.body,
-        floorplan_id: floorplanId,
-        page
-      });
+        floorplan_id: parseInt(floorplanId),
+        page: parseInt(page)
+      };
       
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: 'Invalid calibration data', 
-          errors: result.error.errors
-        });
-      }
+      // Validate the calibration data
+      const validatedData = insertFloorplanCalibrationSchema.parse(calibrationData);
       
-      // Check if calibration exists for this page
-      const [existingCalibration] = await db.select().from(floorplanCalibrations)
-        .where(and(
-          eq(floorplanCalibrations.floorplan_id, floorplanId),
-          eq(floorplanCalibrations.page, page)
-        ));
+      // Check if calibration exists
+      const [existingCalibration] = await db
+        .select()
+        .from(floorplanCalibrations)
+        .where(
+          and(
+            eq(floorplanCalibrations.floorplan_id, parseInt(floorplanId)),
+            eq(floorplanCalibrations.page, parseInt(page))
+          )
+        );
+      
+      let calibration;
       
       if (existingCalibration) {
         // Update existing calibration
-        const [updatedCalibration] = await db.update(floorplanCalibrations)
-          .set({
-            ...result.data as InsertFloorplanCalibration,
-            updated_at: new Date()
-          })
+        [calibration] = await db
+          .update(floorplanCalibrations)
+          .set(validatedData)
           .where(eq(floorplanCalibrations.id, existingCalibration.id))
           .returning();
-        
-        return res.json(updatedCalibration);
+      } else {
+        // Insert new calibration
+        [calibration] = await db
+          .insert(floorplanCalibrations)
+          .values(validatedData)
+          .returning();
       }
       
-      // Insert new calibration
-      const [newCalibration] = await db.insert(floorplanCalibrations)
-        .values(result.data as InsertFloorplanCalibration)
-        .returning();
-      
-      res.status(201).json(newCalibration);
+      res.status(201).json(calibration);
     } catch (error) {
-      console.error('Error setting calibration:', error);
-      res.status(500).json({ message: 'Error setting calibration' });
-    }
-  });
-  
-  /**
-   * Marker Comments API Endpoints
-   */
-  
-  // Get comments for a marker
-  app.get('/api/markers/:markerId/comments', isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const markerId = parseInt(req.params.markerId);
-      
-      const comments = await db.select().from(markerComments)
-        .where(eq(markerComments.marker_id, markerId));
-      
-      res.json(comments);
-    } catch (error) {
-      console.error('Error fetching marker comments:', error);
-      res.status(500).json({ message: 'Error fetching marker comments' });
-    }
-  });
-  
-  // Add a comment to a marker
-  app.post('/api/markers/:markerId/comments', isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const markerId = parseInt(req.params.markerId);
-      
-      // Get user information for the comment
-      const authorId = req.user?.id;
-      const authorName = req.user?.fullName || req.user?.username || 'Anonymous';
-      
-      // Validate comment data
-      const result = insertMarkerCommentSchema.safeParse({
-        ...req.body,
-        marker_id: markerId,
-        author_id: authorId,
-        author_name: authorName
-      });
-      
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: 'Invalid comment data', 
-          errors: result.error.errors
-        });
-      }
-      
-      // Insert comment
-      const [newComment] = await db.insert(markerComments)
-        .values(result.data as InsertMarkerComment)
-        .returning();
-      
-      res.status(201).json(newComment);
-    } catch (error) {
-      console.error('Error adding marker comment:', error);
-      res.status(500).json({ message: 'Error adding marker comment' });
-    }
-  });
-  
-  // Delete a comment
-  app.delete('/api/marker-comments/:commentId', isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const commentId = parseInt(req.params.commentId);
-      
-      // Check if user has permission to delete the comment
-      const [comment] = await db.select().from(markerComments)
-        .where(eq(markerComments.id, commentId));
-      
-      if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
-      }
-      
-      // Allow comment deletion if user is the author or has admin role
-      if (req.user?.id !== comment.author_id && req.user?.role !== 'admin') {
-        return res.status(403).json({ message: 'Permission denied' });
-      }
-      
-      const [deletedComment] = await db.delete(markerComments)
-        .where(eq(markerComments.id, commentId))
-        .returning();
-      
-      res.json({ message: 'Comment deleted', comment: deletedComment });
-    } catch (error) {
-      console.error('Error deleting marker comment:', error);
-      res.status(500).json({ message: 'Error deleting marker comment' });
+      console.error('Error creating/updating floorplan calibration:', error);
+      res.status(500).json({ error: 'Failed to create/update floorplan calibration' });
     }
   });
 }
