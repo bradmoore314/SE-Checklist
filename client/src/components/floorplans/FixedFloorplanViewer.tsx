@@ -955,6 +955,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     console.log('PDF container rect:', rect);
     
     // Calculate position in PDF coordinates, accounting for scale
+    // We divide by pdfScale to convert from screen coordinates to PDF coordinates
+    // This ensures the marker position is stored in the PDF's coordinate system
     const x = Math.floor((e.clientX - rect.left) / pdfScale);
     const y = Math.floor((e.clientY - rect.top) / pdfScale);
     console.log('Calculated coordinates:', { x, y, clientX: e.clientX, clientY: e.clientY, scale: pdfScale });
@@ -1316,7 +1318,7 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
         throw new Error('PDF canvas not found');
       }
 
-      // Get the dimensions of the PDF canvas
+      // Get the dimensions of the PDF canvas (actual PDF dimensions)
       const pdfWidth = pdfCanvas.width;
       const pdfHeight = pdfCanvas.height;
       
@@ -1364,9 +1366,10 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
           height = size * equipmentMarkerScale;
         }
         
-        // Calculate position (adjusted for the marker being centered)
-        const x = marker.position_x * pdfScale;
-        const y = marker.position_y * pdfScale;
+        // Use original PDF coordinates without scaling for export
+        // This ensures markers appear at their correct position regardless of current view zoom
+        const x = marker.position_x;
+        const y = marker.position_y;
 
         // Draw the marker
         ctx.save();
@@ -1933,11 +1936,13 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             cursor: 'move',
                             fontSize: isNote ? '12px' : '14px',
                             fontWeight: 'bold',
-                            transform: `translate(-50%, -50%) scale(${1})`,
+                            // Apply inverse scaling to markers based on PDF zoom
+                            // This counteracts the scaling from the PDF container
+                            transform: `translate(-50%, -50%) scale(${1/pdfScale})`,
                             transformOrigin: 'center',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                            // Make sure marker stays fixed relative to PDF during zoom
-                            position: 'absolute'
+                            position: 'absolute',
+                            zIndex: 1000
                           }}
                           onMouseDown={(e) => {
                             e.stopPropagation();
