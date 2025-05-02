@@ -13,6 +13,8 @@ import {
   parseCoordinatesFromAddress,
   getPlaceAutocomplete
 } from './services/location-services';
+import { registerEnhancedFloorplanRoutes } from './enhanced-floorplan-routes';
+import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
