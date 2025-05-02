@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { pgTable, serial, text, timestamp, integer, boolean, json } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean, json, real, uuid, jsonb } from "drizzle-orm/pg-core";
 
 // Users
 export const users = pgTable("users", {
@@ -127,22 +127,136 @@ export type Floorplan = typeof floorplans.$inferSelect;
 export const insertFloorplanSchema = createInsertSchema(floorplans).omit({ id: true, created_at: true, updated_at: true });
 export type InsertFloorplan = z.infer<typeof insertFloorplanSchema>;
 
-// Floorplan Markers
-export const floorplanMarkers = pgTable("floorplan_markers", {
+// Define marker types enum for better type safety
+export const MARKER_TYPE = {
+  ACCESS_POINT: 'access_point',
+  CAMERA: 'camera',
+  ELEVATOR: 'elevator',
+  INTERCOM: 'intercom',
+  NOTE: 'note',
+  MEASUREMENT: 'measurement',
+  AREA: 'area',
+  CIRCLE: 'circle',
+  RECTANGLE: 'rectangle',
+  TEXT: 'text',
+  CALLOUT: 'callout',
+  ARROW: 'arrow',
+  CLOUD: 'cloud',
+  POLYGON: 'polygon',
+  STAMP: 'stamp',
+} as const;
+
+export type MarkerType = typeof MARKER_TYPE[keyof typeof MARKER_TYPE];
+
+// Layers for organizing annotations
+export const floorplanLayers = pgTable("floorplan_layers", {
+  id: serial("id").primaryKey(),
+  floorplan_id: integer("floorplan_id").notNull(),
+  name: text("name").notNull(),
+  color: text("color").notNull(),
+  visible: boolean("visible").notNull().default(true),
+  order: integer("order").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type FloorplanLayer = typeof floorplanLayers.$inferSelect;
+export const insertFloorplanLayerSchema = createInsertSchema(floorplanLayers).omit({ id: true, created_at: true, updated_at: true });
+export type InsertFloorplanLayer = z.infer<typeof insertFloorplanLayerSchema>;
+
+// Calibration data for scale management
+export const floorplanCalibrations = pgTable("floorplan_calibrations", {
   id: serial("id").primaryKey(),
   floorplan_id: integer("floorplan_id").notNull(),
   page: integer("page").notNull(),
-  marker_type: text("marker_type").notNull(), // 'access_point', 'camera', etc.
-  equipment_id: integer("equipment_id").notNull(),
-  position_x: integer("position_x").notNull(),
-  position_y: integer("position_y").notNull(),
-  label: text("label"),
+  real_world_distance: real("real_world_distance").notNull(),
+  pdf_distance: real("pdf_distance").notNull(),
+  unit: text("unit").notNull(), // feet, meters, inches
+  start_x: real("start_x").notNull(),
+  start_y: real("start_y").notNull(),
+  end_x: real("end_x").notNull(),
+  end_y: real("end_y").notNull(),
   created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type FloorplanCalibration = typeof floorplanCalibrations.$inferSelect;
+export const insertFloorplanCalibrationSchema = createInsertSchema(floorplanCalibrations).omit({ id: true, created_at: true, updated_at: true });
+export type InsertFloorplanCalibration = z.infer<typeof insertFloorplanCalibrationSchema>;
+
+// Enhanced Floorplan Markers with PDF coordinate system
+export const floorplanMarkers = pgTable("floorplan_markers", {
+  id: serial("id").primaryKey(),
+  unique_id: uuid("unique_id").notNull().defaultRandom(), // Unique ID for version tracking
+  floorplan_id: integer("floorplan_id").notNull(),
+  page: integer("page").notNull(),
+  marker_type: text("marker_type").notNull(), // Using MarkerType
+  equipment_id: integer("equipment_id"), // Now optional - not all markers are equipment
+  layer_id: integer("layer_id"), // Reference to the layer
+  
+  // PDF coordinate system (in PDF points, 1/72 inch)
+  position_x: real("position_x").notNull(),
+  position_y: real("position_y").notNull(),
+  
+  // For measurements, shapes, etc.
+  end_x: real("end_x"),
+  end_y: real("end_y"),
+  width: real("width"),
+  height: real("height"),
+  rotation: real("rotation").default(0),
+  
+  // Styling properties
+  color: text("color"),
+  fill_color: text("fill_color"),
+  opacity: real("opacity").default(1),
+  line_width: real("line_width").default(1),
+  
+  // Content-related fields
+  label: text("label"),
+  text_content: text("text_content"),
+  font_size: real("font_size"),
+  font_family: text("font_family"),
+  
+  // For complex shapes - store as JSON array of points
+  points: jsonb("points"),
+  
+  // Authoring and collaboration information
+  author_id: integer("author_id"),
+  author_name: text("author_name"),
+  
+  // Version control
+  version: integer("version").notNull().default(1),
+  parent_id: integer("parent_id"), // For tracking changes - references previous version
+  
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
 });
 
 export type FloorplanMarker = typeof floorplanMarkers.$inferSelect;
-export const insertFloorplanMarkerSchema = createInsertSchema(floorplanMarkers).omit({ id: true, created_at: true });
+export const insertFloorplanMarkerSchema = createInsertSchema(floorplanMarkers)
+  .omit({ 
+    id: true, 
+    unique_id: true, 
+    version: true, 
+    created_at: true, 
+    updated_at: true
+  });
 export type InsertFloorplanMarker = z.infer<typeof insertFloorplanMarkerSchema>;
+
+// Comment system for markers - enables collaboration
+export const markerComments = pgTable("marker_comments", {
+  id: serial("id").primaryKey(),
+  marker_id: integer("marker_id").notNull(),
+  author_id: integer("author_id"),
+  author_name: text("author_name").notNull(),
+  text: text("text").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type MarkerComment = typeof markerComments.$inferSelect;
+export const insertMarkerCommentSchema = createInsertSchema(markerComments).omit({ id: true, created_at: true, updated_at: true });
+export type InsertMarkerComment = z.infer<typeof insertMarkerCommentSchema>;
 
 // Access Points
 export const accessPoints = pgTable("access_points", {
