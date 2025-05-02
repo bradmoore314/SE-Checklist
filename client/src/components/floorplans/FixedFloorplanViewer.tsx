@@ -1296,54 +1296,129 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return;
     }
     
+    // Show loading toast
+    toast({
+      title: "Preparing Export",
+      description: "Creating floorplan export with markers...",
+    });
+    
     try {
-      // Create a temporary container for the export
-      const exportContainer = document.createElement('div');
-      exportContainer.style.position = 'absolute';
-      exportContainer.style.left = '-9999px';
-      exportContainer.style.top = '-9999px';
-      document.body.appendChild(exportContainer);
+      // Import required libraries
+      const html2canvasModule = await import('html2canvas');
+      const html2canvas = html2canvasModule.default;
+      const { jsPDF } = await import('jspdf');
       
-      // Clone the PDF container
-      const pdfContainer = containerRef.current.querySelector('.pdf-container')?.cloneNode(true) as HTMLElement;
-      if (!pdfContainer) {
-        throw new Error('PDF container not found');
+      // Find the PDF viewer container
+      const pdfViewerContainer = containerRef.current.querySelector('[data-testid="pdf-container"]') || 
+                               containerRef.current.querySelector('.pdf-container');
+      if (!pdfViewerContainer) {
+        throw new Error('PDF viewer container not found');
       }
       
-      // Reset styles for clean export
-      pdfContainer.style.transform = 'none';
-      pdfContainer.style.width = 'auto';
-      pdfContainer.style.height = 'auto';
-      pdfContainer.style.position = 'relative';
-      pdfContainer.style.overflow = 'visible';
+      // Get the actual PDF document element 
+      const pdfDocument = pdfViewerContainer.querySelector('.react-pdf__Document');
+      if (!pdfDocument) {
+        throw new Error('PDF document element not found');
+      }
       
-      // Add it to the export container
-      exportContainer.appendChild(pdfContainer);
+      // Create a temporary container for the export that includes both PDF and markers
+      const exportContainer = document.createElement('div');
+      exportContainer.style.position = 'fixed';
+      exportContainer.style.left = '-9999px';
+      exportContainer.style.top = '-9999px';
+      exportContainer.style.background = 'white';
+      document.body.appendChild(exportContainer);
       
-      // Force recalculation of layout
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Clone the PDF document with the page and markers
+      const pdfClone = pdfDocument.cloneNode(true) as HTMLElement;
+      exportContainer.appendChild(pdfClone);
       
-      // Use html2canvas to capture the container
-      const canvas = await html2canvas(pdfContainer, {
-        scale: 2,
+      // Make sure the container is properly sized
+      const originalRect = pdfDocument.getBoundingClientRect();
+      exportContainer.style.width = `${originalRect.width}px`;
+      exportContainer.style.height = `${originalRect.height}px`;
+      pdfClone.style.width = `${originalRect.width}px`;
+      pdfClone.style.height = `${originalRect.height}px`;
+      
+      // Apply the correct scaling to match the original document
+      const pdfDocumentWrapper = pdfClone.querySelector('[data-page-number="1"]')?.parentElement;
+      if (pdfDocumentWrapper) {
+        pdfDocumentWrapper.style.transform = `scale(${pdfScale})`;
+        pdfDocumentWrapper.style.transformOrigin = 'top left';
+      }
+      
+      // Clone all marker elements 
+      const markers = pdfViewerContainer.querySelectorAll('[id^="marker-"]');
+      const markerContainer = document.createElement('div');
+      markerContainer.style.position = 'absolute';
+      markerContainer.style.top = '0';
+      markerContainer.style.left = '0';
+      markerContainer.style.width = '100%';
+      markerContainer.style.height = '100%';
+      markerContainer.style.pointerEvents = 'none';
+      exportContainer.appendChild(markerContainer);
+      
+      // Add all markers to our export container
+      markers.forEach(marker => {
+        const clone = marker.cloneNode(true) as HTMLElement;
+        
+        // Remove any tooltip/dropdown menus from the clone
+        const dropdowns = clone.querySelectorAll('[role="menu"]');
+        dropdowns.forEach(dropdown => dropdown.parentNode?.removeChild(dropdown));
+        
+        // Position marker correctly
+        const rect = (marker as HTMLElement).getBoundingClientRect();
+        const pdfRect = pdfDocument.getBoundingClientRect();
+        
+        // Calculate position relative to the PDF
+        const x = rect.left - pdfRect.left;
+        const y = rect.top - pdfRect.top;
+        
+        // Apply positioning
+        clone.style.position = 'absolute';
+        clone.style.left = `${x}px`;
+        clone.style.top = `${y}px`;
+        clone.style.transform = 'translate(0, 0)'; // Reset any transform
+        clone.style.zIndex = '1000'; // Ensure markers are on top
+        
+        markerContainer.appendChild(clone);
+      });
+      
+      // Force layout calculation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Use html2canvas to capture everything
+      const canvas = await html2canvas(exportContainer, {
+        scale: 2, // Higher resolution
         useCORS: true,
         allowTaint: true,
-        backgroundColor: null,
+        backgroundColor: 'white',
+        logging: false
       });
       
-      // Create a PDF with the canvas contents
+      // Convert to image data
       const imgData = canvas.toDataURL('image/png');
       
-      // Use the PDF's original dimensions
+      // Create PDF with appropriate dimensions
+      const width = canvas.width;
+      const height = canvas.height;
       const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
+        orientation: width > height ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: [width * 0.264583, height * 0.264583] // Convert pixels to mm
       });
       
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      // Add the image to the PDF
+      pdf.addImage(
+        imgData, 
+        'PNG', 
+        0, 
+        0, 
+        pdf.internal.pageSize.getWidth(), 
+        pdf.internal.pageSize.getHeight()
+      );
       
-      // Clean up the temporary container
+      // Clean up
       document.body.removeChild(exportContainer);
       
       // Download the PDF
