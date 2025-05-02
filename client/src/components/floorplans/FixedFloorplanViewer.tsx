@@ -1005,8 +1005,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
     const marker = markers.find(m => m.id === resizingMarker);
     if (!marker || marker.marker_type !== 'note') return;
     
-    const dx = e.clientX - initialResizeData.mousePos.x;
-    const dy = e.clientY - initialResizeData.mousePos.y;
+    // Calculate delta considering the PDF scale
+    const dx = (e.clientX - initialResizeData.mousePos.x) / pdfScale;
+    const dy = (e.clientY - initialResizeData.mousePos.y) / pdfScale;
     
     const newWidth = Math.max(100, initialResizeData.size.width + dx);
     const newHeight = Math.max(30, initialResizeData.size.height + dy);
@@ -1038,8 +1039,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       return;
     }
     
-    const dx = e.clientX - initialResizeData.mousePos.x;
-    const dy = e.clientY - initialResizeData.mousePos.y;
+    // Calculate delta considering the PDF scale
+    const dx = (e.clientX - initialResizeData.mousePos.x) / pdfScale;
+    const dy = (e.clientY - initialResizeData.mousePos.y) / pdfScale;
     
     const newWidth = Math.max(100, initialResizeData.size.width + dx);
     const newHeight = Math.max(30, initialResizeData.size.height + dy);
@@ -1931,9 +1933,11 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             cursor: 'move',
                             fontSize: isNote ? '12px' : '14px',
                             fontWeight: 'bold',
-                            transform: `translate(-50%, -50%)`,
+                            transform: `translate(-50%, -50%) scale(${1})`,
                             transformOrigin: 'center',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                            // Make sure marker stays fixed relative to PDF during zoom
+                            position: 'absolute'
                           }}
                           onMouseDown={(e) => {
                             e.stopPropagation();
