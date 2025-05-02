@@ -590,7 +590,7 @@ export const EnhancedFloorplanViewer = ({
         line.setAttribute('stroke-width', '2');
         line.setAttribute('stroke-dasharray', '5,5');
         
-        svgLayerRef.current.appendChild(line);
+        svgLayerRef.current?.appendChild(line);
         
         // If we have calibration, show distance
         if (calibration) {
@@ -603,8 +603,8 @@ export const EnhancedFloorplanViewer = ({
           const realDistance = (pdfDistance * calibration.real_world_distance) / calibration.pdf_distance;
           
           // Create or update distance label
-          const tempLabel = svgLayerRef.current.querySelector('.temp-measure-label');
-          if (tempLabel) {
+          const tempLabel = svgLayerRef.current?.querySelector('.temp-measure-label');
+          if (tempLabel && svgLayerRef.current) {
             svgLayerRef.current.removeChild(tempLabel);
           }
           
@@ -623,7 +623,7 @@ export const EnhancedFloorplanViewer = ({
           text.setAttribute('paint-order', 'stroke');
           text.textContent = `${realDistance.toFixed(2)} ${calibration.unit}`;
           
-          svgLayerRef.current.appendChild(text);
+          svgLayerRef.current?.appendChild(text);
         }
       }
     }
@@ -679,12 +679,12 @@ export const EnhancedFloorplanViewer = ({
       if (svgLayerRef.current) {
         const tempLine = svgLayerRef.current.querySelector('.temp-measure-line');
         if (tempLine) {
-          svgLayerRef.current.removeChild(tempLine);
+          svgLayerRef.current?.removeChild(tempLine);
         }
         
         const tempLabel = svgLayerRef.current.querySelector('.temp-measure-label');
         if (tempLabel) {
-          svgLayerRef.current.removeChild(tempLabel);
+          svgLayerRef.current?.removeChild(tempLabel);
         }
       }
     }
