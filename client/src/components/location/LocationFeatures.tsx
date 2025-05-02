@@ -411,17 +411,13 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         
         const blob = await response.blob();
         
-        // Convert blob to base64
-        const reader = new FileReader();
-        
-        // Use a Promise to handle the async FileReader
-        base64Result = await new Promise<string>((resolve, reject) => {
+        // First convert the image to base64 for processing
+        const imageBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
           reader.onloadend = () => {
             try {
               const base64data = reader.result as string;
-              // Extract the base64 part (remove data:image/png;base64, prefix)
-              const base64Image = base64data.split(',')[1];
-              resolve(base64Image);
+              resolve(base64data);
             } catch (err) {
               reject(new Error('Failed to process image data'));
             }
@@ -430,7 +426,43 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           reader.readAsDataURL(blob);
         });
         
-        // Create floorplan with the satellite image
+        // Create an image element to get dimensions
+        const img = new Image();
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error('Failed to load image for processing'));
+          img.src = imageBase64;
+        });
+        
+        // Import jsPDF dynamically
+        const { jsPDF } = await import('jspdf');
+        
+        // Create a new PDF with the image dimensions (converted from px to mm)
+        // Use a 1:1 ratio for better quality
+        const pdfWidth = img.width * 0.264583; // convert pixels to mm (1 px = 0.264583 mm)
+        const pdfHeight = img.height * 0.264583;
+        
+        // Create PDF document
+        const pdf = new jsPDF({
+          orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
+          unit: 'mm',
+          format: [pdfWidth, pdfHeight]
+        });
+        
+        // Add the image to the PDF
+        pdf.addImage(
+          imageBase64,
+          'PNG',
+          0,
+          0,
+          pdfWidth,
+          pdfHeight
+        );
+        
+        // Convert PDF to base64
+        base64Result = pdf.output('datauristring').split(',')[1];
+        
+        // Create floorplan with the satellite image as PDF
         await createFloorplanMutation.mutateAsync({
           project_id: project.id,
           name: floorplanName,
