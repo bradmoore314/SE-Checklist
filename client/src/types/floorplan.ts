@@ -140,4 +140,5 @@ export interface PDFExportData {
   projectName: string;
   userName: string;
   exportDate: Date;
+  orientation?: 'portrait' | 'landscape';
 }

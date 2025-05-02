@@ -1,4 +1,16 @@
 import jsPDF from 'jspdf';
+
+// Extended jsPDF type that includes additional methods used in this utility
+interface ExtendedJsPDF extends jsPDF {
+  moveTo(x: number, y: number): this;
+  lineTo(x: number, y: number): this;
+  stroke(): this;
+  polygon(points: Array<[number, number]>, style: string): this;
+  translateY(y: number): this;
+  translateX(x: number): this;
+  rotate(angle: number): this;
+  GState(options: { opacity: number }): any;
+}
 import { MarkerData, LayerData, CalibrationData, PDFExportData, ExportOptions } from '@/types/floorplan';
 
 /**
@@ -41,7 +53,7 @@ export const exportAnnotatedPDF = async (
       orientation: mergedOptions.orientation,
       unit: 'pt',
       format: mergedOptions.pageSize === 'auto' ? [pageWidth, pageHeight] : mergedOptions.pageSize,
-    });
+    }) as ExtendedJsPDF;
     
     // Add the original PDF page as the background
     await addOriginalPageAsBackground(pdfDoc, data.pdfDataUrl, data.currentPage);
@@ -102,7 +114,7 @@ export const exportAnnotatedPDF = async (
  * Add the original PDF page as the background of the new PDF
  */
 const addOriginalPageAsBackground = async (
-  pdfDoc: jsPDF,
+  pdfDoc: ExtendedJsPDF,
   pdfDataUrl: string,
   pageNumber: number
 ): Promise<void> => {
@@ -144,7 +156,7 @@ const addOriginalPageAsBackground = async (
  * Render a marker on the PDF
  */
 const renderMarker = async (
-  pdfDoc: jsPDF,
+  pdfDoc: ExtendedJsPDF,
   marker: MarkerData,
   data: PDFExportData
 ): Promise<void> => {
@@ -217,7 +229,7 @@ const renderMarker = async (
 };
 
 // Individual drawing functions for different marker types
-const drawRectangle = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawRectangle = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, width, height, fill_color } = marker;
   
   if (width && height) {
