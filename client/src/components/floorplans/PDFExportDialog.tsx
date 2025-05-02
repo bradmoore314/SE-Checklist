@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { exportAnnotatedPDF, PDFExportData, ExportOptions } from '@/utils/pdfExporter';
-import { MarkerData, LayerData, CalibrationData } from '@/types/floorplan';
+import exportAnnotatedPDF from '@/utils/pdfExporter';
+import { MarkerData, LayerData, CalibrationData, PDFExportData, ExportOptions } from '@/types/floorplan';
 import { 
   Dialog,
   DialogContent,
@@ -84,7 +84,7 @@ export const PDFExportDialog = ({
   });
   
   const handleOptionChange = (key: keyof ExportOptions, value: any) => {
-    setOptions((prev) => ({
+    setOptions((prev: ExportOptions) => ({
       ...prev,
       [key]: value,
     }));
@@ -128,11 +128,11 @@ export const PDFExportDialog = ({
         title: 'Export Successful',
         description: 'Your PDF has been generated successfully.',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Export failed:', error);
       toast({
         title: 'Export Failed',
-        description: `Error generating PDF: ${error.message}`,
+        description: `Error generating PDF: ${error?.message || 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
