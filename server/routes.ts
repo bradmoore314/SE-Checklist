@@ -2798,6 +2798,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Register enhanced Bluebeam-like PDF annotation routes
+  registerEnhancedFloorplanRoutes(app, isAuthenticated);
+  registerEnhancedMarkerAPI(app, isAuthenticated);
+  
   const httpServer = createServer(app);
   return httpServer;
 }

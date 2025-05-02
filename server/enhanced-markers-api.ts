@@ -26,24 +26,24 @@ export function registerEnhancedMarkerAPI(app: Express, isAuthenticated: any) {
       const layerId = req.query.layer_id ? parseInt(req.query.layer_id as string) : undefined;
       const markerType = req.query.marker_type as string | undefined;
       
-      // Build query with optional filters
-      let query = db.select().from(floorplanMarkers)
-        .where(eq(floorplanMarkers.floorplan_id, floorplanId));
+      // Build conditions for the query
+      let conditions = [eq(floorplanMarkers.floorplan_id, floorplanId)];
       
       if (page !== undefined) {
-        query = query.where(eq(floorplanMarkers.page, page));
+        conditions.push(eq(floorplanMarkers.page, page));
       }
       
       if (layerId !== undefined) {
-        query = query.where(eq(floorplanMarkers.layer_id, layerId));
+        conditions.push(eq(floorplanMarkers.layer_id, layerId));
       }
       
       if (markerType) {
-        query = query.where(eq(floorplanMarkers.marker_type, markerType));
+        conditions.push(eq(floorplanMarkers.marker_type, markerType));
       }
       
-      // Execute the query
-      const markers = await query;
+      // Execute the query with all conditions
+      const markers = await db.select().from(floorplanMarkers)
+        .where(and(...conditions));
       res.json(markers);
     } catch (error) {
       console.error('Error fetching enhanced markers:', error);

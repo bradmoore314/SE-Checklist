@@ -61,6 +61,7 @@ function Router() {
       <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
+      <ProtectedRoute path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
       
       {/* Quote Review */}
       <ProtectedRoute path="/projects/:projectId/quote-review" component={QuoteReviewPage} />
