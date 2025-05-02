@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2, Layout, Map } from 'lucide-react';
-import FixedFloorplanViewer from '@/components/floorplans/FixedFloorplanViewer';
+import { useEffect } from 'react';
+import FixedFloorplanViewer from '@/components/floorplans/FixedFloorplanViewerTemp';
 import { useProject } from '@/context/ProjectContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';

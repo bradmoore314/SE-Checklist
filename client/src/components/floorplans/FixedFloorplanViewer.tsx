@@ -1312,8 +1312,14 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       const html2canvas = html2canvasModule.default;
       const { jsPDF } = await import('jspdf');
 
+      // Get the entire PDF container with markers
+      const pdfContainer = containerRef.current.querySelector('.pdf-container') as HTMLElement;
+      if (!pdfContainer) {
+        throw new Error('PDF container not found');
+      }
+
       // First, we'll get the PDF canvas directly - this is the rendered PDF content
-      const pdfCanvas = containerRef.current.querySelector('.pdf-page canvas') as HTMLCanvasElement;
+      const pdfCanvas = pdfContainer.querySelector('.pdf-page canvas') as HTMLCanvasElement;
       if (!pdfCanvas) {
         throw new Error('PDF canvas not found');
       }
@@ -1335,107 +1341,73 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
       // First draw the PDF canvas to our combined canvas
       ctx.drawImage(pdfCanvas, 0, 0);
       
-      // Now manually draw each marker at its correct position
-      for (const marker of markers) {
-        // Get marker styling
-        const isNote = marker.marker_type === 'note';
-        const markerNumber = marker.label || getMarkerNumber(marker.id).toString();
-        const backgroundColor = getMarkerColor(marker.marker_type);
-        const textColor = getMarkerTextColor(marker.marker_type);
-        const borderColor = getMarkerBorderColor(marker.marker_type);
+      // Use html2canvas to capture the exact appearance of all markers
+      const markersContainer = pdfContainer.querySelector('.markers-container') as HTMLElement;
+      if (markersContainer) {
+        // Temporarily show all markers at full opacity for capturing
+        const markers = markersContainer.querySelectorAll('[id^="marker-"]');
         
-        // Get the marker size from our defaults
-        const defaultSize = defaultMarkerSizes[marker.marker_type];
-        let width, height;
-        
-        if (isNote) {
-          const customSize = markerSize[marker.id];
-          if (customSize) {
-            width = customSize.width;
-            height = customSize.height;
-          } else if (typeof defaultSize === 'object') {
-            width = defaultSize.width;
-            height = defaultSize.height;
+        // Draw all markers on the canvas manually
+        for (const marker of Array.from(markers)) {
+          const markerElement = marker as HTMLElement;
+          const markerRect = markerElement.getBoundingClientRect();
+          const containerRect = pdfContainer.getBoundingClientRect();
+          
+          // Calculate the position relative to the PDF container
+          const relX = markerRect.left - containerRect.left + markerRect.width / 2;
+          const relY = markerRect.top - containerRect.top + markerRect.height / 2;
+          
+          // Convert to PDF coordinates
+          const x = relX / pdfScale;
+          const y = relY / pdfScale;
+          
+          // Get marker styling from the actual marker
+          const backgroundColor = getComputedStyle(markerElement).backgroundColor;
+          const textColor = getComputedStyle(markerElement).color;
+          const borderColor = getComputedStyle(markerElement).borderColor;
+          const label = markerElement.innerText.trim();
+          const isCircular = getComputedStyle(markerElement).borderRadius === '50%';
+          
+          if (isCircular) {
+            // Draw circular marker
+            const radius = markerRect.width / 2 / pdfScale;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = backgroundColor;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = borderColor;
+            ctx.stroke();
+            
+            // Draw the label text
+            ctx.fillStyle = textColor;
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x, y);
           } else {
-            width = defaultSize as number;
-            height = defaultSize as number;
-          }
-        } else {
-          const size = typeof defaultSize === 'number' ? defaultSize : defaultSize.width;
-          width = size * equipmentMarkerScale;
-          height = size * equipmentMarkerScale;
-        }
-        
-        // Use original PDF coordinates without scaling for export
-        // This ensures markers appear at their correct position regardless of current view zoom
-        const x = marker.position_x;
-        const y = marker.position_y;
-
-        // Draw the marker
-        ctx.save();
-        
-        if (isNote) {
-          // Draw note rectangle
-          ctx.fillStyle = backgroundColor;
-          ctx.strokeStyle = borderColor;
-          ctx.lineWidth = 2;
-          const rectX = x - width/2;
-          const rectY = y - height/2;
-          
-          // Draw rectangle with rounded corners
-          ctx.beginPath();
-          ctx.roundRect(rectX, rectY, width, height, 4);
-          ctx.fill();
-          ctx.stroke();
-          
-          // Draw the text
-          ctx.fillStyle = textColor;
-          ctx.font = '12px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          
-          // Wrap text if needed
-          if (marker.label) {
-            const maxWidth = width - 10;
-            const lineHeight = 14;
-            const words = marker.label.split(' ');
-            let line = '';
-            let yPos = rectY + 15;
+            // Draw rectangular note
+            const width = markerRect.width / pdfScale;
+            const height = markerRect.height / pdfScale;
             
-            for (let i = 0; i < words.length; i++) {
-              const testLine = line + words[i] + ' ';
-              const metrics = ctx.measureText(testLine);
-              
-              if (metrics.width > maxWidth && i > 0) {
-                ctx.fillText(line, x, yPos);
-                line = words[i] + ' ';
-                yPos += lineHeight;
-              } else {
-                line = testLine;
-              }
-            }
+            ctx.fillStyle = backgroundColor;
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 2;
             
-            ctx.fillText(line, x, yPos);
+            // Draw rectangle with rounded corners
+            ctx.beginPath();
+            ctx.roundRect(x - width/2, y - height/2, width, height, 4);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Draw the text (simplistic approach)
+            ctx.fillStyle = textColor;
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label || "Note", x, y);
           }
-        } else {
-          // Draw circular marker
-          ctx.beginPath();
-          ctx.arc(x, y, width/2, 0, Math.PI * 2);
-          ctx.fillStyle = backgroundColor;
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = borderColor;
-          ctx.stroke();
-          
-          // Draw the marker number/label
-          ctx.fillStyle = textColor;
-          ctx.font = 'bold 14px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(markerNumber, x, y);
         }
-        
-        ctx.restore();
       }
       
       // Create a PDF with the combined canvas
@@ -1883,8 +1855,9 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                       </div>
                     )}
                     
-                    {/* Render markers */}
-                    {!isLoadingMarkers && markers.map((marker: FloorplanMarker) => {
+                    {/* Separate component for markers to fix syntax issues */}
+                    <div className="absolute inset-0 overflow-visible markers-container">
+                      {!isLoadingMarkers && markers.map((marker: FloorplanMarker) => {
                       const isNote = marker.marker_type === 'note';
                       const markerNumber = marker.label || getMarkerNumber(marker.id).toString();
                       const backgroundColor = getMarkerColor(marker.marker_type);
@@ -1936,9 +1909,8 @@ const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, 
                             cursor: 'move',
                             fontSize: isNote ? '12px' : '14px',
                             fontWeight: 'bold',
-                            // Apply inverse scaling to markers based on PDF zoom
-                            // This counteracts the scaling from the PDF container
-                            transform: `translate(-50%, -50%) scale(${1/pdfScale})`,
+                            // Maintain consistent sizing regardless of zoom
+                            transform: `translate(-50%, -50%)`,
                             transformOrigin: 'center',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
                             position: 'absolute',
