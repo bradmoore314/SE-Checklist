@@ -310,7 +310,8 @@ const drawPolygon = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
     const style = fill_color ? 'FD' : 'S'; // FD = fill and stroke, S = stroke only
     
     // Create polygon path
-    const pointsArray = points.map(p => [p.x, p.y]);
+    // Cast each point to the expected tuple type for polygon
+    const pointsArray: [number, number][] = points.map(p => [p.x, p.y] as [number, number]);
     pdfDoc.polygon(pointsArray, style);
   }
 };
@@ -330,7 +331,7 @@ const drawAccessPoint = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawCamera = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawCamera = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, label, rotation } = marker;
   
   // Save the current transform
@@ -368,7 +369,7 @@ const drawCamera = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawMeasurement = (pdfDoc: jsPDF, marker: MarkerData, data: PDFExportData): void => {
+const drawMeasurement = (pdfDoc: ExtendedJsPDF, marker: MarkerData, data: PDFExportData): void => {
   const { position_x, position_y, end_x, end_y, label } = marker;
   
   if (end_x !== undefined && end_y !== undefined) {
@@ -426,7 +427,7 @@ const drawMeasurement = (pdfDoc: jsPDF, marker: MarkerData, data: PDFExportData)
   }
 };
 
-const drawGenericMarker = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawGenericMarker = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   // Fallback for any unhandled marker types
   const { position_x, position_y, label } = marker;
   
@@ -445,7 +446,7 @@ const drawGenericMarker = (pdfDoc: jsPDF, marker: MarkerData): void => {
  * Add calibration information to the export
  */
 const addCalibrationToExport = (
-  pdfDoc: jsPDF,
+  pdfDoc: ExtendedJsPDF,
   calibration: CalibrationData,
   data: PDFExportData
 ): void => {
@@ -477,7 +478,7 @@ const addCalibrationToExport = (
  * Add a watermark to the PDF
  */
 const addWatermark = (
-  pdfDoc: jsPDF,
+  pdfDoc: ExtendedJsPDF,
   text: string,
   pageWidth: number,
   pageHeight: number
@@ -511,7 +512,7 @@ const addWatermark = (
  * Add metadata to the PDF
  */
 const addMetadata = (
-  pdfDoc: jsPDF,
+  pdfDoc: ExtendedJsPDF,
   data: PDFExportData,
   visibleLayers: LayerData[]
 ): void => {
@@ -523,8 +524,8 @@ const addMetadata = (
     subject: 'Annotated Floor Plan',
     author: userName,
     keywords: 'floor plan, annotations, blueprint',
-    creator: 'SiteWalk Checklist App',
-    producer: 'SiteWalk PDF Exporter'
+    creator: 'SiteWalk Checklist App'
+    // Note: 'producer' is automatically set by jsPDF itself
   });
   
   // Add footer with metadata
