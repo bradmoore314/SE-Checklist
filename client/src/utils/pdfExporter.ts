@@ -242,7 +242,7 @@ const drawRectangle = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawCircle = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawCircle = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, width, fill_color } = marker;
   
   if (width) {
@@ -254,7 +254,7 @@ const drawCircle = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawLine = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawLine = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, end_x, end_y } = marker;
   
   if (end_x !== undefined && end_y !== undefined) {
@@ -262,7 +262,7 @@ const drawLine = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawText = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawText = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, text_content, font_size, font_family, color } = marker;
   
   if (text_content) {
@@ -286,7 +286,7 @@ const drawText = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawFreehand = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawFreehand = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { points } = marker;
   
   if (points && points.length >= 2) {
@@ -303,7 +303,7 @@ const drawFreehand = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawPolygon = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawPolygon = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { points, fill_color } = marker;
   
   if (points && points.length >= 3) {
@@ -315,7 +315,7 @@ const drawPolygon = (pdfDoc: jsPDF, marker: MarkerData): void => {
   }
 };
 
-const drawAccessPoint = (pdfDoc: jsPDF, marker: MarkerData): void => {
+const drawAccessPoint = (pdfDoc: ExtendedJsPDF, marker: MarkerData): void => {
   const { position_x, position_y, label } = marker;
   
   // Draw a door symbol as a rectangle with a small gap
