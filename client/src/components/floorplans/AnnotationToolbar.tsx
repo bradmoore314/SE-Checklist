@@ -47,6 +47,8 @@ export type AnnotationTool =
   | 'highlight'
   | 'access_point'
   | 'camera'
+  | 'intercom'
+  | 'elevator'
   | 'delete';
 
 interface AnnotationToolbarProps {

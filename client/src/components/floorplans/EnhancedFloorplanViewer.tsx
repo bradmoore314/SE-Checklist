@@ -558,6 +558,30 @@ export const EnhancedFloorplanViewer = ({
       setDrawStartY(coords.y);
       setDrawEndX(coords.x);
       setDrawEndY(coords.y);
+    } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
+      // Handle equipment placement
+      const coords = screenToPdfCoordinates(e.clientX, e.clientY);
+      
+      // Create a new marker
+      const newMarker = {
+        floorplan_id: floorplan.id,
+        page: currentPage,
+        marker_type: toolMode,
+        position_x: coords.x,
+        position_y: coords.y,
+        label: `New ${toolMode.replace('_', ' ')}`,
+        color: '#3b82f6', // Default blue color
+        version: 1
+      };
+      
+      // Send to server
+      createMarkerMutation.mutate(newMarker);
+      
+      // Show toast notification
+      toast({
+        title: 'Adding Equipment',
+        description: `Placed ${toolMode.replace('_', ' ')} at coordinates (${Math.round(coords.x)}, ${Math.round(coords.y)})`
+      });
     }
   };
   
