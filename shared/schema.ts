@@ -156,7 +156,7 @@ export const floorplanLayers = pgTable("floorplan_layers", {
   name: text("name").notNull(),
   color: text("color").notNull(),
   visible: boolean("visible").notNull().default(true),
-  order: integer("order").notNull(),
+  order_index: integer("order_index").notNull(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
