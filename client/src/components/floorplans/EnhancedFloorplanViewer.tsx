@@ -682,13 +682,16 @@ export const EnhancedFloorplanViewer = ({
             tooltip.setAttribute('id', `tooltip-${marker.id}`);
             
             // Get label text with more detail and formatting
-            let labelText = marker.label || `${marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ')} ${marker.id}`;
+            let labelText = marker.label || `${marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ')} ${markerNumber}`;
             
             // Add equipment type prefix if not already included
             const typePrefix = marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ');
             if (!labelText.includes(typePrefix)) {
               labelText = `${typePrefix}: ${labelText}`;
             }
+            
+            // Add unique ID to the label
+            labelText = `${labelText} (ID: ${marker.unique_id.substring(0, 8)})`;
             
             // Calculate appropriate size based on text length
             const labelWidth = Math.max(labelText.length * 7 + 20, 120);
@@ -761,9 +764,10 @@ export const EnhancedFloorplanViewer = ({
               // Use CSS class for controlling visibility based on showAllLabels state
               smallLabel.setAttribute('class', showAllLabels ? 'marker-permanent-label marker-label-visible' : 'marker-permanent-label');
               
-              // Get short version of label (first few characters)
-              const shortLabel = labelText.length > 15 ? 
-                `${labelText.substring(0, 13)}...` : labelText;
+              // Get short version of label (first few characters, possibly including ID)
+              let shortLabel = `${typePrefix} ${markerNumber}`;
+              // Add shortened unique ID
+              shortLabel += ` (${marker.unique_id.substring(0, 6)})`;
               
               // Small background
               const smallLabelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
