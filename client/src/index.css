@@ -145,4 +145,36 @@
     75% { opacity: 1; }
     100% { opacity: 0; }
   }
+  
+  /* FloorplanViewer marker selection styles */
+  .marker-group {
+    transition: transform 0.2s ease-out;
+  }
+  
+  .marker-group:hover {
+    cursor: pointer;
+    filter: brightness(1.2);
+    z-index: 10;
+  }
+  
+  .marker-group.selected-marker {
+    z-index: 100;
+  }
+  
+  .selected-marker .marker-circle {
+    stroke-width: 3px !important;
+    stroke-dasharray: 3, 2 !important;
+    animation: pulse-outline 1.5s infinite;
+  }
+  
+  .selected-marker .marker-number {
+    font-weight: bold;
+    filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.7));
+  }
+  
+  @keyframes pulse-outline {
+    0% { stroke-opacity: 0.8; }
+    50% { stroke-opacity: 1; }
+    100% { stroke-opacity: 0.8; }
+  }
 }
