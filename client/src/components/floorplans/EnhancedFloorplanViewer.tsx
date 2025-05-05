@@ -336,19 +336,18 @@ export const EnhancedFloorplanViewer = ({
           element.setAttribute('stroke-width', '1');
           element.setAttribute('opacity', `${opacity}`);
           
-          // Add label
-          if (marker.label) {
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', `${x}`);
-            text.setAttribute('y', `${y}`);
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('dy', '0.3em');
-            text.setAttribute('font-size', '10px');
-            text.setAttribute('font-weight', 'bold');
-            text.setAttribute('fill', 'white');
-            text.textContent = marker.label;
-            svgLayerRef.current?.appendChild(text);
-          }
+          // Add label - either use the label from database or the marker's ID
+          const labelText = marker.label || `#${marker.id}`;
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', `${x}`);
+          text.setAttribute('y', `${y}`);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('dy', '0.3em');
+          text.setAttribute('font-size', '10px');
+          text.setAttribute('font-weight', 'bold');
+          text.setAttribute('fill', 'white');
+          text.textContent = labelText;
+          svgLayerRef.current?.appendChild(text);
           break;
           
         case 'measurement':
@@ -698,10 +697,14 @@ export const EnhancedFloorplanViewer = ({
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     
-    if (toolMode === 'zoom') {
+    // Always allow zoom with ctrl key, otherwise only in zoom mode
+    if (toolMode === 'zoom' || e.ctrlKey) {
       // Zoom in/out
       const delta = e.deltaY > 0 ? 0.9 : 1.1; // Zoom factor
       setScale(prev => Math.max(0.1, Math.min(10, prev * delta)));
+      
+      // Re-render page at new scale
+      renderPage(currentPage);
     }
   };
   
