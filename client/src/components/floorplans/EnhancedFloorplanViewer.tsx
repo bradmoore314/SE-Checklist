@@ -313,11 +313,37 @@ export const EnhancedFloorplanViewer = ({
       const x = marker.position_x * pdfToViewportScale;
       const y = marker.position_y * pdfToViewportScale;
       
-      // Default styling
-      const color = marker.color || (layer ? layer.color : '#3b82f6');
-      const fillColor = marker.fill_color || 'none';
+      // Default styling based on marker type
+      let color = marker.color || (layer ? layer.color : '#3b82f6');
+      let fillColor = marker.fill_color || 'none';
       const strokeWidth = marker.line_width || 2;
       const opacity = marker.opacity || 1;
+      
+      // Set type-specific colors if not overridden by marker.color
+      if (!marker.color) {
+        switch (marker.marker_type) {
+          case 'access_point':
+            color = '#16a34a'; // Green
+            fillColor = 'rgba(22, 163, 74, 0.1)'; // Light green fill
+            break;
+          case 'camera':
+            color = '#2563eb'; // Blue
+            fillColor = 'rgba(37, 99, 235, 0.1)'; // Light blue fill
+            break;
+          case 'intercom':
+            color = '#9333ea'; // Purple
+            fillColor = 'rgba(147, 51, 234, 0.1)'; // Light purple fill
+            break;
+          case 'elevator':
+            color = '#f97316'; // Orange
+            fillColor = 'rgba(249, 115, 22, 0.1)'; // Light orange fill
+            break;
+          case 'note':
+            color = '#f59e0b'; // Amber
+            fillColor = 'rgba(245, 158, 11, 0.1)'; // Light amber fill
+            break;
+        }
+      }
       
       // Create different elements based on marker type
       let element;
@@ -333,7 +359,7 @@ export const EnhancedFloorplanViewer = ({
           group.setAttribute('data-marker-id', marker.id.toString());
           
           // Choose colors based on marker type
-          let fillColor = color;
+          let markerFillColor = color;
           let textColor = 'white';
           let markerNumber = marker.id; // Default to ID
           let typeSymbol = '';
@@ -341,26 +367,26 @@ export const EnhancedFloorplanViewer = ({
           // Apply professional styling based on marker type
           switch (marker.marker_type) {
             case 'access_point':
-              fillColor = '#10b981'; // Green
+              markerFillColor = '#10b981'; // Green
               typeSymbol = 'A'; 
               break;
             case 'camera':
-              fillColor = '#3b82f6'; // Blue
+              markerFillColor = '#3b82f6'; // Blue
               typeSymbol = 'C';
               break;
             case 'elevator':
-              fillColor = '#f59e0b'; // Orange
+              markerFillColor = '#f59e0b'; // Orange
               typeSymbol = 'E';
               break;
             case 'intercom':
-              fillColor = '#8b5cf6'; // Purple
+              markerFillColor = '#8b5cf6'; // Purple
               typeSymbol = 'I';
               break;
           }
           
           // Use custom color if specified
           if (marker.color) {
-            fillColor = marker.color;
+            markerFillColor = marker.color;
           }
           
           // Create drop shadow filter for the marker
