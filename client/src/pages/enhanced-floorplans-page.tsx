@@ -387,11 +387,13 @@ function EnhancedFloorplansPage() {
         </div>
         
         <div className="flex-1 border rounded-lg overflow-hidden">
-          {/* Using SimpleEnhancedViewer as a fallback until database migration is complete */}
-          <SimpleEnhancedViewer
+          {/* Enhanced viewer with PDF coordinate system and Bluebeam-like features */}
+          <EnhancedFloorplanViewer
             key={viewerKey}
             floorplan={floorplan}
             currentPage={currentPage}
+            toolMode={toolMode}
+            layers={layers || []}
             onPageChange={setCurrentPage}
           />
         </div>
