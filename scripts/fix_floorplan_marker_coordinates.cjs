@@ -5,7 +5,17 @@
  * type instead of INTEGER to properly support precise PDF coordinates
  */
 
-const { pool } = require('../server/db');
+const { Pool } = require('pg');
+
+// Setup connection pool
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable not set');
+}
+
+const pool = new Pool({
+  connectionString: DATABASE_URL
+});
 
 async function runMigration() {
   console.log('Starting coordinate type migration...');
