@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Pointer,
   Hand,
   MoveHorizontal,
   ZoomIn,
-  RotateCcw,
+  ZoomOut,
   RotateCw,
   Square,
   Circle,
-  Highlighter,
-  PenTool,
   Type,
   LineChart,
   Ruler,
-  Image,
   Camera,
   DoorClosed,
   Magnet,
@@ -23,7 +20,6 @@ import {
   Layers,
   Copy,
   FileOutput,
-  FileCheck,
   Pipette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -71,6 +67,7 @@ interface AnnotationToolbarProps {
 
 /**
  * Professional PDF annotation toolbar similar to Bluebeam's interface
+ * With responsive design for mobile and tablet
  */
 export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   activeTool,
@@ -89,10 +86,265 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   canCopy,
   zoomLevel
 }) => {
+  // Mobile detection state
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Add event listener for screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    handleResize(); // Check on initial load
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
+  // Mobile toolbar - collapsed state
+  if (isMobile && !mobileMenuOpen) {
+    return (
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-background border rounded-lg shadow-lg p-1.5 flex space-x-1">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex items-center"
+        >
+          <Layers className="h-4 w-4 mr-1" />
+          <span className="text-xs">Tools</span>
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onToolChange('pan')}
+          className={activeTool === 'pan' ? 'bg-primary/20' : ''}
+        >
+          <Hand className="h-4 w-4" />
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onToolChange('access_point')}
+          className={activeTool === 'access_point' ? 'bg-primary/20' : ''}
+        >
+          <DoorClosed className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+  
+  // Mobile toolbar - expanded state
+  if (isMobile && mobileMenuOpen) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 z-20 bg-background border-t p-4 shadow-lg">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-sm font-semibold">Annotation Tools</h3>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setMobileMenuOpen(false)}
+            className="h-7 w-7 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-xs font-medium mb-1 text-muted-foreground">Navigation</h4>
+            <div className="grid grid-cols-4 gap-1">
+              <Button
+                variant={activeTool === 'select' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('select')}
+                className="h-9 w-full"
+              >
+                <Pointer className="h-4 w-4 mr-1" />
+                <span className="text-xs">Select</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'pan' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('pan')}
+                className="h-9 w-full"
+              >
+                <Hand className="h-4 w-4 mr-1" />
+                <span className="text-xs">Pan</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onZoomIn}
+                className="h-9 w-full"
+              >
+                <ZoomIn className="h-4 w-4 mr-1" />
+                <span className="text-xs">Zoom+</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onZoomOut}
+                className="h-9 w-full"
+              >
+                <ZoomOut className="h-4 w-4 mr-1" />
+                <span className="text-xs">Zoom-</span>
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-xs font-medium mb-1 text-muted-foreground">Equipment</h4>
+            <div className="grid grid-cols-4 gap-1">
+              <Button
+                variant={activeTool === 'access_point' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('access_point')}
+                className="h-9 w-full bg-green-50"
+              >
+                <DoorClosed className="h-4 w-4 mr-1 text-green-600" />
+                <span className="text-xs">Access</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'camera' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('camera')}
+                className="h-9 w-full bg-blue-50"
+              >
+                <Camera className="h-4 w-4 mr-1 text-blue-600" />
+                <span className="text-xs">Camera</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'intercom' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('intercom')}
+                className="h-9 w-full bg-purple-50"
+              >
+                <Magnet className="h-4 w-4 mr-1 text-purple-600" />
+                <span className="text-xs">Intercom</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'elevator' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('elevator')}
+                className="h-9 w-full bg-orange-50"
+              >
+                <MoveHorizontal className="h-4 w-4 mr-1 text-orange-600" />
+                <span className="text-xs">Elevator</span>
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-xs font-medium mb-1 text-muted-foreground">Drawing</h4>
+            <div className="grid grid-cols-4 gap-1">
+              <Button
+                variant={activeTool === 'rectangle' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('rectangle')}
+                className="h-9 w-full"
+              >
+                <Square className="h-4 w-4 mr-1" />
+                <span className="text-xs">Rect</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'circle' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('circle')}
+                className="h-9 w-full"
+              >
+                <Circle className="h-4 w-4 mr-1" />
+                <span className="text-xs">Circle</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'measure' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('measure')}
+                className="h-9 w-full"
+              >
+                <Ruler className="h-4 w-4 mr-1" />
+                <span className="text-xs">Measure</span>
+              </Button>
+              
+              <Button
+                variant={activeTool === 'text' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('text')}
+                className="h-9 w-full"
+              >
+                <Type className="h-4 w-4 mr-1" />
+                <span className="text-xs">Text</span>
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-xs font-medium mb-1 text-muted-foreground">Actions</h4>
+            <div className="grid grid-cols-4 gap-1">
+              <Button
+                variant={showLayers ? 'default' : 'ghost'}
+                size="sm"
+                onClick={onLayersToggle}
+                className="h-9 w-full"
+              >
+                <Layers className="h-4 w-4 mr-1" />
+                <span className="text-xs">Layers</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onSave}
+                className="h-9 w-full"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                <span className="text-xs">Save</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRotate.bind(null, 'cw')}
+                className="h-9 w-full"
+              >
+                <RotateCw className="h-4 w-4 mr-1" />
+                <span className="text-xs">Rotate</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onDelete}
+                disabled={!canDelete}
+                className="h-9 w-full"
+              >
+                <Trash2 className={`h-4 w-4 mr-1 ${!canDelete ? 'text-muted-foreground' : 'text-red-500'}`} />
+                <span className="text-xs">Delete</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Desktop view
   return (
     <TooltipProvider>
       <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 bg-background border rounded-lg shadow-lg flex flex-col p-2 space-y-2">
-        {/* Toolbar header with title */}
         <div className="flex items-center justify-center border-b pb-1 mb-1">
           <span className="text-xs font-semibold text-primary">Annotation Tools</span>
         </div>
@@ -269,7 +521,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 className={`h-9 w-9 rounded-md ${activeTool !== 'access_point' ? 'bg-green-50 hover:bg-green-100' : ''}`}
               >
                 <DoorClosed className={`h-5 w-5 ${activeTool !== 'access_point' ? 'text-green-600' : ''}`} />
-                <span className="absolute -top-1 -right-1 text-[10px] bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center">1</span>
+                <span className="absolute -top-1 -right-1 text-[10px] bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center">A</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">Access Point (A)</TooltipContent>
@@ -284,7 +536,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 className={`h-9 w-9 rounded-md ${activeTool !== 'camera' ? 'bg-blue-50 hover:bg-blue-100' : ''}`}
               >
                 <Camera className={`h-5 w-5 ${activeTool !== 'camera' ? 'text-blue-600' : ''}`} />
-                <span className="absolute -top-1 -right-1 text-[10px] bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                <span className="absolute -top-1 -right-1 text-[10px] bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center">C</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">Camera (C)</TooltipContent>
@@ -299,7 +551,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 className={`h-9 w-9 rounded-md ${activeTool !== 'intercom' ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
               >
                 <Magnet className={`h-5 w-5 ${activeTool !== 'intercom' ? 'text-purple-600' : ''}`} />
-                <span className="absolute -top-1 -right-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                <span className="absolute -top-1 -right-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center">I</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">Intercom</TooltipContent>
@@ -314,7 +566,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 className={`h-9 w-9 rounded-md ${activeTool !== 'elevator' ? 'bg-orange-50 hover:bg-orange-100' : ''}`}
               >
                 <MoveHorizontal className={`h-5 w-5 ${activeTool !== 'elevator' ? 'text-orange-600' : ''}`} />
-                <span className="absolute -top-1 -right-1 text-[10px] bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center">4</span>
+                <span className="absolute -top-1 -right-1 text-[10px] bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center">E</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">Elevator</TooltipContent>
