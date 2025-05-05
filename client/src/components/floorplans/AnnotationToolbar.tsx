@@ -334,6 +334,22 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
             <h4 className="text-xs font-medium mb-1 text-muted-foreground">Actions</h4>
             <div className="grid grid-cols-4 gap-1">
               <Button
+                variant={showAllLabels ? 'default' : 'ghost'}
+                size="sm"
+                onClick={onToggleLabels}
+                className="h-9 w-full"
+                disabled={!onToggleLabels}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-1">
+                  <path d="M4 9h16" />
+                  <path d="M4 15h16" />
+                  <path d="M10 3v18" />
+                  <rect x="16" y="6" width="4" height="4" rx="1" />
+                </svg>
+                <span className="text-xs">Labels</span>
+              </Button>
+              
+              <Button
                 variant={showLayers ? 'default' : 'ghost'}
                 size="sm"
                 onClick={onLayersToggle}
@@ -663,6 +679,26 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
         
         {/* File operations */}
         <div className="flex flex-row items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleLabels}
+                className={`h-8 w-8 rounded-md ${showAllLabels ? 'bg-primary/10 border-primary' : ''}`}
+                disabled={!onToggleLabels}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 9h16" />
+                  <path d="M4 15h16" />
+                  <path d="M10 3v18" />
+                  <rect x="16" y="6" width="4" height="4" rx="1" />
+                </svg>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Show All Labels</TooltipContent>
+          </Tooltip>
+          
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
