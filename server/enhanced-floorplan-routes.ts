@@ -57,6 +57,29 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       if (req.body.height !== undefined) processedData.height = parseFloat(req.body.height);
       if (req.body.rotation !== undefined) processedData.rotation = parseFloat(req.body.rotation);
       
+      // For marker types that are equipment, set a default equipment_id of 0
+      // This is a temporary solution until we properly integrate with equipment management
+      if (['access_point', 'camera', 'intercom', 'elevator'].includes(processedData.marker_type) && 
+          !processedData.equipment_id) {
+        processedData.equipment_id = 0; // Use dummy ID to satisfy not-null constraint
+      }
+      
+      // Add a default color per marker type if not specified
+      if (!processedData.color) {
+        const colorMap = {
+          'access_point': '#10b981', // green
+          'camera': '#3b82f6',      // blue
+          'intercom': '#8b5cf6',    // purple
+          'elevator': '#f59e0b',    // orange
+          'rectangle': '#64748b',   // slate
+          'circle': '#64748b',      // slate
+          'line': '#64748b',        // slate
+          'text': '#000000',        // black
+          'measure': '#ef4444',     // red
+        };
+        processedData.color = colorMap[processedData.marker_type] || '#64748b';
+      }
+      
       // Validate the marker data
       const validatedData = insertFloorplanMarkerSchema.parse(processedData);
       
