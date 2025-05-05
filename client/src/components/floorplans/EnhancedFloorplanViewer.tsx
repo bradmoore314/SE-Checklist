@@ -136,6 +136,14 @@ export const EnhancedFloorplanViewer = ({
   } | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   
+  // State for equipment form dialog
+  const [showEquipmentFormDialog, setShowEquipmentFormDialog] = useState(false);
+  const [newMarkerData, setNewMarkerData] = useState<{
+    position_x: number;
+    position_y: number;
+    marker_type: string;
+  } | null>(null);
+  
   // Convert PDF data URL to Uint8Array for PDF.js
   const loadPDF = async () => {
     setIsLoading(true);
