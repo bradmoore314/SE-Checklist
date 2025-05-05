@@ -27,7 +27,7 @@ import {
   Pipette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
@@ -90,8 +90,9 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   zoomLevel
 }) => {
   return (
-    <div className="flex flex-col p-1 bg-background border rounded-md shadow-sm">
-      {/* Navigation Tools */}
+    <TooltipProvider>
+      <div className="flex flex-col p-1 bg-background border rounded-md shadow-sm">
+        {/* Navigation Tools */}
       <div className="flex space-x-1 mb-1">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -466,7 +467,8 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
           <TooltipContent>Delete (Del)</TooltipContent>
         </Tooltip>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
 
