@@ -616,9 +616,9 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             </div>
           )}
           
-          {/* Map Section - Made square and taller */}
+          {/* Map Section - Mobile Responsive */}
           {coordinates && mapData && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-2">
               <div className="relative aspect-square overflow-hidden">
                 <img 
                   src={mapData.url} 
@@ -626,20 +626,20 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                   className="w-full h-full object-cover rounded-md border cursor-pointer" 
                   onClick={() => setShowMapFullscreen(true)}
                 />
-                <div className="absolute bottom-3 right-3 flex space-x-2">
+                <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 flex space-x-2">
                   <Button 
                     size="sm" 
                     variant="secondary" 
-                    className="bg-white/70 hover:bg-white/90"
+                    className="bg-white/70 hover:bg-white/90 text-xs sm:text-sm py-1 h-auto sm:h-9 px-2 sm:px-3"
                     onClick={() => setShowAddToFloorplanDialog(true)}
                   >
-                    <PlusCircle className="h-4 w-4 mr-1" />
-                    Add to Floorplans
+                    <PlusCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                    <span className="hidden xs:inline">Add to </span>Floorplans
                   </Button>
                 </div>
               </div>
               
-              <div className="text-sm text-gray-500">
+              <div className="text-xs sm:text-sm text-gray-500 truncate">
                 {coordinates.formattedAddress}
               </div>
             </div>
@@ -654,19 +654,19 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         </CardContent>
       </Card>
       
-      {/* Address Edit Dialog */}
+      {/* Address Edit Dialog - Mobile Responsive */}
       <Dialog open={showAddressEditDialog} onOpenChange={setShowAddressEditDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Update Site Address</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-md max-h-[95vh] overflow-y-auto p-3 sm:p-6">
+          <DialogHeader className="pb-2 sm:pb-4">
+            <DialogTitle className="text-base sm:text-lg">Update Site Address</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Enter a new address to update the location information and weather data.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="address" className="text-sm font-medium text-gray-700">
+          <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
+            <div className="space-y-1 sm:space-y-2">
+              <label htmlFor="address" className="text-xs sm:text-sm font-medium text-gray-700">
                 Site Address
               </label>
               <div className="relative">
@@ -675,32 +675,32 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                   placeholder="Start typing an address..."
                   value={pendingAddress}
                   onChange={(e) => setPendingAddress(e.target.value)}
-                  className="w-full"
+                  className="w-full text-xs sm:text-sm h-8 sm:h-10"
                 />
                 {isSearching && (
-                  <div className="absolute right-2 top-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin text-gray-400" />
                   </div>
                 )}
               </div>
               
-              {/* API Status Information */}
+              {/* API Status Information - Mobile Responsive */}
               {addressApiStatus.status === 'unauthorized' && (
-                <div className="mt-2 text-sm flex items-center p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
-                  <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+                <div className="mt-1 sm:mt-2 text-xs sm:text-sm flex items-start p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
+                  <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">API Authentication Required</p>
-                    <p>{addressApiStatus.message || 'Google Places API needs proper authentication for address suggestions.'}</p>
+                    <p className="text-[10px] sm:text-xs">{addressApiStatus.message || 'Google Places API needs proper authentication for address suggestions.'}</p>
                   </div>
                 </div>
               )}
               
               {addressApiStatus.status === 'error' && (
-                <div className="mt-2 text-sm flex items-center p-2 bg-red-50 text-red-700 rounded border border-red-200">
-                  <AlertOctagon className="h-4 w-4 mr-2 flex-shrink-0" />
+                <div className="mt-1 sm:mt-2 text-xs sm:text-sm flex items-start p-2 bg-red-50 text-red-700 rounded border border-red-200">
+                  <AlertOctagon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Error retrieving address suggestions</p>
-                    <p>{addressApiStatus.message || 'Please try again later'}</p>
+                    <p className="text-[10px] sm:text-xs">{addressApiStatus.message || 'Please try again later'}</p>
                   </div>
                 </div>
               )}
@@ -708,17 +708,17 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               {addressSuggestions.length > 0 && (
                 <Command className="border rounded-md shadow-md mt-1">
                   <CommandList>
-                    <CommandGroup heading="Suggestions">
+                    <CommandGroup heading="Suggestions" className="text-xs sm:text-sm">
                       {addressSuggestions.map((suggestion, index) => (
                         <CommandItem 
                           key={index} 
                           onSelect={() => handleAddressSelect(suggestion)}
-                          className="flex items-center cursor-pointer hover:bg-gray-100 p-2"
+                          className="flex items-center cursor-pointer hover:bg-gray-100 p-1 sm:p-2 text-xs sm:text-sm"
                         >
-                          <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>{suggestion}</span>
+                          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-gray-500" />
+                          <span className="line-clamp-2">{suggestion}</span>
                           {pendingAddress === suggestion && (
-                            <Check className="h-4 w-4 ml-auto text-green-500" />
+                            <Check className="h-3 w-3 sm:h-4 sm:w-4 ml-auto text-green-500 flex-shrink-0" />
                           )}
                         </CommandItem>
                       ))}
@@ -729,17 +729,22 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddressEditDialog(false)}>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0 mt-2 sm:mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
+              onClick={() => setShowAddressEditDialog(false)}
+            >
               Cancel
             </Button>
             <Button 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
               onClick={handleAddressUpdate}
               disabled={updateProjectMutation.isPending}
             >
               {updateProjectMutation.isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                   Updating...
                 </>
               ) : 'Update Address'}
@@ -748,15 +753,15 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         </DialogContent>
       </Dialog>
       
-      {/* Fullscreen Map Dialog */}
+      {/* Fullscreen Map Dialog - Mobile Responsive */}
       <Dialog open={showMapFullscreen} onOpenChange={setShowMapFullscreen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Site Location - Satellite View</DialogTitle>
+        <DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-y-auto p-3 sm:p-6">
+          <DialogHeader className="pb-2 sm:pb-4">
+            <DialogTitle className="text-base sm:text-lg">Site Location - Satellite View</DialogTitle>
           </DialogHeader>
           
           {coordinates && (
-            <div className="w-full h-[60vh] overflow-hidden rounded">
+            <div className="w-full h-[40vh] sm:h-[60vh] overflow-hidden rounded">
               <iframe
                 width="100%"
                 height="100%"
@@ -769,36 +774,41 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             </div>
           )}
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowMapFullscreen(false)}>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0 mt-3 sm:mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-auto sm:h-9"
+              onClick={() => setShowMapFullscreen(false)}
+            >
               Close
             </Button>
             <Button 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-auto sm:h-9"
               onClick={() => {
                 setShowMapFullscreen(false);
                 setShowAddToFloorplanDialog(true);
               }}
             >
-              <PlusCircle className="h-4 w-4 mr-1" />
+              <PlusCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
               Add to Floorplans
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       
-      {/* Add to Floorplan Dialog */}
+      {/* Add to Floorplan Dialog - Mobile Responsive */}
       <Dialog open={showAddToFloorplanDialog} onOpenChange={setShowAddToFloorplanDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Floorplan</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-md max-h-[95vh] overflow-y-auto p-3 sm:p-6">
+          <DialogHeader className="pb-2 sm:pb-4">
+            <DialogTitle className="text-base sm:text-lg">Add Floorplan</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Add the satellite view or upload your own image file as a floorplan for marking equipment locations.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <label htmlFor="floorplan-name" className="text-sm font-medium text-gray-700">
+          <div className="space-y-4 sm:space-y-6 py-2 sm:py-4">
+            <div className="space-y-1 sm:space-y-2">
+              <label htmlFor="floorplan-name" className="text-xs sm:text-sm font-medium text-gray-700">
                 Floorplan Name
               </label>
               <Input
@@ -806,21 +816,21 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                 placeholder="e.g., Site Satellite View"
                 value={floorplanName}
                 onChange={(e) => setFloorplanName(e.target.value)}
-                className="w-full"
+                className="w-full text-xs sm:text-sm h-8 sm:h-10"
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">Floorplan Source</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-700">Floorplan Source</label>
               </div>
               
               <Tabs defaultValue="satellite" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="satellite">Use Satellite View</TabsTrigger>
-                  <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 h-8 sm:h-10">
+                  <TabsTrigger value="satellite" className="text-xs sm:text-sm">Use Satellite View</TabsTrigger>
+                  <TabsTrigger value="upload" className="text-xs sm:text-sm">Upload Image</TabsTrigger>
                 </TabsList>
-                <TabsContent value="satellite" className="mt-4">
+                <TabsContent value="satellite" className="mt-2 sm:mt-4">
                   {mapData && (
                     <div className="border rounded overflow-hidden">
                       <img 
@@ -828,14 +838,14 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                         alt="Satellite view preview" 
                         className="w-full h-auto"
                       />
-                      <div className="p-2 bg-gray-50 text-xs text-gray-500">
+                      <div className="p-2 bg-gray-50 text-[10px] sm:text-xs text-gray-500">
                         Satellite image will be saved as a floorplan for this location
                       </div>
                     </div>
                   )}
                 </TabsContent>
-                <TabsContent value="upload" className="mt-4 space-y-4">
-                  <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center">
+                <TabsContent value="upload" className="mt-2 sm:mt-4 space-y-2 sm:space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-md p-3 sm:p-6 flex flex-col items-center justify-center">
                     <input
                       type="file"
                       id="floorplan-file"
@@ -866,15 +876,16 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                     />
                     {!customFloorplanPreview ? (
                       <div className="text-center">
-                        <div className="mt-2">
+                        <div className="mt-1 sm:mt-2">
                           <Button 
-                            variant="outline" 
+                            variant="outline"
+                            className="text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-10"
                             onClick={() => document.getElementById('floorplan-file')?.click()}
                           >
                             Choose File
                           </Button>
                         </div>
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-1 sm:mt-2 text-[10px] sm:text-sm text-gray-500">
                           Supported formats: JPEG, PNG, GIF, PDF
                         </p>
                       </div>
@@ -884,12 +895,12 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                           <img 
                             src={customFloorplanPreview} 
                             alt="Uploaded preview" 
-                            className="max-h-64 mx-auto object-contain"
+                            className="max-h-48 sm:max-h-64 mx-auto object-contain"
                           />
                           <Button
                             size="sm"
                             variant="destructive"
-                            className="absolute top-2 right-2"
+                            className="absolute top-1 sm:top-2 right-1 sm:right-2 text-xs sm:text-sm py-0 px-2 h-6 sm:h-8"
                             onClick={() => {
                               setCustomFloorplanData(null);
                               setCustomFloorplanType(null);
@@ -902,7 +913,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                             Remove
                           </Button>
                         </div>
-                        <p className="mt-2 text-sm text-center text-gray-500">
+                        <p className="mt-1 sm:mt-2 text-[10px] sm:text-sm text-center text-gray-500">
                           {customFloorplanType?.split('/')[1].toUpperCase()} file selected
                         </p>
                       </div>
@@ -913,24 +924,29 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowAddToFloorplanDialog(false);
-              // Reset uploaded file data when closing
-              setCustomFloorplanData(null);
-              setCustomFloorplanType(null);
-              setCustomFloorplanPreview(null);
-            }}>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0 mt-2 sm:mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
+              onClick={() => {
+                setShowAddToFloorplanDialog(false);
+                // Reset uploaded file data when closing
+                setCustomFloorplanData(null);
+                setCustomFloorplanType(null);
+                setCustomFloorplanPreview(null);
+              }}
+            >
               Cancel
             </Button>
             <Button 
+              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
               onClick={handleAddToFloorplan}
               disabled={createFloorplanMutation.isPending || !floorplanName || 
                        (!mapData && !customFloorplanData)}
             >
               {createFloorplanMutation.isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                   Saving...
                 </>
               ) : 'Save as Floorplan'}
