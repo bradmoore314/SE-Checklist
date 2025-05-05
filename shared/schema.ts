@@ -454,3 +454,133 @@ export const BITRATE_TABLE = {
   8: 3.5,
   12: 4.0
 };
+
+// KVG (Kastle Video Guarding) Tables
+export const kvgStreams = pgTable('kvg_streams', {
+  id: serial('id').primaryKey(),
+  project_id: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  
+  // Camera Video Stream Details
+  location: text('location'),
+  fovAccessibility: text('fov_accessibility'),
+  cameraAccessibility: text('camera_accessibility'),
+  cameraType: text('camera_type'),
+  environment: text('environment'),
+  
+  // Unique Use Case Problem
+  useCaseProblem: text('use_case_problem'),
+  
+  // Speaker Video Stream Association
+  speakerAssociation: text('speaker_association'),
+  audioTalkDown: text('audio_talk_down'),
+  
+  // Event Monitoring Details
+  eventMonitoring: text('event_monitoring'),
+  monitoringStartTime: text('monitoring_start_time'),
+  monitoringEndTime: text('monitoring_end_time'),
+  
+  // Patrol Group Details
+  patrolGroups: text('patrol_groups'),
+  patrolStartTime: text('patrol_start_time'),
+  patrolEndTime: text('patrol_end_time'),
+  
+  // Legacy fields
+  quantity: integer('quantity').default(1),
+  description: text('description'),
+  monitoredArea: text('monitored_area'),
+  accessibility: text('accessibility'),
+  useCase: text('use_case'),
+  analyticRule1: text('analytic_rule1'),
+  dwellTime1: integer('dwell_time1'),
+  analyticRule2: text('analytic_rule2'),
+  dwellTime2: integer('dwell_time2'),
+  daysOfWeek: text('days_of_week'),
+  schedule: text('schedule'),
+  eventVolume: integer('event_volume'),
+  patrolType: text('patrol_type'),
+  patrolsPerWeek: integer('patrols_per_week'),
+  
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow()
+});
+
+export const kvgStreamImages = pgTable('kvg_stream_images', {
+  id: serial('id').primaryKey(),
+  stream_id: integer('stream_id').notNull().references(() => kvgStreams.id, { onDelete: 'cascade' }),
+  imageData: text('image_data').notNull(),
+  filename: text('filename').notNull(),
+  created_at: timestamp('created_at').defaultNow()
+});
+
+export const kvgFormData = pgTable('kvg_form_data', {
+  id: serial('id').primaryKey(),
+  project_id: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  
+  // Discovery tab fields
+  bdmOwner: text('bdm_owner'),
+  salesEngineer: text('sales_engineer'),
+  kvgSme: text('kvg_sme'),
+  customerName: text('customer_name'),
+  siteAddress: text('site_address'),
+  cityStateZip: text('city_state_zip'),
+  crmOpportunity: text('crm_opportunity'),
+  quoteDate: text('quote_date'),
+  numSites: integer('num_sites'),
+  technology: text('technology'),
+  installType: text('install_type'),
+  timeZone: text('time_zone'),
+  opportunityStage: text('opportunity_stage'),
+  opportunityType: text('opportunity_type'),
+  siteEnvironment: text('site_environment'),
+  region: text('region'),
+  customerVertical: text('customer_vertical'),
+  propertyCategory: text('property_category'),
+  
+  // Incident Types - stored as JSON
+  incidentTypes: json('incident_types'),
+  
+  // Site Assessment tab fields
+  lightingRequirements: text('lighting_requirements'),
+  cameraFieldOfView: text('camera_field_of_view'),
+  networkConnectivity: text('network_connectivity'),
+  
+  // Use Case tab fields
+  useCaseCommitment: text('use_case_commitment'),
+  
+  // VOC Protocol tab fields
+  amName: text('am_name'),
+  projectId: text('project_id'),
+  escalationProcess1: text('escalation_process1'),
+  escalationProcess2: text('escalation_process2'),
+  escalationProcess3: text('escalation_process3'),
+  
+  // Project Deployment tab fields
+  pmName: text('pm_name'),
+  gatewayCredentials: text('gateway_credentials'),
+  streamNames: text('stream_names'),
+  speakersWork: text('speakers_work'),
+  
+  // Additional Services section
+  vocEscalations: integer('voc_escalations'),
+  dispatchResponses: integer('dispatch_responses'),
+  gdodsPatrols: integer('gdods_patrols'),
+  sgppPatrols: integer('sgpp_patrols'),
+  forensicInvestigations: integer('forensic_investigations'),
+  appUsers: integer('app_users'),
+  audioDevices: integer('audio_devices'),
+  
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow()
+});
+
+export type KvgStream = typeof kvgStreams.$inferSelect;
+export const insertKvgStreamSchema = createInsertSchema(kvgStreams).omit({ id: true, created_at: true, updated_at: true });
+export type InsertKvgStream = z.infer<typeof insertKvgStreamSchema>;
+
+export type KvgStreamImage = typeof kvgStreamImages.$inferSelect;
+export const insertKvgStreamImageSchema = createInsertSchema(kvgStreamImages).omit({ id: true, created_at: true });
+export type InsertKvgStreamImage = z.infer<typeof insertKvgStreamImageSchema>;
+
+export type KvgFormData = typeof kvgFormData.$inferSelect;
+export const insertKvgFormDataSchema = createInsertSchema(kvgFormData).omit({ id: true, created_at: true, updated_at: true });
+export type InsertKvgFormData = z.infer<typeof insertKvgFormDataSchema>;
