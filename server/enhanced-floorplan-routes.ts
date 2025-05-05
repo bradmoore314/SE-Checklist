@@ -1,7 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { floorplanMarkers, floorplanLayers, floorplanCalibrations, insertFloorplanMarkerSchema, insertFloorplanLayerSchema, insertFloorplanCalibrationSchema } from '@shared/schema';
-import { eq, and } from 'drizzle-orm';
+import { floorplanMarkers, floorplanLayers, floorplanCalibrations, insertFloorplanMarkerSchema, insertFloorplanLayerSchema, insertFloorplanCalibrationSchema, floorplans, accessPoints, cameras } from '@shared/schema';
+import { eq, and, inArray } from 'drizzle-orm';
 
 /**
  * Register enhanced floorplan routes
@@ -184,6 +184,118 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
     } catch (error) {
       console.error('Error deleting floorplan marker:', error);
       res.status(500).json({ error: 'Failed to delete floorplan marker' });
+    }
+  });
+  
+  // Get all markers for a project with counts by type and placement categories
+  app.get('/api/projects/:projectId/marker-stats', async (req: Request, res: Response) => {
+    try {
+      const { projectId } = req.params;
+      const numericProjectId = parseInt(projectId);
+      
+      // First fetch all floorplans for this project
+      const projectFloorplans = await db
+        .select()
+        .from(floorplans)
+        .where(eq(floorplans.project_id, numericProjectId));
+      
+      // If no floorplans found, return empty stats
+      if (!projectFloorplans.length) {
+        return res.status(200).json({
+          total: 0,
+          types: {
+            access_point: { total: 0, interior: 0, perimeter: 0 },
+            camera: { total: 0, indoor: 0, outdoor: 0 },
+            elevator: { total: 0 },
+            intercom: { total: 0 }
+          }
+        });
+      }
+      
+      // Get all floorplan IDs for this project
+      const floorplanIds = projectFloorplans.map(fp => fp.id);
+      
+      // Fetch all markers across all floorplans for this project
+      const markers = await db
+        .select()
+        .from(floorplanMarkers)
+        .where(inArray(floorplanMarkers.floorplan_id, floorplanIds));
+      
+      // Count markers by type
+      const accessPointMarkers = markers.filter(m => m.marker_type === 'access_point');
+      const cameraMarkers = markers.filter(m => m.marker_type === 'camera');
+      const elevatorMarkers = markers.filter(m => m.marker_type === 'elevator');
+      const intercomMarkers = markers.filter(m => m.marker_type === 'intercom');
+      
+      // Fetch equipment details where available to count interior/perimeter access points
+      // and indoor/outdoor cameras
+      const accessPointIds = accessPointMarkers
+        .filter(m => m.equipment_id && m.equipment_id > 0)
+        .map(m => m.equipment_id);
+        
+      const cameraIds = cameraMarkers
+        .filter(m => m.equipment_id && m.equipment_id > 0)
+        .map(m => m.equipment_id);
+        
+      // Fetch access points to count interior/perimeter
+      let accessPointDetails = [];
+      if (accessPointIds.length > 0) {
+        accessPointDetails = await db
+          .select()
+          .from(accessPoints)
+          .where(inArray(accessPoints.id, accessPointIds as number[]));
+      }
+      
+      // Fetch cameras to count indoor/outdoor
+      let cameraDetails = [];
+      if (cameraIds.length > 0) {
+        cameraDetails = await db
+          .select()
+          .from(cameras)
+          .where(inArray(cameras.id, cameraIds as number[]));
+      }
+      
+      // Count interior/perimeter access points
+      const interiorAccessPoints = accessPointDetails.filter(ap => 
+        ap.interior_perimeter === 'interior').length;
+      const perimeterAccessPoints = accessPointDetails.filter(ap => 
+        ap.interior_perimeter === 'perimeter').length;
+        
+      // Count indoor/outdoor cameras
+      const indoorCameras = cameraDetails.filter(cam => 
+        cam.indoor_outdoor === 'indoor').length;
+      const outdoorCameras = cameraDetails.filter(cam => 
+        cam.indoor_outdoor === 'outdoor').length;
+      
+      // Compile stats
+      const stats = {
+        total: markers.length,
+        types: {
+          access_point: {
+            total: accessPointMarkers.length,
+            interior: interiorAccessPoints,
+            perimeter: perimeterAccessPoints,
+            unspecified: accessPointMarkers.length - interiorAccessPoints - perimeterAccessPoints
+          },
+          camera: {
+            total: cameraMarkers.length,
+            indoor: indoorCameras,
+            outdoor: outdoorCameras,
+            unspecified: cameraMarkers.length - indoorCameras - outdoorCameras
+          },
+          elevator: {
+            total: elevatorMarkers.length
+          },
+          intercom: {
+            total: intercomMarkers.length
+          }
+        }
+      };
+      
+      res.status(200).json(stats);
+    } catch (error) {
+      console.error('Error fetching project marker statistics:', error);
+      res.status(500).json({ error: 'Failed to fetch marker statistics' });
     }
   });
   
