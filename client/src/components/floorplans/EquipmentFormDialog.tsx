@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import EditAccessPointModal from '@/components/modals/EditAccessPointModal';
-import EditCameraModal from '@/components/modals/EditCameraModal';
-import EditElevatorModal from '@/components/modals/EditElevatorModal';
-import EditIntercomModal from '@/components/modals/EditIntercomModal';
+import EditAccessPointModal from '../modals/EditAccessPointModal'; 
+import EditCameraModal from '../modals/EditCameraModal';
+import EditElevatorModal from '../modals/EditElevatorModal';
+import EditIntercomModal from '../modals/EditIntercomModal';
 
 interface EquipmentFormDialogProps {
   isOpen: boolean;
@@ -18,169 +17,152 @@ interface EquipmentFormDialogProps {
   onEquipmentCreated: (equipmentId: number, equipmentLabel: string) => void;
 }
 
-export function EquipmentFormDialog({
+/**
+ * EquipmentFormDialog Component
+ * 
+ * This component automatically displays the appropriate equipment form modal
+ * based on the marker type when a user places a marker on the floorplan.
+ */
+const EquipmentFormDialog = ({
   isOpen,
   onClose,
   markerType,
   projectId,
   position,
   onEquipmentCreated
-}: EquipmentFormDialogProps) {
+}: EquipmentFormDialogProps) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Create empty equipment object based on marker type
-  const emptyEquipment = {
-    id: 0,
-    project_id: projectId,
-    location: `${markerType.charAt(0).toUpperCase() + markerType.slice(1).replace('_', ' ')} at position (${Math.round(position.x)}, ${Math.round(position.y)})`,
-    notes: ''
-  };
-  
-  // Access point specific fields
-  const emptyAccessPoint = {
-    ...emptyEquipment,
-    reader_type: 'KR-100',
-    lock_type: 'Standard',
-    monitoring_type: 'Prop Monitoring',
-    lock_provider: 'Kastle',
-    interior_perimeter: 'Interior'
-  };
-  
-  // Camera specific fields
-  const emptyCamera = {
-    ...emptyEquipment,
-    camera_type: 'Dome',
-    mounting_type: 'Ceiling',
-    resolution: '4MP',
-    field_of_view: '120°',
-    is_indoor: true
-  };
-  
-  // Elevator specific fields
-  const emptyElevator = {
-    ...emptyEquipment,
-    manufacturer: '',
-    model: '',
-    number_of_floors: 0,
-    control_board_location: ''
-  };
-  
-  // Intercom specific fields
-  const emptyIntercom = {
-    ...emptyEquipment, 
-    intercom_type: 'Aiphone',
-    connection_type: 'IP',
-    mounting_type: 'Wall'
-  };
-  
-  // Create equipment mutation handlers for each type
-  const handleAccessPointCreated = async (id: number, label: string) => {
-    setIsSubmitting(false);
-    onEquipmentCreated(id, label);
-    onClose();
-    
-    toast({
-      title: 'Access Point Created',
-      description: `Successfully created "${label}"`,
-    });
-  };
-  
-  const handleCameraCreated = async (id: number, label: string) => {
-    setIsSubmitting(false);
-    onEquipmentCreated(id, label);
-    onClose();
-    
-    toast({
-      title: 'Camera Created',
-      description: `Successfully created "${label}"`,
-    });
-  };
-  
-  const handleElevatorCreated = async (id: number, label: string) => {
-    setIsSubmitting(false);
-    onEquipmentCreated(id, label);
-    onClose();
-    
-    toast({
-      title: 'Elevator Created',
-      description: `Successfully created "${label}"`,
-    });
-  };
-  
-  const handleIntercomCreated = async (id: number, label: string) => {
-    setIsSubmitting(false);
-    onEquipmentCreated(id, label);
-    onClose();
-    
-    toast({
-      title: 'Intercom Created',
-      description: `Successfully created "${label}"`,
-    });
-  };
-  
-  // Render the appropriate form based on marker type
-  const renderEquipmentForm = () => {
-    switch (markerType) {
-      case 'access_point':
-        return (
-          <EditAccessPointModal
-            isOpen={true}
-            accessPoint={emptyAccessPoint as any}
-            onClose={onClose}
-            onSave={(id, data) => handleAccessPointCreated(id, data.location)}
-            fromFloorplan={true}
-            isNewAccessPoint={true}
-          />
-        );
-      case 'camera':
-        return (
-          <EditCameraModal
-            isOpen={true}
-            camera={emptyCamera as any}
-            onClose={onClose}
-            onSave={(id, data) => handleCameraCreated(id, data.location)}
-            fromFloorplan={true}
-            isNewCamera={true}
-          />
-        );
-      case 'elevator':
-        return (
-          <EditElevatorModal
-            isOpen={true}
-            elevator={emptyElevator as any}
-            onClose={onClose}
-            onSave={(id, data) => handleElevatorCreated(id, data.location)}
-            fromFloorplan={true}
-            isNewElevator={true}
-          />
-        );
-      case 'intercom':
-        return (
-          <EditIntercomModal
-            isOpen={true}
-            intercom={emptyIntercom as any}
-            onClose={onClose}
-            onSave={(id, data) => handleIntercomCreated(id, data.location)}
-            fromFloorplan={true}
-            isNewIntercom={true}
-          />
-        );
-      default:
-        return (
-          <div className="flex items-center justify-center p-6">
-            <p className="text-muted-foreground">
-              Form not available for this equipment type.
-            </p>
-          </div>
-        );
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Determine which form to show based on marker type
+  const getEquipmentFormModal = () => {
+    // Default empty equipment templates
+    const accessPoint = {
+      id: 0,
+      project_id: projectId,
+      location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
+      reader_type: '',
+      mounting_type: '',
+      connection_type: '',
+      notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
+    };
+
+    const camera = {
+      id: 0,
+      project_id: projectId,
+      location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
+      camera_type: '',
+      mounting_type: '',
+      resolution: '',
+      notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
+    };
+
+    const elevator = {
+      id: 0,
+      project_id: projectId,
+      location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
+      manufacturer: '',
+      model: '',
+      number_of_floors: 0,
+      control_board_location: '',
+      notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
+    };
+
+    const intercom = {
+      id: 0,
+      project_id: projectId,
+      location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
+      intercom_type: '',
+      connection_type: '',
+      mounting_type: '',
+      notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
+    };
+
+    // Handle access point form
+    if (markerType === 'access_point') {
+      return (
+        <EditAccessPointModal
+          isOpen={isOpen}
+          accessPoint={accessPoint}
+          onClose={onClose}
+          onSave={async (id, data) => {
+            onEquipmentCreated(id, data.location);
+          }}
+          fromFloorplan={true}
+          isNewAccessPoint={true}
+        />
+      );
     }
+
+    // Handle camera form
+    if (markerType === 'camera') {
+      return (
+        <EditCameraModal
+          isOpen={isOpen}
+          camera={camera}
+          onClose={onClose}
+          onSave={async (id, data) => {
+            onEquipmentCreated(id, data.location);
+          }}
+          fromFloorplan={true}
+          isNewCamera={true}
+        />
+      );
+    }
+
+    // Handle elevator form
+    if (markerType === 'elevator') {
+      return (
+        <EditElevatorModal
+          isOpen={isOpen}
+          elevator={elevator}
+          onClose={onClose}
+          onSave={async (id, data) => {
+            onEquipmentCreated(id, data.location);
+          }}
+          fromFloorplan={true}
+          isNewElevator={true}
+        />
+      );
+    }
+
+    // Handle intercom form
+    if (markerType === 'intercom') {
+      return (
+        <EditIntercomModal
+          isOpen={isOpen}
+          intercom={intercom}
+          onClose={onClose}
+          onSave={async (id, data) => {
+            onEquipmentCreated(id, data.location);
+          }}
+          fromFloorplan={true}
+          isNewIntercom={true}
+        />
+      );
+    }
+
+    // If no matching equipment type, show a generic dialog
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Equipment Type Not Supported</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>
+              The selected equipment type "{markerType}" doesn't have a form implementation yet.
+            </p>
+            <div className="flex justify-end">
+              <Button onClick={onClose}>Close</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
   };
 
-  // Note: We don't use the Dialog component here because the specific modal components
-  // already include their own Dialog component. Instead, we're making this a wrapper
-  // that conditionally renders the right modal.
-  return isOpen ? renderEquipmentForm() : null;
-}
+  return <>{getEquipmentFormModal()}</>;
+};
 
 export default EquipmentFormDialog;

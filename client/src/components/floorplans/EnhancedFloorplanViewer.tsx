@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import EquipmentFormDialog from './EquipmentFormDialog';
@@ -1257,7 +1258,7 @@ export const EnhancedFloorplanViewer = ({
                 position_x: newMarkerData.position_x,
                 position_y: newMarkerData.position_y,
                 equipment_id: equipmentId,
-                unique_id: generateUniqueId(),
+                unique_id: uuidv4(),
                 label: equipmentLabel,
                 version: 1
               };
