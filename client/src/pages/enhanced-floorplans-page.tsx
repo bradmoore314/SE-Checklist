@@ -192,11 +192,17 @@ function EnhancedFloorplansPage() {
       return;
     }
     
-    // Validate file type more strictly
-    if (!pdfFile.type.includes('pdf') && !pdfFile.name.toLowerCase().endsWith('.pdf')) {
+    // Validate file type for supported formats
+    const supportedTypes = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp'];
+    const fileExtension = pdfFile.name.split('.').pop()?.toLowerCase();
+    const isValidType = 
+      supportedTypes.some(type => pdfFile.type.includes(type)) || 
+      (fileExtension && supportedTypes.includes(fileExtension));
+    
+    if (!isValidType) {
       toast({
         title: "Invalid File Type",
-        description: "Please upload a valid PDF file. Only PDF files are supported.",
+        description: "Please upload a supported file type: PDF or common image formats (JPG, PNG, etc.)",
         variant: "destructive"
       });
       return;
@@ -344,14 +350,14 @@ function EnhancedFloorplansPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="pdfFile">PDF File</Label>
+                <Label htmlFor="pdfFile">Upload File</Label>
                 <Input 
                   id="pdfFile" 
                   type="file" 
-                  accept=".pdf"
+                  accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.webp"
                   onChange={handleFileChange}
                 />
-                <p className="text-xs text-gray-500">Upload a PDF file of your floorplan (max 10MB)</p>
+                <p className="text-xs text-gray-500">Upload a PDF or image file of your floorplan (max 10MB)</p>
               </div>
             </div>
             <DialogFooter>
@@ -397,7 +403,7 @@ function EnhancedFloorplansPage() {
             <span className="material-icons text-4xl text-gray-400 mb-4">description</span>
             <h3 className="text-lg font-medium text-gray-900">No Floorplans Available</h3>
             <p className="mt-2 text-sm text-gray-500">
-              Upload a PDF floorplan to get started with enhanced annotation tools.
+              Upload a PDF or image file to get started with enhanced annotation tools.
             </p>
             <Button 
               variant="outline" 
