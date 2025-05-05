@@ -424,54 +424,55 @@ export const EnhancedFloorplanViewer = ({
           typeIndicator.appendChild(badge);
           typeIndicator.appendChild(badgeText);
           
-          // Add tooltip with full label
-          if (marker.label) {
-            // Invisible bigger circle for better hover/click area
-            const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            hitArea.setAttribute('cx', `${x}`);
-            hitArea.setAttribute('cy', `${y}`);
-            hitArea.setAttribute('r', '18');
-            hitArea.setAttribute('fill', 'transparent');
-            hitArea.setAttribute('style', 'pointer-events: all;');
+          // Add hit area for better interaction
+          const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          hitArea.setAttribute('cx', `${x}`);
+          hitArea.setAttribute('cy', `${y}`);
+          hitArea.setAttribute('r', '18');
+          hitArea.setAttribute('fill', 'transparent');
+          hitArea.setAttribute('style', 'pointer-events: all;');
+          
+          // Show tooltip on hover
+          hitArea.addEventListener('mouseenter', () => {
+            const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            tooltip.setAttribute('class', 'marker-tooltip');
+            tooltip.setAttribute('id', `tooltip-${marker.id}`);
             
-            // Show tooltip on hover
-            hitArea.addEventListener('mouseenter', () => {
-              const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-              tooltip.setAttribute('class', 'marker-tooltip');
-              tooltip.setAttribute('id', `tooltip-${marker.id}`);
-              
-              // Tooltip background
-              const tooltipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-              tooltipBg.setAttribute('x', `${x + 20}`);
-              tooltipBg.setAttribute('y', `${y - 10}`);
-              tooltipBg.setAttribute('width', `${marker.label.length * 7 + 10}px`);
-              tooltipBg.setAttribute('height', '20px');
-              tooltipBg.setAttribute('rx', '4');
-              tooltipBg.setAttribute('fill', '#000000');
-              tooltipBg.setAttribute('opacity', '0.8');
-              
-              // Tooltip text
-              const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-              tooltipText.setAttribute('x', `${x + 25}`);
-              tooltipText.setAttribute('y', `${y}`);
-              tooltipText.setAttribute('fill', '#ffffff');
-              tooltipText.setAttribute('font-size', '12px');
-              tooltipText.textContent = marker.label;
-              
-              tooltip.appendChild(tooltipBg);
-              tooltip.appendChild(tooltipText);
-              group.appendChild(tooltip);
-            });
+            // Get label text - either use stored label or create a default one
+            const labelText = marker.label || `${marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ')} ${marker.id}`;
+            const labelWidth = labelText ? labelText.length * 7 + 10 : 100;
             
-            hitArea.addEventListener('mouseleave', () => {
-              const tooltip = document.getElementById(`tooltip-${marker.id}`);
-              if (tooltip) {
-                tooltip.remove();
-              }
-            });
+            // Tooltip background
+            const tooltipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            tooltipBg.setAttribute('x', `${x + 20}`);
+            tooltipBg.setAttribute('y', `${y - 10}`);
+            tooltipBg.setAttribute('width', `${labelWidth}px`);
+            tooltipBg.setAttribute('height', '20px');
+            tooltipBg.setAttribute('rx', '4');
+            tooltipBg.setAttribute('fill', '#000000');
+            tooltipBg.setAttribute('opacity', '0.8');
             
-            group.appendChild(hitArea);
-          }
+            // Tooltip text
+            const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            tooltipText.setAttribute('x', `${x + 25}`);
+            tooltipText.setAttribute('y', `${y}`);
+            tooltipText.setAttribute('fill', '#ffffff');
+            tooltipText.setAttribute('font-size', '12px');
+            tooltipText.textContent = labelText;
+            
+            tooltip.appendChild(tooltipBg);
+            tooltip.appendChild(tooltipText);
+            group.appendChild(tooltip);
+          });
+          
+          hitArea.addEventListener('mouseleave', () => {
+            const tooltip = document.getElementById(`tooltip-${marker.id}`);
+            if (tooltip) {
+              tooltip.remove();
+            }
+          });
+          
+          group.appendChild(hitArea);
           
           // Assemble all elements
           group.appendChild(element);
