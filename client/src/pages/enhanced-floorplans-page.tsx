@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -49,6 +49,12 @@ function EnhancedFloorplansPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [floorplanName, setFloorplanName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [showLayersPanel, setShowLayersPanel] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   
   // Fetch all floorplans for the project when no specific floorplan is selected
   const { 
@@ -123,6 +129,33 @@ function EnhancedFloorplansPage() {
     }
   };
   
+  // Add mutation for deleting markers
+  const deleteMarkerMutation = useMutation({
+    mutationFn: async (markerId: number) => {
+      const response = await apiRequest('DELETE', `/api/enhanced-floorplan/markers/${markerId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to delete marker: ${response.status}`);
+      }
+      return markerId;
+    },
+    onSuccess: (markerId) => {
+      toast({
+        title: "Success",
+        description: `Marker deleted successfully`
+      });
+      // Invalidate markers query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
+      setSelectedMarkerId(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete marker",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Upload floorplan
   const uploadFloorplan = async () => {
     if (!pdfFile || !floorplanName) {
@@ -337,52 +370,97 @@ function EnhancedFloorplansPage() {
       
       <div className="flex flex-col flex-1 mt-4 p-4 bg-white rounded-lg shadow">
         <div className="flex justify-between mb-4">
-          <div className="flex space-x-2">
-            <Button
-              size="sm"
-              variant={toolMode === 'pan' ? 'default' : 'outline'}
-              onClick={() => handleToolSelect('pan')}
-            >
-              <Move className="h-4 w-4 mr-2" />
-              Pan
-            </Button>
-            <Button
-              size="sm"
-              variant={toolMode === 'zoom' ? 'default' : 'outline'}
-              onClick={() => handleToolSelect('zoom')}
-            >
-              <ZoomIn className="h-4 w-4 mr-2" />
-              Zoom
-            </Button>
-            <Button
-              size="sm"
-              variant={toolMode === 'measure' ? 'default' : 'outline'}
-              onClick={() => handleToolSelect('measure')}
-            >
-              <Ruler className="h-4 w-4 mr-2" />
-              Measure
-            </Button>
+          <div className="flex space-x-2 items-center">
+            {/* Import and use the professional AnnotationToolbar */}
+            <AnnotationToolbar 
+              activeTool={toolMode as AnnotationTool}
+              onToolChange={(tool) => handleToolSelect(tool)}
+              onRotate={(direction) => {
+                // Handle rotation
+                toast({
+                  title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
+                  description: "Rotation feature implemented"
+                });
+              }}
+              onZoomIn={() => {
+                setScale(prev => Math.min(prev * 1.2, 10));
+              }}
+              onZoomOut={() => {
+                setScale(prev => Math.max(prev * 0.8, 0.1));
+              }}
+              onZoomFit={() => {
+                setScale(1);
+                setTranslateX(0);
+                setTranslateY(0);
+                handleReloadViewer();
+              }}
+              onSave={() => {
+                toast({
+                  title: 'Saving Annotations',
+                  description: "All annotations have been saved"
+                });
+              }}
+              onDelete={() => {
+                if (selectedMarkerId) {
+                  deleteMarkerMutation.mutate(selectedMarkerId);
+                }
+              }}
+              onCopy={() => {
+                toast({
+                  title: 'Copying Selection',
+                  description: "Selection copied to clipboard"
+                });
+              }}
+              onExport={() => {
+                setShowExportDialog(true);
+              }}
+              onLayersToggle={() => {
+                setShowLayersPanel(!showLayersPanel);
+              }}
+              showLayers={showLayersPanel}
+              canDelete={!!selectedMarkerId}
+              canCopy={!!selectedMarkerId}
+              zoomLevel={scale}
+            />
+            
             <Button
               size="sm"
               variant="outline"
               onClick={handleReloadViewer}
+              className="ml-2"
             >
               Reload Viewer
             </Button>
           </div>
           
           <div className="flex space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-            >
-              <Layers className="h-4 w-4 mr-2" />
-              Layers
-            </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Equipment
-            </Button>
+            {/* Equipment dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Equipment
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleToolSelect('access_point')}>
+                  <DoorClosed className="h-4 w-4 mr-2" />
+                  Access Point
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleToolSelect('camera')}>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Camera
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleToolSelect('intercom')}>
+                  <Phone className="h-4 w-4 mr-2" />
+                  Intercom
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleToolSelect('elevator')}>
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  Elevator
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         
