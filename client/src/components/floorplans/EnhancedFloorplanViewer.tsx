@@ -347,6 +347,22 @@ export const EnhancedFloorplanViewer = ({
       svgLayerRef.current.removeChild(svgLayerRef.current.firstChild);
     }
     
+    // Group and count markers by type
+    const markerTypeGroups: Record<string, MarkerData[]> = {};
+    
+    // First, organize markers by type and sort them by ID
+    markers.forEach(marker => {
+      if (!markerTypeGroups[marker.marker_type]) {
+        markerTypeGroups[marker.marker_type] = [];
+      }
+      markerTypeGroups[marker.marker_type].push(marker);
+    });
+    
+    // Sort each group by ID
+    Object.keys(markerTypeGroups).forEach(type => {
+      markerTypeGroups[type].sort((a, b) => a.id - b.id);
+    });
+    
     // Draw each marker based on its type
     markers.forEach(marker => {
       // Find the layer this marker belongs to
@@ -407,19 +423,31 @@ export const EnhancedFloorplanViewer = ({
           // Choose colors based on marker type
           let markerFillColor = color;
           let textColor = 'white';
-          // Extract the marker number from the label if it exists
+          // Extract the marker number from the label if it exists, or assign a sequential number
           let markerNumber = 0;
+          
+          // Get all markers of this type sorted by ID
+          const markersOfSameType = markers.filter(m => m.marker_type === marker.marker_type)
+            .sort((a, b) => a.id - b.id);
+          
           if (marker.label) {
+            // Try to extract a number from the label
             const match = marker.label.match(/\d+$/);
             if (match) {
               markerNumber = parseInt(match[0]);
             } else {
-              markerNumber = markers.filter(m => m.marker_type === marker.marker_type).indexOf(marker) + 1;
+              // Find the position of this marker in the sorted array
+              const index = markersOfSameType.findIndex(m => m.id === marker.id);
+              markerNumber = index !== -1 ? index + 1 : markersOfSameType.length;
             }
           } else {
-            // If no label, use the position in the array of this marker type
-            markerNumber = markers.filter(m => m.marker_type === marker.marker_type).indexOf(marker) + 1;
+            // Use the marker's position in the sorted array
+            const index = markersOfSameType.findIndex(m => m.id === marker.id);
+            markerNumber = index !== -1 ? index + 1 : markersOfSameType.length;
           }
+          
+          // Ensure we have a valid number (for debugging)
+          console.log(`Marker ${marker.id} (${marker.marker_type}) assigned number: ${markerNumber}`);
           let typeSymbol = '';
           
           // Apply professional styling based on marker type
@@ -474,9 +502,12 @@ export const EnhancedFloorplanViewer = ({
           markerLabel.setAttribute('y', `${y}`);
           markerLabel.setAttribute('text-anchor', 'middle');
           markerLabel.setAttribute('dominant-baseline', 'central');
-          markerLabel.setAttribute('font-size', '11px');
+          markerLabel.setAttribute('font-size', '12px');
           markerLabel.setAttribute('font-weight', 'bold');
           markerLabel.setAttribute('fill', textColor);
+          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.3)');
+          markerLabel.setAttribute('stroke-width', '0.5');
+          markerLabel.setAttribute('paint-order', 'stroke');
           markerLabel.setAttribute('class', 'marker-number');
           markerLabel.textContent = markerNumber.toString();
           
