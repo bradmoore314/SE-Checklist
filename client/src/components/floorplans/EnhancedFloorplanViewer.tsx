@@ -117,6 +117,16 @@ export const EnhancedFloorplanViewer = ({
   const [drawStartY, setDrawStartY] = useState(0);
   const [drawEndX, setDrawEndX] = useState(0);
   const [drawEndY, setDrawEndY] = useState(0);
+  
+  // State for calibration
+  const [isCalibrationDialogOpen, setIsCalibrationDialogOpen] = useState(false);
+  const [calibrationLine, setCalibrationLine] = useState<{
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    pdfDistance: number;
+  } | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   
   // Convert PDF data URL to Uint8Array for PDF.js
