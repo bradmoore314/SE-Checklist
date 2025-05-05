@@ -112,6 +112,12 @@ export const EnhancedFloorplanViewer = ({
   const [viewportDimensions, setViewportDimensions] = useState({ width: 0, height: 0 });
   const [pdfToViewportScale, setPdfToViewportScale] = useState(1);
   
+  // State for marker dragging
+  const [isMarkerDragging, setIsMarkerDragging] = useState(false);
+  const [draggedMarkerId, setDraggedMarkerId] = useState<number | null>(null);
+  const [markerDragStartX, setMarkerDragStartX] = useState(0);
+  const [markerDragStartY, setMarkerDragStartY] = useState(0);
+  
   // State for drawing/measuring
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawStartX, setDrawStartX] = useState(0);
@@ -224,6 +230,35 @@ export const EnhancedFloorplanViewer = ({
       toast({
         title: 'Error',
         description: 'Failed to create marker.',
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // Mutation for updating marker position
+  const updateMarkerPositionMutation = useMutation({
+    mutationFn: async ({ markerId, positionX, positionY }: { markerId: number, positionX: number, positionY: number }) => {
+      const response = await apiRequest(
+        'PATCH',
+        `/api/enhanced-floorplan/markers/${markerId}/position`,
+        { position_x: positionX, position_y: positionY }
+      );
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/enhanced-floorplan', floorplan.id, 'markers', currentPage]
+      });
+      toast({
+        title: 'Position Updated',
+        description: 'Marker position updated successfully.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating marker position:', error);
+      toast({
+        title: 'Update Failed',
+        description: 'Failed to update marker position.',
         variant: 'destructive',
       });
     }
@@ -414,10 +449,10 @@ export const EnhancedFloorplanViewer = ({
           element.setAttribute('cx', `${x}`);
           element.setAttribute('cy', `${y}`);
           element.setAttribute('r', '12');
-          element.setAttribute('fill', fillColor);
+          element.setAttribute('fill', markerFillColor); // Using the more vibrant markerFillColor
           element.setAttribute('stroke', '#ffffff');
           element.setAttribute('stroke-width', '1.5');
-          element.setAttribute('opacity', `${opacity}`);
+          element.setAttribute('opacity', '1'); // Full opacity for better visibility
           element.setAttribute('filter', `url(#${filterId})`);
           element.setAttribute('class', 'marker-circle');
           
@@ -442,9 +477,9 @@ export const EnhancedFloorplanViewer = ({
           badge.setAttribute('cx', `${x + 12}`);
           badge.setAttribute('cy', `${y - 10}`);
           badge.setAttribute('r', '7');
-          badge.setAttribute('fill', fillColor);
+          badge.setAttribute('fill', markerFillColor); // Use consistent fill color
           badge.setAttribute('stroke', '#ffffff');
-          badge.setAttribute('stroke-width', '1');
+          badge.setAttribute('stroke-width', '1.5'); // Thicker stroke for visibility
           
           // Type badge text
           const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
