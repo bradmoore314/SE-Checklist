@@ -39,14 +39,31 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // For non-auth pages, show the full layout with navigation
   return (
     <div className="flex h-screen overflow-hidden app-container">
-      <Sidebar collapsed={sidebarCollapsed} />
+      {/* Mobile sidebar with overlay */}
+      {!sidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        ></div>
+      )}
+      
+      {/* Responsive sidebar - fixed on mobile, static on desktop */}
+      <div className={`
+        ${sidebarCollapsed ? 'hidden' : 'fixed'} 
+        z-50 h-full md:static md:block
+        ${sidebarCollapsed ? 'md:w-16' : 'md:w-64'}
+      `}>
+        <Sidebar collapsed={sidebarCollapsed} />
+      </div>
+      
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNav 
           project={currentSiteWalk} 
           onToggleSidebar={toggleSidebar} 
           user={user}
         />
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 bg-gray-50">
           {children}
         </main>
       </div>

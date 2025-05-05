@@ -40,71 +40,110 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 border-b bg-white shadow-sm"
+    <header className="flex items-center justify-between px-2 sm:px-4 md:px-6 py-2 sm:py-3 border-b bg-white shadow-sm"
             style={{ borderColor: 'var(--medium-grey)' }}>
       <div className="flex items-center">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={onToggleSidebar} 
-          className="mr-4 text-gray-600 hover:text-gray-900"
+          className="mr-2 sm:mr-4 text-gray-600 hover:text-gray-900"
         >
           <span className="material-icons">menu</span>
         </Button>
         
-        {/* Kastle Logo */}
+        {/* Kastle Logo - Hidden on smallest screens */}
         <img 
           src={kastleLogo} 
           alt="Kastle Logo" 
-          className="h-10 mr-4" 
+          className="hidden xs:block h-8 sm:h-10 mr-2 sm:mr-4" 
         />
         
         {/* Project Switcher */}
         <ProjectSwitcher />
       </div>
       
-      <div className="flex items-center">
-        <Link href="/documentation">
-          <Button 
-            variant="outline" 
-            className="text-gray-700 hover:text-gray-900 mr-4 flex items-center"
-          >
-            <span className="material-icons mr-1">menu_book</span>
-            Documentation
-          </Button>
-        </Link>
-        <Link href="/feedback">
-          <Button 
-            variant="outline" 
-            className="text-gray-700 hover:text-gray-900 mr-4 flex items-center"
-          >
-            <span className="material-icons mr-1">bug_report</span>
-            Feedback
-          </Button>
-        </Link>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-gray-600 hover:text-gray-900 mr-4"
-        >
-          <span className="material-icons">notifications</span>
-        </Button>
-
-        <Link href="/projects">
-          <Button 
-            className="text-white px-4 py-2 rounded-md flex items-center mr-4"
-            style={{ backgroundColor: 'var(--red-accent)' }}
-          >
-            <span className="material-icons mr-1">add</span>
-            New Site Walk
-          </Button>
-        </Link>
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        {/* More menu for smaller screens */}
+        <div className="block md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <span className="material-icons">more_vert</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 mt-1 border rounded-lg shadow-sm bg-white" align="end">
+              <DropdownMenuItem asChild className="focus:bg-gray-100">
+                <Link href="/documentation" className="flex w-full cursor-pointer text-gray-800">
+                  <span className="material-icons mr-2 text-sm">menu_book</span>
+                  <span>Documentation</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-gray-100">
+                <Link href="/feedback" className="flex w-full cursor-pointer text-gray-800">
+                  <span className="material-icons mr-2 text-sm">bug_report</span>
+                  <span>Feedback</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-gray-100">
+                <Link href="/projects" className="flex w-full cursor-pointer text-gray-800">
+                  <span className="material-icons mr-2 text-sm">add</span>
+                  <span>New Site Walk</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
+        {/* Desktop navigation items - Hidden on mobile */}
+        <div className="hidden md:flex md:items-center">
+          <Link href="/documentation">
+            <Button 
+              variant="outline" 
+              className="text-gray-700 hover:text-gray-900 mr-2 sm:mr-4 flex items-center text-xs sm:text-sm"
+            >
+              <span className="material-icons mr-1 text-sm sm:text-base">menu_book</span>
+              <span className="hidden sm:inline">Documentation</span>
+            </Button>
+          </Link>
+          <Link href="/feedback">
+            <Button 
+              variant="outline" 
+              className="text-gray-700 hover:text-gray-900 mr-2 sm:mr-4 flex items-center text-xs sm:text-sm"
+            >
+              <span className="material-icons mr-1 text-sm sm:text-base">bug_report</span>
+              <span className="hidden sm:inline">Feedback</span>
+            </Button>
+          </Link>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-gray-600 hover:text-gray-900 mr-2 sm:mr-4"
+          >
+            <span className="material-icons text-sm sm:text-base">notifications</span>
+          </Button>
+
+          <Link href="/projects">
+            <Button 
+              className="text-white px-2 sm:px-4 py-1 sm:py-2 rounded-md flex items-center mr-2 sm:mr-4 text-xs sm:text-sm"
+              style={{ backgroundColor: 'var(--red-accent)' }}
+            >
+              <span className="material-icons mr-1 text-sm sm:text-base">add</span>
+              <span className="hidden xs:inline">New Site Walk</span>
+            </Button>
+          </Link>
+        </div>
+        
+        {/* User menu - Always visible */}
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-10 w-10">
+              <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full">
+                <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                   <AvatarFallback style={{ backgroundColor: 'var(--red-accent)', color: 'white' }}>
                     {getUserInitials(user)}
                   </AvatarFallback>
