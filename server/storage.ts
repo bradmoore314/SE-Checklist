@@ -9,10 +9,16 @@ import {
   FloorplanMarker, InsertFloorplanMarker,
   Feedback, InsertFeedback,
   ProjectCollaborator, InsertProjectCollaborator,
+  KvgFormData, InsertKvgFormData,
+  KvgStream, InsertKvgStream,
+  KvgStreamImage, InsertKvgStreamImage,
   PERMISSION, Permission,
   users,
   projects,
   accessPoints,
+  kvgFormData,
+  kvgStreams,
+  kvgStreamImages,
   cameras,
   elevators,
   intercoms,
@@ -107,6 +113,23 @@ export interface IStorage {
   updateFeedback(id: number, feedback: Partial<InsertFeedback>): Promise<Feedback | undefined>;
   updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined>;
   deleteFeedback(id: number): Promise<boolean>;
+  
+  // KVG Form Data
+  getKvgFormData(projectId: number): Promise<KvgFormData | undefined>;
+  createKvgFormData(formData: InsertKvgFormData): Promise<KvgFormData>;
+  updateKvgFormData(projectId: number, formData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined>;
+  
+  // KVG Streams
+  getKvgStreams(projectId: number): Promise<KvgStream[]>;
+  getKvgStream(id: number): Promise<KvgStream | undefined>;
+  createKvgStream(stream: InsertKvgStream): Promise<KvgStream>;
+  updateKvgStream(id: number, stream: Partial<InsertKvgStream>): Promise<KvgStream | undefined>;
+  deleteKvgStream(id: number): Promise<boolean>;
+  
+  // KVG Stream Images
+  getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]>;
+  createKvgStreamImage(image: InsertKvgStreamImage): Promise<KvgStreamImage>;
+  deleteKvgStreamImage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
