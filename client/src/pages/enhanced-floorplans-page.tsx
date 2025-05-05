@@ -8,6 +8,7 @@ import { Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, FileUp } from
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { EnhancedFloorplanViewer } from '@/components/floorplans/EnhancedFloorplanViewer';
+import { SimpleEnhancedViewer } from '@/components/floorplans/SimpleEnhancedViewer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -386,13 +387,11 @@ function EnhancedFloorplansPage() {
         </div>
         
         <div className="flex-1 border rounded-lg overflow-hidden">
-          {/* Enhanced viewer with PDF coordinate system */}
-          <EnhancedFloorplanViewer
+          {/* Using SimpleEnhancedViewer as a fallback until database migration is complete */}
+          <SimpleEnhancedViewer
             key={viewerKey}
             floorplan={floorplan}
             currentPage={currentPage}
-            toolMode={toolMode}
-            layers={layers || []}
             onPageChange={setCurrentPage}
           />
         </div>
