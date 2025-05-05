@@ -168,16 +168,17 @@ const BasicFloorplanViewer: React.FC<FloorplanViewerProps> = ({ projectId, onMar
     },
   });
   
-  // Set default floorplan if available
+  // Set default floorplan if available - only run this effect when floorplans change
   useEffect(() => {
     if (floorplans && floorplans.length > 0 && !selectedFloorplan) {
       setSelectedFloorplan(floorplans[0]);
     }
-  }, [floorplans, selectedFloorplan]);
+  }, [floorplans]); // Removed selectedFloorplan from dependencies to prevent infinite loop
 
   // Update markers when floorplanMarkers changes
+  // We need to compare stringified markers to prevent unnecessary re-renders
   useEffect(() => {
-    if (floorplanMarkers) {
+    if (floorplanMarkers && JSON.stringify(floorplanMarkers) !== JSON.stringify(markers)) {
       setMarkers(floorplanMarkers);
     }
   }, [floorplanMarkers]);
