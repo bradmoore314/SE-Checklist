@@ -456,7 +456,7 @@ function EnhancedFloorplansPage() {
     <div className="flex flex-col h-full">
       <div className="mb-2 md:mb-4">
         <h1 className="text-xl md:text-2xl font-bold truncate">{floorplan.name}</h1>
-        <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Enhanced PDF Floorplan Viewer with Bluebeam-like annotation capabilities</p>
+        <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Advanced floorplan viewer with professional annotation and markup capabilities</p>
       </div>
       
       <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
@@ -563,7 +563,7 @@ function EnhancedFloorplansPage() {
         </div>
         
         <div className="flex-1 border rounded-lg overflow-hidden">
-          {/* Enhanced viewer with PDF coordinate system and Bluebeam-like features */}
+          {/* Enhanced viewer with professional PDF coordinate system and markup tools */}
           <EnhancedFloorplanViewer
             key={viewerKey}
             floorplan={floorplan}
