@@ -945,6 +945,50 @@ const KastleVideoGuardingPage: React.FC = () => {
       description: "The stream has been removed successfully.",
     });
   };
+  
+  // Function to apply main schedule to all streams
+  const applyScheduleToAllStreams = () => {
+    if (!formData.scheduleType || !formData.monitoringDaysOfWeek || !formData.monitoringHours) {
+      toast({
+        title: "Missing Schedule Information",
+        description: "Please define the main schedule first (type, days, and hours).",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Update all streams with the main schedule
+    const updatedStreams = streams.map(stream => ({
+      ...stream,
+      scheduleType: formData.scheduleType,
+      monitoringDaysOfWeek: formData.monitoringDaysOfWeek,
+      monitoringHours: formData.monitoringHours,
+      useMainSchedule: true
+    }));
+    
+    // Update UI immediately
+    setStreams(updatedStreams);
+    
+    // Persist changes to database
+    if (currentProject?.id) {
+      updatedStreams.forEach(stream => {
+        if (stream.id > 0) { // Only update in DB if it's an existing record
+          updateStreamMutation.mutate({ 
+            id: stream.id, 
+            data: { 
+              ...stream,
+              project_id: currentProject.id
+            } 
+          });
+        }
+      });
+    }
+    
+    toast({
+      title: "Schedules Updated",
+      description: `Main schedule applied to all ${streams.length} streams.`,
+    });
+  };
 
   // Handle stream image upload click
   const handleUploadStreamImageClick = (streamId: number) => {
@@ -2234,6 +2278,28 @@ const KastleVideoGuardingPage: React.FC = () => {
                     value={formData.scheduleNotes}
                     onChange={(e) => handleFormChange("scheduleNotes", e.target.value)}
                   />
+                </div>
+                
+                <div className="flex justify-end mb-4">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          onClick={applyScheduleToAllStreams}
+                          type="button"
+                          variant="outline"
+                          className="flex items-center gap-2 border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                          disabled={!formData.scheduleType || !formData.monitoringDaysOfWeek || !formData.monitoringHours}
+                        >
+                          <RefreshCw size={15} />
+                          Apply Schedule to All Streams
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Apply the main schedule to all camera streams at once
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
               
