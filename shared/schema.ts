@@ -609,3 +609,20 @@ export type InsertKvgStreamImage = z.infer<typeof insertKvgStreamImageSchema>;
 export type KvgFormData = typeof kvgFormData.$inferSelect;
 export const insertKvgFormDataSchema = createInsertSchema(kvgFormData).omit({ id: true, created_at: true, updated_at: true });
 export type InsertKvgFormData = z.infer<typeof insertKvgFormDataSchema>;
+
+// CRM Settings
+export const crmSettings = pgTable("crm_settings", {
+  id: serial("id").primaryKey(),
+  crm_type: text("crm_type").notNull(), // 'dynamics365', 'dataverse', etc.
+  base_url: text("base_url").notNull(),
+  api_version: text("api_version"),
+  auth_type: text("auth_type").notNull().default("oauth2"),
+  // Store additional settings as JSON
+  settings: jsonb("settings"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type CrmSetting = typeof crmSettings.$inferSelect;
+export const insertCrmSettingSchema = createInsertSchema(crmSettings).omit({ id: true, created_at: true, updated_at: true });
+export type InsertCrmSetting = z.infer<typeof insertCrmSettingSchema>;

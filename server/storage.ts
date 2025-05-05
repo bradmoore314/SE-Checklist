@@ -12,6 +12,7 @@ import {
   KvgFormData, InsertKvgFormData,
   KvgStream, InsertKvgStream,
   KvgStreamImage, InsertKvgStreamImage,
+  CrmSetting, InsertCrmSetting,
   PERMISSION, Permission,
   users,
   projects,
@@ -25,7 +26,8 @@ import {
   floorplans,
   floorplanMarkers,
   feedback,
-  projectCollaborators
+  projectCollaborators,
+  crmSettings
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -130,6 +132,14 @@ export interface IStorage {
   getKvgStreamImages(streamId: number): Promise<KvgStreamImage[]>;
   createKvgStreamImage(image: InsertKvgStreamImage): Promise<KvgStreamImage>;
   deleteKvgStreamImage(id: number): Promise<boolean>;
+  
+  // CRM Settings
+  getCrmSettings(): Promise<CrmSetting[]>;
+  getCrmSettingById(id: number): Promise<CrmSetting | undefined>;
+  getCrmSettingByType(crmType: string): Promise<CrmSetting | undefined>;
+  createCrmSetting(setting: InsertCrmSetting): Promise<CrmSetting>;
+  updateCrmSetting(id: number, setting: Partial<InsertCrmSetting>): Promise<CrmSetting | undefined>;
+  deleteCrmSetting(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -144,6 +154,7 @@ export class MemStorage implements IStorage {
   private floorplans: Map<number, Floorplan>;
   private floorplanMarkers: Map<number, FloorplanMarker>;
   private feedback: Map<number, Feedback>;
+  private crmSettings: Map<number, CrmSetting>;
   
   private currentUserId: number;
   private currentProjectId: number;
@@ -155,6 +166,7 @@ export class MemStorage implements IStorage {
   private currentFloorplanId: number;
   private currentFloorplanMarkerId: number;
   private currentFeedbackId: number;
+  private currentCrmSettingId: number;
   
   // Feedback
   async getFeedback(): Promise<Feedback[]> {
@@ -238,6 +250,7 @@ export class MemStorage implements IStorage {
     this.floorplans = new Map();
     this.floorplanMarkers = new Map();
     this.feedback = new Map();
+    this.crmSettings = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -249,6 +262,7 @@ export class MemStorage implements IStorage {
     this.currentFloorplanId = 1;
     this.currentFloorplanMarkerId = 1;
     this.currentFeedbackId = 1;
+    this.currentCrmSettingId = 1;
     
     // Initialize with sample data
     this.initSampleData();
