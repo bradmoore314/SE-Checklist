@@ -71,6 +71,8 @@ import { setupAuth } from "./auth";
 import { translateText } from "./services/gemini-translation";
 import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
 import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
+import crmRoutes from "./routes/crm-routes";
+import { dataverseIntegration } from "./services/dataverse-integration";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -2801,6 +2803,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register enhanced Bluebeam-like PDF annotation routes
   registerEnhancedFloorplanRoutes(app, isAuthenticated);
   registerEnhancedMarkerAPI(app, isAuthenticated);
+  
+  // Register CRM and Dataverse integration routes
+  app.use(crmRoutes);
+  
+  // Initialize Dataverse integration
+  dataverseIntegration.loadConfiguration().catch(err => {
+    console.error("Failed to load Dataverse configuration:", err);
+  });
   
   const httpServer = createServer(app);
   return httpServer;
