@@ -344,25 +344,25 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   // Desktop view
   return (
     <TooltipProvider>
-      <div className="bg-background border rounded-lg shadow-lg flex flex-col p-2 space-y-2">
-        <div className="flex items-center justify-center border-b pb-1 mb-1">
-          <span className="text-xs font-semibold text-primary">Annotation Tools</span>
+      <div className="bg-background border rounded-lg shadow-lg flex flex-row gap-2 p-2 w-full">
+        <div className="flex items-center border-r pr-2 mr-2">
+          <span className="text-xs font-semibold text-primary">Tools</span>
         </div>
         
-        {/* Main toolbar with essential tools */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Main toolbar with essential tools - now in horizontal layout */}
+        <div className="flex flex-row items-center gap-1 border-r pr-2 mr-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={activeTool === 'select' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('select')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Pointer className="h-5 w-5" />
+                <Pointer className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Select (V)</TooltipContent>
+            <TooltipContent side="bottom">Select</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -371,67 +371,73 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'pan' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('pan')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Hand className="h-5 w-5" />
+                <Hand className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Pan (H)</TooltipContent>
+            <TooltipContent side="bottom">Pan</TooltipContent>
           </Tooltip>
-        </div>
         
-        {/* Zoom & View Controls in a small area */}
-        <div className="grid grid-cols-2 gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon" 
                 onClick={onZoomIn}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <ZoomIn className="h-5 w-5" />
+                <ZoomIn className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Zoom In (+)</TooltipContent>
+            <TooltipContent side="bottom">Zoom In</TooltipContent>
           </Tooltip>
           
-          <HoverCard>
-            <HoverCardTrigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onZoomOut}
+                className="h-8 w-8 rounded-md"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Zoom Out</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onZoomFit}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
                 <div className="text-xs font-medium">
                   {Math.round(zoomLevel * 100)}%
                 </div>
               </Button>
-            </HoverCardTrigger>
-            <HoverCardContent className="w-40" side="right">
-              <p className="text-xs">Click to fit to page</p>
-              <p className="text-xs text-muted-foreground">Current zoom: {Math.round(zoomLevel * 100)}%</p>
-            </HoverCardContent>
-          </HoverCard>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Fit to page</TooltipContent>
+          </Tooltip>
         </div>
         
-        <Separator className="my-1" />
-        
-        {/* Drawing Tools Section */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Drawing and Measurement Tools */}
+        <div className="flex flex-row items-center gap-1 border-r pr-2 mr-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={activeTool === 'rectangle' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('rectangle')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Square className="h-5 w-5" />
+                <Square className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Rectangle (R)</TooltipContent>
+            <TooltipContent side="bottom">Rectangle</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -440,12 +446,12 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'circle' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('circle')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Circle className="h-5 w-5" />
+                <Circle className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Circle (C)</TooltipContent>
+            <TooltipContent side="bottom">Circle</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -454,12 +460,12 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'line' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('line')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <LineChart className="h-5 w-5" />
+                <LineChart className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Line (L)</TooltipContent>
+            <TooltipContent side="bottom">Line</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -468,29 +474,26 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'text' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('text')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Type className="h-5 w-5" />
+                <Type className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Text (T)</TooltipContent>
+            <TooltipContent side="bottom">Text</TooltipContent>
           </Tooltip>
-        </div>
         
-        {/* Measurement */}
-        <div className="grid grid-cols-2 gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={activeTool === 'measure' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('measure')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Ruler className="h-5 w-5" />
+                <Ruler className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Measure (M)</TooltipContent>
+            <TooltipContent side="bottom">Measure</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -499,32 +502,30 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'calibrate' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('calibrate')}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Pipette className="h-5 w-5" />
+                <Pipette className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Calibrate</TooltipContent>
+            <TooltipContent side="bottom">Calibrate</TooltipContent>
           </Tooltip>
         </div>
         
-        <Separator className="my-1" />
-        
-        {/* Equipment Tools with colored buttons */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Equipment Tools */}
+        <div className="flex flex-row items-center gap-1 border-r pr-2 mr-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={activeTool === 'access_point' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('access_point')}
-                className={`h-9 w-9 rounded-md ${activeTool !== 'access_point' ? 'bg-green-50 hover:bg-green-100' : ''}`}
+                className={`h-8 w-8 rounded-md ${activeTool !== 'access_point' ? 'bg-green-50 hover:bg-green-100' : ''}`}
               >
-                <DoorClosed className={`h-5 w-5 ${activeTool !== 'access_point' ? 'text-green-600' : ''}`} />
+                <DoorClosed className={`h-4 w-4 ${activeTool !== 'access_point' ? 'text-green-600' : ''}`} />
                 <span className="absolute -top-1 -right-1 text-[10px] bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center">A</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Access Point (A)</TooltipContent>
+            <TooltipContent side="bottom">Access Point</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -533,13 +534,13 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'camera' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('camera')}
-                className={`h-9 w-9 rounded-md ${activeTool !== 'camera' ? 'bg-blue-50 hover:bg-blue-100' : ''}`}
+                className={`h-8 w-8 rounded-md ${activeTool !== 'camera' ? 'bg-blue-50 hover:bg-blue-100' : ''}`}
               >
-                <Camera className={`h-5 w-5 ${activeTool !== 'camera' ? 'text-blue-600' : ''}`} />
+                <Camera className={`h-4 w-4 ${activeTool !== 'camera' ? 'text-blue-600' : ''}`} />
                 <span className="absolute -top-1 -right-1 text-[10px] bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center">C</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Camera (C)</TooltipContent>
+            <TooltipContent side="bottom">Camera</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -548,13 +549,13 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'intercom' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('intercom')}
-                className={`h-9 w-9 rounded-md ${activeTool !== 'intercom' ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
+                className={`h-8 w-8 rounded-md ${activeTool !== 'intercom' ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
               >
-                <Magnet className={`h-5 w-5 ${activeTool !== 'intercom' ? 'text-purple-600' : ''}`} />
+                <Magnet className={`h-4 w-4 ${activeTool !== 'intercom' ? 'text-purple-600' : ''}`} />
                 <span className="absolute -top-1 -right-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center">I</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Intercom</TooltipContent>
+            <TooltipContent side="bottom">Intercom</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -563,32 +564,30 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'elevator' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('elevator')}
-                className={`h-9 w-9 rounded-md ${activeTool !== 'elevator' ? 'bg-orange-50 hover:bg-orange-100' : ''}`}
+                className={`h-8 w-8 rounded-md ${activeTool !== 'elevator' ? 'bg-orange-50 hover:bg-orange-100' : ''}`}
               >
-                <MoveHorizontal className={`h-5 w-5 ${activeTool !== 'elevator' ? 'text-orange-600' : ''}`} />
+                <MoveHorizontal className={`h-4 w-4 ${activeTool !== 'elevator' ? 'text-orange-600' : ''}`} />
                 <span className="absolute -top-1 -right-1 text-[10px] bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center">E</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Elevator</TooltipContent>
+            <TooltipContent side="bottom">Elevator</TooltipContent>
           </Tooltip>
         </div>
         
-        <Separator className="my-1" />
-        
         {/* File operations */}
-        <div className="grid grid-cols-2 gap-1">
+        <div className="flex flex-row items-center gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onLayersToggle}
-                className={`h-9 w-9 rounded-md ${showLayers ? 'bg-primary/10' : ''}`}
+                className={`h-8 w-8 rounded-md ${showLayers ? 'bg-primary/10' : ''}`}
               >
-                <Layers className="h-5 w-5" />
+                <Layers className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Toggle Layers Panel</TooltipContent>
+            <TooltipContent side="bottom">Layers</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -597,12 +596,12 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={onSave}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Save className="h-5 w-5" />
+                <Save className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Save (Ctrl+S)</TooltipContent>
+            <TooltipContent side="bottom">Save</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -611,12 +610,12 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={onExport}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <FileOutput className="h-5 w-5" />
+                <FileOutput className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Export (Ctrl+E)</TooltipContent>
+            <TooltipContent side="bottom">Export</TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -626,12 +625,12 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 size="icon"
                 onClick={onDelete}
                 disabled={!canDelete}
-                className="h-9 w-9 rounded-md"
+                className="h-8 w-8 rounded-md"
               >
-                <Trash2 className={`h-5 w-5 ${!canDelete ? 'opacity-50' : 'text-red-500'}`} />
+                <Trash2 className={`h-4 w-4 ${!canDelete ? 'opacity-50' : 'text-red-500'}`} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Delete (Del)</TooltipContent>
+            <TooltipContent side="bottom">Delete</TooltipContent>
           </Tooltip>
         </div>
       </div>
