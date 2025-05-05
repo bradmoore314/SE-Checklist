@@ -868,6 +868,11 @@ const KastleVideoGuardingPage: React.FC = () => {
           eventVolume: 0,
           patrolType: "",
           patrolsPerWeek: 0,
+          // New schedule fields
+          scheduleType: "",
+          monitoringDaysOfWeek: "",
+          monitoringHours: "",
+          useMainSchedule: false,
           images: []
         };
     

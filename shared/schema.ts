@@ -484,6 +484,12 @@ export const kvgStreams = pgTable('kvg_streams', {
   patrolStartTime: text('patrol_start_time'),
   patrolEndTime: text('patrol_end_time'),
   
+  // Schedule fields
+  scheduleType: text('schedule_type'),
+  monitoringDaysOfWeek: text('monitoring_days_of_week'),
+  monitoringHours: text('monitoring_hours'),
+  useMainSchedule: boolean('use_main_schedule').default(false),
+  
   // Legacy fields
   quantity: integer('quantity').default(1),
   description: text('description'),
