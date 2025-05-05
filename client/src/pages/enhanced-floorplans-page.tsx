@@ -55,6 +55,10 @@ function EnhancedFloorplansPage() {
     isLoading: isLoadingProjectFloorplans 
   } = useQuery<FloorplanData[]>({
     queryKey: ['/api/projects', projectId, 'floorplans'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
+      return await res.json();
+    },
     enabled: !!projectId && !floorplanId
   });
   
@@ -64,15 +68,32 @@ function EnhancedFloorplansPage() {
     isLoading: isLoadingFloorplan 
   } = useQuery<FloorplanData>({
     queryKey: ['/api/floorplans', floorplanId],
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/floorplans/${floorplanId}`);
+      return await res.json();
+    },
     enabled: !!floorplanId
   });
   
-  // Fetch layers for organization
+  // Define a default empty layers array since we don't have a layers endpoint yet
   const { 
-    data: layers, 
+    data: layers = [], 
     isLoading: isLoadingLayers 
   } = useQuery<LayerData[]>({
     queryKey: ['/api/floorplans', floorplanId, 'layers'],
+    queryFn: async () => {
+      try {
+        // If we implement a layers API in the future, we can use this:
+        // const res = await apiRequest('GET', `/api/floorplans/${floorplanId}/layers`);
+        // return await res.json();
+        
+        // For now, return an empty array
+        return [];
+      } catch (error) {
+        console.error("Error fetching layers:", error);
+        return [];
+      }
+    },
     enabled: !!floorplanId
   });
   
