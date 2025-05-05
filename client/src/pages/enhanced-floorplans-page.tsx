@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/AnnotationToolbar';
+import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
 
@@ -57,6 +58,10 @@ function EnhancedFloorplansPage() {
   const projectId = parseInt(params.projectId);
   const floorplanId = params.floorplanId ? parseInt(params.floorplanId) : undefined;
   
+  // Mobile detection state
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // State for viewer properties
   const [currentPage, setCurrentPage] = useState(1);
   const [toolMode, setToolMode] = useState<AnnotationTool>('pan');
   const [viewerKey, setViewerKey] = useState(0);
@@ -72,6 +77,18 @@ function EnhancedFloorplansPage() {
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   const [showAllLabels, setShowAllLabels] = useState(false);
+  
+  // Check for mobile devices on component mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile(); // Initial check
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Fetch all floorplans for the project when no specific floorplan is selected
   const { 
