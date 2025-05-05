@@ -24,6 +24,12 @@ import {
   List,
   RefreshCw,
   ChevronDown,
+  Calendar as CalendarIcon,
+  CalendarDays as CalendarDaysIcon,
+  Clock as ClockIcon,
+  Shield,
+  Clock3,
+  Users2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Stream, StreamImage } from "@/types";
@@ -1431,40 +1437,56 @@ const KastleVideoGuardingPage: React.FC = () => {
                               </div>
                             </div>
                             
-                            {/* Schedule Section */}
-                            <div className="mt-2">
-                              <div className="flex items-center justify-between mb-1">
-                                <Label className="text-xs font-medium text-blue-800 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-blue-600 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">📅</span>
+                            {/* Schedule Section - Mobile Optimized */}
+                            <div className="mt-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                                <Label className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-blue-600 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📅</span>
                                   Stream Schedule
                                 </Label>
                                 
-                                <div className="flex items-center gap-2">
-                                  <Switch
-                                    id={`stream-${stream.id}-use-main-schedule`}
-                                    checked={stream.useMainSchedule}
-                                    onCheckedChange={(checked) => updateStream(stream.id, "useMainSchedule", checked)}
-                                    className="data-[state=checked]:bg-blue-600"
-                                  />
-                                  <Label htmlFor={`stream-${stream.id}-use-main-schedule`} className="text-xs text-blue-700">
-                                    Use Main Schedule
-                                  </Label>
+                                <div className="flex items-center gap-2 mt-1 sm:mt-0">
+                                  <div className="bg-blue-50 rounded-lg px-3 py-1.5 border border-blue-200 flex items-center gap-2">
+                                    <Switch
+                                      id={`stream-${stream.id}-use-main-schedule`}
+                                      checked={stream.useMainSchedule}
+                                      onCheckedChange={(checked) => updateStream(stream.id, "useMainSchedule", checked)}
+                                      className="data-[state=checked]:bg-blue-600"
+                                    />
+                                    <Label htmlFor={`stream-${stream.id}-use-main-schedule`} className="text-sm text-blue-700 cursor-pointer">
+                                      Use Main Schedule
+                                    </Label>
+                                  </div>
                                 </div>
                               </div>
                               
                               {stream.useMainSchedule ? (
-                                <div className="bg-blue-50 p-2 rounded-md border border-blue-200 mt-1">
-                                  <div className="text-xs text-blue-700 mb-2">
+                                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-2">
+                                  <div className="text-sm text-blue-700 mb-3">
                                     <span className="font-medium">Main Schedule: </span>
-                                    {formData.scheduleType || 'Not set'} • 
-                                    {formData.monitoringDaysOfWeek ? ` ${formData.monitoringDaysOfWeek}` : ' No days set'} •
-                                    {formData.monitoringHours ? ` ${formData.monitoringHours.replace('-', ' to ')}` : ' No times set'}
+                                    <div className="mt-1 rounded-md bg-white/70 px-3 py-2 border border-blue-100">
+                                      <div className="flex flex-wrap gap-2 items-center">
+                                        <span className="px-2 py-1 rounded-md bg-blue-100 text-blue-800 font-medium">
+                                          {formData.scheduleType || 'Not set'}
+                                        </span>
+                                        {formData.monitoringDaysOfWeek && (
+                                          <span className="px-2 py-1 rounded-md bg-indigo-100 text-indigo-800">
+                                            {formData.monitoringDaysOfWeek}
+                                          </span>
+                                        )}
+                                        {formData.monitoringHours && (
+                                          <span className="px-2 py-1 rounded-md bg-teal-100 text-teal-800">
+                                            {formData.monitoringHours.replace('-', ' to ')}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                   
                                   <Button 
                                     size="sm" 
                                     variant="outline" 
-                                    className="w-full h-7 bg-white border-blue-300 text-blue-700 text-xs hover:bg-blue-100"
+                                    className="w-full h-9 bg-white border-blue-300 text-blue-700 text-sm hover:bg-blue-100 rounded-lg flex items-center justify-center"
                                     onClick={() => {
                                       updateStream(stream.id, "scheduleType", formData.scheduleType);
                                       updateStream(stream.id, "monitoringDaysOfWeek", formData.monitoringDaysOfWeek);
@@ -1475,17 +1497,21 @@ const KastleVideoGuardingPage: React.FC = () => {
                                       });
                                     }}
                                   >
-                                    <RefreshCw size={12} className="mr-1" /> Apply Main Schedule
+                                    <RefreshCw size={16} className="mr-2" /> Apply Main Schedule
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/80 p-3 rounded-lg border border-blue-100 mt-2">
                                   <div>
+                                    <Label className="text-sm text-blue-700 font-medium mb-2 flex items-center gap-1.5">
+                                      <CalendarIcon size={14} className="text-blue-600" />
+                                      Schedule Type
+                                    </Label>
                                     <Select 
                                       value={stream.scheduleType || ""}
                                       onValueChange={(value) => updateStream(stream.id, "scheduleType", value)}
                                     >
-                                      <SelectTrigger className="h-8 text-xs">
+                                      <SelectTrigger className="h-10 text-sm rounded-lg">
                                         <SelectValue placeholder="Schedule Type" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1498,18 +1524,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                                   </div>
                                   
                                   <div>
+                                    <Label className="text-sm text-blue-700 font-medium mb-2 flex items-center gap-1.5">
+                                      <CalendarDaysIcon size={14} className="text-blue-600" />
+                                      Days of Week
+                                    </Label>
                                     <Popover>
                                       <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full justify-between text-xs h-8">
+                                        <Button variant="outline" className="w-full justify-between text-sm h-10 rounded-lg">
                                           {stream.monitoringDaysOfWeek ? 
                                             stream.monitoringDaysOfWeek : 
                                             <span className="text-muted-foreground">Select Days</span>
                                           }
-                                          <ChevronDown className="ml-1 h-3 w-3 opacity-50" />
+                                          <ChevronDown className="ml-1 h-4 w-4 opacity-50" />
                                         </Button>
                                       </PopoverTrigger>
-                                      <PopoverContent className="w-full p-2">
-                                        <div className="flex flex-wrap gap-1">
+                                      <PopoverContent className="w-full p-3">
+                                        <div className="flex flex-wrap gap-2">
                                           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
                                             const isSelected = stream.monitoringDaysOfWeek?.includes(day);
                                             return (
@@ -1518,7 +1548,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                                 type="button"
                                                 size="sm"
                                                 variant={isSelected ? "default" : "outline"}
-                                                className={`py-0 px-2 h-6 text-xs ${isSelected ? 'bg-blue-600' : 'border-blue-300 text-blue-700'}`}
+                                                className={`py-1 px-3 h-8 text-sm ${isSelected ? 'bg-blue-600' : 'border-blue-300 text-blue-700'}`}
                                                 onClick={() => {
                                                   const current = stream.monitoringDaysOfWeek || '';
                                                   let newValue;
@@ -1543,74 +1573,96 @@ const KastleVideoGuardingPage: React.FC = () => {
                                     </Popover>
                                   </div>
                                   
-                                  <div className="col-span-2">
-                                    <div className="grid grid-cols-2 gap-1 mt-1">
-                                      <Input
-                                        type="time"
-                                        className="h-7 text-xs"
-                                        value={(stream.monitoringHours || '').split('-')[0] || ''}
-                                        onChange={(e) => {
-                                          const endTime = (stream.monitoringHours || '').split('-')[1] || '';
-                                          updateStream(stream.id, "monitoringHours", `${e.target.value}-${endTime}`);
-                                        }}
-                                        placeholder="Start"
-                                      />
-                                      <Input
-                                        type="time"
-                                        className="h-7 text-xs"
-                                        value={(stream.monitoringHours || '').split('-')[1] || ''}
-                                        onChange={(e) => {
-                                          const startTime = (stream.monitoringHours || '').split('-')[0] || '';
-                                          updateStream(stream.id, "monitoringHours", `${startTime}-${e.target.value}`);
-                                        }}
-                                        placeholder="End"
-                                      />
+                                  <div className="col-span-1 sm:col-span-2">
+                                    <Label className="text-sm text-blue-700 font-medium mb-2 flex items-center gap-1.5">
+                                      <ClockIcon size={14} className="text-blue-600" />
+                                      Monitoring Hours
+                                    </Label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Start</span>
+                                        <Input
+                                          type="time"
+                                          className="h-10 text-sm pl-12 rounded-lg"
+                                          value={(stream.monitoringHours || '').split('-')[0] || ''}
+                                          onChange={(e) => {
+                                            const endTime = (stream.monitoringHours || '').split('-')[1] || '';
+                                            updateStream(stream.id, "monitoringHours", `${e.target.value}-${endTime}`);
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">End</span>
+                                        <Input
+                                          type="time"
+                                          className="h-10 text-sm pl-12 rounded-lg"
+                                          value={(stream.monitoringHours || '').split('-')[1] || ''}
+                                          onChange={(e) => {
+                                            const startTime = (stream.monitoringHours || '').split('-')[0] || '';
+                                            updateStream(stream.id, "monitoringHours", `${startTime}-${e.target.value}`);
+                                          }}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               )}
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-3 mt-3">
-                              <div>
-                                <Label htmlFor={`stream-${stream.id}-patrol-groups`} className="text-xs font-medium text-red-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">👮</span>
-                                  Patrol Groups
-                                </Label>
-                                <Select 
-                                  value={stream.patrolGroups}
-                                  onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
-                                >
-                                  <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-8">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Yes">Yes</SelectItem>
-                                    <SelectItem value="No">No</SelectItem>
-                                    <SelectItem value="Select">Select</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg border border-amber-200 mt-4">
+                              <h4 className="text-sm font-medium text-amber-800 mb-3 flex items-center gap-1.5">
+                                <Badge className="bg-amber-500 text-white py-0.5 px-2">
+                                  <Shield size={14} className="mr-1" />
+                                  Patrol Settings
+                                </Badge>
+                              </h4>
                               
-                              <div className="flex flex-col">
-                                <Label className="text-xs font-medium text-orange-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-orange-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">⏰</span>
-                                  Patrol Times
-                                </Label>
-                                <div className="flex gap-1 items-center">
-                                  <Input 
-                                    type="time"
-                                    value={stream.patrolStartTime || ""}
-                                    onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
-                                    className="h-8 text-xs"
-                                  />
-                                  <span className="text-xs">to</span>
-                                  <Input 
-                                    type="time"
-                                    value={stream.monitoringEndTime || ""}
-                                    onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
-                                    className="h-8 text-xs"
-                                  />
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor={`stream-${stream.id}-patrol-groups`} className="text-sm font-medium text-amber-700 mb-1.5 flex items-center gap-1.5">
+                                    <Users2 size={14} className="text-amber-600" />
+                                    Include in Patrol Groups
+                                  </Label>
+                                  <Select 
+                                    value={stream.patrolGroups}
+                                    onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
+                                  >
+                                    <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-10 rounded-lg">
+                                      <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Yes">Yes</SelectItem>
+                                      <SelectItem value="No">No</SelectItem>
+                                      <SelectItem value="Select">Select</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div>
+                                  <Label className="text-sm font-medium text-amber-700 mb-1.5 flex items-center gap-1.5">
+                                    <Clock3 size={14} className="text-amber-600" />
+                                    Patrol Time Window
+                                  </Label>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="relative">
+                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Start</span>
+                                      <Input 
+                                        type="time"
+                                        value={stream.patrolStartTime || ""}
+                                        onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
+                                        className="h-10 text-sm pl-12 rounded-lg"
+                                      />
+                                    </div>
+                                    <div className="relative">
+                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">End</span>
+                                      <Input 
+                                        type="time"
+                                        value={stream.monitoringEndTime || ""}
+                                        onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
+                                        className="h-10 text-sm pl-12 rounded-lg"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
