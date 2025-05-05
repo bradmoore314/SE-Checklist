@@ -136,14 +136,31 @@ function EnhancedFloorplansPage() {
     setIsUploading(true);
     
     try {
-      const formData = new FormData();
-      formData.append('pdfFile', pdfFile);
-      formData.append('name', floorplanName);
-      formData.append('projectId', projectId.toString());
+      // Read the file as base64 and send it in the correct format
+      const reader = new FileReader();
       
-      const response = await fetch('/api/floorplans/upload', {
-        method: 'POST',
-        body: formData
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = (e) => {
+          if (e.target && typeof e.target.result === 'string') {
+            // Extract just the base64 data part without the prefix
+            const base64Data = e.target.result.split(',')[1];
+            resolve(base64Data);
+          } else {
+            reject(new Error('Failed to read file as base64'));
+          }
+        };
+        reader.onerror = (e) => reject(e);
+      });
+      
+      reader.readAsDataURL(pdfFile);
+      
+      const base64 = await base64Promise;
+      
+      // Use the correct API endpoint
+      const response = await apiRequest('POST', '/api/floorplans', {
+        name: floorplanName,
+        pdf_data: base64,
+        project_id: projectId
       });
       
       if (!response.ok) {
