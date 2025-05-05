@@ -23,7 +23,7 @@ interface LayerData {
   name: string;
   color: string;
   visible: boolean;
-  order: number;
+  order_index: number;
 }
 
 interface MarkerData {
@@ -122,8 +122,13 @@ export const EnhancedFloorplanViewer = ({
   const loadPDF = async () => {
     setIsLoading(true);
     try {
-      // Extract the base64 data from the data URL
-      const base64Data = floorplan.pdf_data.split(',')[1];
+      // Process the base64 data, handling both with and without data URL prefix
+      let base64Data = floorplan.pdf_data;
+      if (base64Data.includes(',')) {
+        // If it's a data URL, extract just the base64 part
+        base64Data = base64Data.split(',')[1];
+      }
+      
       // Convert base64 to Uint8Array
       const binaryString = atob(base64Data);
       const len = binaryString.length;

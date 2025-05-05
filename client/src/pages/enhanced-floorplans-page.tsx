@@ -29,7 +29,7 @@ interface LayerData {
   name: string;
   color: string;
   visible: boolean;
-  order: number;
+  order_index: number;
 }
 
 /**
