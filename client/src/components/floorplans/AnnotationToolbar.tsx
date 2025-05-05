@@ -344,7 +344,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   // Desktop view
   return (
     <TooltipProvider>
-      <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 bg-background border rounded-lg shadow-lg flex flex-col p-2 space-y-2">
+      <div className="bg-background border rounded-lg shadow-lg flex flex-col p-2 space-y-2">
         <div className="flex items-center justify-center border-b pb-1 mb-1">
           <span className="text-xs font-semibold text-primary">Annotation Tools</span>
         </div>

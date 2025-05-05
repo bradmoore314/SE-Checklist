@@ -407,7 +407,19 @@ export const EnhancedFloorplanViewer = ({
           // Choose colors based on marker type
           let markerFillColor = color;
           let textColor = 'white';
-          let markerNumber = marker.id; // Default to ID
+          // Extract the marker number from the label if it exists
+          let markerNumber = 0;
+          if (marker.label) {
+            const match = marker.label.match(/\d+$/);
+            if (match) {
+              markerNumber = parseInt(match[0]);
+            } else {
+              markerNumber = markers.filter(m => m.marker_type === marker.marker_type).indexOf(marker) + 1;
+            }
+          } else {
+            // If no label, use the position in the array of this marker type
+            markerNumber = markers.filter(m => m.marker_type === marker.marker_type).indexOf(marker) + 1;
+          }
           let typeSymbol = '';
           
           // Apply professional styling based on marker type
