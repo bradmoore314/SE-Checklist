@@ -442,6 +442,12 @@ export interface Stream {
   throughput: number;
   storage: number;
   cameraId: string;
+  
+  // Schedule fields
+  scheduleType?: string;
+  monitoringDaysOfWeek?: string;
+  monitoringHours?: string;
+  useMainSchedule?: boolean;
 }
 
 // BitRate table as a constant object

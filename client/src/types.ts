@@ -32,6 +32,12 @@ export interface Stream {
   patrolStartTime: string;
   patrolEndTime: string;
   
+  // Schedule fields
+  scheduleType?: string;
+  monitoringDaysOfWeek?: string;
+  monitoringHours?: string;
+  useMainSchedule?: boolean;
+  
   // Legacy fields maintained for compatibility
   quantity: number;
   description: string;
