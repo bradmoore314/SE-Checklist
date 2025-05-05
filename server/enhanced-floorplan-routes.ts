@@ -128,6 +128,49 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
     }
   });
   
+  // Update just a marker's position (for dragging operations)
+  app.patch('/api/enhanced-floorplan/markers/:markerId/position', async (req: Request, res: Response) => {
+    try {
+      const { markerId } = req.params;
+      const { position_x, position_y } = req.body;
+      
+      // Validate input
+      if (position_x === undefined || position_y === undefined) {
+        return res.status(400).json({ error: 'Position coordinates required' });
+      }
+      
+      // Get the current marker to increment version
+      const [currentMarker] = await db
+        .select()
+        .from(floorplanMarkers)
+        .where(eq(floorplanMarkers.id, parseInt(markerId)));
+      
+      if (!currentMarker) {
+        return res.status(404).json({ error: 'Marker not found' });
+      }
+      
+      // Parse coordinates as floats to ensure proper data type
+      const parsedX = parseFloat(position_x as any);
+      const parsedY = parseFloat(position_y as any);
+      
+      // Update only the marker position and version
+      const [updatedMarker] = await db
+        .update(floorplanMarkers)
+        .set({
+          position_x: parsedX,
+          position_y: parsedY,
+          version: (currentMarker.version || 1) + 1
+        })
+        .where(eq(floorplanMarkers.id, parseInt(markerId)))
+        .returning();
+      
+      res.status(200).json(updatedMarker);
+    } catch (error) {
+      console.error('Error updating floorplan marker position:', error);
+      res.status(500).json({ error: 'Failed to update marker position' });
+    }
+  });
+  
   // Delete a marker
   app.delete('/api/enhanced-floorplan/markers/:markerId', async (req: Request, res: Response) => {
     try {

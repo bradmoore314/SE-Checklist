@@ -321,13 +321,13 @@ export const EnhancedFloorplanViewer = ({
         position_y: marker.position_y + 20
       };
       
-      // Remove ID as it will be assigned by the server
-      delete duplicateMarker.id;
+      // Create a new object without the id property instead of using delete
+      const { id, ...markerWithoutId } = duplicateMarker;
       
       const response = await apiRequest(
         'POST', 
         `/api/enhanced-floorplan/${floorplan.id}/markers`,
-        duplicateMarker
+        markerWithoutId
       );
       return await response.json();
     },
@@ -1255,6 +1255,55 @@ export const EnhancedFloorplanViewer = ({
       drawMarkers();
     }
   }, [markers, isLoading, pdfToViewportScale, layers]);
+  
+  // Keyboard handler for marker operations
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only process if we have a selected marker
+      if (selectedMarker) {
+        // Delete key for deleting marker
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          e.preventDefault();
+          deleteMarkerMutation.mutate(selectedMarker.id);
+        }
+        
+        // Ctrl+D for duplicating marker
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          duplicateMarkerMutation.mutate(selectedMarker);
+        }
+        
+        // Escape key to deselect
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          setSelectedMarker(null);
+          
+          // Clear selection styling
+          if (svgLayerRef.current) {
+            const markerGroups = svgLayerRef.current.querySelectorAll('.marker-group');
+            markerGroups.forEach(g => {
+              if (g instanceof Element) {
+                g.classList.remove('selected-marker');
+                const markerCircle = g.querySelector('circle.marker-circle');
+                if (markerCircle) {
+                  markerCircle.setAttribute('stroke-width', '2');
+                  markerCircle.setAttribute('stroke-dasharray', '');
+                }
+              }
+            });
+          }
+        }
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation]);
   
   return (
     <div 
