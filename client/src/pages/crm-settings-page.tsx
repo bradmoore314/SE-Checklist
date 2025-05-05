@@ -1,294 +1,579 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { CrmIntegrationStatus } from "@/components/settings/CrmIntegrationStatus";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, CardContent, CardDescription, 
-  CardHeader, CardTitle, CardFooter 
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, Check, AlertCircle } from "lucide-react";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Heading } from "@/components/ui/heading";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface CrmSettings {
+// Create a schema for the CRM settings form
+const crmSettingSchema = z.object({
+  crm_type: z.string(),
+  base_url: z.string().url("Please enter a valid URL"),
+  api_version: z.string().optional(),
+  auth_type: z.string(),
+  settings: z.string().optional(),
+});
+
+type CrmSetting = {
   id: number;
   crm_type: string;
   base_url: string;
   api_version: string | null;
   auth_type: string;
-  settings: Record<string, any>;
-  created_at: string | null;
-  updated_at: string | null;
-}
+  settings: string | null;
+  created_at: Date | null;
+  updated_at: Date | null;
+};
 
-export default function CrmSettingsPage() {
+const DataverseSettingsForm = () => {
   const { toast } = useToast();
-  const [crmType, setCrmType] = useState("dynamics365");
-  const [baseUrl, setBaseUrl] = useState("");
-  const [apiVersion, setApiVersion] = useState("");
-  const [authType, setAuthType] = useState("oauth2");
-  const [sharePointSiteId, setSharePointSiteId] = useState("");
-  const [sharePointDriveId, setSharePointDriveId] = useState("");
-  const [opportunitiesFolderId, setOpportunitiesFolderId] = useState("");
-
-  const { data: crmSettings, isLoading: isLoadingSettings } = useQuery<CrmSettings[]>({
-    queryKey: ["/api/crm-settings"],
-    refetchOnWindowFocus: false,
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<{success: boolean; message: string} | null>(null);
+  
+  const { data: existingSettings, isLoading: isLoadingSettings } = useQuery<CrmSetting | undefined>({
+    queryKey: ['/api/crm/settings/type/dataverse'],
+    queryFn: async () => {
+      try {
+        const res = await fetch('/api/crm/settings/type/dataverse');
+        if (!res.ok) {
+          if (res.status === 404) {
+            return undefined; // No settings found is ok
+          }
+          throw new Error(`Failed to fetch Dataverse settings: ${res.statusText}`);
+        }
+        return await res.json();
+      } catch (error) {
+        console.error("Error fetching Dataverse settings:", error);
+        return undefined;
+      }
+    }
   });
 
-  const createCrmSettings = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/crm-settings", data);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create CRM settings");
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(crmSettingSchema),
+    defaultValues: {
+      crm_type: "dataverse",
+      base_url: "",
+      api_version: "9.2",
+      auth_type: "oauth2",
+      settings: "",
+    }
+  });
+
+  // Update form when existing settings are loaded
+  useEffect(() => {
+    if (existingSettings) {
+      setValue("crm_type", existingSettings.crm_type);
+      setValue("base_url", existingSettings.base_url);
+      setValue("api_version", existingSettings.api_version || "");
+      setValue("auth_type", existingSettings.auth_type);
+      setValue("settings", existingSettings.settings || "");
+    }
+  }, [existingSettings, setValue]);
+
+  const createSettingsMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof crmSettingSchema>) => {
+      const res = await apiRequest("POST", "/api/crm/settings", data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create CRM settings");
       }
-      return response.json();
+      return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "CRM settings created successfully",
+        title: "Settings saved",
+        description: "Dataverse settings have been saved successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/crm-settings"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/integration/status"] });
-      
-      // Reset form
-      setBaseUrl("");
-      setApiVersion("");
-      setSharePointSiteId("");
-      setSharePointDriveId("");
-      setOpportunitiesFolderId("");
+      queryClient.invalidateQueries({ queryKey: ['/api/crm/settings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/crm/settings/type/dataverse'] });
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: "Failed to save settings",
         description: error.message,
         variant: "destructive",
       });
-    },
+    }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const settings: Record<string, any> = {
-      sharePointSiteId,
-      sharePointDriveId,
-    };
-    
-    if (opportunitiesFolderId) {
-      settings.opportunitiesFolderId = opportunitiesFolderId;
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: { id: number; settings: Partial<z.infer<typeof crmSettingSchema>> }) => {
+      const res = await apiRequest("PATCH", `/api/crm/settings/${data.id}`, data.settings);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update CRM settings");
+      }
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Settings updated",
+        description: "Dataverse settings have been updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/crm/settings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/crm/settings/type/dataverse'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update settings",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-    
-    createCrmSettings.mutate({
-      crm_type: crmType,
-      base_url: baseUrl,
-      api_version: apiVersion || undefined,
-      auth_type: authType,
-      settings,
-    });
+  });
+
+  const onSubmit = async (data: z.infer<typeof crmSettingSchema>) => {
+    try {
+      // Parse and enhance the settings to ensure it's a valid JSON string
+      if (data.settings) {
+        try {
+          // Attempt to parse as JSON to validate
+          const settingsObj = JSON.parse(data.settings);
+          // Format it nicely
+          data.settings = JSON.stringify(settingsObj, null, 2);
+        } catch (e) {
+          toast({
+            title: "Invalid JSON",
+            description: "The settings field must contain valid JSON.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      if (existingSettings) {
+        await updateSettingsMutation.mutateAsync({ 
+          id: existingSettings.id, 
+          settings: data 
+        });
+      } else {
+        await createSettingsMutation.mutateAsync(data);
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+    }
   };
 
-  // Find existing settings for the current CRM type
-  const currentCrmSettings = crmSettings?.find(
-    (setting) => setting.crm_type === crmType
-  );
+  const testConnection = async () => {
+    try {
+      setTestLoading(true);
+      setTestResult(null);
+
+      // Get form data for testing
+      const formData = {
+        url: document.getElementById("base_url") as HTMLInputElement,
+        api_version: document.getElementById("api_version") as HTMLInputElement,
+        auth_type: document.getElementById("auth_type") as HTMLSelectElement,
+        settings: document.getElementById("settings") as HTMLTextAreaElement,
+      };
+
+      // Parse settings to extract credentials
+      let clientId = "";
+      let clientSecret = "";
+      let tenantId = "";
+
+      try {
+        const settingsObj = JSON.parse(formData.settings.value);
+        clientId = settingsObj.clientId || "";
+        clientSecret = settingsObj.clientSecret || "";
+        tenantId = settingsObj.tenantId || "";
+      } catch (e) {
+        throw new Error("Invalid settings JSON. Please check the format.");
+      }
+
+      if (!clientId || !clientSecret || !tenantId) {
+        throw new Error("Missing required credentials in settings. Please provide clientId, clientSecret, and tenantId.");
+      }
+
+      // Call the test connection endpoint
+      const response = await fetch("/api/crm/dataverse/test-connection", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: formData.url.value,
+          clientId,
+          clientSecret,
+          tenantId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Connection test failed");
+      }
+
+      const result = await response.json();
+      setTestResult({
+        success: true,
+        message: result.message || "Connection successful",
+      });
+    } catch (error) {
+      console.error("Connection test failed:", error);
+      setTestResult({
+        success: false,
+        message: error instanceof Error ? error.message : "Connection test failed",
+      });
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  if (isLoadingSettings) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="container py-8">
-      <Heading 
-        title="CRM Integration Settings" 
-        description="Configure Microsoft Dataverse and Dynamics 365 integration" 
-      />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="base_url">Base URL</Label>
+            <Input
+              id="base_url"
+              placeholder="https://your-org.crm.dynamics.com"
+              {...register("base_url")}
+            />
+            {errors.base_url && (
+              <p className="text-sm text-destructive mt-1">{errors.base_url.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="api_version">API Version</Label>
+            <Input
+              id="api_version"
+              placeholder="9.2"
+              {...register("api_version")}
+            />
+            {errors.api_version && (
+              <p className="text-sm text-destructive mt-1">{errors.api_version.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="auth_type">Authentication Type</Label>
+            <Select defaultValue="oauth2" {...register("auth_type")}>
+              <SelectTrigger id="auth_type">
+                <SelectValue placeholder="Select authentication type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="oauth2">OAuth 2.0</SelectItem>
+                <SelectItem value="client_credentials">Client Credentials</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.auth_type && (
+              <p className="text-sm text-destructive mt-1">{errors.auth_type.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="settings" className="flex justify-between">
+              <span>Settings (JSON)</span>
+              <span className="text-xs text-muted-foreground">
+                Include clientId, clientSecret, tenantId
+              </span>
+            </Label>
+            <Textarea
+              id="settings"
+              placeholder='{
+  "clientId": "your-client-id",
+  "clientSecret": "your-client-secret",
+  "tenantId": "your-tenant-id"
+}'
+              className="h-[240px] font-mono text-sm"
+              {...register("settings")}
+            />
+            {errors.settings && (
+              <p className="text-sm text-destructive mt-1">{errors.settings.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {testResult && (
+        <Alert variant={testResult.success ? "default" : "destructive"} className="my-4">
+          <div className="flex items-center">
+            {testResult.success ? (
+              <Check className="h-4 w-4 mr-2" />
+            ) : (
+              <AlertCircle className="h-4 w-4 mr-2" />
+            )}
+            <AlertTitle>{testResult.success ? "Success" : "Error"}</AlertTitle>
+          </div>
+          <AlertDescription>{testResult.message}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="flex justify-between">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={testConnection}
+          disabled={testLoading}
+        >
+          {testLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Test Connection
+        </Button>
+
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {existingSettings ? "Update Settings" : "Save Settings"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const SyncSettingsForm = () => {
+  const { toast } = useToast();
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncResult, setSyncResult] = useState<{success: boolean; message: string} | null>(null);
+
+  const startSync = async () => {
+    try {
+      setSyncLoading(true);
+      setSyncResult(null);
+
+      const response = await fetch("/api/crm/dataverse/sync", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Sync failed");
+      }
+
+      const result = await response.json();
+      setSyncResult({
+        success: true,
+        message: `Sync completed. ${result.syncedProjects} projects were synchronized.`,
+      });
       
-      <div className="grid gap-6 mt-6">
-        <CrmIntegrationStatus />
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Add CRM Configuration</CardTitle>
-            <CardDescription>
-              Connect to your Dynamics 365 or Dataverse environment
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="crm-type">CRM Type</Label>
-                <Select
-                  value={crmType}
-                  onValueChange={(value) => setCrmType(value)}
-                >
-                  <SelectTrigger id="crm-type">
-                    <SelectValue placeholder="Select CRM type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dynamics365">Dynamics 365</SelectItem>
-                    <SelectItem value="dataverse">Dataverse</SelectItem>
-                  </SelectContent>
-                </Select>
-                {currentCrmSettings && (
-                  <p className="text-sm text-yellow-600 mt-1">
-                    Note: This CRM type already has a configuration. Creating a new one will replace it.
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="base-url">Base URL</Label>
-                <Input
-                  id="base-url"
-                  value={baseUrl}
-                  onChange={(e) => setBaseUrl(e.target.value)}
-                  placeholder="https://your-org.crm.dynamics.com"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  The base URL for your Microsoft Dynamics or Dataverse environment
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="api-version">API Version</Label>
-                <Input
-                  id="api-version"
-                  value={apiVersion}
-                  onChange={(e) => setApiVersion(e.target.value)}
-                  placeholder="v9.2"
-                />
-                <p className="text-xs text-muted-foreground">
-                  The API version to use (e.g., v9.2)
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="auth-type">Authentication Type</Label>
-                <Select
-                  value={authType}
-                  onValueChange={(value) => setAuthType(value)}
-                >
-                  <SelectTrigger id="auth-type">
-                    <SelectValue placeholder="Select authentication type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="oauth2">OAuth 2.0</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="pt-4">
-                <h3 className="text-lg font-medium">SharePoint Integration</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Configure SharePoint integration for document storage
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="sharepoint-site-id">SharePoint Site ID</Label>
-                    <Input
-                      id="sharepoint-site-id"
-                      value={sharePointSiteId}
-                      onChange={(e) => setSharePointSiteId(e.target.value)}
-                      placeholder="your-tenant.sharepoint.com,guid,guid"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      The ID of your SharePoint site
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="sharepoint-drive-id">SharePoint Drive ID</Label>
-                    <Input
-                      id="sharepoint-drive-id"
-                      value={sharePointDriveId}
-                      onChange={(e) => setSharePointDriveId(e.target.value)}
-                      placeholder="drive-id"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      The ID of the document library in SharePoint
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="opportunities-folder-id">Opportunities Folder ID (Optional)</Label>
-                    <Input
-                      id="opportunities-folder-id"
-                      value={opportunitiesFolderId}
-                      onChange={(e) => setOpportunitiesFolderId(e.target.value)}
-                      placeholder="folder-id"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      The ID of the folder to store opportunities in (defaults to root if not provided)
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="submit"
-                disabled={createCrmSettings.isPending}
-                className="ml-auto"
-              >
-                {createCrmSettings.isPending ? "Saving..." : "Save Configuration"}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
-        
-        {crmSettings && crmSettings.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Existing CRM Configurations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {crmSettings.map((setting) => (
-                  <div
-                    key={setting.id}
-                    className="p-4 border rounded-lg space-y-2"
-                  >
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium">{setting.crm_type}</h3>
-                      <span className="text-sm text-muted-foreground">
-                        {setting.auth_type}
-                      </span>
-                    </div>
-                    <p className="text-sm">{setting.base_url}</p>
-                    {setting.api_version && (
-                      <p className="text-xs text-muted-foreground">
-                        API Version: {setting.api_version}
-                      </p>
-                    )}
-                    {setting.settings && (
-                      <div className="text-xs mt-2">
-                        <p className="font-medium">SharePoint Settings:</p>
-                        <ul className="list-disc pl-5 mt-1">
-                          {Object.entries(setting.settings).map(([key, value]) => (
-                            <li key={key}>
-                              {key}: {String(value)}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+      if (result.syncedProjects > 0) {
+        // Invalidate projects query to refresh the data
+        queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      }
+    } catch (error) {
+      console.error("Sync failed:", error);
+      setSyncResult({
+        success: false,
+        message: error instanceof Error ? error.message : "Sync failed",
+      });
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold">Synchronize with Microsoft Dataverse</h3>
+            <p className="text-sm text-muted-foreground">
+              Synchronize projects with opportunities in Dataverse.
+            </p>
+          </div>
+          <Button onClick={startSync} disabled={syncLoading}>
+            {syncLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Start Sync
+          </Button>
+        </div>
+
+        {syncResult && (
+          <Alert variant={syncResult.success ? "default" : "destructive"} className="my-4">
+            <div className="flex items-center">
+              {syncResult.success ? (
+                <Check className="h-4 w-4 mr-2" />
+              ) : (
+                <AlertCircle className="h-4 w-4 mr-2" />
+              )}
+              <AlertTitle>{syncResult.success ? "Success" : "Error"}</AlertTitle>
+            </div>
+            <AlertDescription>{syncResult.message}</AlertDescription>
+          </Alert>
         )}
       </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Sync Settings</h3>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="auto-sync">Auto Sync</Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically sync projects with Dataverse opportunities
+              </p>
+            </div>
+            <Switch id="auto-sync" />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="two-way-sync">Two-way Sync</Label>
+              <p className="text-sm text-muted-foreground">
+                Changes in either system will be reflected in the other
+              </p>
+            </div>
+            <Switch id="two-way-sync" />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="sync-contacts">Sync Contacts</Label>
+              <p className="text-sm text-muted-foreground">
+                Include contacts in synchronization
+              </p>
+            </div>
+            <Switch id="sync-contacts" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProjectMappingForm = () => {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Field Mappings</h3>
+        <p className="text-muted-foreground">
+          Configure how fields map between projects and Dataverse opportunities
+        </p>
+        
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="py-2 px-4 text-left">Project Field</th>
+              <th className="py-2 px-4 text-left">Dataverse Field</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b">
+              <td className="py-2 px-4">Name</td>
+              <td className="py-2 px-4">
+                <Input defaultValue="name" />
+              </td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-2 px-4">Client</td>
+              <td className="py-2 px-4">
+                <Input defaultValue="customerid" />
+              </td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-2 px-4">Site Address</td>
+              <td className="py-2 px-4">
+                <Input defaultValue="address1_composite" />
+              </td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-2 px-4">SE Name</td>
+              <td className="py-2 px-4">
+                <Input defaultValue="ownerid" />
+              </td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-2 px-4">BDM Name</td>
+              <td className="py-2 px-4">
+                <Input defaultValue="salesrepid" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div className="flex justify-end mt-4">
+          <Button>Save Mappings</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function CrmSettingsPage() {
+  return (
+    <div className="container mx-auto py-6 space-y-8">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">CRM Integration Settings</h1>
+        <p className="text-muted-foreground">
+          Configure Microsoft Dataverse integration for project synchronization.
+        </p>
+      </div>
+
+      <Tabs defaultValue="connection" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="connection">Connection</TabsTrigger>
+          <TabsTrigger value="sync">Synchronization</TabsTrigger>
+          <TabsTrigger value="mapping">Field Mapping</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="connection" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Microsoft Dataverse Connection</CardTitle>
+              <CardDescription>
+                Configure connection settings for Microsoft Dataverse CRM.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataverseSettingsForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="sync" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Synchronization Settings</CardTitle>
+              <CardDescription>
+                Configure how and when data is synchronized with Dataverse.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SyncSettingsForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="mapping" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Field Mapping</CardTitle>
+              <CardDescription>
+                Configure how fields map between projects and Dataverse opportunities.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProjectMappingForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
