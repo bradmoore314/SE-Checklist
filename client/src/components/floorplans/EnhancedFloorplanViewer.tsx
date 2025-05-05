@@ -103,6 +103,10 @@ export const EnhancedFloorplanViewer = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileActionPanelOpen, setMobileActionPanelOpen] = useState(false);
+  
   // State for viewer properties
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -1473,6 +1477,24 @@ export const EnhancedFloorplanViewer = ({
       drawMarkers();
     }
   }, [markers, isLoading, pdfToViewportScale, layers]);
+  
+  // Mobile detection for responsive layout
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Check on initial load
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Add a confirmation state for delete operations
   const [markerToDelete, setMarkerToDelete] = useState<number | null>(null);
