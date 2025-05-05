@@ -611,61 +611,53 @@ export const EnhancedFloorplanViewer = ({
           defs.appendChild(filter);
           group.appendChild(defs);
           
-          // Main equipment marker circle
-          element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          element.setAttribute('cx', `${x}`);
-          element.setAttribute('cy', `${y}`);
-          element.setAttribute('r', '12');
-          element.setAttribute('fill', markerFillColor); // Using the more vibrant markerFillColor
+          // Create a rectangular marker that displays the ID more prominently
+          // Main equipment marker rectangle with rounded corners
+          element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          element.setAttribute('x', `${x - 18}`); // Wider rectangle
+          element.setAttribute('y', `${y - 14}`);
+          element.setAttribute('width', '36'); // Increased width for better visibility
+          element.setAttribute('height', '28'); // Increased height
+          element.setAttribute('rx', '4'); // Rounded corners
+          element.setAttribute('fill', markerFillColor);
           element.setAttribute('stroke', '#ffffff');
           element.setAttribute('stroke-width', '1.5');
-          element.setAttribute('opacity', '1'); // Full opacity for better visibility
+          element.setAttribute('opacity', '0.9');
           element.setAttribute('filter', `url(#${filterId})`);
-          element.setAttribute('class', 'marker-circle');
+          element.setAttribute('class', 'marker-rectangle');
           
-          // Add number label inside the circle with improved visibility
+          // Add marker number as the most prominent element
           const markerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
           markerLabel.setAttribute('x', `${x}`);
-          markerLabel.setAttribute('y', `${y}`);
+          markerLabel.setAttribute('y', `${y - 2}`); // Positioned above the center for ID
           markerLabel.setAttribute('text-anchor', 'middle');
           markerLabel.setAttribute('dominant-baseline', 'central');
-          markerLabel.setAttribute('font-size', '13px');
+          markerLabel.setAttribute('font-size', '14px'); // Larger font
           markerLabel.setAttribute('font-weight', 'bold');
           markerLabel.setAttribute('fill', textColor);
-          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.5)');
-          markerLabel.setAttribute('stroke-width', '1');
+          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.6)');
+          markerLabel.setAttribute('stroke-width', '0.8');
           markerLabel.setAttribute('paint-order', 'stroke');
           markerLabel.setAttribute('class', 'marker-number');
-          markerLabel.setAttribute('pointer-events', 'none'); // Ensure text doesn't interfere with clicking
+          markerLabel.setAttribute('pointer-events', 'none');
           markerLabel.textContent = markerNumber.toString();
           
-          // Add type indicator in small badge
-          const typeIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-          typeIndicator.setAttribute('class', 'marker-type-badge');
+          // Add type text below the ID
+          const typeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          typeText.setAttribute('x', `${x}`);
+          typeText.setAttribute('y', `${y + 8}`); // Positioned below the center
+          typeText.setAttribute('text-anchor', 'middle');
+          typeText.setAttribute('dominant-baseline', 'central');
+          typeText.setAttribute('font-size', '10px');
+          typeText.setAttribute('font-weight', 'bold');
+          typeText.setAttribute('fill', textColor);
+          typeText.setAttribute('stroke', 'rgba(0,0,0,0.4)');
+          typeText.setAttribute('stroke-width', '0.5');
+          typeText.setAttribute('paint-order', 'stroke');
+          typeText.setAttribute('pointer-events', 'none');
+          typeText.textContent = typeSymbol;
           
-          // Type badge circle
-          const badge = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          badge.setAttribute('cx', `${x + 12}`);
-          badge.setAttribute('cy', `${y - 10}`);
-          badge.setAttribute('r', '7');
-          badge.setAttribute('fill', markerFillColor); // Use consistent fill color
-          badge.setAttribute('stroke', '#ffffff');
-          badge.setAttribute('stroke-width', '1.5'); // Thicker stroke for visibility
-          
-          // Type badge text
-          const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          badgeText.setAttribute('x', `${x + 12}`);
-          badgeText.setAttribute('y', `${y - 10}`);
-          badgeText.setAttribute('text-anchor', 'middle');
-          badgeText.setAttribute('dominant-baseline', 'central');
-          badgeText.setAttribute('font-size', '8px');
-          badgeText.setAttribute('font-weight', 'bold');
-          badgeText.setAttribute('fill', textColor);
-          badgeText.textContent = typeSymbol;
-          
-          // Assembly
-          typeIndicator.appendChild(badge);
-          typeIndicator.appendChild(badgeText);
+          // We're not using the small circles as requested
           
           // Add hit area for better interaction
           const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -819,7 +811,7 @@ export const EnhancedFloorplanViewer = ({
           // Assemble all elements
           group.appendChild(element);
           group.appendChild(markerLabel);
-          group.appendChild(typeIndicator);
+          group.appendChild(typeText);
           
           // Add click event to the group
           group.addEventListener('click', () => handleMarkerClick(marker));
@@ -1000,13 +992,56 @@ export const EnhancedFloorplanViewer = ({
     svgLayerRef.current?.appendChild(text);
   };
   
-  // Handle marker click
+  // Handle marker click with enhanced mobile controls
   const handleMarkerClick = (marker: MarkerData) => {
     setSelectedMarker(marker);
-    toast({
-      title: 'Marker Selected',
-      description: `${marker.marker_type} marker ${marker.id}`,
+    
+    // Show contextual menu for marker operations - especially useful on mobile
+    setContextMenuPosition({
+      x: marker.position_x * pdfToViewportScale, 
+      y: marker.position_y * pdfToViewportScale
     });
+    setContextMenuOpen(true);
+    
+    // Enhanced feedback with marker type-specific messages
+    const markerTypeLabels = {
+      'access_point': 'Card Access',
+      'camera': 'Camera',
+      'elevator': 'Elevator',
+      'intercom': 'Intercom',
+      'note': 'Note'
+    };
+    
+    const typeLabel = markerTypeLabels[marker.marker_type as keyof typeof markerTypeLabels] || marker.marker_type;
+    
+    toast({
+      title: `${typeLabel} Selected`,
+      description: `${typeLabel} #${marker.id} selected. Use the toolbar for edit options.`,
+      duration: 3000,
+    });
+    
+    // Apply visual highlighting to selected marker
+    if (svgLayerRef.current) {
+      // Remove previous highlighting
+      const allMarkers = svgLayerRef.current.querySelectorAll('.marker-group');
+      allMarkers.forEach(m => {
+        if (m instanceof Element) {
+          m.classList.remove('marker-selected');
+          m.setAttribute('filter', '');
+        }
+      });
+      
+      // Add highlighting to selected marker
+      const selectedMarkerElement = svgLayerRef.current.querySelector(`.marker-group[data-marker-id="${marker.id}"]`);
+      if (selectedMarkerElement instanceof Element) {
+        selectedMarkerElement.classList.add('marker-selected');
+        // Add glow effect
+        const pulseFilter = document.getElementById('pulse-filter');
+        if (pulseFilter) {
+          selectedMarkerElement.setAttribute('filter', 'url(#pulse-filter)');
+        }
+      }
+    }
   };
   
   // Convert screen coordinates to PDF coordinates
@@ -1590,8 +1625,76 @@ export const EnhancedFloorplanViewer = ({
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
       onTouchStart={(e) => {
-        // Convert touch event to mouse event for mobile
+        // Get the first touch
         const touch = e.touches[0];
+        
+        // Store touch data for potential long press detection
+        const touchStartTime = Date.now();
+        const touchStartX = touch.clientX;
+        const touchStartY = touch.clientY;
+        
+        // Convert coordinates to PDF space
+        const pdfCoords = screenToPdfCoordinates(touchStartX, touchStartY);
+        
+        // Find if we're touching a marker
+        let touchedMarker = null;
+        if (markers && svgLayerRef.current) {
+          // Use elementFromPoint to detect if we're touching a marker
+          const element = document.elementFromPoint(touchStartX, touchStartY);
+          if (element) {
+            // Find the parent marker group
+            let currentElement = element;
+            while (currentElement && currentElement !== svgLayerRef.current.parentElement) {
+              if (currentElement instanceof Element && 
+                  currentElement.classList && 
+                  currentElement.classList.contains('marker-group')) {
+                const markerId = currentElement.getAttribute('data-marker-id');
+                if (markerId) {
+                  touchedMarker = markers.find(m => m.id === parseInt(markerId));
+                }
+                break;
+              }
+              if (currentElement.parentElement) {
+                currentElement = currentElement.parentElement;
+              } else {
+                break;
+              }
+            }
+          }
+        }
+        
+        // Setup long press detection
+        const longPressTimer = setTimeout(() => {
+          // If a marker was touched and we haven't moved much, trigger long press
+          if (touchedMarker) {
+            // Select the marker
+            handleMarkerClick(touchedMarker);
+            
+            // Vibrate device for feedback if supported
+            if (navigator.vibrate) {
+              navigator.vibrate(50);
+            }
+            
+            // Show the context menu at the marker position
+            setContextMenuPosition({
+              x: touchedMarker.position_x * pdfToViewportScale, 
+              y: touchedMarker.position_y * pdfToViewportScale
+            });
+            setContextMenuOpen(true);
+            
+            // Prevent normal click
+            e.preventDefault();
+          }
+        }, 500); // 500ms for long press
+        
+        // Store the timer so we can clear it on move/end
+        (e.currentTarget as any).longPressTimer = longPressTimer;
+        (e.currentTarget as any).touchStartTime = touchStartTime;
+        (e.currentTarget as any).touchStartX = touchStartX;
+        (e.currentTarget as any).touchStartY = touchStartY;
+        (e.currentTarget as any).touchedMarker = touchedMarker;
+        
+        // Also dispatch a regular mouse event for compatibility with existing handlers
         const mouseEvent = new MouseEvent('mousedown', {
           clientX: touch.clientX,
           clientY: touch.clientY,
@@ -1604,10 +1707,34 @@ export const EnhancedFloorplanViewer = ({
       onTouchMove={(e) => {
         // Prevent default scroll behavior on touch devices
         e.preventDefault();
+        
+        // Get touch coordinates
         const touch = e.touches[0];
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
+        
+        // Cancel long press timer if user moved their finger significantly
+        const longPressTimer = (e.currentTarget as any).longPressTimer;
+        const touchStartX = (e.currentTarget as any).touchStartX;
+        const touchStartY = (e.currentTarget as any).touchStartY;
+        
+        if (longPressTimer) {
+          // Calculate movement distance
+          const movementX = Math.abs(touchX - touchStartX);
+          const movementY = Math.abs(touchY - touchStartY);
+          const totalMovement = Math.sqrt(movementX * movementX + movementY * movementY);
+          
+          // If moved more than 10 pixels, cancel the long press
+          if (totalMovement > 10) {
+            clearTimeout(longPressTimer);
+            (e.currentTarget as any).longPressTimer = null;
+          }
+        }
+        
+        // Convert touch to mouse event for handler compatibility
         const mouseEvent = new MouseEvent('mousemove', {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
+          clientX: touchX,
+          clientY: touchY,
           bubbles: true,
           cancelable: true,
           view: window,
@@ -1615,7 +1742,39 @@ export const EnhancedFloorplanViewer = ({
         e.currentTarget.dispatchEvent(mouseEvent);
       }}
       onTouchEnd={(e) => {
-        // Convert touch event to mouse event for mobile
+        // Clear any long press timer
+        const longPressTimer = (e.currentTarget as any).longPressTimer;
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          (e.currentTarget as any).longPressTimer = null;
+        }
+        
+        // Check if this was a tap on a marker (quick touch)
+        const touchStartTime = (e.currentTarget as any).touchStartTime;
+        const touchedMarker = (e.currentTarget as any).touchedMarker;
+        
+        if (touchStartTime && touchedMarker) {
+          const touchDuration = Date.now() - touchStartTime;
+          
+          // If it was a quick tap (less than 300ms) on a marker, select it
+          if (touchDuration < 300) {
+            // Select the marker with a slight delay to avoid double handling
+            setTimeout(() => {
+              if (!contextMenuOpen) {
+                handleMarkerClick(touchedMarker);
+                
+                // Toast feedback for mobile users
+                toast({
+                  title: 'Marker Selected',
+                  description: `${touchedMarker.marker_type.replace('_', ' ')} marker selected. Tap and hold for more options.`,
+                  duration: 2000,
+                });
+              }
+            }, 50);
+          }
+        }
+        
+        // Convert touch event to mouse event for compatibility with other handlers
         const mouseEvent = new MouseEvent('mouseup', {
           bubbles: true,
           cancelable: true,
@@ -1903,6 +2062,170 @@ export const EnhancedFloorplanViewer = ({
           </button>
         </div>
       </div>
+      
+      {/* Mobile-friendly marker context menu */}
+      {contextMenuOpen && selectedMarker && (
+        <div 
+          className="marker-context-menu fixed bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden z-50 max-w-[85vw] touch-none"
+          style={{
+            top: `${Math.min(window.innerHeight - 300, contextMenuPosition.y + 20)}px`,
+            left: `${Math.min(Math.max(10, contextMenuPosition.x - 100), window.innerWidth - 170)}px`,
+            width: '200px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }}
+        >
+          <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 py-2 px-3 flex justify-between items-center">
+            <h3 className="text-sm font-medium truncate">{selectedMarker.marker_type.replace('_', ' ')} #{selectedMarker.id}</h3>
+            <button
+              onClick={() => setContextMenuOpen(false)}
+              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500"
+              aria-label="Close menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div className="p-2">
+            <button 
+              className="w-full text-left px-3 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center my-1"
+              onClick={() => {
+                // View/Edit equipment details
+                toast({
+                  title: 'Edit Equipment',
+                  description: 'Opening equipment details form',
+                  duration: 2000,
+                });
+                
+                // Close menu
+                setContextMenuOpen(false);
+                
+                // Redirect to equipment edit page based on type and ID
+                let route = '';
+                switch (selectedMarker.marker_type) {
+                  case 'access_point':
+                    window.location.href = `/projects/${floorplan.project_id}/access-points/${selectedMarker.equipment_id}/edit`;
+                    break;
+                  case 'camera':
+                    window.location.href = `/projects/${floorplan.project_id}/cameras/${selectedMarker.equipment_id}/edit`;
+                    break;
+                  case 'elevator':
+                    window.location.href = `/projects/${floorplan.project_id}/elevators/${selectedMarker.equipment_id}/edit`;
+                    break;
+                  case 'intercom':
+                    window.location.href = `/projects/${floorplan.project_id}/intercoms/${selectedMarker.equipment_id}/edit`;
+                    break;
+                  default:
+                    toast({
+                      title: 'Not Supported',
+                      description: `Editing ${selectedMarker.marker_type} is not supported.`,
+                      variant: 'destructive',
+                    });
+                }
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Edit Details
+            </button>
+            
+            <button 
+              className="w-full text-left px-3 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center my-1"
+              onClick={() => {
+                // Duplicate the marker
+                createMarkerMutation.mutate({
+                  floorplan_id: floorplan.id,
+                  page: currentPage,
+                  marker_type: selectedMarker.marker_type,
+                  equipment_id: selectedMarker.equipment_id,
+                  position_x: Math.min(100, selectedMarker.position_x + 2),
+                  position_y: Math.min(100, selectedMarker.position_y + 2),
+                  unique_id: uuidv4(),
+                  label: selectedMarker.label ? `${selectedMarker.label} (Copy)` : null,
+                  version: 1
+                });
+                
+                // Close menu
+                setContextMenuOpen(false);
+                
+                toast({
+                  title: 'Marker Duplicated',
+                  description: 'Created a copy of the marker',
+                });
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Duplicate
+            </button>
+            
+            <button 
+              className="w-full text-left px-3 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center my-1"
+              onClick={() => {
+                // Enable drag mode for moving marker
+                if (selectedMarker) {
+                  setIsMarkerDragging(true);
+                  setDraggedMarkerId(selectedMarker.id);
+                  setMarkerDragStartX(selectedMarker.position_x);
+                  setMarkerDragStartY(selectedMarker.position_y);
+                  
+                  toast({
+                    title: 'Move Mode Enabled',
+                    description: 'Drag the marker to a new position and release to place it',
+                  });
+                }
+                
+                // Close menu
+                setContextMenuOpen(false);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 9l-3 3 3 3"></path>
+                <path d="M9 5l3-3 3 3"></path>
+                <path d="M15 19l3 3 3-3"></path>
+                <path d="M19 9l3 3-3 3"></path>
+                <path d="M2 12h20"></path>
+                <path d="M12 2v20"></path>
+              </svg>
+              Move
+            </button>
+            
+            <button 
+              className="w-full text-left px-3 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900 dark:text-red-400 rounded flex items-center my-1"
+              onClick={() => {
+                // Delete the marker
+                if (selectedMarker && selectedMarker.id) {
+                  deleteMarkerMutation.mutate(selectedMarker.id);
+                }
+                
+                // Close menu
+                setContextMenuOpen(false);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              Delete
+            </button>
+          </div>
+          <div className="border-t border-gray-200 dark:border-gray-700 p-2 flex justify-center">
+            <button 
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full"
+              onClick={() => setContextMenuOpen(false)}
+            >
+              Close Menu
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* Calibration Dialog */}
       <CalibrationDialog
