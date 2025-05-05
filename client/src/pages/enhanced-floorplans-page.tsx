@@ -26,6 +26,7 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/AnnotationToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
+import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
 
 interface FloorplanData {
   id: number;
@@ -454,9 +455,15 @@ function EnhancedFloorplansPage() {
   // Render specific floorplan view
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-2 md:mb-4">
-        <h1 className="text-xl md:text-2xl font-bold truncate">{floorplan.name}</h1>
-        <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Advanced floorplan viewer with professional annotation and markup capabilities</p>
+      <div className="flex flex-row justify-between items-start mb-2 md:mb-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold truncate">{floorplan.name}</h1>
+          <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Advanced floorplan viewer with professional annotation and markup capabilities</p>
+        </div>
+        {/* Add the marker stats legend in the top right */}
+        <div className="hidden md:block">
+          <MarkerStatsLegend projectId={floorplan.project_id} />
+        </div>
       </div>
       
       <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
@@ -615,6 +622,11 @@ function EnhancedFloorplansPage() {
               Back to Project
             </Button>
           </div>
+        </div>
+        
+        {/* Mobile-only legend at the bottom */}
+        <div className="mt-4 md:hidden">
+          <MarkerStatsLegend projectId={floorplan.project_id} />
         </div>
       </div>
     </div>
