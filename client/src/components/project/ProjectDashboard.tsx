@@ -239,19 +239,19 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         </DialogContent>
       </Dialog>
       
-      {/* Site Walk Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {/* Site Walk Info Cards - Mobile Responsive */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-6">
         <Card className="border rounded-lg shadow-sm">
-          <CardContent className="p-6">
-            <div className="text-gray-700 font-medium mb-1">Activity Status</div>
-            <div className="flex items-end justify-between">
-              <div className="text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="text-gray-700 font-medium mb-1 text-sm sm:text-base">Activity Status</div>
+            <div className="flex flex-wrap items-end justify-between">
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: 'var(--red-accent)' }}>
                 {progressValue < 25 ? "Just Started" : 
                  progressValue < 50 ? "In Progress" : 
                  progressValue < 75 ? "Almost Done" : 
                  progressValue < 100 ? "Final Review" : "Complete"}
               </div>
-              <div className="text-sm text-gray-500">Updated {formatDate(project.updated_at)}</div>
+              <div className="text-xs sm:text-sm text-gray-500">Updated {formatDate(project.updated_at)}</div>
             </div>
             <div className="mt-4">
               <label htmlFor="progress-slider" className="text-sm font-medium text-gray-700 mb-2 block">
@@ -308,48 +308,48 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         </Card>
         
         <Card className="border rounded-lg shadow-sm">
-          <CardContent className="p-6">
-            <div className="text-gray-700 font-medium mb-1">Equipment Summary</div>
-            <div className="grid grid-cols-2 gap-3 mt-3">
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="text-gray-700 font-medium mb-1 text-sm sm:text-base">Equipment Summary</div>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-2 sm:mt-3">
               <div>
-                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.accessPointCount || 0}
                 </div>
-                <div className="text-sm text-gray-600">Access Points</div>
+                <div className="text-xs sm:text-sm text-gray-600">Access Points</div>
                 <div className="text-xs text-gray-500 mt-1">
                   Interior: {isLoading ? "..." : summaryData?.summary?.interiorAccessPointCount || 0} | 
                   Perimeter: {isLoading ? "..." : summaryData?.summary?.perimeterAccessPointCount || 0}
                 </div>
               </div>
               <div>
-                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.cameraCount || 0}
                 </div>
-                <div className="text-sm text-gray-600">Cameras</div>
+                <div className="text-xs sm:text-sm text-gray-600">Cameras</div>
                 <div className="text-xs text-gray-500 mt-1">
                   Indoor: {isLoading ? "..." : summaryData?.summary?.indoorCameraCount || 0} | 
                   Outdoor: {isLoading ? "..." : summaryData?.summary?.outdoorCameraCount || 0}
                 </div>
               </div>
               <div>
-                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.elevatorCount || 0}
                 </div>
-                <div className="text-sm text-gray-600">Elevators</div>
+                <div className="text-xs sm:text-sm text-gray-600">Elevators</div>
                 <div className="text-xs text-gray-500 mt-1">
                   Total Banks: {isLoading ? "..." : summaryData?.summary?.elevatorBankCount || 0}
                 </div>
               </div>
               <div>
-                <div className="text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold" style={{ color: 'var(--red-accent)' }}>
                   {isLoading ? "..." : summaryData?.summary?.intercomCount || 0}
                 </div>
-                <div className="text-sm text-gray-600">Intercoms</div>
+                <div className="text-xs sm:text-sm text-gray-600">Intercoms</div>
               </div>
             </div>
             
-            <div className="mt-4 pt-4 border-t">
-              <label htmlFor="equipment-notes" className="text-sm font-medium text-gray-700 mb-2 block">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
+              <label htmlFor="equipment-notes" className="text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2 block">
                 Equipment Notes
               </label>
               <textarea
@@ -359,40 +359,40 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
                   updateSiteWalkMutation.mutate({ equipment_notes: e.target.value });
                 }}
                 placeholder="Add notes about equipment..."
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+                className="w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[80px]"
               />
             </div>
           </CardContent>
         </Card>
         
         <Card className="border rounded-lg shadow-sm">
-          <CardContent className="p-6">
-            <div className="text-gray-700 font-medium mb-1">Scope Info</div>
-            <div className="mt-3 space-y-3">
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="text-gray-700 font-medium mb-1 text-sm sm:text-base">Scope Info</div>
+            <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-3">
               <div className="flex justify-between">
-                <div className="text-sm text-gray-600">SE Name:</div>
-                <div className="text-sm font-medium text-gray-800">{project.se_name || "Not specified"}</div>
+                <div className="text-xs sm:text-sm text-gray-600">SE Name:</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">{project.se_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-600">BDM Name:</div>
-                <div className="text-sm font-medium text-gray-800">{project.bdm_name || "Not specified"}</div>
+                <div className="text-xs sm:text-sm text-gray-600">BDM Name:</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">{project.bdm_name || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-600">Site Address:</div>
-                <div className="text-sm font-medium text-gray-800">{project.site_address || "Not specified"}</div>
+                <div className="text-xs sm:text-sm text-gray-600">Site Address:</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">{project.site_address || "Not specified"}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-600">Building Count:</div>
-                <div className="text-sm font-medium text-gray-800">{project.building_count || 1}</div>
+                <div className="text-xs sm:text-sm text-gray-600">Building Count:</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800 text-right">{project.building_count || 1}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm text-gray-600">Created Date:</div>
-                <div className="text-sm font-medium text-gray-800">{formatDate(project.created_at)}</div>
+                <div className="text-xs sm:text-sm text-gray-600">Created Date:</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800 text-right">{formatDate(project.created_at)}</div>
               </div>
             </div>
             
-            <div className="mt-4 pt-4 border-t">
-              <label htmlFor="scope-notes" className="text-sm font-medium text-gray-700 mb-2 block">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
+              <label htmlFor="scope-notes" className="text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2 block">
                 Scope Notes
               </label>
               <textarea
@@ -402,7 +402,7 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
                   updateSiteWalkMutation.mutate({ scope_notes: e.target.value });
                 }}
                 placeholder="Add notes about the scope..."
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+                className="w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[80px]"
               />
             </div>
           </CardContent>
@@ -413,14 +413,14 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
       </div>
       
       {/* Location Features Section */}
-      <div className="mt-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Location Information</h3>
+      <div className="mt-4 sm:mt-6 md:mt-8">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Location Information</h3>
         <LocationFeatures project={project} onProjectUpdate={onProjectUpdate} />
       </div>
       
       {/* Project Collaborators Section - Moved to the bottom */}
-      <div className="mt-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Project Collaborators</h3>
+      <div className="mt-4 sm:mt-6 md:mt-8">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Project Collaborators</h3>
         <CollaborationProvider projectId={project.id}>
           <ProjectCollaborators projectId={project.id} />
         </CollaborationProvider>
