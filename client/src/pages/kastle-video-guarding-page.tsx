@@ -112,6 +112,7 @@ interface FormData {
   scheduleNotes: string;
   patrolFrequencyDays: string;
   patrolFrequencyHours: string;
+  suggestedIncidentResponse: string;
   
   // Project Deployment - PM tab fields
   pmName: string;
@@ -345,6 +346,7 @@ const KastleVideoGuardingPage: React.FC = () => {
     scheduleNotes: "",
     patrolFrequencyDays: "",
     patrolFrequencyHours: "",
+    suggestedIncidentResponse: "Ask how they currently address these issues and incidents on their property or if they have an idea of how they want us to address them. Typical examples of what is done has to do with initial talk-down when operator observes specific incident types. If the subject does not vacate premise, escalate to local onsite security or police.",
     
     // Technology fields
     technology: "",
@@ -2300,6 +2302,21 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
+                </div>
+                
+                {/* Suggested Incident Response Section */}
+                <div className="mb-6">
+                  <h3 className="text-md font-semibold mb-2 text-blue-800 flex items-center gap-2">
+                    <span className="text-lg">📋</span>
+                    Suggested Incident(s) Response:
+                  </h3>
+                  <Textarea 
+                    id="suggestedIncidentResponse" 
+                    className="bg-white mt-2 min-h-[120px]" 
+                    placeholder="Enter suggested incident response details..."
+                    value={formData.suggestedIncidentResponse}
+                    onChange={(e) => handleFormChange("suggestedIncidentResponse", e.target.value)}
+                  />
                 </div>
               </div>
               
