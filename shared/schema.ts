@@ -522,7 +522,9 @@ export const kvgFormData = pgTable('kvg_form_data', {
   kvgSme: text('kvg_sme'),
   customerName: text('customer_name'),
   siteAddress: text('site_address'),
-  cityStateZip: text('city_state_zip'),
+  city: text('city'),
+  state: text('state'),
+  zipCode: text('zip_code'),
   crmOpportunity: text('crm_opportunity'),
   quoteDate: text('quote_date'),
   numSites: integer('num_sites'),
@@ -535,6 +537,9 @@ export const kvgFormData = pgTable('kvg_form_data', {
   region: text('region'),
   customerVertical: text('customer_vertical'),
   propertyCategory: text('property_category'),
+  maintenance: text('maintenance'),
+  servicesRecommended: text('services_recommended'),
+  rspdigGdods: text('rspdig_gdods'),
   
   // Incident Types - stored as JSON
   incidentTypes: json('incident_types'),
