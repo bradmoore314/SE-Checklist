@@ -383,61 +383,63 @@ function EnhancedFloorplansPage() {
       </div>
       
       <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
+        <div className="mb-2">
+          <TooltipProvider>
+            <AnnotationToolbar 
+              activeTool={toolMode}
+              onToolChange={(tool) => handleToolSelect(tool)}
+              onRotate={(direction: 'cw' | 'ccw') => {
+                // Handle rotation
+                toast({
+                  title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
+                  description: "Rotation feature implemented"
+                });
+              }}
+              onZoomIn={() => {
+                setScale(prev => Math.min(prev * 1.2, 10));
+              }}
+              onZoomOut={() => {
+                setScale(prev => Math.max(prev * 0.8, 0.1));
+              }}
+              onZoomFit={() => {
+                setScale(1);
+                setTranslateX(0);
+                setTranslateY(0);
+                handleReloadViewer();
+              }}
+              onSave={() => {
+                toast({
+                  title: 'Saving Annotations',
+                  description: "All annotations have been saved"
+                });
+              }}
+              onDelete={() => {
+                if (selectedMarkerId) {
+                  deleteMarkerMutation.mutate(selectedMarkerId);
+                }
+              }}
+              onCopy={() => {
+                toast({
+                  title: 'Copying Selection',
+                  description: "Selection copied to clipboard"
+                });
+              }}
+              onExport={() => {
+                setShowExportDialog(true);
+              }}
+              onLayersToggle={() => {
+                setShowLayersPanel(!showLayersPanel);
+              }}
+              showLayers={showLayersPanel}
+              canDelete={!!selectedMarkerId}
+              canCopy={!!selectedMarkerId}
+              zoomLevel={scale}
+            />
+          </TooltipProvider>
+        </div>
+        
         <div className="flex flex-wrap justify-between mb-2 md:mb-4">
           <div className="flex space-x-2 items-center">
-            <TooltipProvider>
-              <AnnotationToolbar 
-                activeTool={toolMode}
-                onToolChange={(tool) => handleToolSelect(tool)}
-                onRotate={(direction: 'cw' | 'ccw') => {
-                  // Handle rotation
-                  toast({
-                    title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
-                    description: "Rotation feature implemented"
-                  });
-                }}
-                onZoomIn={() => {
-                  setScale(prev => Math.min(prev * 1.2, 10));
-                }}
-                onZoomOut={() => {
-                  setScale(prev => Math.max(prev * 0.8, 0.1));
-                }}
-                onZoomFit={() => {
-                  setScale(1);
-                  setTranslateX(0);
-                  setTranslateY(0);
-                  handleReloadViewer();
-                }}
-                onSave={() => {
-                  toast({
-                    title: 'Saving Annotations',
-                    description: "All annotations have been saved"
-                  });
-                }}
-                onDelete={() => {
-                  if (selectedMarkerId) {
-                    deleteMarkerMutation.mutate(selectedMarkerId);
-                  }
-                }}
-                onCopy={() => {
-                  toast({
-                    title: 'Copying Selection',
-                    description: "Selection copied to clipboard"
-                  });
-                }}
-                onExport={() => {
-                  setShowExportDialog(true);
-                }}
-                onLayersToggle={() => {
-                  setShowLayersPanel(!showLayersPanel);
-                }}
-                showLayers={showLayersPanel}
-                canDelete={!!selectedMarkerId}
-                canCopy={!!selectedMarkerId}
-                zoomLevel={scale}
-              />
-            </TooltipProvider>
-            
             <Button
               size="sm"
               variant="outline"
