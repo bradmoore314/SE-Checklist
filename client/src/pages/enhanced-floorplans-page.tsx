@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
-  Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft,
+  Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, ChevronLeft, ChevronRight,
   FileUp, Camera, RefreshCcw, DoorClosed, Phone, ArrowUpDown 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -377,13 +377,13 @@ function EnhancedFloorplansPage() {
   // Render specific floorplan view
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold">{floorplan.name}</h1>
-        <p className="text-gray-500">Enhanced PDF Floorplan Viewer with Bluebeam-like annotation capabilities</p>
+      <div className="mb-2 md:mb-4">
+        <h1 className="text-xl md:text-2xl font-bold truncate">{floorplan.name}</h1>
+        <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Enhanced PDF Floorplan Viewer with Bluebeam-like annotation capabilities</p>
       </div>
       
-      <div className="flex flex-col flex-1 mt-4 p-4 bg-white rounded-lg shadow">
-        <div className="flex justify-between mb-4">
+      <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
+        <div className="flex flex-wrap justify-between mb-2 md:mb-4">
           <div className="flex space-x-2 items-center">
             <TooltipProvider>
               <AnnotationToolbar 
@@ -491,19 +491,21 @@ function EnhancedFloorplansPage() {
           />
         </div>
         
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-2 md:mt-4 gap-2">
+          <div className="flex w-full sm:w-auto justify-center space-x-1 sm:space-x-2">
             <Button
               size="sm"
               variant="outline"
               disabled={currentPage <= 1}
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              className="p-2 sm:px-3"
             >
-              Previous Page
+              <ChevronLeft className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Previous</span>
             </Button>
-            <div className="flex items-center">
-              <span className="text-sm">
-                Page {currentPage} of {floorplan.page_count}
+            <div className="flex items-center px-2">
+              <span className="text-xs sm:text-sm whitespace-nowrap">
+                {currentPage}/{floorplan.page_count}
               </span>
             </div>
             <Button
@@ -511,18 +513,21 @@ function EnhancedFloorplansPage() {
               variant="outline"
               disabled={currentPage >= floorplan.page_count}
               onClick={() => setCurrentPage(prev => Math.min(floorplan.page_count, prev + 1))}
+              className="p-2 sm:px-3"
             >
-              Next Page
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="h-4 w-4 sm:ml-2" />
             </Button>
           </div>
           
-          <div>
+          <div className="w-full sm:w-auto flex justify-center sm:justify-end">
             <Button
               size="sm"
               variant="outline"
               onClick={() => window.history.back()}
+              className="w-full sm:w-auto"
             >
-              <ChevronsLeft className="mr-2 h-4 w-4" />
+              <ChevronsLeft className="mr-1 sm:mr-2 h-4 w-4" />
               Back to Project
             </Button>
           </div>
