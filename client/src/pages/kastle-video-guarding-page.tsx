@@ -1888,9 +1888,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="CCTV">CCTV</SelectItem>
-                        <SelectItem value="Analytics">Analytics</SelectItem>
-                        <SelectItem value="Thermal">Thermal</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                        <SelectItem value="KV - Add-On at KVG">KV - Add-On at KVG</SelectItem>
+                        <SelectItem value="KV Gateway - KVG">KV Gateway - KVG</SelectItem>
+                        <SelectItem value="KV New Install">KV New Install</SelectItem>
+                        <SelectItem value="Avigilon New Install">Avigilon New Install</SelectItem>
+                        <SelectItem value="Avigilon Take-over">Avigilon Take-over</SelectItem>
+                        <SelectItem value="Other - New Install">Other - New Install</SelectItem>
+                        <SelectItem value="Other - Take-over">Other - Take-over</SelectItem>
+                        <SelectItem value="TBD - SE follow-up">TBD - SE follow-up</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -1958,10 +1964,11 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="New">New</SelectItem>
-                        <SelectItem value="Upgrade">Upgrade</SelectItem>
-                        <SelectItem value="Replacement">Replacement</SelectItem>
-                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                        <SelectItem value="Select">Select</SelectItem>
+                        <SelectItem value="Take-over Only">Take-over Only</SelectItem>
+                        <SelectItem value="New Install - Video/KVG">New Install - Video/KVG</SelectItem>
+                        <SelectItem value="Existing Acct - Add KVG">Existing Acct - Add KVG</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
