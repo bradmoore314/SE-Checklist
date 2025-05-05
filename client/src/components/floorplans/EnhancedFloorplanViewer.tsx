@@ -755,6 +755,66 @@ export const EnhancedFloorplanViewer = ({
   
   // Mouse event handlers for pan and zoom
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Check if we clicked on a marker when in select mode
+    if (toolMode === 'select' && svgLayerRef.current) {
+      // Get all marker elements in the viewport
+      const markerGroups = svgLayerRef.current.querySelectorAll('.marker-group');
+      
+      // Check if we clicked on a marker
+      if (markerGroups.length > 0) {
+        // Get mouse position
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        // Get the element under the cursor
+        const element = document.elementFromPoint(mouseX, mouseY);
+        
+        // Find the parent marker group
+        if (element) {
+          let markerGroup = null;
+          let current = element;
+          
+          // Walk up the DOM tree to find the marker group
+          while (current && current !== svgLayerRef.current.parentElement) {
+            if (current instanceof Element && current.classList && current.classList.contains('marker-group')) {
+              markerGroup = current;
+              break;
+            }
+            if (current.parentElement) {
+              current = current.parentElement;
+            } else {
+              break;
+            }
+          }
+          
+          // If we found a marker group
+          if (markerGroup && markerGroup instanceof Element && markerGroup.getAttribute('data-marker-id')) {
+            const markerIdStr = markerGroup.getAttribute('data-marker-id');
+            const markerId = parseInt(markerIdStr || '0');
+            
+            // Start dragging
+            setIsMarkerDragging(true);
+            setDraggedMarkerId(markerId);
+            
+            // Store initial position
+            const coords = screenToPdfCoordinates(mouseX, mouseY);
+            setMarkerDragStartX(coords.x);
+            setMarkerDragStartY(coords.y);
+            
+            // Show toast to indicate dragging has started
+            toast({
+              title: 'Marker Dragging',
+              description: `Drag to reposition marker #${markerId}`,
+            });
+            
+            // Don't process further
+            return;
+          }
+        }
+      }
+    }
+    
+    // Handle regular panning
     if (toolMode === 'pan') {
       setIsDragging(true);
       setStartX(e.clientX - translateX);
@@ -817,8 +877,53 @@ export const EnhancedFloorplanViewer = ({
   
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDragging && toolMode === 'pan') {
+      // Regular panning of the view
       setTranslateX(e.clientX - startX);
       setTranslateY(e.clientY - startY);
+    } else if (isMarkerDragging && draggedMarkerId !== null) {
+      // Handle marker dragging
+      const coords = screenToPdfCoordinates(e.clientX, e.clientY);
+      
+      // Update marker position visually during drag
+      if (svgLayerRef.current) {
+        const markerGroup = svgLayerRef.current.querySelector(`[data-marker-id="${draggedMarkerId}"]`);
+        if (markerGroup) {
+          // Calculate visual position with viewport scaling
+          const visualX = coords.x * pdfToViewportScale;
+          const visualY = coords.y * pdfToViewportScale;
+          
+          // Update the marker circle position
+          const circle = markerGroup.querySelector('circle.marker-circle');
+          if (circle) {
+            circle.setAttribute('cx', `${visualX}`);
+            circle.setAttribute('cy', `${visualY}`);
+          }
+          
+          // Update the marker label position
+          const label = markerGroup.querySelector('text.marker-number');
+          if (label) {
+            label.setAttribute('x', `${visualX}`);
+            label.setAttribute('y', `${visualY}`);
+          }
+          
+          // Update badge position
+          const badge = markerGroup.querySelector('.marker-type-badge circle');
+          const badgeText = markerGroup.querySelector('.marker-type-badge text');
+          if (badge && badgeText) {
+            badge.setAttribute('cx', `${visualX + 12}`);
+            badge.setAttribute('cy', `${visualY - 10}`);
+            badgeText.setAttribute('x', `${visualX + 12}`);
+            badgeText.setAttribute('y', `${visualY - 10}`);
+          }
+          
+          // Update hit area position
+          const hitArea = markerGroup.querySelector('circle[style*="pointer-events: all"]');
+          if (hitArea) {
+            hitArea.setAttribute('cx', `${visualX}`);
+            hitArea.setAttribute('cy', `${visualY}`);
+          }
+        }
+      }
     } else if (isDrawing && (toolMode === 'measure' || toolMode === 'calibrate')) {
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       setDrawEndX(coords.x);
@@ -890,6 +995,30 @@ export const EnhancedFloorplanViewer = ({
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDragging) {
       setIsDragging(false);
+    }
+    
+    if (isMarkerDragging && draggedMarkerId !== null) {
+      // End marker dragging
+      setIsMarkerDragging(false);
+      
+      // Get final position
+      const coords = screenToPdfCoordinates(e.clientX, e.clientY);
+      
+      // Save the new position to the database
+      updateMarkerPositionMutation.mutate({
+        markerId: draggedMarkerId,
+        positionX: coords.x,
+        positionY: coords.y
+      });
+      
+      // Reset dragged marker
+      setDraggedMarkerId(null);
+      
+      // Show toast confirmation
+      toast({
+        title: 'Position Updated',
+        description: 'Marker position has been updated.',
+      });
     }
     
     if (isDrawing) {
