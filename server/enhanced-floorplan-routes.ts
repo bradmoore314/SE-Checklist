@@ -39,15 +39,26 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   app.post('/api/enhanced-floorplan/:floorplanId/markers', async (req: Request, res: Response) => {
     try {
       const { floorplanId } = req.params;
-      const markerData = {
+      
+      // Ensure all coordinate values are properly formatted as numbers
+      const processedData = {
         ...req.body,
         floorplan_id: parseInt(floorplanId),
         version: 1,
-        unique_id: `marker_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        unique_id: `marker_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        position_x: parseFloat(req.body.position_x),
+        position_y: parseFloat(req.body.position_y)
       };
       
+      // Add optional coordinates if present
+      if (req.body.end_x !== undefined) processedData.end_x = parseFloat(req.body.end_x);
+      if (req.body.end_y !== undefined) processedData.end_y = parseFloat(req.body.end_y);
+      if (req.body.width !== undefined) processedData.width = parseFloat(req.body.width);
+      if (req.body.height !== undefined) processedData.height = parseFloat(req.body.height);
+      if (req.body.rotation !== undefined) processedData.rotation = parseFloat(req.body.rotation);
+      
       // Validate the marker data
-      const validatedData = insertFloorplanMarkerSchema.parse(markerData);
+      const validatedData = insertFloorplanMarkerSchema.parse(processedData);
       
       // Insert the marker
       const [marker] = await db

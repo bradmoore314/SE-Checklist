@@ -91,382 +91,297 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
 }) => {
   return (
     <TooltipProvider>
-      <div className="flex flex-col p-1 bg-background border rounded-md shadow-sm">
-        {/* Navigation Tools */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'select' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('select')}
-              className="h-8 w-8"
-            >
-              <Pointer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Select (V)</TooltipContent>
-        </Tooltip>
+      <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 bg-background border rounded-lg shadow-lg flex flex-col p-2 space-y-2">
+        {/* Toolbar header with title */}
+        <div className="flex items-center justify-center border-b pb-1 mb-1">
+          <span className="text-xs font-semibold text-primary">Annotation Tools</span>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'pan' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('pan')}
-              className="h-8 w-8"
-            >
-              <Hand className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Pan (H)</TooltipContent>
-        </Tooltip>
+        {/* Main toolbar with essential tools */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'select' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('select')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Pointer className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Select (V)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'pan' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('pan')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Hand className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Pan (H)</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'zoom' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('zoom')}
-              className="h-8 w-8"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Zoom (Z)</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      <Separator className="my-1" />
-      
-      {/* Zoom Controls */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onZoomIn}
-              className="h-8 w-8"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Zoom In (+)</TooltipContent>
-        </Tooltip>
+        {/* Zoom & View Controls in a small area */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon" 
+                onClick={onZoomIn}
+                className="h-9 w-9 rounded-md"
+              >
+                <ZoomIn className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Zoom In (+)</TooltipContent>
+          </Tooltip>
+          
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onZoomFit}
+                className="h-9 w-9 rounded-md"
+              >
+                <div className="text-xs font-medium">
+                  {Math.round(zoomLevel * 100)}%
+                </div>
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-40" side="right">
+              <p className="text-xs">Click to fit to page</p>
+              <p className="text-xs text-muted-foreground">Current zoom: {Math.round(zoomLevel * 100)}%</p>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onZoomOut}
-              className="h-8 w-8"
-            >
-              <ZoomIn className="h-4 w-4 transform rotate-180" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Zoom Out (-)</TooltipContent>
-        </Tooltip>
+        <Separator className="my-1" />
         
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onZoomFit}
-              className="h-8 text-xs"
-            >
-              {Math.round(zoomLevel * 100)}%
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-40">
-            <p className="text-xs">Click to fit to page</p>
-            <p className="text-xs text-muted-foreground">Current zoom: {Math.round(zoomLevel * 100)}%</p>
-          </HoverCardContent>
-        </HoverCard>
-      </div>
-      
-      {/* Rotation Controls */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onRotate('ccw')}
-              className="h-8 w-8"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Rotate Counter-Clockwise</TooltipContent>
-        </Tooltip>
+        {/* Drawing Tools Section */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'rectangle' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('rectangle')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Square className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Rectangle (R)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'circle' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('circle')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Circle className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Circle (C)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'line' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('line')}
+                className="h-9 w-9 rounded-md"
+              >
+                <LineChart className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Line (L)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'text' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('text')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Type className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Text (T)</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onRotate('cw')}
-              className="h-8 w-8"
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Rotate Clockwise</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      <Separator className="my-1" />
-      
-      {/* Drawing Tools */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'rectangle' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('rectangle')}
-              className="h-8 w-8"
-            >
-              <Square className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Rectangle (R)</TooltipContent>
-        </Tooltip>
+        {/* Measurement */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'measure' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('measure')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Ruler className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Measure (M)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'calibrate' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('calibrate')}
+                className="h-9 w-9 rounded-md"
+              >
+                <Pipette className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Calibrate</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'circle' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('circle')}
-              className="h-8 w-8"
-            >
-              <Circle className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Circle (C)</TooltipContent>
-        </Tooltip>
+        <Separator className="my-1" />
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'line' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('line')}
-              className="h-8 w-8"
-            >
-              <LineChart className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Line (L)</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      {/* More Drawing Tools */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'freehand' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('freehand')}
-              className="h-8 w-8"
-            >
-              <PenTool className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Freehand (F)</TooltipContent>
-        </Tooltip>
+        {/* Equipment Tools with colored buttons */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'access_point' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('access_point')}
+                className={`h-9 w-9 rounded-md ${activeTool !== 'access_point' ? 'bg-green-50 hover:bg-green-100' : ''}`}
+              >
+                <DoorClosed className={`h-5 w-5 ${activeTool !== 'access_point' ? 'text-green-600' : ''}`} />
+                <span className="absolute -top-1 -right-1 text-[10px] bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center">1</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Access Point (A)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'camera' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('camera')}
+                className={`h-9 w-9 rounded-md ${activeTool !== 'camera' ? 'bg-blue-50 hover:bg-blue-100' : ''}`}
+              >
+                <Camera className={`h-5 w-5 ${activeTool !== 'camera' ? 'text-blue-600' : ''}`} />
+                <span className="absolute -top-1 -right-1 text-[10px] bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center">2</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Camera (C)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'intercom' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('intercom')}
+                className={`h-9 w-9 rounded-md ${activeTool !== 'intercom' ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
+              >
+                <Magnet className={`h-5 w-5 ${activeTool !== 'intercom' ? 'text-purple-600' : ''}`} />
+                <span className="absolute -top-1 -right-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center">3</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Intercom</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'elevator' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('elevator')}
+                className={`h-9 w-9 rounded-md ${activeTool !== 'elevator' ? 'bg-orange-50 hover:bg-orange-100' : ''}`}
+              >
+                <MoveHorizontal className={`h-5 w-5 ${activeTool !== 'elevator' ? 'text-orange-600' : ''}`} />
+                <span className="absolute -top-1 -right-1 text-[10px] bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center">4</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Elevator</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'text' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('text')}
-              className="h-8 w-8"
-            >
-              <Type className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Text (T)</TooltipContent>
-        </Tooltip>
+        <Separator className="my-1" />
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'highlight' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('highlight')}
-              className="h-8 w-8"
-            >
-              <Highlighter className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Highlight (H)</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      {/* Measurement Tools */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'measure' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('measure')}
-              className="h-8 w-8"
-            >
-              <Ruler className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Measure (M)</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'calibrate' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('calibrate')}
-              className="h-8 w-8"
-            >
-              <Pipette className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Calibrate</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      <Separator className="my-1" />
-      
-      {/* Equipment Tools */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'access_point' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('access_point')}
-              className="h-8 w-8"
-            >
-              <DoorClosed className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Access Point (A)</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'camera' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('camera')}
-              className="h-8 w-8"
-            >
-              <Camera className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Camera (C)</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={activeTool === 'image' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => onToolChange('image')}
-              className="h-8 w-8"
-            >
-              <Image className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Insert Image (I)</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      <Separator className="my-1" />
-      
-      {/* Operations */}
-      <div className="flex space-x-1 mb-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onSave}
-              className="h-8 w-8"
-            >
-              <Save className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Save (Ctrl+S)</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onLayersToggle}
-              className={`h-8 w-8 ${showLayers ? 'bg-accent' : ''}`}
-            >
-              <Layers className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Toggle Layers Panel</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onExport}
-              className="h-8 w-8"
-            >
-              <FileOutput className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Export (Ctrl+E)</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      {/* Edit Operations */}
-      <div className="flex space-x-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onCopy}
-              disabled={!canCopy}
-              className="h-8 w-8"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Copy (Ctrl+C)</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onDelete}
-              disabled={!canDelete}
-              className="h-8 w-8 text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Delete (Del)</TooltipContent>
-        </Tooltip>
-      </div>
+        {/* File operations */}
+        <div className="grid grid-cols-2 gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onLayersToggle}
+                className={`h-9 w-9 rounded-md ${showLayers ? 'bg-primary/10' : ''}`}
+              >
+                <Layers className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Toggle Layers Panel</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onSave}
+                className="h-9 w-9 rounded-md"
+              >
+                <Save className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Save (Ctrl+S)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onExport}
+                className="h-9 w-9 rounded-md"
+              >
+                <FileOutput className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Export (Ctrl+E)</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onDelete}
+                disabled={!canDelete}
+                className="h-9 w-9 rounded-md"
+              >
+                <Trash2 className={`h-5 w-5 ${!canDelete ? 'opacity-50' : 'text-red-500'}`} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Delete (Del)</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
     </TooltipProvider>
   );
