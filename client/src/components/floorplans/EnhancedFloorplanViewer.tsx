@@ -252,27 +252,35 @@ export const EnhancedFloorplanViewer = ({
   // Mutation for updating marker position
   const updateMarkerPositionMutation = useMutation({
     mutationFn: async ({ markerId, positionX, positionY }: { markerId: number, positionX: number, positionY: number }) => {
+      // Round to 2 decimal places for better precision storage
+      const roundedX = Math.round(positionX * 100) / 100;
+      const roundedY = Math.round(positionY * 100) / 100;
+      
       const response = await apiRequest(
         'PATCH',
         `/api/enhanced-floorplan/markers/${markerId}/position`,
-        { position_x: positionX, position_y: positionY }
+        { position_x: roundedX, position_y: roundedY }
       );
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Only invalidate specific marker to avoid full refresh
       queryClient.invalidateQueries({ 
         queryKey: ['/api/enhanced-floorplan', floorplan.id, 'markers', currentPage]
       });
+      
+      // Show success toast with precise coordinates
       toast({
         title: 'Position Updated',
-        description: 'Marker position updated successfully.',
+        description: `Marker moved to (${data.position_x.toFixed(2)}, ${data.position_y.toFixed(2)})`,
+        duration: 2000,
       });
     },
     onError: (error) => {
       console.error('Error updating marker position:', error);
       toast({
         title: 'Update Failed',
-        description: 'Failed to update marker position.',
+        description: 'Failed to update marker position. Please try again.',
         variant: 'destructive',
       });
     }
@@ -1246,12 +1254,64 @@ export const EnhancedFloorplanViewer = ({
     
     // Always allow zoom with ctrl key, otherwise only in zoom mode
     if (toolMode === 'zoom' || e.ctrlKey) {
-      // Zoom in/out
-      const delta = e.deltaY > 0 ? 0.9 : 1.1; // Zoom factor
-      setScale(prev => Math.max(0.1, Math.min(10, prev * delta)));
+      // Get cursor position relative to canvas
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      
+      // Calculate cursor position in document coordinates (before scaling)
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Position in PDF coordinates
+      const pdfX = mouseX / pdfToViewportScale;
+      const pdfY = mouseY / pdfToViewportScale;
+      
+      // Calculate new scale
+      const delta = e.deltaY > 0 ? 0.8 : 1.25; // More dramatic zoom factor for better user experience
+      const newScale = Math.max(0.1, Math.min(10, scale * delta));
+      
+      // Apply new scale
+      setScale(newScale);
       
       // Re-render page at new scale
       renderPage(currentPage);
+      
+      // Update translation to zoom towards cursor position
+      if (containerRef.current) {
+        // Allow small delay for the renderPage to update dimensions
+        setTimeout(() => {
+          const containerWidth = containerRef.current?.clientWidth || 0;
+          const containerHeight = containerRef.current?.clientHeight || 0;
+          
+          // Calculate new center point
+          const newCenterX = pdfX * pdfToViewportScale * (newScale / scale);
+          const newCenterY = pdfY * pdfToViewportScale * (newScale / scale);
+          
+          // Calculate translation needed to keep the point under cursor
+          const newTranslateX = containerWidth / 2 - newCenterX;
+          const newTranslateY = containerHeight / 2 - newCenterY;
+          
+          setTranslateX(newTranslateX);
+          setTranslateY(newTranslateY);
+        }, 10);
+      }
+      
+      // Show toast for user feedback
+      if (e.deltaY > 0) {
+        toast({
+          title: 'Zooming Out',
+          description: `Scale: ${newScale.toFixed(1)}x`,
+          variant: 'default',
+          duration: 1000,
+        });
+      } else {
+        toast({
+          title: 'Zooming In',
+          description: `Scale: ${newScale.toFixed(1)}x`,
+          variant: 'default',
+          duration: 1000,
+        });
+      }
     }
   };
   
@@ -1269,6 +1329,62 @@ export const EnhancedFloorplanViewer = ({
     }
   }, [markers, isLoading, pdfToViewportScale, layers]);
   
+  // Add a confirmation state for delete operations
+  const [markerToDelete, setMarkerToDelete] = useState<number | null>(null);
+  
+  // Function to deselect the current marker and clear styling
+  const deselectMarker = () => {
+    setSelectedMarker(null);
+    
+    // Clear selection styling
+    if (svgLayerRef.current) {
+      const markerGroups = svgLayerRef.current.querySelectorAll('.marker-group');
+      markerGroups.forEach(g => {
+        if (g instanceof Element) {
+          g.classList.remove('selected-marker');
+          const markerCircle = g.querySelector('circle.marker-circle');
+          if (markerCircle) {
+            markerCircle.setAttribute('stroke-width', '2');
+            markerCircle.setAttribute('stroke-dasharray', '');
+          }
+        }
+      });
+    }
+  };
+  
+  // Function to handle marker deletion with confirmation
+  const confirmDeleteMarker = (markerId: number) => {
+    setMarkerToDelete(markerId);
+    
+    // Show confirmation toast
+    toast({
+      title: 'Confirm Deletion',
+      description: (
+        <div className="flex flex-col gap-2">
+          <p>Are you sure you want to delete this marker?</p>
+          <div className="flex justify-end gap-2 mt-2">
+            <button 
+              onClick={() => setMarkerToDelete(null)}
+              className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={() => {
+                deleteMarkerMutation.mutate(markerId);
+                setMarkerToDelete(null);
+              }}
+              className="px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      duration: 5000,
+    });
+  };
+  
   // Keyboard handler for marker operations
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1277,35 +1393,72 @@ export const EnhancedFloorplanViewer = ({
         // Delete key for deleting marker
         if (e.key === 'Delete' || e.key === 'Backspace') {
           e.preventDefault();
-          deleteMarkerMutation.mutate(selectedMarker.id);
+          confirmDeleteMarker(selectedMarker.id);
         }
         
         // Ctrl+D for duplicating marker
         if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
           e.preventDefault();
           duplicateMarkerMutation.mutate(selectedMarker);
+          
+          // Show toast for user feedback
+          toast({
+            title: 'Duplicating Marker',
+            description: 'Creating a copy with offset position',
+            duration: 2000,
+          });
         }
         
         // Escape key to deselect
         if (e.key === 'Escape') {
           e.preventDefault();
-          setSelectedMarker(null);
-          
-          // Clear selection styling
-          if (svgLayerRef.current) {
-            const markerGroups = svgLayerRef.current.querySelectorAll('.marker-group');
-            markerGroups.forEach(g => {
-              if (g instanceof Element) {
-                g.classList.remove('selected-marker');
-                const markerCircle = g.querySelector('circle.marker-circle');
-                if (markerCircle) {
-                  markerCircle.setAttribute('stroke-width', '2');
-                  markerCircle.setAttribute('stroke-dasharray', '');
-                }
-              }
-            });
-          }
+          deselectMarker();
         }
+      }
+      
+      // Global keyboard shortcuts regardless of selection
+      
+      // Ctrl+Plus for zoom in
+      if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+        e.preventDefault();
+        const newScale = Math.min(10, scale * 1.2);
+        setScale(newScale);
+        renderPage(currentPage);
+        
+        toast({
+          title: 'Zooming In',
+          description: `Scale: ${newScale.toFixed(1)}x`,
+          duration: 1000,
+        });
+      }
+      
+      // Ctrl+Minus for zoom out
+      if (e.ctrlKey && e.key === '-') {
+        e.preventDefault();
+        const newScale = Math.max(0.1, scale * 0.8);
+        setScale(newScale);
+        renderPage(currentPage);
+        
+        toast({
+          title: 'Zooming Out',
+          description: `Scale: ${newScale.toFixed(1)}x`,
+          duration: 1000,
+        });
+      }
+      
+      // Ctrl+0 for reset zoom and position
+      if (e.ctrlKey && e.key === '0') {
+        e.preventDefault();
+        setScale(1);
+        setTranslateX(0);
+        setTranslateY(0);
+        renderPage(currentPage);
+        
+        toast({
+          title: 'Zoom Reset',
+          description: 'Restored default view',
+          duration: 1000,
+        });
       }
     };
     
@@ -1316,7 +1469,7 @@ export const EnhancedFloorplanViewer = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation]);
+  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
   
   return (
     <div 
@@ -1382,6 +1535,68 @@ export const EnhancedFloorplanViewer = ({
             height: viewportDimensions.height
           }}
         />
+      </div>
+      
+      {/* Zoom Controls */}
+      <div className="zoom-controls">
+        <button
+          onClick={() => {
+            const newScale = Math.min(10, scale * 1.2);
+            setScale(newScale);
+            renderPage(currentPage);
+            toast({
+              title: 'Zooming In',
+              description: `Scale: ${newScale.toFixed(1)}x`,
+              duration: 1000,
+            });
+          }}
+          title="Zoom In (Ctrl +)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
+        <button
+          onClick={() => {
+            const newScale = Math.max(0.1, scale * 0.8);
+            setScale(newScale);
+            renderPage(currentPage);
+            toast({
+              title: 'Zooming Out',
+              description: `Scale: ${newScale.toFixed(1)}x`,
+              duration: 1000,
+            });
+          }}
+          title="Zoom Out (Ctrl -)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
+        <button
+          onClick={() => {
+            setScale(1);
+            setTranslateX(0);
+            setTranslateY(0);
+            renderPage(currentPage);
+            toast({
+              title: 'Zoom Reset',
+              description: 'Restored default view',
+              duration: 1000,
+            });
+          }}
+          title="Reset Zoom and Position (Ctrl 0)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 12h8"></path>
+          </svg>
+        </button>
       </div>
       
       {/* Calibration Dialog */}
