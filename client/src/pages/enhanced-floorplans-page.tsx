@@ -237,11 +237,13 @@ function EnhancedFloorplansPage() {
         throw new Error("Invalid project ID");
       }
       
+      const numericProjectId = parseInt(projectId);
+      
       // Use the correct API endpoint with detailed error handling
       const response = await apiRequest('POST', '/api/floorplans', {
         name: floorplanName,
         pdf_data: base64,
-        project_id: parseInt(projectId)
+        project_id: numericProjectId
       });
       
       // Handle various error responses

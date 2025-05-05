@@ -213,6 +213,16 @@
     stroke-width: 3px;
     transition: stroke-width 0.2s ease;
   }
+  
+  /* Ensure marker numbers are always visible */
+  .marker-number {
+    font-weight: bold !important;
+    filter: drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.7)) !important;
+    paint-order: stroke !important;
+    stroke: rgba(0, 0, 0, 0.7) !important;
+    stroke-width: 1.5px !important;
+    font-size: 14px !important;
+  }
 
   /* Controls panel styling */
   .controls-panel {
