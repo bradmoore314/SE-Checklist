@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { AnnotationTool } from './AnnotationToolbar';
 
 // Ensure PDF.js worker is configured
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -72,7 +73,7 @@ interface CalibrationData {
 interface EnhancedFloorplanViewerProps {
   floorplan: FloorplanData;
   currentPage: number;
-  toolMode: string; 
+  toolMode: AnnotationTool; 
   layers: LayerData[];
   onPageChange: (page: number) => void;
 }
