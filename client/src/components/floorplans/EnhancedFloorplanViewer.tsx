@@ -912,6 +912,40 @@ export const EnhancedFloorplanViewer = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
+      onTouchStart={(e) => {
+        // Convert touch event to mouse event for mobile
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        e.currentTarget.dispatchEvent(mouseEvent);
+      }}
+      onTouchMove={(e) => {
+        // Prevent default scroll behavior on touch devices
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        e.currentTarget.dispatchEvent(mouseEvent);
+      }}
+      onTouchEnd={(e) => {
+        // Convert touch event to mouse event for mobile
+        const mouseEvent = new MouseEvent('mouseup', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        e.currentTarget.dispatchEvent(mouseEvent);
+      }}
     >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
