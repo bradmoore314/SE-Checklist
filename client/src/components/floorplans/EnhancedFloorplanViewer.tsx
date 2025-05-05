@@ -890,47 +890,18 @@ export const EnhancedFloorplanViewer = ({
       // Handle equipment placement
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // Get appropriate color based on equipment type
-      let markerColor = '#3b82f6'; // Default blue
-      switch (toolMode) {
-        case 'access_point':
-          markerColor = '#10b981'; // Green
-          break;
-        case 'camera':
-          markerColor = '#3b82f6'; // Blue
-          break;
-        case 'elevator':
-          markerColor = '#f59e0b'; // Orange
-          break;
-        case 'intercom':
-          markerColor = '#8b5cf6'; // Purple
-          break;
-      }
-      
-      // Count existing markers of this type to get the next number
-      const typeCount = markers ? markers.filter(m => m.marker_type === toolMode).length : 0;
-      const markerNumber = typeCount + 1;
-      
-      // Create a marker with sequential numbering
-      const newMarker = {
-        floorplan_id: floorplan.id,
-        page: currentPage,
-        marker_type: toolMode,
+      // Instead of directly creating the marker, show the equipment form dialog
+      setNewMarkerData({
         position_x: coords.x,
         position_y: coords.y,
-        // Use professional labeling format
-        label: `${toolMode.charAt(0).toUpperCase() + toolMode.slice(1).replace('_', ' ')} ${markerNumber}`,
-        color: markerColor,
-        version: 1
-      };
-      
-      // Send to server
-      createMarkerMutation.mutate(newMarker);
+        marker_type: toolMode
+      });
+      setShowEquipmentFormDialog(true);
       
       // Show toast notification
       toast({
         title: 'Adding Equipment',
-        description: `Placed ${toolMode.replace('_', ' ')} #${markerNumber} at coordinates (${Math.round(coords.x)}, ${Math.round(coords.y)})`
+        description: `Fill in the details for this ${toolMode.replace('_', ' ')}`,
       });
     }
   };
@@ -1263,8 +1234,42 @@ export const EnhancedFloorplanViewer = ({
           });
         }}
       />
+      
+      {/* Equipment form dialog */}
+      {showEquipmentFormDialog && newMarkerData && (
+        <EquipmentFormDialog
+          isOpen={showEquipmentFormDialog}
+          onClose={() => {
+            setShowEquipmentFormDialog(false);
+            setNewMarkerData(null);
+          }}
+          markerType={newMarkerData.marker_type}
+          projectId={floorplan.project_id}
+          position={{ x: newMarkerData.position_x, y: newMarkerData.position_y }}
+          onEquipmentCreated={(equipmentId, equipmentLabel) => {
+            // Create the marker after equipment is created
+            if (equipmentId && newMarkerData) {
+              const newMarker = {
+                floorplan_id: floorplan.id,
+                page: currentPage,
+                marker_type: newMarkerData.marker_type,
+                position_x: newMarkerData.position_x,
+                position_y: newMarkerData.position_y,
+                equipment_id: equipmentId,
+                unique_id: generateUniqueId(),
+                label: equipmentLabel,
+                version: 1
+              };
+              
+              // Send to server
+              createMarkerMutation.mutate(newMarker);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
 
+import EquipmentFormDialog from './EquipmentFormDialog';
 export default EnhancedFloorplanViewer;
