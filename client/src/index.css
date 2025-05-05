@@ -298,10 +298,34 @@
     color: #555;
   }
 
-  /* Tooltip styling */
+  /* Enhanced tooltip and label styling */
   .marker-tooltip {
     pointer-events: none;
     transition: opacity 0.2s ease;
+    animation: fade-in 0.2s ease-out;
+  }
+  
+  .marker-permanent-label {
+    pointer-events: none;
+    transition: all 0.3s ease;
+    animation: fade-in 0.3s ease-out;
+  }
+  
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Marker labels should be fully visible by default */
+  .marker-permanent-label rect {
+    filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.5));
+  }
+  
+  /* Hover effects for permanent labels */
+  .marker-group:hover .marker-permanent-label rect {
+    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.7));
+    transform: scale(1.05);
+    transition: all 0.2s ease;
   }
 
   /* Multi-touch gesture handling for mobile devices */
