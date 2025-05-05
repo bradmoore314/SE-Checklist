@@ -94,7 +94,7 @@ export const EnhancedFloorplanViewer = ({
   toolMode,
   layers,
   onPageChange,
-  showAllLabels = false
+  showAllLabels
 }: EnhancedFloorplanViewerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

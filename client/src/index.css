@@ -305,10 +305,23 @@
     animation: fade-in 0.2s ease-out;
   }
   
+  /* By default, permanent labels are hidden until hovered */
   .marker-permanent-label {
     pointer-events: none;
     transition: all 0.3s ease;
     animation: fade-in 0.3s ease-out;
+    opacity: 0.1;  /* Nearly invisible by default */
+  }
+  
+  /* When marker is hovered, always show its label */
+  .marker-group:hover .marker-permanent-label {
+    opacity: 1 !important;
+  }
+  
+  /* When "Show All Labels" is active or marker is being hovered */
+  .marker-label-visible, 
+  .marker-group:hover .marker-permanent-label {
+    opacity: 1;
   }
   
   @keyframes fade-in {
@@ -316,7 +329,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
-  /* Marker labels should be fully visible by default */
+  /* Marker labels should have shadows for better visibility */
   .marker-permanent-label rect {
     filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.5));
   }
