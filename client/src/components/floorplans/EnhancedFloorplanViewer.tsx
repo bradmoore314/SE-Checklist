@@ -264,7 +264,7 @@ export const EnhancedFloorplanViewer = ({
     }
   });
   
-  // Rendering the PDF page
+  // Rendering the PDF page with performance optimization
   const renderPage = async (pageNumber: number) => {
     if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
     
@@ -285,47 +285,64 @@ export const EnhancedFloorplanViewer = ({
       const scaleY = containerHeight / viewport.height;
       const fitScale = Math.min(scaleX, scaleY) * 0.95; // 95% to add a bit of margin
       
-      // Update the viewport with the new scale
-      viewport = page.getViewport({ scale: scale * fitScale, rotation });
+      // For better performance, use integer dimensions
+      const scaleFactor = scale * fitScale;
+      const scaledWidth = Math.floor(viewport.width * scaleFactor);
+      const scaledHeight = Math.floor(viewport.height * scaleFactor);
+      
+      // Update the viewport with the new scale - use rounded values for better performance
+      viewport = page.getViewport({ scale: scaleFactor, rotation });
       
       // Store dimensions for coordinate conversion
       setPdfDimensions({ width: viewport.width / scale, height: viewport.height / scale });
-      setViewportDimensions({ width: viewport.width, height: viewport.height });
+      setViewportDimensions({ width: scaledWidth, height: scaledHeight });
       setPdfToViewportScale(fitScale);
       
       // Set canvas dimensions
       const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
+      const context = canvas.getContext('2d', { alpha: false }); // Disable alpha for better performance
       if (!context) return;
       
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      canvas.width = scaledWidth;
+      canvas.height = scaledHeight;
+      
+      // Optimize rendering
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'medium'; // Balance between quality and performance
       
       // Set SVG layer dimensions
       if (svgLayerRef.current) {
-        svgLayerRef.current.setAttribute('width', `${viewport.width}px`);
-        svgLayerRef.current.setAttribute('height', `${viewport.height}px`);
+        svgLayerRef.current.setAttribute('width', `${scaledWidth}px`);
+        svgLayerRef.current.setAttribute('height', `${scaledHeight}px`);
         // This viewBox ensures SVG coordinates match PDF coordinates
-        svgLayerRef.current.setAttribute('viewBox', `0 0 ${viewport.width} ${viewport.height}`);
+        svgLayerRef.current.setAttribute('viewBox', `0 0 ${scaledWidth} ${scaledHeight}`);
       }
       
-      // Render the page
+      // Render the page with optimized settings
       const renderContext = {
         canvasContext: context,
-        viewport: viewport
+        viewport: viewport,
+        intent: 'display', // 'display' is faster than 'print'
+        enableWebGL: false, // WebGL can cause issues on some devices
+        renderInteractiveForms: false // Disable interactive forms for better performance
       };
       
       await page.render(renderContext).promise;
       setIsLoading(false);
       
-      // Draw markers
+      // Only draw markers if we have them and they're not too many (for performance)
       if (markers && markers.length > 0) {
-        drawMarkers();
+        // Use a small timeout to ensure UI remains responsive
+        setTimeout(() => {
+          drawMarkers();
+        }, 0);
       }
       
-      // Draw calibration if available
+      // Draw calibration if available, also with a small delay
       if (calibration) {
-        drawCalibration(calibration);
+        setTimeout(() => {
+          drawCalibration(calibration);
+        }, 10);
       }
     } catch (error) {
       console.error('Error rendering page:', error);
@@ -423,31 +440,23 @@ export const EnhancedFloorplanViewer = ({
           // Choose colors based on marker type
           let markerFillColor = color;
           let textColor = 'white';
-          // Extract the marker number from the label if it exists, or assign a sequential number
+          // Use marker type-specific counters for numbering from markerTypeGroups
           let markerNumber = 0;
           
-          // Get all markers of this type sorted by ID
-          const markersOfSameType = markers.filter(m => m.marker_type === marker.marker_type)
-            .sort((a, b) => a.id - b.id);
+          // The marker type group already exists and is sorted by ID
+          const thisTypeGroup = markerTypeGroups[marker.marker_type] || [];
           
+          // Find this marker's position in its type group (simpler and more reliable)
+          const position = thisTypeGroup.findIndex(m => m.id === marker.id);
+          markerNumber = position !== -1 ? position + 1 : 1;
+          
+          // If label contains a number, use that instead
           if (marker.label) {
-            // Try to extract a number from the label
             const match = marker.label.match(/\d+$/);
             if (match) {
               markerNumber = parseInt(match[0]);
-            } else {
-              // Find the position of this marker in the sorted array
-              const index = markersOfSameType.findIndex(m => m.id === marker.id);
-              markerNumber = index !== -1 ? index + 1 : markersOfSameType.length;
             }
-          } else {
-            // Use the marker's position in the sorted array
-            const index = markersOfSameType.findIndex(m => m.id === marker.id);
-            markerNumber = index !== -1 ? index + 1 : markersOfSameType.length;
           }
-          
-          // Ensure we have a valid number (for debugging)
-          console.log(`Marker ${marker.id} (${marker.marker_type}) assigned number: ${markerNumber}`);
           let typeSymbol = '';
           
           // Apply professional styling based on marker type

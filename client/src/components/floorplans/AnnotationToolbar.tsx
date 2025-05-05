@@ -68,6 +68,11 @@ interface AnnotationToolbarProps {
 /**
  * Professional PDF annotation toolbar similar to Bluebeam's interface
  * With responsive design for mobile and tablet
+ * 
+ * Tools are color-coded to indicate their status:
+ * - Green: Fully functional
+ * - Orange: Partially functional
+ * - Gray: Placeholder (not yet implemented)
  */
 export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   activeTool,
@@ -89,6 +94,36 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   // Mobile detection state
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Tool status to indicate which tools are functional
+  const toolStatus = {
+    // Navigation tools - fully functional
+    select: 'functional',
+    pan: 'functional',
+    
+    // Equipment tools - fully functional
+    access_point: 'functional',
+    camera: 'functional',
+    intercom: 'functional',
+    elevator: 'functional',
+    
+    // Drawing tools - placeholders or partial
+    rectangle: 'placeholder',
+    circle: 'placeholder',
+    line: 'placeholder',
+    text: 'placeholder',
+    measure: 'partial',
+    calibrate: 'partial',
+    
+    // Action tools - mixed functionality
+    delete: canDelete ? 'functional' : 'disabled',
+    
+    // The rest are placeholders
+    freehand: 'placeholder',
+    polygon: 'placeholder',
+    image: 'placeholder',
+    highlight: 'placeholder'
+  };
   
   // Add event listener for screen size changes
   useEffect(() => {
@@ -432,12 +467,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'rectangle' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('rectangle')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.rectangle === 'placeholder' ? 'bg-gray-100' : ''}`}
               >
-                <Square className="h-4 w-4" />
+                <Square className={`h-4 w-4 ${toolStatus.rectangle === 'placeholder' ? 'text-gray-400' : ''}`} />
+                {toolStatus.rectangle === 'placeholder' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-gray-400 text-white rounded-full w-3 h-3 flex items-center justify-center">P</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Rectangle</TooltipContent>
+            <TooltipContent side="bottom">
+              Rectangle
+              {toolStatus.rectangle === 'placeholder' && (
+                <span className="ml-1 text-[9px] text-gray-400">(Coming Soon)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -446,12 +489,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'circle' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('circle')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.circle === 'placeholder' ? 'bg-gray-100' : ''}`}
               >
-                <Circle className="h-4 w-4" />
+                <Circle className={`h-4 w-4 ${toolStatus.circle === 'placeholder' ? 'text-gray-400' : ''}`} />
+                {toolStatus.circle === 'placeholder' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-gray-400 text-white rounded-full w-3 h-3 flex items-center justify-center">P</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Circle</TooltipContent>
+            <TooltipContent side="bottom">
+              Circle
+              {toolStatus.circle === 'placeholder' && (
+                <span className="ml-1 text-[9px] text-gray-400">(Coming Soon)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -460,12 +511,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'line' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('line')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.line === 'placeholder' ? 'bg-gray-100' : ''}`}
               >
-                <LineChart className="h-4 w-4" />
+                <LineChart className={`h-4 w-4 ${toolStatus.line === 'placeholder' ? 'text-gray-400' : ''}`} />
+                {toolStatus.line === 'placeholder' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-gray-400 text-white rounded-full w-3 h-3 flex items-center justify-center">P</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Line</TooltipContent>
+            <TooltipContent side="bottom">
+              Line
+              {toolStatus.line === 'placeholder' && (
+                <span className="ml-1 text-[9px] text-gray-400">(Coming Soon)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -474,12 +533,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'text' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('text')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.text === 'placeholder' ? 'bg-gray-100' : ''}`}
               >
-                <Type className="h-4 w-4" />
+                <Type className={`h-4 w-4 ${toolStatus.text === 'placeholder' ? 'text-gray-400' : ''}`} />
+                {toolStatus.text === 'placeholder' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-gray-400 text-white rounded-full w-3 h-3 flex items-center justify-center">P</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Text</TooltipContent>
+            <TooltipContent side="bottom">
+              Text
+              {toolStatus.text === 'placeholder' && (
+                <span className="ml-1 text-[9px] text-gray-400">(Coming Soon)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
         
           <Tooltip>
@@ -488,12 +555,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'measure' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('measure')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.measure === 'partial' ? 'bg-amber-50' : ''}`}
               >
-                <Ruler className="h-4 w-4" />
+                <Ruler className={`h-4 w-4 ${toolStatus.measure === 'partial' ? 'text-amber-600' : ''}`} />
+                {toolStatus.measure === 'partial' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-amber-500 text-white rounded-full w-3 h-3 flex items-center justify-center">B</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Measure</TooltipContent>
+            <TooltipContent side="bottom">
+              Measure
+              {toolStatus.measure === 'partial' && (
+                <span className="ml-1 text-[9px] text-amber-600">(Basic)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
           
           <Tooltip>
@@ -502,12 +577,20 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant={activeTool === 'calibrate' ? 'default' : 'ghost'}
                 size="icon"
                 onClick={() => onToolChange('calibrate')}
-                className="h-8 w-8 rounded-md"
+                className={`h-8 w-8 rounded-md ${toolStatus.calibrate === 'partial' ? 'bg-amber-50' : ''}`}
               >
-                <Pipette className="h-4 w-4" />
+                <Pipette className={`h-4 w-4 ${toolStatus.calibrate === 'partial' ? 'text-amber-600' : ''}`} />
+                {toolStatus.calibrate === 'partial' && (
+                  <span className="absolute -top-1 -right-1 text-[8px] bg-amber-500 text-white rounded-full w-3 h-3 flex items-center justify-center">B</span>
+                )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Calibrate</TooltipContent>
+            <TooltipContent side="bottom">
+              Calibrate
+              {toolStatus.calibrate === 'partial' && (
+                <span className="ml-1 text-[9px] text-amber-600">(Basic)</span>
+              )}
+            </TooltipContent>
           </Tooltip>
         </div>
         
