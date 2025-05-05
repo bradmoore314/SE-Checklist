@@ -199,15 +199,22 @@ export const EnhancedFloorplanViewer = ({
     enabled: !isNaN(floorplan.id) && currentPage > 0
   });
   
+  // State for showing all labels
+  const [showAllLabels, setShowAllLabels] = useState(false);
+  
   // Fetch calibration data for the current page
   const { 
     data: calibration,
     isLoading: isLoadingCalibration
-  } = useQuery<CalibrationData>({
+  } = useQuery<CalibrationData | null>({
     queryKey: ['/api/floorplans', floorplan.id, 'calibrations', currentPage],
     queryFn: async () => {
       try {
         const res = await apiRequest('GET', `/api/floorplans/${floorplan.id}/calibrations/${currentPage}`);
+        if (res.status === 404) {
+          console.log('Calibration not found, this is expected for new floorplans');
+          return null;
+        }
         return await res.json();
       } catch (error) {
         // Silently fail as calibration might not exist yet
@@ -665,37 +672,121 @@ export const EnhancedFloorplanViewer = ({
           hitArea.setAttribute('fill', 'transparent');
           hitArea.setAttribute('style', 'pointer-events: all;');
           
-          // Show tooltip on hover
+          // Enhanced tooltip and label system
           hitArea.addEventListener('mouseenter', () => {
             const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             tooltip.setAttribute('class', 'marker-tooltip');
             tooltip.setAttribute('id', `tooltip-${marker.id}`);
             
-            // Get label text - either use stored label or create a default one
-            const labelText = marker.label || `${marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ')} ${marker.id}`;
-            const labelWidth = labelText ? labelText.length * 7 + 10 : 100;
+            // Get label text with more detail and formatting
+            let labelText = marker.label || `${marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ')} ${marker.id}`;
+            
+            // Add equipment type prefix if not already included
+            const typePrefix = marker.marker_type.charAt(0).toUpperCase() + marker.marker_type.slice(1).replace('_', ' ');
+            if (!labelText.includes(typePrefix)) {
+              labelText = `${typePrefix}: ${labelText}`;
+            }
+            
+            // Calculate appropriate size based on text length
+            const labelWidth = Math.max(labelText.length * 7 + 20, 120);
+            
+            // Determine best position for tooltip based on marker position
+            // This prevents tooltips from going off-screen
+            const viewportWidth = svgLayerRef.current?.getBoundingClientRect().width || 1000;
+            let tooltipX = x + 20;
+            let textAnchor = 'start';
+            let textX = tooltipX + 10;
+            
+            // If too close to right edge, show tooltip to the left
+            if (tooltipX + labelWidth > viewportWidth - 20) {
+              tooltipX = x - labelWidth - 10;
+              textAnchor = 'end';
+              textX = tooltipX + labelWidth - 10;
+            }
+            
+            // Enhanced tooltip background with drop shadow
+            const dropShadowId = `dropShadow-tooltip-${marker.id}`;
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            filter.setAttribute('id', dropShadowId);
+            filter.innerHTML = `<feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3" />`;
+            defs.appendChild(filter);
+            tooltip.appendChild(defs);
             
             // Tooltip background
             const tooltipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            tooltipBg.setAttribute('x', `${x + 20}`);
-            tooltipBg.setAttribute('y', `${y - 10}`);
+            tooltipBg.setAttribute('x', `${tooltipX}`);
+            tooltipBg.setAttribute('y', `${y - 15}`);
             tooltipBg.setAttribute('width', `${labelWidth}px`);
-            tooltipBg.setAttribute('height', '20px');
-            tooltipBg.setAttribute('rx', '4');
+            tooltipBg.setAttribute('height', '30px');
+            tooltipBg.setAttribute('rx', '6');
             tooltipBg.setAttribute('fill', '#000000');
-            tooltipBg.setAttribute('opacity', '0.8');
+            tooltipBg.setAttribute('opacity', '0.85');
+            tooltipBg.setAttribute('filter', `url(#${dropShadowId})`);
             
             // Tooltip text
             const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            tooltipText.setAttribute('x', `${x + 25}`);
+            tooltipText.setAttribute('x', `${textX}`);
             tooltipText.setAttribute('y', `${y}`);
+            tooltipText.setAttribute('text-anchor', textAnchor);
             tooltipText.setAttribute('fill', '#ffffff');
-            tooltipText.setAttribute('font-size', '12px');
+            tooltipText.setAttribute('font-size', '13px');
+            tooltipText.setAttribute('font-weight', 'normal');
             tooltipText.textContent = labelText;
             
+            // Connector line to marker
+            const connectorLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            connectorLine.setAttribute('x1', `${x}`);
+            connectorLine.setAttribute('y1', `${y}`);
+            connectorLine.setAttribute('x2', tooltipX > x ? `${tooltipX}` : `${tooltipX + labelWidth}`);
+            connectorLine.setAttribute('y2', `${y}`);
+            connectorLine.setAttribute('stroke', '#ffffff');
+            connectorLine.setAttribute('stroke-width', '1');
+            connectorLine.setAttribute('stroke-dasharray', '3,2');
+            
+            // Assemble tooltip
+            tooltip.appendChild(connectorLine);
             tooltip.appendChild(tooltipBg);
             tooltip.appendChild(tooltipText);
             group.appendChild(tooltip);
+            
+            // Optional: Display a permanent small label below the marker
+            if (!document.getElementById(`permanent-label-${marker.id}`)) {
+              const smallLabel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+              smallLabel.setAttribute('id', `permanent-label-${marker.id}`);
+              smallLabel.setAttribute('class', 'marker-permanent-label');
+              
+              // Get short version of label (first few characters)
+              const shortLabel = labelText.length > 15 ? 
+                `${labelText.substring(0, 13)}...` : labelText;
+              
+              // Small background
+              const smallLabelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              smallLabelBg.setAttribute('x', `${x - (shortLabel.length * 3)}`);
+              smallLabelBg.setAttribute('y', `${y + 14}`);
+              smallLabelBg.setAttribute('width', `${shortLabel.length * 6}px`);
+              smallLabelBg.setAttribute('height', '16px');
+              smallLabelBg.setAttribute('rx', '3');
+              smallLabelBg.setAttribute('fill', markerFillColor);
+              smallLabelBg.setAttribute('opacity', '0.9');
+              
+              // Small label text
+              const smallLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              smallLabelText.setAttribute('x', `${x}`);
+              smallLabelText.setAttribute('y', `${y + 22}`);
+              smallLabelText.setAttribute('text-anchor', 'middle');
+              smallLabelText.setAttribute('fill', textColor);
+              smallLabelText.setAttribute('font-size', '10px');
+              smallLabelText.setAttribute('font-weight', 'bold');
+              smallLabelText.setAttribute('paint-order', 'stroke');
+              smallLabelText.setAttribute('stroke', 'rgba(0,0,0,0.5)');
+              smallLabelText.setAttribute('stroke-width', '1px');
+              smallLabelText.textContent = shortLabel;
+              
+              smallLabel.appendChild(smallLabelBg);
+              smallLabel.appendChild(smallLabelText);
+              group.appendChild(smallLabel);
+            }
           });
           
           hitArea.addEventListener('mouseleave', () => {
@@ -703,6 +794,15 @@ export const EnhancedFloorplanViewer = ({
             if (tooltip) {
               tooltip.remove();
             }
+            
+            // Option: You can decide whether to keep or remove the permanent label
+            // Uncomment the following to remove permanent label on mouseleave
+            /*
+            const permanentLabel = document.getElementById(`permanent-label-${marker.id}`);
+            if (permanentLabel) {
+              permanentLabel.remove();
+            }
+            */
           });
           
           group.appendChild(hitArea);
