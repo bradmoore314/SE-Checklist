@@ -5,6 +5,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { AnnotationTool } from './AnnotationToolbar';
+import { CalibrationDialog } from './CalibrationDialog';
 
 // Ensure PDF.js worker is configured
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -723,7 +724,7 @@ export const EnhancedFloorplanViewer = ({
       setIsDragging(true);
       setStartX(e.clientX - translateX);
       setStartY(e.clientY - translateY);
-    } else if (toolMode === 'measure') {
+    } else if (toolMode === 'measure' || toolMode === 'calibrate') {
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       setIsDrawing(true);
       setDrawStartX(coords.x);
@@ -783,7 +784,7 @@ export const EnhancedFloorplanViewer = ({
     if (isDragging && toolMode === 'pan') {
       setTranslateX(e.clientX - startX);
       setTranslateY(e.clientY - startY);
-    } else if (isDrawing && toolMode === 'measure') {
+    } else if (isDrawing && (toolMode === 'measure' || toolMode === 'calibrate')) {
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       setDrawEndX(coords.x);
       setDrawEndY(coords.y);
@@ -856,10 +857,10 @@ export const EnhancedFloorplanViewer = ({
       setIsDragging(false);
     }
     
-    if (isDrawing && toolMode === 'measure') {
+    if (isDrawing) {
       setIsDrawing(false);
       
-      // Create a permanent measurement marker
+      // Get the end coordinates
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Only create if it's not just a click (minimum distance)
@@ -868,33 +869,46 @@ export const EnhancedFloorplanViewer = ({
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 5 / pdfToViewportScale) { // Minimum 5 pixels in viewport space
-        // Calculate real-world distance if calibration is available
-        let label = '';
-        if (calibration) {
-          const pdfDistance = distance;
-          const realDistance = (pdfDistance * calibration.real_world_distance) / calibration.pdf_distance;
-          label = `${realDistance.toFixed(2)} ${calibration.unit}`;
+        if (toolMode === 'measure') {
+          // Calculate real-world distance if calibration is available
+          let label = '';
+          if (calibration) {
+            const pdfDistance = distance;
+            const realDistance = (pdfDistance * calibration.real_world_distance) / calibration.pdf_distance;
+            label = `${realDistance.toFixed(2)} ${calibration.unit}`;
+          }
+          
+          // Find default layer for measurements
+          const measurementLayer = layers.find(l => l.name.toLowerCase().includes('measure'));
+          
+          // Create the measurement marker
+          const markerData = {
+            floorplan_id: floorplan.id,
+            page: currentPage,
+            marker_type: 'measurement',
+            layer_id: measurementLayer?.id,
+            position_x: drawStartX,
+            position_y: drawStartY,
+            end_x: coords.x,
+            end_y: coords.y,
+            color: '#ef4444',
+            line_width: 2,
+            label
+          };
+          
+          createMarkerMutation.mutate(markerData);
         }
-        
-        // Find default layer for measurements
-        const measurementLayer = layers.find(l => l.name.toLowerCase().includes('measure'));
-        
-        // Create the measurement marker
-        const markerData = {
-          floorplan_id: floorplan.id,
-          page: currentPage,
-          marker_type: 'measurement',
-          layer_id: measurementLayer?.id,
-          position_x: drawStartX,
-          position_y: drawStartY,
-          end_x: coords.x,
-          end_y: coords.y,
-          color: '#ef4444',
-          line_width: 2,
-          label
-        };
-        
-        createMarkerMutation.mutate(markerData);
+        else if (toolMode === 'calibrate') {
+          // Open calibration dialog with the line data
+          setCalibrationLine({
+            startX: drawStartX,
+            startY: drawStartY,
+            endX: coords.x,
+            endY: coords.y,
+            pdfDistance: distance
+          });
+          setIsCalibrationDialogOpen(true);
+        }
       }
       
       // Clear temporary drawing elements
@@ -1005,6 +1019,26 @@ export const EnhancedFloorplanViewer = ({
           }}
         />
       </div>
+      
+      {/* Calibration Dialog */}
+      <CalibrationDialog
+        open={isCalibrationDialogOpen}
+        onOpenChange={setIsCalibrationDialogOpen}
+        floorplanId={floorplan.id}
+        currentPage={currentPage}
+        calibrationLine={calibrationLine}
+        onCalibrationComplete={() => {
+          // Refresh calibration data
+          queryClient.invalidateQueries({
+            queryKey: ['/api/floorplans', floorplan.id, 'calibrations', currentPage]
+          });
+          // Show success toast
+          toast({
+            title: 'Success',
+            description: 'Calibration saved successfully',
+          });
+        }}
+      />
     </div>
   );
 };
