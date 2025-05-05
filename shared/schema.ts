@@ -559,6 +559,14 @@ export const kvgFormData = pgTable('kvg_form_data', {
   escalationProcess2: text('escalation_process2'),
   escalationProcess3: text('escalation_process3'),
   
+  // Schedule fields
+  scheduleType: text('schedule_type'),
+  monitoringDaysOfWeek: text('monitoring_days_of_week'),
+  monitoringHours: text('monitoring_hours'),
+  scheduleNotes: text('schedule_notes'),
+  patrolFrequencyDays: text('patrol_frequency_days'),
+  patrolFrequencyHours: text('patrol_frequency_hours'),
+  
   // Project Deployment tab fields
   pmName: text('pm_name'),
   gatewayCredentials: text('gateway_credentials'),
