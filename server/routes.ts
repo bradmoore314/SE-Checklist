@@ -15,6 +15,8 @@ import {
 } from './services/location-services';
 import { registerEnhancedFloorplanRoutes } from './enhanced-floorplan-routes';
 import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
+import { recognizeSpeech, textToSpeech } from './speech-api';
+import { processChatMessage, generateEquipmentRecommendations } from './services/chatbot-gemini';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2804,6 +2806,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerEnhancedFloorplanRoutes(app, isAuthenticated);
   registerEnhancedMarkerAPI(app, isAuthenticated);
   
+  // Speech API endpoints
+  app.post("/api/speech/recognize", isAuthenticated, (req: Request, res: Response) => {
+    recognizeSpeech(req, res);
+  });
+
+  app.post("/api/speech/synthesize", isAuthenticated, (req: Request, res: Response) => {
+    textToSpeech(req, res);
+  });
+  
+  // Chatbot API endpoints
+  app.post("/api/gemini/chat", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { messages, context } = req.body;
+      
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Messages are required and must be an array"
+        });
+      }
+      
+      const result = await processChatMessage(messages, context || {});
+      res.json(result);
+    } catch (error) {
+      console.error("Error processing chat message:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to process chat message",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
+  app.post("/api/gemini/chat/recommendations", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { messages, context } = req.body;
+      
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Messages are required and must be an array"
+        });
+      }
+      
+      const recommendations = await generateEquipmentRecommendations(messages, context || {});
+      res.json({ recommendations });
+    } catch (error) {
+      console.error("Error generating equipment recommendations:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate equipment recommendations",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Register CRM and Dataverse integration routes
   app.use(crmRoutes);
   
