@@ -327,28 +327,162 @@ export const EnhancedFloorplanViewer = ({
         case 'camera':
         case 'elevator':
         case 'intercom':
-          // Equipment markers are circles with labels
+          // Create a group for the marker
+          const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          group.setAttribute('class', `marker-group marker-type-${marker.marker_type}`);
+          group.setAttribute('data-marker-id', marker.id.toString());
+          
+          // Choose colors based on marker type
+          let fillColor = color;
+          let textColor = 'white';
+          let markerNumber = marker.id; // Default to ID
+          let typeSymbol = '';
+          
+          // Apply professional styling based on marker type
+          switch (marker.marker_type) {
+            case 'access_point':
+              fillColor = '#10b981'; // Green
+              typeSymbol = 'A'; 
+              break;
+            case 'camera':
+              fillColor = '#3b82f6'; // Blue
+              typeSymbol = 'C';
+              break;
+            case 'elevator':
+              fillColor = '#f59e0b'; // Orange
+              typeSymbol = 'E';
+              break;
+            case 'intercom':
+              fillColor = '#8b5cf6'; // Purple
+              typeSymbol = 'I';
+              break;
+          }
+          
+          // Use custom color if specified
+          if (marker.color) {
+            fillColor = marker.color;
+          }
+          
+          // Create drop shadow filter for the marker
+          const filterId = `drop-shadow-${marker.id}`;
+          const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+          const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+          filter.setAttribute('id', filterId);
+          filter.innerHTML = `<feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.3" />`;
+          defs.appendChild(filter);
+          group.appendChild(defs);
+          
+          // Main equipment marker circle
           element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
           element.setAttribute('cx', `${x}`);
           element.setAttribute('cy', `${y}`);
           element.setAttribute('r', '12');
-          element.setAttribute('fill', color);
-          element.setAttribute('stroke', 'white');
-          element.setAttribute('stroke-width', '1');
+          element.setAttribute('fill', fillColor);
+          element.setAttribute('stroke', '#ffffff');
+          element.setAttribute('stroke-width', '1.5');
           element.setAttribute('opacity', `${opacity}`);
+          element.setAttribute('filter', `url(#${filterId})`);
+          element.setAttribute('class', 'marker-circle');
           
-          // Add label - either use the label from database or the marker's ID
-          const labelText = marker.label || `#${marker.id}`;
-          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', `${x}`);
-          text.setAttribute('y', `${y}`);
-          text.setAttribute('text-anchor', 'middle');
-          text.setAttribute('dy', '0.3em');
-          text.setAttribute('font-size', '10px');
-          text.setAttribute('font-weight', 'bold');
-          text.setAttribute('fill', 'white');
-          text.textContent = labelText;
-          svgLayerRef.current?.appendChild(text);
+          // Add number label inside the circle
+          const markerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          markerLabel.setAttribute('x', `${x}`);
+          markerLabel.setAttribute('y', `${y}`);
+          markerLabel.setAttribute('text-anchor', 'middle');
+          markerLabel.setAttribute('dominant-baseline', 'central');
+          markerLabel.setAttribute('font-size', '11px');
+          markerLabel.setAttribute('font-weight', 'bold');
+          markerLabel.setAttribute('fill', textColor);
+          markerLabel.setAttribute('class', 'marker-number');
+          markerLabel.textContent = markerNumber.toString();
+          
+          // Add type indicator in small badge
+          const typeIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          typeIndicator.setAttribute('class', 'marker-type-badge');
+          
+          // Type badge circle
+          const badge = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          badge.setAttribute('cx', `${x + 12}`);
+          badge.setAttribute('cy', `${y - 10}`);
+          badge.setAttribute('r', '7');
+          badge.setAttribute('fill', fillColor);
+          badge.setAttribute('stroke', '#ffffff');
+          badge.setAttribute('stroke-width', '1');
+          
+          // Type badge text
+          const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          badgeText.setAttribute('x', `${x + 12}`);
+          badgeText.setAttribute('y', `${y - 10}`);
+          badgeText.setAttribute('text-anchor', 'middle');
+          badgeText.setAttribute('dominant-baseline', 'central');
+          badgeText.setAttribute('font-size', '8px');
+          badgeText.setAttribute('font-weight', 'bold');
+          badgeText.setAttribute('fill', textColor);
+          badgeText.textContent = typeSymbol;
+          
+          // Assembly
+          typeIndicator.appendChild(badge);
+          typeIndicator.appendChild(badgeText);
+          
+          // Add tooltip with full label
+          if (marker.label) {
+            // Invisible bigger circle for better hover/click area
+            const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            hitArea.setAttribute('cx', `${x}`);
+            hitArea.setAttribute('cy', `${y}`);
+            hitArea.setAttribute('r', '18');
+            hitArea.setAttribute('fill', 'transparent');
+            hitArea.setAttribute('style', 'pointer-events: all;');
+            
+            // Show tooltip on hover
+            hitArea.addEventListener('mouseenter', () => {
+              const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+              tooltip.setAttribute('class', 'marker-tooltip');
+              tooltip.setAttribute('id', `tooltip-${marker.id}`);
+              
+              // Tooltip background
+              const tooltipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              tooltipBg.setAttribute('x', `${x + 20}`);
+              tooltipBg.setAttribute('y', `${y - 10}`);
+              tooltipBg.setAttribute('width', `${marker.label.length * 7 + 10}px`);
+              tooltipBg.setAttribute('height', '20px');
+              tooltipBg.setAttribute('rx', '4');
+              tooltipBg.setAttribute('fill', '#000000');
+              tooltipBg.setAttribute('opacity', '0.8');
+              
+              // Tooltip text
+              const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              tooltipText.setAttribute('x', `${x + 25}`);
+              tooltipText.setAttribute('y', `${y}`);
+              tooltipText.setAttribute('fill', '#ffffff');
+              tooltipText.setAttribute('font-size', '12px');
+              tooltipText.textContent = marker.label;
+              
+              tooltip.appendChild(tooltipBg);
+              tooltip.appendChild(tooltipText);
+              group.appendChild(tooltip);
+            });
+            
+            hitArea.addEventListener('mouseleave', () => {
+              const tooltip = document.getElementById(`tooltip-${marker.id}`);
+              if (tooltip) {
+                tooltip.remove();
+              }
+            });
+            
+            group.appendChild(hitArea);
+          }
+          
+          // Assemble all elements
+          group.appendChild(element);
+          group.appendChild(markerLabel);
+          group.appendChild(typeIndicator);
+          
+          // Add click event to the group
+          group.addEventListener('click', () => handleMarkerClick(marker));
+          
+          // Add to SVG layer
+          svgLayerRef.current?.appendChild(group);
           break;
           
         case 'measurement':
@@ -563,15 +697,37 @@ export const EnhancedFloorplanViewer = ({
       // Handle equipment placement
       const coords = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // Create a new marker
+      // Get appropriate color based on equipment type
+      let markerColor = '#3b82f6'; // Default blue
+      switch (toolMode) {
+        case 'access_point':
+          markerColor = '#10b981'; // Green
+          break;
+        case 'camera':
+          markerColor = '#3b82f6'; // Blue
+          break;
+        case 'elevator':
+          markerColor = '#f59e0b'; // Orange
+          break;
+        case 'intercom':
+          markerColor = '#8b5cf6'; // Purple
+          break;
+      }
+      
+      // Count existing markers of this type to get the next number
+      const typeCount = markers ? markers.filter(m => m.marker_type === toolMode).length : 0;
+      const markerNumber = typeCount + 1;
+      
+      // Create a marker with sequential numbering
       const newMarker = {
         floorplan_id: floorplan.id,
         page: currentPage,
         marker_type: toolMode,
         position_x: coords.x,
         position_y: coords.y,
-        label: `New ${toolMode.replace('_', ' ')}`,
-        color: '#3b82f6', // Default blue color
+        // Use professional labeling format
+        label: `${toolMode.charAt(0).toUpperCase() + toolMode.slice(1).replace('_', ' ')} ${markerNumber}`,
+        color: markerColor,
         version: 1
       };
       
@@ -581,7 +737,7 @@ export const EnhancedFloorplanViewer = ({
       // Show toast notification
       toast({
         title: 'Adding Equipment',
-        description: `Placed ${toolMode.replace('_', ' ')} at coordinates (${Math.round(coords.x)}, ${Math.round(coords.y)})`
+        description: `Placed ${toolMode.replace('_', ' ')} #${markerNumber} at coordinates (${Math.round(coords.x)}, ${Math.round(coords.y)})`
       });
     }
   };
