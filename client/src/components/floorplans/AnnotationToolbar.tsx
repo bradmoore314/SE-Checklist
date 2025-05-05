@@ -59,7 +59,9 @@ interface AnnotationToolbarProps {
   onCopy: () => void;
   onExport: () => void;
   onLayersToggle: () => void;
+  onToggleLabels?: () => void;
   showLayers: boolean;
+  showAllLabels?: boolean;
   canDelete: boolean;
   canCopy: boolean;
   zoomLevel: number;
@@ -86,7 +88,9 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   onCopy,
   onExport,
   onLayersToggle,
+  onToggleLabels,
   showLayers,
+  showAllLabels = false,
   canDelete,
   canCopy,
   zoomLevel

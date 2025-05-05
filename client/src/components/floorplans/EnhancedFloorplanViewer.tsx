@@ -276,10 +276,12 @@ export const EnhancedFloorplanViewer = ({
         queryKey: ['/api/enhanced-floorplan', floorplan.id, 'markers', currentPage]
       });
       
-      // Show success toast with precise coordinates
+      // Show success toast with precise coordinates - handle undefined data gracefully
       toast({
         title: 'Position Updated',
-        description: `Marker moved to (${data.position_x.toFixed(2)}, ${data.position_y.toFixed(2)})`,
+        description: data && typeof data.position_x === 'number' && typeof data.position_y === 'number'
+          ? `Marker moved to (${data.position_x.toFixed(2)}, ${data.position_y.toFixed(2)})`
+          : 'Marker position updated successfully',
         duration: 2000,
       });
     },
