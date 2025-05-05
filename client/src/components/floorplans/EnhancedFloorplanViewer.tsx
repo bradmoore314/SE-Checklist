@@ -285,7 +285,20 @@ export const EnhancedFloorplanViewer = ({
         'DELETE',
         `/api/enhanced-floorplan/markers/${markerId}`
       );
-      return await response.json();
+      
+      // For successful deletion (204 No Content), we don't need to parse the response
+      if (response.status !== 204) {
+        let errorText = 'Failed to delete marker';
+        try {
+          const errorData = await response.text();
+          if (errorData) errorText = errorData;
+        } catch (e) {
+          console.error('Error parsing delete response:', e);
+        }
+        throw new Error(errorText);
+      }
+      
+      return markerId;
     },
     onSuccess: () => {
       // Clear selected marker
@@ -489,20 +502,20 @@ export const EnhancedFloorplanViewer = ({
       if (!marker.color) {
         switch (marker.marker_type) {
           case 'access_point':
-            color = '#16a34a'; // Green
-            fillColor = 'rgba(22, 163, 74, 0.1)'; // Light green fill
+            color = '#ef4444'; // Red for Card Access
+            fillColor = 'rgba(239, 68, 68, 0.1)'; // Light red fill
             break;
           case 'camera':
-            color = '#2563eb'; // Blue
-            fillColor = 'rgba(37, 99, 235, 0.1)'; // Light blue fill
-            break;
-          case 'intercom':
-            color = '#9333ea'; // Purple
-            fillColor = 'rgba(147, 51, 234, 0.1)'; // Light purple fill
+            color = '#3b82f6'; // Blue for Cameras
+            fillColor = 'rgba(59, 130, 246, 0.1)'; // Light blue fill
             break;
           case 'elevator':
-            color = '#f97316'; // Orange
-            fillColor = 'rgba(249, 115, 22, 0.1)'; // Light orange fill
+            color = '#10b981'; // Green for Elevators
+            fillColor = 'rgba(16, 185, 129, 0.1)'; // Light green fill
+            break;
+          case 'intercom':
+            color = '#eab308'; // Yellow for Intercoms
+            fillColor = 'rgba(234, 179, 8, 0.1)'; // Light yellow fill
             break;
           case 'note':
             color = '#f59e0b'; // Amber
@@ -546,22 +559,22 @@ export const EnhancedFloorplanViewer = ({
           }
           let typeSymbol = '';
           
-          // Apply professional styling based on marker type
+          // Apply professional styling based on marker type with client's requested colors
           switch (marker.marker_type) {
             case 'access_point':
-              markerFillColor = '#10b981'; // Green
+              markerFillColor = '#ef4444'; // Red for Card Access
               typeSymbol = 'A'; 
               break;
             case 'camera':
-              markerFillColor = '#3b82f6'; // Blue
+              markerFillColor = '#3b82f6'; // Blue for Cameras
               typeSymbol = 'C';
               break;
             case 'elevator':
-              markerFillColor = '#f59e0b'; // Orange
+              markerFillColor = '#10b981'; // Green for Elevators
               typeSymbol = 'E';
               break;
             case 'intercom':
-              markerFillColor = '#8b5cf6'; // Purple
+              markerFillColor = '#eab308'; // Yellow for Intercoms
               typeSymbol = 'I';
               break;
           }

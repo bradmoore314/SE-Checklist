@@ -66,18 +66,18 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       
       // Add a default color per marker type if not specified
       if (!processedData.color) {
-        const colorMap = {
-          'access_point': '#10b981', // green
-          'camera': '#3b82f6',      // blue
-          'intercom': '#8b5cf6',    // purple
-          'elevator': '#f59e0b',    // orange
+        const colorMap: Record<string, string> = {
+          'access_point': '#ef4444', // red for Card Access
+          'camera': '#3b82f6',      // blue for Cameras
+          'intercom': '#eab308',    // yellow for Intercoms
+          'elevator': '#10b981',    // green for Elevators
           'rectangle': '#64748b',   // slate
           'circle': '#64748b',      // slate
           'line': '#64748b',        // slate
           'text': '#000000',        // black
-          'measure': '#ef4444',     // red
+          'measure': '#6366f1',     // indigo
         };
-        processedData.color = colorMap[processedData.marker_type] || '#64748b';
+        processedData.color = colorMap[processedData.marker_type as string] || '#64748b';
       }
       
       // Validate the marker data
