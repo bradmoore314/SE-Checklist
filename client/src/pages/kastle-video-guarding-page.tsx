@@ -1079,37 +1079,115 @@ const KastleVideoGuardingPage: React.FC = () => {
     fileInput.click();
   };
 
+  // State for mobile tab dropdown
+  const [isTabsMenuOpen, setIsTabsMenuOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("stream-details");
+  
+  // Helper function to get tab icon and title
+  const getTabInfo = (value: string) => {
+    const tabInfo = {
+      "stream-details": { icon: "📹", title: "Stream Details", color: "from-teal-500 to-teal-700" },
+      "discovery": { icon: "🔍", title: "1. Discovery - BDM", color: "from-green-500 to-green-700" },
+      "site-assessment": { icon: "🏢", title: "2. Site Assessment - SE", color: "from-blue-500 to-blue-700" },
+      "use-case": { icon: "📝", title: "3. Use Case - SOW - SME", color: "from-purple-500 to-purple-700" },
+      "voc-protocol": { icon: "🎯", title: "4. VOC Protocol - AM", color: "from-orange-500 to-orange-700" },
+      "deployment": { icon: "🚀", title: "5. Project Deployment - PM", color: "from-indigo-500 to-indigo-700" },
+      "pricing": { icon: "💰", title: "Pricing", color: "from-pink-500 to-pink-700" }
+    };
+    return tabInfo[value as keyof typeof tabInfo];
+  };
+  
+  // Function to handle tab selection from dropdown
+  const handleTabSelection = (value: string) => {
+    setSelectedTab(value);
+    setIsTabsMenuOpen(false);
+  };
+  
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">Kastle Video Guarding</h1>
-      <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">Kastle Video Guarding</h1>
+      <p className="text-center text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
         Configure video monitoring settings, patrol schedules, and service commitments for your Kastle Video Guarding project
       </p>
 
-      <Tabs defaultValue="stream-details" className="w-full">
-        <TabsList className="grid grid-cols-7 mb-6 p-1 gap-1.5 rounded-xl bg-gradient-to-r from-gray-100 to-slate-200 shadow-md">
-          <TabsTrigger value="stream-details" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">📹</span> Stream Details
-          </TabsTrigger>
-          <TabsTrigger value="discovery" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">🔍</span> 1. Discovery - BDM
-          </TabsTrigger>
-          <TabsTrigger value="site-assessment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">🏢</span> 2. Site Assessment - SE
-          </TabsTrigger>
-          <TabsTrigger value="use-case" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">📝</span> 3. Use Case - SOW - SME
-          </TabsTrigger>
-          <TabsTrigger value="voc-protocol" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">🎯</span> 4. VOC Protocol - AM
-          </TabsTrigger>
-          <TabsTrigger value="deployment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">🚀</span> 5. Project Deployment - PM
-          </TabsTrigger>
-          <TabsTrigger value="pricing" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
-            <span className="text-xl">💰</span> Pricing
-          </TabsTrigger>
-        </TabsList>
+      {/* Desktop Tabs */}
+      <div className="hidden sm:block">
+        <Tabs defaultValue="stream-details" className="w-full" value={selectedTab} onValueChange={setSelectedTab}>
+          <TabsList className="grid grid-cols-7 mb-6 p-1 gap-1.5 rounded-xl bg-gradient-to-r from-gray-100 to-slate-200 shadow-md">
+            <TabsTrigger value="stream-details" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">📹</span> Stream Details
+            </TabsTrigger>
+            <TabsTrigger value="discovery" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">🔍</span> 1. Discovery - BDM
+            </TabsTrigger>
+            <TabsTrigger value="site-assessment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">🏢</span> 2. Site Assessment - SE
+            </TabsTrigger>
+            <TabsTrigger value="use-case" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">📝</span> 3. Use Case - SOW - SME
+            </TabsTrigger>
+            <TabsTrigger value="voc-protocol" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">🎯</span> 4. VOC Protocol - AM
+            </TabsTrigger>
+            <TabsTrigger value="deployment" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">🚀</span> 5. Project Deployment - PM
+            </TabsTrigger>
+            <TabsTrigger value="pricing" className="flex items-center gap-2 transition-all font-medium py-2.5 rounded-lg data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105">
+              <span className="text-xl">💰</span> Pricing
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      
+      {/* Mobile Tab Selector */}
+      <div className="sm:hidden mb-6">
+        <Popover open={isTabsMenuOpen} onOpenChange={setIsTabsMenuOpen}>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-between border-2 py-6 rounded-xl shadow-sm bg-gradient-to-r from-gray-50 to-gray-100"
+            >
+              <div className="flex items-center">
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br mr-3 text-white shadow-sm" style={{
+                  backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                  "--tw-gradient-from": getTabInfo(selectedTab).color.split(" ")[0],
+                  "--tw-gradient-to": getTabInfo(selectedTab).color.split(" ")[1]
+                }}>
+                  <span className="text-xl">{getTabInfo(selectedTab).icon}</span>
+                </span>
+                <span className="font-medium text-lg">{getTabInfo(selectedTab).title}</span>
+              </div>
+              <ChevronDown className={`h-5 w-5 transition-transform ${isTabsMenuOpen ? 'transform rotate-180' : ''}`} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0 max-h-[80vh] overflow-auto" align="start">
+            <div className="grid gap-1 p-2">
+              {Object.entries(getTabInfo).map(([key]) => {
+                const tab = getTabInfo(key);
+                return (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    className={`w-full flex items-center justify-start gap-3 py-4 ${selectedTab === key ? 'bg-muted' : ''}`}
+                    onClick={() => handleTabSelection(key)}
+                  >
+                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br text-white shadow-sm" style={{
+                      backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                      "--tw-gradient-from": tab.color.split(" ")[0],
+                      "--tw-gradient-to": tab.color.split(" ")[1]
+                    }}>
+                      <span className="text-lg">{tab.icon}</span>
+                    </span>
+                    <span className="font-medium">{tab.title}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
 
         {/* Stream Details Tab Content */}
         <TabsContent value="stream-details">
