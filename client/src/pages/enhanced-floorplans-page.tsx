@@ -61,6 +61,25 @@ function EnhancedFloorplansPage() {
   // Mobile detection state
   const [isMobile, setIsMobile] = useState(false);
   
+  // Detect mobile devices on component mount and when window resizes
+  useEffect(() => {
+    const checkMobile = () => {
+      // Use a combination of screen width and checking for touch capability
+      const isMobileDevice = window.innerWidth <= 768 || 
+        (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+      setIsMobile(isMobileDevice);
+    };
+    
+    // Check on mount
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
   // State for viewer properties
   const [currentPage, setCurrentPage] = useState(1);
   const [toolMode, setToolMode] = useState<AnnotationTool>('pan');
@@ -78,17 +97,7 @@ function EnhancedFloorplansPage() {
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   const [showAllLabels, setShowAllLabels] = useState(false);
   
-  // Check for mobile devices on component mount and window resize
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile(); // Initial check
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // Mobile detection added above at lines 64-81
   
   // Fetch all floorplans for the project when no specific floorplan is selected
   const { 
