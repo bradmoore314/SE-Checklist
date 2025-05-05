@@ -27,7 +27,7 @@ interface LayerData {
   name: string;
   color: string;
   visible: boolean;
-  order: number;
+  order_index: number;
 }
 
 interface LayersPanelProps {
@@ -63,8 +63,8 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   const [draggingLayerId, setDraggingLayerId] = useState<number | null>(null);
   const queryClient = useQueryClient();
   
-  // Sort layers by order
-  const sortedLayers = [...layers].sort((a, b) => a.order - b.order);
+  // Sort layers by order_index
+  const sortedLayers = [...layers].sort((a, b) => a.order_index - b.order_index);
   
   const createLayerMutation = useMutation({
     mutationFn: async (layer: Partial<LayerData>) => {
@@ -164,10 +164,10 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
     // Swap orders
     const updatedLayers = newLayers.map(layer => {
       if (layer.id === sourceLayerId) {
-        return { ...layer, order: targetLayer.order };
+        return { ...layer, order_index: targetLayer.order_index };
       }
       if (layer.id === targetLayerId) {
-        return { ...layer, order: sourceLayer.order };
+        return { ...layer, order_index: sourceLayer.order_index };
       }
       return layer;
     });
@@ -175,8 +175,8 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
     onLayerReorder(updatedLayers);
     
     // Update in database
-    updateLayerMutation.mutate({ ...sourceLayer, order: targetLayer.order });
-    updateLayerMutation.mutate({ ...targetLayer, order: sourceLayer.order });
+    updateLayerMutation.mutate({ ...sourceLayer, order_index: targetLayer.order_index });
+    updateLayerMutation.mutate({ ...targetLayer, order_index: sourceLayer.order_index });
     
     setDraggingLayerId(null);
   };
@@ -191,14 +191,14 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       return;
     }
     
-    const maxOrder = Math.max(...layers.map(l => l.order), -1);
+    const maxOrder = Math.max(...layers.map(l => l.order_index), -1);
     
     createLayerMutation.mutate({
       floorplan_id: floorplanId,
       name: newLayerName,
       color: newLayerColor,
       visible: true,
-      order: maxOrder + 1,
+      order_index: maxOrder + 1,
     });
   };
   
