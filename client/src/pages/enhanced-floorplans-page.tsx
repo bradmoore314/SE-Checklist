@@ -259,17 +259,17 @@ function EnhancedFloorplansPage() {
       const base64 = await base64Promise;
       
       // Ensure the project ID is valid
-      if (!projectId || isNaN(parseInt(projectId))) {
+      if (!projectId || isNaN(projectId)) {
         throw new Error("Invalid project ID");
       }
       
-      const numericProjectId = parseInt(projectId);
+      // projectId is already a number from line 58: const projectId = parseInt(params.projectId);
       
       // Use the correct API endpoint with detailed error handling
       const response = await apiRequest('POST', '/api/floorplans', {
         name: floorplanName,
         pdf_data: base64,
-        project_id: numericProjectId
+        project_id: projectId
       });
       
       // Handle various error responses
@@ -484,64 +484,101 @@ function EnhancedFloorplansPage() {
       </div>
       
       <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
-        <div className="mb-2">
-          <TooltipProvider>
-            <AnnotationToolbar 
-              activeTool={toolMode}
-              onToolChange={(tool) => handleToolSelect(tool)}
-              onRotate={(direction: 'cw' | 'ccw') => {
-                // Handle rotation
-                toast({
-                  title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
-                  description: "Rotation feature implemented"
-                });
-              }}
-              onZoomIn={() => {
-                setScale(prev => Math.min(prev * 1.2, 10));
-              }}
-              onZoomOut={() => {
-                setScale(prev => Math.max(prev * 0.8, 0.1));
-              }}
-              onZoomFit={() => {
-                setScale(1);
-                setTranslateX(0);
-                setTranslateY(0);
-                handleReloadViewer();
-              }}
-              onSave={() => {
-                toast({
-                  title: 'Saving Annotations',
-                  description: "All annotations have been saved"
-                });
-              }}
-              onDelete={() => {
-                if (selectedMarkerId) {
-                  deleteMarkerMutation.mutate(selectedMarkerId);
-                }
-              }}
-              onCopy={() => {
-                toast({
-                  title: 'Copying Selection',
-                  description: "Selection copied to clipboard"
-                });
-              }}
-              onExport={() => {
-                setShowExportDialog(true);
-              }}
-              onLayersToggle={() => {
-                setShowLayersPanel(!showLayersPanel);
-              }}
-              onToggleLabels={() => {
-                setShowAllLabels(!showAllLabels);
-              }}
-              showLayers={showLayersPanel}
-              showAllLabels={showAllLabels}
-              canDelete={!!selectedMarkerId}
-              canCopy={!!selectedMarkerId}
-              zoomLevel={scale}
-            />
-          </TooltipProvider>
-        </div>
+        {/* Conditional rendering based on device type */}
+        {isMobile ? (
+          /* Mobile Toolbar - renders at the bottom via fixed positioning */
+          <MobileToolbar
+            currentTool={toolMode}
+            onToolSelect={handleToolSelect}
+            onZoomIn={() => {
+              setScale(prev => Math.min(prev * 1.2, 10));
+              toast({
+                title: 'Zooming In',
+                description: `Scale: ${(scale * 1.2).toFixed(1)}x`,
+                duration: 1000,
+              });
+            }}
+            onZoomOut={() => {
+              setScale(prev => Math.max(prev * 0.8, 0.1));
+              toast({
+                title: 'Zooming Out',
+                description: `Scale: ${(scale * 0.8).toFixed(1)}x`,
+                duration: 1000,
+              });
+            }}
+            onReset={() => {
+              setScale(1);
+              setTranslateX(0);
+              setTranslateY(0);
+              handleReloadViewer();
+              toast({
+                title: 'View Reset',
+                description: 'Zoom level and position reset to default',
+                duration: 1000,
+              });
+            }}
+          />
+        ) : (
+          /* Desktop Toolbar */
+          <div className="mb-2">
+            <TooltipProvider>
+              <AnnotationToolbar 
+                activeTool={toolMode}
+                onToolChange={(tool) => handleToolSelect(tool)}
+                onRotate={(direction: 'cw' | 'ccw') => {
+                  // Handle rotation
+                  toast({
+                    title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
+                    description: "Rotation feature implemented"
+                  });
+                }}
+                onZoomIn={() => {
+                  setScale(prev => Math.min(prev * 1.2, 10));
+                }}
+                onZoomOut={() => {
+                  setScale(prev => Math.max(prev * 0.8, 0.1));
+                }}
+                onZoomFit={() => {
+                  setScale(1);
+                  setTranslateX(0);
+                  setTranslateY(0);
+                  handleReloadViewer();
+                }}
+                onSave={() => {
+                  toast({
+                    title: 'Saving Annotations',
+                    description: "All annotations have been saved"
+                  });
+                }}
+                onDelete={() => {
+                  if (selectedMarkerId) {
+                    deleteMarkerMutation.mutate(selectedMarkerId);
+                  }
+                }}
+                onCopy={() => {
+                  toast({
+                    title: 'Copying Selection',
+                    description: "Selection copied to clipboard"
+                  });
+                }}
+                onExport={() => {
+                  setShowExportDialog(true);
+                }}
+                onLayersToggle={() => {
+                  setShowLayersPanel(!showLayersPanel);
+                }}
+                onToggleLabels={() => {
+                  setShowAllLabels(!showAllLabels);
+                }}
+                showLayers={showLayersPanel}
+                showAllLabels={showAllLabels}
+                canDelete={!!selectedMarkerId}
+                canCopy={!!selectedMarkerId}
+                zoomLevel={scale}
+              />
+            </TooltipProvider>
+          </div>
+        )}
         
         <div className="flex flex-wrap justify-between mb-2 md:mb-4">
           <div className="flex space-x-2 items-center">
