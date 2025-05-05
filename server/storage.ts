@@ -2011,6 +2011,43 @@ export class DatabaseStorage implements IStorage {
     return result.count > 0;
   }
   
+  // CRM Settings
+  async getCrmSettings(): Promise<CrmSetting[]> {
+    return await db.select().from(crmSettings);
+  }
+  
+  async getCrmSettingById(id: number): Promise<CrmSetting | undefined> {
+    const [setting] = await db.select().from(crmSettings).where(eq(crmSettings.id, id));
+    return setting;
+  }
+  
+  async getCrmSettingByType(crmType: string): Promise<CrmSetting | undefined> {
+    const [setting] = await db.select().from(crmSettings).where(eq(crmSettings.crm_type, crmType));
+    return setting;
+  }
+  
+  async createCrmSetting(insertSetting: InsertCrmSetting): Promise<CrmSetting> {
+    const [setting] = await db.insert(crmSettings).values(insertSetting).returning();
+    return setting;
+  }
+  
+  async updateCrmSetting(id: number, updateSetting: Partial<InsertCrmSetting>): Promise<CrmSetting | undefined> {
+    const [setting] = await db
+      .update(crmSettings)
+      .set({
+        ...updateSetting,
+        updated_at: new Date()
+      })
+      .where(eq(crmSettings.id, id))
+      .returning();
+    return setting;
+  }
+  
+  async deleteCrmSetting(id: number): Promise<boolean> {
+    const result = await db.delete(crmSettings).where(eq(crmSettings.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
   // Feedback
   async getFeedback(): Promise<Feedback[]> {
     return await db.select().from(feedback);
