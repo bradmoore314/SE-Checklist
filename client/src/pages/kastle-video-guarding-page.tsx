@@ -94,6 +94,16 @@ interface FormData {
   region: string;
   customerVertical: string;
   propertyCategory: string;
+  maintenance: string;
+  servicesRecommended: string;
+  
+  // Schedule details fields
+  scheduleType: string;
+  monitoringDaysOfWeek: string;
+  monitoringHours: string;
+  scheduleNotes: string;
+  patrolFrequencyDays: string;
+  patrolFrequencyHours: string;
   
   // Project Deployment - PM tab fields
   pmName: string;
@@ -317,6 +327,16 @@ const KastleVideoGuardingPage: React.FC = () => {
     region: "",
     customerVertical: "",
     propertyCategory: "",
+    maintenance: "",
+    servicesRecommended: "",
+    
+    // Schedule details fields
+    scheduleType: "Standard",
+    monitoringDaysOfWeek: "",
+    monitoringHours: "",
+    scheduleNotes: "",
+    patrolFrequencyDays: "",
+    patrolFrequencyHours: "",
     
     // Technology fields
     technology: "",
@@ -1854,7 +1874,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       value={formData.siteEnvironment} 
                       onValueChange={(value) => handleFormChange("siteEnvironment", value)}
                     >
-                      <SelectTrigger className="bg-white">
+                      <SelectTrigger className="bg-white mb-4">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1863,7 +1883,205 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectItem value="Mixed">Both Indoor & Outdoor</SelectItem>
                       </SelectContent>
                     </Select>
+                    
+                    <Label htmlFor="maintenance" className="text-sm text-indigo-700">Maintenance:</Label>
+                    <Select 
+                      value={formData.maintenance} 
+                      onValueChange={(value) => handleFormChange("maintenance", value)}
+                    >
+                      <SelectTrigger className="bg-white mb-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Select">Select</SelectItem>
+                        <SelectItem value="Basic">Basic</SelectItem>
+                        <SelectItem value="Standard">Standard</SelectItem>
+                        <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="None">None</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Label htmlFor="servicesRecommended" className="text-sm text-indigo-700">Services Recommended:</Label>
+                    <Select 
+                      value={formData.servicesRecommended} 
+                      onValueChange={(value) => handleFormChange("servicesRecommended", value)}
+                    >
+                      <SelectTrigger className="bg-white mb-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Select">Select</SelectItem>
+                        <SelectItem value="Basic">Basic</SelectItem>
+                        <SelectItem value="Advanced">Advanced</SelectItem>
+                        <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="Custom">Custom</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+                </div>
+              </div>
+              
+              {/* Scheduling Section */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-blue-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-blue-800 flex items-center gap-2">
+                  <span className="p-1 bg-blue-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5m-9-6h.008v.008H12v-.008zM12 12h.008v.008H12v-.008zM12 15h.008v.008H12v-.008zM9 15h.008v.008H9v-.008zM9 12h.008v.008H9v-.008zM9 9h.008v.008H9v-.008zM15 15h.008v.008H15v-.008zM15 12h.008v.008H15v-.008zM15 9h.008v.008H15v-.008zM16.5 9h.008v.008h-.008v-.008zM16.5 12h.008v.008h-.008v-.008zM16.5 15h.008v.008h-.008v-.008zM7.5 9h.008v.008H7.5v-.008zM7.5 12h.008v.008H7.5v-.008zM7.5 15h.008v.008H7.5v-.008z" />
+                    </svg>
+                  </span>
+                  Schedule Details
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                  <div>
+                    <Label htmlFor="scheduleType" className="text-sm text-blue-700 mb-2">Schedule Type:</Label>
+                    <Select 
+                      value={formData.scheduleType} 
+                      onValueChange={(value) => handleFormChange("scheduleType", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select Schedule Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="24/7">24/7 Monitoring</SelectItem>
+                        <SelectItem value="Business Hours">Business Hours Only</SelectItem>
+                        <SelectItem value="After Hours">After Hours Only</SelectItem>
+                        <SelectItem value="Standard">Standard Schedule</SelectItem>
+                        <SelectItem value="Custom">Custom Schedule</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="monitoringDaysOfWeek" className="text-sm text-blue-700 mb-2">Monitoring Days:</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
+                        const isSelected = formData.monitoringDaysOfWeek.includes(day);
+                        return (
+                          <Button
+                            key={day}
+                            type="button"
+                            variant={isSelected ? "default" : "outline"}
+                            className={`py-1 px-3 h-8 ${isSelected ? 'bg-blue-600' : 'border-blue-300 text-blue-700'}`}
+                            onClick={() => {
+                              const current = formData.monitoringDaysOfWeek;
+                              let newValue;
+                              if (isSelected) {
+                                newValue = current.split(',').filter(d => d !== day).join(',');
+                              } else {
+                                const days = current ? current.split(',') : [];
+                                days.push(day);
+                                // Sort days of week in correct order
+                                const order = {Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7};
+                                days.sort((a, b) => order[a] - order[b]);
+                                newValue = days.join(',');
+                              }
+                              handleFormChange("monitoringDaysOfWeek", newValue);
+                            }}
+                          >
+                            {day}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                  <div>
+                    <Label htmlFor="monitoringHours" className="text-sm text-blue-700 mb-2">Monitoring Hours:</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="startTime" className="text-xs text-blue-600">Start Time</Label>
+                        <Input 
+                          id="startTime" 
+                          type="time"
+                          className="bg-white" 
+                          value={formData.monitoringHours.split('-')[0] || ''}
+                          onChange={(e) => {
+                            const endTime = formData.monitoringHours.split('-')[1] || '';
+                            handleFormChange("monitoringHours", `${e.target.value}-${endTime}`);
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="endTime" className="text-xs text-blue-600">End Time</Label>
+                        <Input 
+                          id="endTime" 
+                          type="time"
+                          className="bg-white" 
+                          value={formData.monitoringHours.split('-')[1] || ''}
+                          onChange={(e) => {
+                            const startTime = formData.monitoringHours.split('-')[0] || '';
+                            handleFormChange("monitoringHours", `${startTime}-${e.target.value}`);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="patrolFrequency" className="text-sm text-blue-700 mb-2">Patrol Frequency:</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="patrolDays" className="text-xs text-blue-600">Days</Label>
+                        <Select 
+                          value={formData.patrolFrequencyDays} 
+                          onValueChange={(value) => handleFormChange("patrolFrequencyDays", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select Days" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Daily">Daily</SelectItem>
+                            <SelectItem value="Weekdays">Weekdays</SelectItem>
+                            <SelectItem value="Weekends">Weekends</SelectItem>
+                            <SelectItem value="Monday">Monday</SelectItem>
+                            <SelectItem value="Tuesday">Tuesday</SelectItem>
+                            <SelectItem value="Wednesday">Wednesday</SelectItem>
+                            <SelectItem value="Thursday">Thursday</SelectItem>
+                            <SelectItem value="Friday">Friday</SelectItem>
+                            <SelectItem value="Saturday">Saturday</SelectItem>
+                            <SelectItem value="Sunday">Sunday</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="patrolHours" className="text-xs text-blue-600">Hours</Label>
+                        <Select 
+                          value={formData.patrolFrequencyHours} 
+                          onValueChange={(value) => handleFormChange("patrolFrequencyHours", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select Hours" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Every Hour">Every Hour</SelectItem>
+                            <SelectItem value="Every 2 Hours">Every 2 Hours</SelectItem>
+                            <SelectItem value="Every 3 Hours">Every 3 Hours</SelectItem>
+                            <SelectItem value="Every 4 Hours">Every 4 Hours</SelectItem>
+                            <SelectItem value="Every 6 Hours">Every 6 Hours</SelectItem>
+                            <SelectItem value="Every 8 Hours">Every 8 Hours</SelectItem>
+                            <SelectItem value="Every 12 Hours">Every 12 Hours</SelectItem>
+                            <SelectItem value="Once a Day">Once a Day</SelectItem>
+                            <SelectItem value="Twice a Day">Twice a Day</SelectItem>
+                            <SelectItem value="Three Times a Day">Three Times a Day</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <Label htmlFor="scheduleNotes" className="text-sm text-blue-700 mb-2">Schedule Notes:</Label>
+                  <Textarea 
+                    id="scheduleNotes" 
+                    className="bg-white" 
+                    placeholder="Enter any specific details about the schedule or patrols..."
+                    value={formData.scheduleNotes}
+                    onChange={(e) => handleFormChange("scheduleNotes", e.target.value)}
+                  />
                 </div>
               </div>
               
@@ -1950,6 +2168,24 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectItem value="New">New</SelectItem>
                         <SelectItem value="Takeover">Takeover</SelectItem>
                         <SelectItem value="Add-on">Add-on</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="rspndrGdods" className="text-sm text-teal-700">RSPDIG-GDODS:</Label>
+                    <Select 
+                      value={formData.rspndrGdods} 
+                      onValueChange={(value) => handleFormChange("rspndrGdods", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Select">Select</SelectItem>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="TBD">TBD</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
