@@ -69,6 +69,7 @@ function EnhancedFloorplansPage() {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
+  const [showAllLabels, setShowAllLabels] = useState(false);
   
   // Fetch all floorplans for the project when no specific floorplan is selected
   const { 
@@ -488,7 +489,11 @@ function EnhancedFloorplansPage() {
               onLayersToggle={() => {
                 setShowLayersPanel(!showLayersPanel);
               }}
+              onToggleLabels={() => {
+                setShowAllLabels(!showAllLabels);
+              }}
               showLayers={showLayersPanel}
+              showAllLabels={showAllLabels}
               canDelete={!!selectedMarkerId}
               canCopy={!!selectedMarkerId}
               zoomLevel={scale}
@@ -548,6 +553,7 @@ function EnhancedFloorplansPage() {
             toolMode={toolMode}
             layers={layers || []}
             onPageChange={setCurrentPage}
+            showAllLabels={showAllLabels}
           />
         </div>
         
