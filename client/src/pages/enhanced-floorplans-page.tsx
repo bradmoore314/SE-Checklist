@@ -4,7 +4,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, FileUp } from 'lucide-react';
+import { Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, FileUp, Camera, AlignJustify } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { EnhancedFloorplanViewer } from '@/components/floorplans/EnhancedFloorplanViewer';
@@ -12,6 +12,14 @@ import { SimpleEnhancedViewer } from '@/components/floorplans/SimpleEnhancedView
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FloorplanData {
   id: number;
@@ -55,6 +63,7 @@ function EnhancedFloorplansPage() {
   const [showLayersPanel, setShowLayersPanel] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
+  const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   
   // Fetch all floorplans for the project when no specific floorplan is selected
   const { 
@@ -370,97 +379,95 @@ function EnhancedFloorplansPage() {
       
       <div className="flex flex-col flex-1 mt-4 p-4 bg-white rounded-lg shadow">
         <div className="flex justify-between mb-4">
-          <div className="flex space-x-2 items-center">
-            {/* Import and use the professional AnnotationToolbar */}
-            <AnnotationToolbar 
-              activeTool={toolMode as AnnotationTool}
-              onToolChange={(tool) => handleToolSelect(tool)}
-              onRotate={(direction) => {
-                // Handle rotation
-                toast({
-                  title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
-                  description: "Rotation feature implemented"
-                });
-              }}
-              onZoomIn={() => {
-                setScale(prev => Math.min(prev * 1.2, 10));
-              }}
-              onZoomOut={() => {
-                setScale(prev => Math.max(prev * 0.8, 0.1));
-              }}
-              onZoomFit={() => {
-                setScale(1);
-                setTranslateX(0);
-                setTranslateY(0);
-                handleReloadViewer();
-              }}
-              onSave={() => {
-                toast({
-                  title: 'Saving Annotations',
-                  description: "All annotations have been saved"
-                });
-              }}
-              onDelete={() => {
-                if (selectedMarkerId) {
-                  deleteMarkerMutation.mutate(selectedMarkerId);
-                }
-              }}
-              onCopy={() => {
-                toast({
-                  title: 'Copying Selection',
-                  description: "Selection copied to clipboard"
-                });
-              }}
-              onExport={() => {
-                setShowExportDialog(true);
-              }}
-              onLayersToggle={() => {
-                setShowLayersPanel(!showLayersPanel);
-              }}
-              showLayers={showLayersPanel}
-              canDelete={!!selectedMarkerId}
-              canCopy={!!selectedMarkerId}
-              zoomLevel={scale}
-            />
-            
+          <div className="flex space-x-2">
+            <Button
+              size="sm"
+              variant={toolMode === 'pan' ? 'default' : 'outline'}
+              onClick={() => handleToolSelect('pan')}
+            >
+              <Move className="h-4 w-4 mr-2" />
+              Pan
+            </Button>
+            <Button
+              size="sm"
+              variant={toolMode === 'zoom' ? 'default' : 'outline'}
+              onClick={() => handleToolSelect('zoom')}
+            >
+              <ZoomIn className="h-4 w-4 mr-2" />
+              Zoom
+            </Button>
+            <Button
+              size="sm"
+              variant={toolMode === 'measure' ? 'default' : 'outline'}
+              onClick={() => handleToolSelect('measure')}
+            >
+              <Ruler className="h-4 w-4 mr-2" />
+              Measure
+            </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={handleReloadViewer}
-              className="ml-2"
             >
               Reload Viewer
             </Button>
           </div>
           
           <div className="flex space-x-2">
-            {/* Equipment dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Equipment
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleToolSelect('access_point')}>
-                  <DoorClosed className="h-4 w-4 mr-2" />
-                  Access Point
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('camera')}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Camera
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('intercom')}>
-                  <Phone className="h-4 w-4 mr-2" />
-                  Intercom
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('elevator')}>
-                  <ArrowUpDown className="h-4 w-4 mr-2" />
-                  Elevator
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="relative">
+              <Button 
+                size="sm"
+                onClick={() => setShowEquipmentMenu(!showEquipmentMenu)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Equipment
+              </Button>
+              
+              {showEquipmentMenu && (
+                <div className="absolute top-full right-0 mt-1 bg-white border rounded-md shadow-md z-10 w-48">
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                    onClick={() => {
+                      handleToolSelect('access_point');
+                      setShowEquipmentMenu(false);
+                    }}
+                  >
+                    <span className="bg-blue-500 rounded-full w-3 h-3 mr-2"></span>
+                    Access Point
+                  </button>
+                  <button 
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                    onClick={() => {
+                      handleToolSelect('camera');
+                      setShowEquipmentMenu(false);
+                    }}
+                  >
+                    <span className="bg-red-500 rounded-full w-3 h-3 mr-2"></span>
+                    Camera
+                  </button>
+                  <button 
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                    onClick={() => {
+                      handleToolSelect('intercom');
+                      setShowEquipmentMenu(false);
+                    }}
+                  >
+                    <span className="bg-green-500 rounded-full w-3 h-3 mr-2"></span>
+                    Intercom
+                  </button>
+                  <button 
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                    onClick={() => {
+                      handleToolSelect('elevator');
+                      setShowEquipmentMenu(false);
+                    }}
+                  >
+                    <span className="bg-yellow-500 rounded-full w-3 h-3 mr-2"></span>
+                    Elevator
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
