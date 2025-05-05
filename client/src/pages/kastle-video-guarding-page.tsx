@@ -1204,30 +1204,32 @@ const KastleVideoGuardingPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-between mb-4">
+              <div className="flex flex-col sm:flex-row justify-between mb-4 gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex border rounded overflow-hidden">
+                  <div className="flex border rounded-lg overflow-hidden shadow-sm">
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className={`h-9 ${viewMode === 'cards' ? 
+                      className={`h-10 ${viewMode === 'cards' ? 
                         'bg-blue-50 text-blue-700 border-r border-blue-200' : 
                         'text-gray-600 hover:text-blue-600 hover:bg-blue-50'}`}
                       onClick={() => setViewMode('cards')}
                       title="Card View"
                     >
-                      <LayoutGrid size={18} />
+                      <LayoutGrid size={18} className="sm:mr-1" />
+                      <span className="hidden sm:inline">Cards</span>
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className={`h-9 ${viewMode === 'list' ? 
+                      className={`h-10 ${viewMode === 'list' ? 
                         'bg-blue-50 text-blue-700' : 
                         'text-gray-600 hover:text-blue-600 hover:bg-blue-50'}`}
                       onClick={() => setViewMode('list')}
                       title="List View"
                     >
-                      <List size={18} />
+                      <List size={18} className="sm:mr-1" />
+                      <span className="hidden sm:inline">List</span>
                     </Button>
                   </div>
                   
@@ -1239,9 +1241,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
                 <Button 
                   onClick={() => addStream()} 
-                  className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-10 rounded-lg text-base"
                 >
-                  <Plus size={16} /> Add Stream
+                  <Plus size={18} /> Add Stream
                 </Button>
               </div>
               
@@ -1254,29 +1256,29 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <CardHeader className="bg-gradient-to-r from-teal-50 to-teal-100 border-b pb-3">
                           <div className="flex justify-between items-start">
                             <CardTitle className="text-lg text-teal-800 flex items-center gap-2">
-                              <span className="p-1 bg-teal-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm">
+                              <span className="p-1 bg-teal-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs shadow-sm">
                                 {stream.id}
                               </span>
-                              Camera Stream
+                              <span className="truncate">Camera Stream</span>
                             </CardTitle>
-                            <div className="flex gap-1">
+                            <div className="flex gap-2">
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => addStream(stream)}
-                                className="text-blue-500 p-0 h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                                className="text-blue-500 p-0 h-8 w-8 hover:bg-blue-50 hover:text-blue-600 rounded-full"
                                 title="Duplicate Stream"
                               >
-                                <Copy size={14} />
+                                <Copy size={16} />
                               </Button>
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => removeStream(stream.id)}
-                                className="text-red-500 p-0 h-7 w-7 hover:bg-red-50 hover:text-red-600"
+                                className="text-red-500 p-0 h-8 w-8 hover:bg-red-50 hover:text-red-600 rounded-full"
                                 title="Delete Stream"
                               >
-                                <Trash size={14} />
+                                <Trash size={16} />
                               </Button>
                             </div>
                           </div>
@@ -1295,8 +1297,8 @@ const KastleVideoGuardingPage: React.FC = () => {
                           <div className="grid gap-3">
                             {/* Location/Name */}
                             <div>
-                              <Label htmlFor={`stream-${stream.id}-location`} className="text-xs font-medium text-teal-700 mb-1 flex items-center gap-1.5">
-                                <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">📍</span>
+                              <Label htmlFor={`stream-${stream.id}-location`} className="text-sm font-medium text-teal-700 mb-1.5 flex items-center gap-1.5">
+                                <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📍</span>
                                 Camera Location/Name
                               </Label>
                               <div className="relative">
@@ -1304,22 +1306,22 @@ const KastleVideoGuardingPage: React.FC = () => {
                                   id={`stream-${stream.id}-location`}
                                   value={stream.location || ""}
                                   onChange={(e) => updateStream(stream.id, "location", e.target.value)}
-                                  className="min-h-[60px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm"
+                                  className="min-h-[70px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm p-3 rounded-lg"
                                   placeholder="Enter the location and naming of the camera video stream"
                                 />
-                                <div className="absolute bottom-1 right-1 text-xs text-gray-400">
+                                <div className="absolute bottom-2 right-2 text-xs text-gray-400">
                                   {stream.location?.length || 0}
                                 </div>
                               </div>
                             </div>
                             
-                            {/* Image Management - Horizontal Layout */}
-                            <div className="flex items-center gap-2 mt-1">
-                              <Label className="text-xs font-medium text-teal-700 whitespace-nowrap flex items-center gap-1.5">
-                                <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🖼️</span>
+                            {/* Image Management - Responsive Layout */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
+                              <Label className="text-sm font-medium text-teal-700 whitespace-nowrap flex items-center gap-1.5">
+                                <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">🖼️</span>
                                 Images ({stream.images?.length || 0})
                               </Label>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-2">
                                 <Button 
                                   variant="outline" 
                                   size="sm"
@@ -1327,35 +1329,35 @@ const KastleVideoGuardingPage: React.FC = () => {
                                     setSelectedStream(stream);
                                     setIsImagesModalOpen(true);
                                   }}
-                                  className="h-7 text-xs flex items-center gap-1"
+                                  className="h-9 text-sm flex items-center gap-1.5 rounded-lg border-teal-200 hover:bg-teal-50"
                                   title="View Images"
                                 >
-                                  <ImageIcon size={12} /> View 
+                                  <ImageIcon size={16} /> View Images
                                 </Button>
                                 <Button 
                                   variant="outline" 
                                   size="sm"
                                   onClick={() => handleUploadStreamImageClick(stream.id)}
-                                  className="h-7 text-xs"
+                                  className="h-9 text-sm flex items-center gap-1.5 rounded-lg border-teal-200 hover:bg-teal-50"
                                   title="Upload Image"
                                 >
-                                  <Upload size={12} /> Add
+                                  <Upload size={16} /> Add Image
                                 </Button>
                               </div>
                             </div>
                             
-                            {/* Core Properties Grid */}
-                            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-2">
+                            {/* Core Properties Grid - Mobile Responsive */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-3">
                               <div>
-                                <Label htmlFor={`stream-${stream.id}-fov`} className="text-xs font-medium text-blue-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-blue-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔍</span>
+                                <Label htmlFor={`stream-${stream.id}-fov`} className="text-sm font-medium text-blue-700 mb-1.5 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-blue-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">🔍</span>
                                   FOV Accessibility
                                 </Label>
                                 <Select 
                                   value={stream.fovAccessibility}
                                   onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
                                 >
-                                  <SelectTrigger id={`stream-${stream.id}-fov`} className="h-8">
+                                  <SelectTrigger id={`stream-${stream.id}-fov`} className="h-10 rounded-lg">
                                     <SelectValue placeholder="Select" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -1367,15 +1369,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                               </div>
                               
                               <div>
-                                <Label htmlFor={`stream-${stream.id}-camera-type`} className="text-xs font-medium text-indigo-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-indigo-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">📹</span>
+                                <Label htmlFor={`stream-${stream.id}-camera-type`} className="text-sm font-medium text-indigo-700 mb-1.5 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-indigo-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📹</span>
                                   Camera Type
                                 </Label>
                                 <Select 
                                   value={stream.cameraType}
                                   onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
                                 >
-                                  <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-8">
+                                  <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-10 rounded-lg">
                                     <SelectValue placeholder="Select" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -1389,15 +1391,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                               </div>
                               
                               <div>
-                                <Label htmlFor={`stream-${stream.id}-monitoring`} className="text-xs font-medium text-orange-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-orange-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">👁️</span>
+                                <Label htmlFor={`stream-${stream.id}-monitoring`} className="text-sm font-medium text-orange-700 mb-1.5 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-orange-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">👁️</span>
                                   Event Monitoring
                                 </Label>
                                 <Select 
                                   value={stream.eventMonitoring}
                                   onValueChange={(value) => updateStream(stream.id, "eventMonitoring", value)}
                                 >
-                                  <SelectTrigger id={`stream-${stream.id}-monitoring`} className="h-8">
+                                  <SelectTrigger id={`stream-${stream.id}-monitoring`} className="h-10 rounded-lg">
                                     <SelectValue placeholder="Select" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -1409,15 +1411,15 @@ const KastleVideoGuardingPage: React.FC = () => {
                               </div>
                               
                               <div>
-                                <Label htmlFor={`stream-${stream.id}-audio`} className="text-xs font-medium text-pink-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-pink-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">🔊</span>
+                                <Label htmlFor={`stream-${stream.id}-audio`} className="text-sm font-medium text-pink-700 mb-1.5 flex items-center gap-1.5">
+                                  <span className="p-0.5 bg-pink-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">🔊</span>
                                   Audio Talk Down
                                 </Label>
                                 <Select 
                                   value={stream.audioTalkDown}
                                   onValueChange={(value) => updateStream(stream.id, "audioTalkDown", value)}
                                 >
-                                  <SelectTrigger id={`stream-${stream.id}-audio`} className="h-8">
+                                  <SelectTrigger id={`stream-${stream.id}-audio`} className="h-10 rounded-lg">
                                     <SelectValue placeholder="Select" />
                                   </SelectTrigger>
                                   <SelectContent>
