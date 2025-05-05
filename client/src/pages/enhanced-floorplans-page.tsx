@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/AnnotationToolbar';
+import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 
 interface FloorplanData {
   id: number;
@@ -386,8 +387,19 @@ function EnhancedFloorplansPage() {
               <Link key={floorplan.id} href={`/projects/${projectId}/enhanced-floorplans/${floorplan.id}`}>
                 <Card className="cursor-pointer hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
-                    <div className="aspect-video bg-gray-100 mb-4 flex items-center justify-center rounded-md">
-                      <span className="material-icons text-4xl text-gray-400">map</span>
+                    <div className="aspect-video bg-gray-100 mb-4 flex items-center justify-center rounded-md overflow-hidden relative">
+                      {/* Generate thumbnail from the floorplan PDF or image data */}
+                      {floorplan.pdf_data ? (
+                        <div className="absolute inset-0 w-full h-full">
+                          <FloorplanThumbnail floorplanData={floorplan.pdf_data} alt={floorplan.name} />
+                        </div>
+                      ) : (
+                        <span className="material-icons text-4xl text-gray-400">map</span>
+                      )}
+                      {/* Display marker count as an overlay badge */}
+                      <div className="absolute bottom-2 right-2 bg-primary/80 text-white text-xs rounded px-2 py-1 shadow-sm">
+                        Page 1
+                      </div>
                     </div>
                     <h3 className="font-semibold text-lg truncate">{floorplan.name}</h3>
                     <p className="text-sm text-gray-500">
