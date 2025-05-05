@@ -79,6 +79,7 @@ interface EnhancedFloorplanViewerProps {
   toolMode: AnnotationTool; 
   layers: LayerData[];
   onPageChange: (page: number) => void;
+  showAllLabels?: boolean;
 }
 
 /**
@@ -92,7 +93,8 @@ export const EnhancedFloorplanViewer = ({
   currentPage,
   toolMode,
   layers,
-  onPageChange
+  onPageChange,
+  showAllLabels = false
 }: EnhancedFloorplanViewerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -199,8 +201,7 @@ export const EnhancedFloorplanViewer = ({
     enabled: !isNaN(floorplan.id) && currentPage > 0
   });
   
-  // State for showing all labels
-  const [showAllLabels, setShowAllLabels] = useState(false);
+  // Use the prop value instead of local state for showAllLabels
   
   // Fetch calibration data for the current page
   const { 
@@ -753,10 +754,12 @@ export const EnhancedFloorplanViewer = ({
             group.appendChild(tooltip);
             
             // Optional: Display a permanent small label below the marker
+            // Always show labels when showAllLabels is true or during mouseover
             if (!document.getElementById(`permanent-label-${marker.id}`)) {
               const smallLabel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               smallLabel.setAttribute('id', `permanent-label-${marker.id}`);
-              smallLabel.setAttribute('class', 'marker-permanent-label');
+              // Use CSS class for controlling visibility based on showAllLabels state
+              smallLabel.setAttribute('class', showAllLabels ? 'marker-permanent-label marker-label-visible' : 'marker-permanent-label');
               
               // Get short version of label (first few characters)
               const shortLabel = labelText.length > 15 ? 
