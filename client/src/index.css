@@ -214,8 +214,8 @@
     transition: stroke-width 0.2s ease;
   }
 
-  /* Zoom controls styling */
-  .zoom-controls {
+  /* Controls panel styling */
+  .controls-panel {
     position: absolute;
     bottom: 20px;
     right: 20px;
@@ -224,13 +224,33 @@
     gap: 8px;
     background-color: white;
     border-radius: 8px;
-    padding: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 10;
+    padding: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+    max-width: 200px;
+    width: 100%;
   }
 
-  .zoom-controls button {
-    width: 40px;
+  .controls-panel > div {
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+
+  .controls-panel > div:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .zoom-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .zoom-controls button,
+  .scale-button,
+  .layer-button,
+  .export-button {
     height: 40px;
     display: flex;
     align-items: center;
@@ -240,10 +260,38 @@
     border: 1px solid #e0e0e0;
     cursor: pointer;
     transition: all 0.2s ease;
+    padding: 0 10px;
   }
 
-  .zoom-controls button:hover {
+  .zoom-controls button {
+    width: 40px;
+  }
+
+  .scale-button,
+  .layer-button,
+  .export-button {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .zoom-controls button:hover,
+  .scale-button:hover,
+  .layer-button:hover,
+  .export-button:hover {
     background-color: #e0e0e0;
+  }
+
+  .scale-label,
+  .current-scale {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    color: #555;
+  }
+
+  /* Tooltip styling */
+  .marker-tooltip {
+    pointer-events: none;
+    transition: opacity 0.2s ease;
   }
 
   /* Multi-touch gesture handling for mobile devices */

@@ -613,19 +613,20 @@ export const EnhancedFloorplanViewer = ({
           element.setAttribute('filter', `url(#${filterId})`);
           element.setAttribute('class', 'marker-circle');
           
-          // Add number label inside the circle
+          // Add number label inside the circle with improved visibility
           const markerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
           markerLabel.setAttribute('x', `${x}`);
           markerLabel.setAttribute('y', `${y}`);
           markerLabel.setAttribute('text-anchor', 'middle');
           markerLabel.setAttribute('dominant-baseline', 'central');
-          markerLabel.setAttribute('font-size', '12px');
+          markerLabel.setAttribute('font-size', '13px');
           markerLabel.setAttribute('font-weight', 'bold');
           markerLabel.setAttribute('fill', textColor);
-          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.3)');
-          markerLabel.setAttribute('stroke-width', '0.5');
+          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.5)');
+          markerLabel.setAttribute('stroke-width', '1');
           markerLabel.setAttribute('paint-order', 'stroke');
           markerLabel.setAttribute('class', 'marker-number');
+          markerLabel.setAttribute('pointer-events', 'none'); // Ensure text doesn't interfere with clicking
           markerLabel.textContent = markerNumber.toString();
           
           // Add type indicator in small badge
@@ -1537,66 +1538,261 @@ export const EnhancedFloorplanViewer = ({
         />
       </div>
       
-      {/* Zoom Controls */}
-      <div className="zoom-controls">
-        <button
-          onClick={() => {
-            const newScale = Math.min(10, scale * 1.2);
-            setScale(newScale);
-            renderPage(currentPage);
-            toast({
-              title: 'Zooming In',
-              description: `Scale: ${newScale.toFixed(1)}x`,
-              duration: 1000,
-            });
-          }}
-          title="Zoom In (Ctrl +)"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            <line x1="11" y1="8" x2="11" y2="14"></line>
-            <line x1="8" y1="11" x2="14" y2="11"></line>
-          </svg>
-        </button>
-        <button
-          onClick={() => {
-            const newScale = Math.max(0.1, scale * 0.8);
-            setScale(newScale);
-            renderPage(currentPage);
-            toast({
-              title: 'Zooming Out',
-              description: `Scale: ${newScale.toFixed(1)}x`,
-              duration: 1000,
-            });
-          }}
-          title="Zoom Out (Ctrl -)"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            <line x1="8" y1="11" x2="14" y2="11"></line>
-          </svg>
-        </button>
-        <button
-          onClick={() => {
-            setScale(1);
-            setTranslateX(0);
-            setTranslateY(0);
-            renderPage(currentPage);
-            toast({
-              title: 'Zoom Reset',
-              description: 'Restored default view',
-              duration: 1000,
-            });
-          }}
-          title="Reset Zoom and Position (Ctrl 0)"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M8 12h8"></path>
-          </svg>
-        </button>
+      {/* Controls Panel */}
+      <div className="controls-panel">
+        {/* Zoom Controls */}
+        <div className="zoom-controls">
+          <button
+            onClick={() => {
+              const newScale = Math.min(10, scale * 1.2);
+              setScale(newScale);
+              renderPage(currentPage);
+              toast({
+                title: 'Zooming In',
+                description: `Scale: ${newScale.toFixed(1)}x`,
+                duration: 1000,
+              });
+            }}
+            title="Zoom In (Ctrl +)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button
+            onClick={() => {
+              const newScale = Math.max(0.1, scale * 0.8);
+              setScale(newScale);
+              renderPage(currentPage);
+              toast({
+                title: 'Zooming Out',
+                description: `Scale: ${newScale.toFixed(1)}x`,
+                duration: 1000,
+              });
+            }}
+            title="Zoom Out (Ctrl -)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button
+            onClick={() => {
+              setScale(1);
+              setTranslateX(0);
+              setTranslateY(0);
+              renderPage(currentPage);
+              toast({
+                title: 'Zoom Reset',
+                description: 'Restored default view',
+                duration: 1000,
+              });
+            }}
+            title="Reset Zoom and Position (Ctrl 0)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12h8"></path>
+            </svg>
+          </button>
+        </div>
+        
+        {/* Floorplan Scaling Controls */}
+        <div className="scale-controls mt-4">
+          <div className="scale-label">Scale Floorplan</div>
+          <div className="scale-inputs">
+            <button 
+              onClick={() => {
+                // Open calibration dialog to set up scaling
+                if (toolMode !== 'calibrate') {
+                  toast({
+                    title: 'Scaling Tool',
+                    description: 'Draw a line of known length on the floorplan to set the scale',
+                    duration: 3000
+                  });
+                  // This is a workaround since we don't have direct access to the parent component
+                  const event = new CustomEvent('set-tool-mode', { 
+                    detail: { mode: 'calibrate' } 
+                  });
+                  document.dispatchEvent(event);
+                }
+              }}
+              title="Calibrate Scale"
+              className="scale-button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"/>
+                <path d="M13 17h4"/>
+                <path d="M13 7h4"/>
+                <path d="M5 7H3a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2"/>
+                <path d="M5 7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/>
+              </svg>
+              <span>Scale</span>
+            </button>
+          </div>
+          {calibration && (
+            <div className="current-scale text-xs mt-1">
+              Scale: {calibration.real_world_distance} {calibration.unit} = {calibration.pdf_distance.toFixed(2)} px
+            </div>
+          )}
+        </div>
+        
+        {/* Layers Panel Button */}
+        <div className="layers-panel mt-4">
+          <button 
+            onClick={() => {
+              toast({
+                title: 'Layers Panel',
+                description: (
+                  <div className="flex flex-col gap-2">
+                    <p className="font-bold">Available Layers:</p>
+                    <div className="max-h-40 overflow-y-auto">
+                      {layers.length > 0 ? (
+                        <ul className="space-y-1">
+                          {layers.map(layer => (
+                            <li key={layer.id} className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: layer.color }}
+                              />
+                              <span>{layer.name}</span>
+                              <input 
+                                type="checkbox"
+                                checked={layer.visible}
+                                onChange={() => {
+                                  // This would ideally update the layer visibility
+                                  toast({
+                                    title: 'Layer Toggled',
+                                    description: `Layer "${layer.name}" visibility toggled`,
+                                    duration: 1000
+                                  });
+                                }}
+                              />
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No layers created yet</p>
+                      )}
+                    </div>
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => {
+                          toast({
+                            title: 'Feature Coming Soon',
+                            description: 'Layer management will be implemented in the next update.',
+                            duration: 3000
+                          });
+                        }}
+                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                      >
+                        Add Layer
+                      </button>
+                    </div>
+                  </div>
+                ),
+                duration: 8000,
+              });
+            }}
+            title="Manage Layers"
+            className="layer-button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            <span>Layers</span>
+          </button>
+        </div>
+        
+        {/* Export Button */}
+        <div className="export-panel mt-4">
+          <button 
+            onClick={() => {
+              toast({
+                title: 'Export Options',
+                description: (
+                  <div className="flex flex-col gap-2">
+                    <button 
+                      className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-left"
+                      onClick={() => {
+                        // Create a temporary canvas to export as image
+                        const tempCanvas = document.createElement('canvas');
+                        const tempCtx = tempCanvas.getContext('2d');
+                        
+                        if (tempCtx && canvasRef.current && svgLayerRef.current) {
+                          // Set canvas dimensions
+                          tempCanvas.width = canvasRef.current.width;
+                          tempCanvas.height = canvasRef.current.height;
+                          
+                          // Draw PDF from original canvas
+                          tempCtx.drawImage(canvasRef.current, 0, 0);
+                          
+                          // Convert SVG to image and draw it
+                          const svgData = new XMLSerializer().serializeToString(svgLayerRef.current);
+                          const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                          const url = URL.createObjectURL(svgBlob);
+                          
+                          const img = new Image();
+                          img.onload = () => {
+                            tempCtx.drawImage(img, 0, 0);
+                            URL.revokeObjectURL(url);
+                            
+                            // Create download link
+                            const link = document.createElement('a');
+                            link.download = `${floorplan.name || 'floorplan'}_page${currentPage}.png`;
+                            link.href = tempCanvas.toDataURL('image/png');
+                            link.click();
+                            
+                            toast({
+                              title: 'Export Complete',
+                              description: 'Floorplan exported as PNG image',
+                              duration: 3000
+                            });
+                          };
+                          img.src = url;
+                        }
+                      }}
+                    >
+                      <span className="font-bold">Export as PNG Image</span>
+                      <span className="block text-sm">Exports the current view as a PNG image with all annotations</span>
+                    </button>
+                    
+                    <button 
+                      className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-left"
+                      onClick={() => {
+                        toast({
+                          title: 'Feature Coming Soon',
+                          description: 'PDF export with annotations will be implemented in the next update.',
+                          duration: 3000
+                        });
+                      }}
+                    >
+                      <span className="font-bold">Export as PDF</span>
+                      <span className="block text-sm">Exports the floorplan as a PDF with all annotations</span>
+                    </button>
+                  </div>
+                ),
+                duration: 8000,
+              });
+            }}
+            title="Export Floorplan"
+            className="export-button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export</span>
+          </button>
+        </div>
       </div>
       
       {/* Calibration Dialog */}

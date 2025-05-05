@@ -170,7 +170,7 @@ function EnhancedFloorplansPage() {
     }
   });
 
-  // Upload floorplan
+  // Upload floorplan with improved validation and error handling
   const uploadFloorplan = async () => {
     if (!pdfFile || !floorplanName) {
       toast({
@@ -181,9 +181,35 @@ function EnhancedFloorplansPage() {
       return;
     }
     
+    // Validate file size (limit to 10MB)
+    if (pdfFile.size > 10 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "File is too large. Please upload a PDF under 10MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Validate file type more strictly
+    if (!pdfFile.type.includes('pdf') && !pdfFile.name.toLowerCase().endsWith('.pdf')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a valid PDF file. Only PDF files are supported.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsUploading(true);
     
     try {
+      // Show an immediate toast to indicate the process is starting
+      toast({
+        title: "Processing",
+        description: "Processing your floorplan... This may take a moment.",
+      });
+      
       // Read the file as base64 and send it in the correct format
       const reader = new FileReader();
       
@@ -197,29 +223,50 @@ function EnhancedFloorplansPage() {
             reject(new Error('Failed to read file as base64'));
           }
         };
-        reader.onerror = (e) => reject(e);
+        reader.onerror = (e) => {
+          reject(new Error('File reading failed'));
+        };
       });
       
       reader.readAsDataURL(pdfFile);
       
       const base64 = await base64Promise;
       
-      // Use the correct API endpoint
+      // Ensure the project ID is valid
+      if (!projectId || isNaN(parseInt(projectId))) {
+        throw new Error("Invalid project ID");
+      }
+      
+      // Use the correct API endpoint with detailed error handling
       const response = await apiRequest('POST', '/api/floorplans', {
         name: floorplanName,
         pdf_data: base64,
-        project_id: projectId
+        project_id: parseInt(projectId)
       });
       
+      // Handle various error responses
       if (!response.ok) {
-        throw new Error(`Upload failed with status: ${response.status}`);
+        let errorMessage = `Upload failed with status: ${response.status}`;
+        
+        try {
+          const errorData = await response.json();
+          if (errorData && errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (e) {
+          // If we can't parse JSON, just use the default error message
+        }
+        
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
       
+      // Success toast with more details
       toast({
         title: "Upload Successful",
-        description: "Floorplan has been successfully uploaded."
+        description: `"${floorplanName}" has been successfully uploaded and is ready to use.`,
+        duration: 5000
       });
       
       // Reset the form
@@ -227,14 +274,23 @@ function EnhancedFloorplansPage() {
       setFloorplanName('');
       setShowUploadDialog(false);
       
-      // Refresh the floorplans list
+      // Refresh the floorplans list and navigate to the newly created floorplan
       queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
       
+      // Optional: Navigate to the new floorplan after a short delay
+      if (result && result.id) {
+        setTimeout(() => {
+          window.location.href = `/projects/${projectId}/enhanced-floorplans/${result.id}`;
+        }, 500);
+      }
+      
     } catch (error) {
+      console.error("Floorplan upload error:", error);
       toast({
         title: "Upload Failed",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive"
+        description: error instanceof Error ? error.message : "An unknown error occurred during upload",
+        variant: "destructive",
+        duration: 7000
       });
     } finally {
       setIsUploading(false);
