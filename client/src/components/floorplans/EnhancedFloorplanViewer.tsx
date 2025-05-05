@@ -136,7 +136,11 @@ export const EnhancedFloorplanViewer = ({
     endY: number;
     pdfDistance: number;
   } | null>(null);
+  
+  // State for marker selection and operations
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
+  const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   
   // State for equipment form dialog
   const [showEquipmentFormDialog, setShowEquipmentFormDialog] = useState(false);
@@ -269,6 +273,79 @@ export const EnhancedFloorplanViewer = ({
       toast({
         title: 'Update Failed',
         description: 'Failed to update marker position.',
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // Mutation for deleting a marker
+  const deleteMarkerMutation = useMutation({
+    mutationFn: async (markerId: number) => {
+      const response = await apiRequest(
+        'DELETE',
+        `/api/enhanced-floorplan/markers/${markerId}`
+      );
+      return await response.json();
+    },
+    onSuccess: () => {
+      // Clear selected marker
+      setSelectedMarker(null);
+      
+      // Invalidate the markers query to trigger a refetch
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/enhanced-floorplan', floorplan.id, 'markers', currentPage]
+      });
+      toast({
+        title: 'Success',
+        description: 'Marker deleted successfully.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting marker:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete marker.',
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // Mutation for duplicating a marker
+  const duplicateMarkerMutation = useMutation({
+    mutationFn: async (marker: MarkerData) => {
+      // Create new marker based on existing one
+      const duplicateMarker = {
+        ...marker,
+        unique_id: uuidv4(), // Generate new unique ID
+        position_x: marker.position_x + 20, // Offset position slightly
+        position_y: marker.position_y + 20
+      };
+      
+      // Remove ID as it will be assigned by the server
+      delete duplicateMarker.id;
+      
+      const response = await apiRequest(
+        'POST', 
+        `/api/enhanced-floorplan/${floorplan.id}/markers`,
+        duplicateMarker
+      );
+      return await response.json();
+    },
+    onSuccess: () => {
+      // Invalidate the markers query to trigger a refetch
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/enhanced-floorplan', floorplan.id, 'markers', currentPage]
+      });
+      toast({
+        title: 'Success',
+        description: 'Marker duplicated successfully.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error duplicating marker:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to duplicate marker.',
         variant: 'destructive',
       });
     }
@@ -854,23 +931,51 @@ export const EnhancedFloorplanViewer = ({
             const markerIdStr = markerGroup.getAttribute('data-marker-id');
             const markerId = parseInt(markerIdStr || '0');
             
-            // Start dragging
-            setIsMarkerDragging(true);
-            setDraggedMarkerId(markerId);
-            
-            // Store initial position
-            const coords = screenToPdfCoordinates(mouseX, mouseY);
-            setMarkerDragStartX(coords.x);
-            setMarkerDragStartY(coords.y);
-            
-            // Show toast to indicate dragging has started
-            toast({
-              title: 'Marker Dragging',
-              description: `Drag to reposition marker #${markerId}`,
-            });
-            
-            // Don't process further
-            return;
+            // Find the marker data for this ID
+            const marker = markers?.find(m => m.id === markerId);
+            if (marker) {
+              // Set as selected marker
+              setSelectedMarker(marker);
+              
+              // Start dragging
+              setIsMarkerDragging(true);
+              setDraggedMarkerId(markerId);
+              
+              // Store initial position
+              const coords = screenToPdfCoordinates(mouseX, mouseY);
+              setMarkerDragStartX(coords.x);
+              setMarkerDragStartY(coords.y);
+              
+              // Visual feedback for selection
+              // Remove previous selection styling
+              markerGroups.forEach(g => {
+                if (g instanceof Element) {
+                  g.classList.remove('selected-marker');
+                  const markerCircle = g.querySelector('circle.marker-circle');
+                  if (markerCircle) {
+                    markerCircle.setAttribute('stroke-width', '2');
+                    markerCircle.setAttribute('stroke-dasharray', '');
+                  }
+                }
+              });
+              
+              // Add selection styling
+              markerGroup.classList.add('selected-marker');
+              const markerCircle = markerGroup.querySelector('circle.marker-circle');
+              if (markerCircle) {
+                markerCircle.setAttribute('stroke-width', '3');
+                markerCircle.setAttribute('stroke-dasharray', '3,2');
+              }
+              
+              // Show toast to indicate selection
+              toast({
+                title: 'Marker Selected',
+                description: `Marker #${markerId} selected. Drag to reposition or press Delete to remove.`,
+              });
+              
+              // Don't process further
+              return;
+            }
           }
         }
       }
