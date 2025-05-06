@@ -7,8 +7,8 @@ import { storage } from '../server/storage.js';
 
 // Helper function to get all users
 async function getAllUsers() {
-  // Query the database directly since we're using DatabaseStorage
-  return await storage.getAllUsers();
+  // Use the correct method from the storage interface
+  return await storage.getUsers();
 }
 
 async function migrateProjectOwners() {
