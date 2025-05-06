@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, ChevronLeft, ChevronRight,
-  FileUp, Camera, RefreshCcw, DoorClosed, Phone, ArrowUpDown, Eye, Edit, MapPin
+  FileUp, Camera, RefreshCcw, DoorClosed, Phone, ArrowUpDown, Eye, Edit, MapPin,
+  Download, Maximize, Minimize, PanelRight, PanelRightClose
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -33,6 +34,7 @@ import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/Annot
 import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
+import { FullScreenButton } from '@/components/ui/fullscreen-button';
 
 interface FloorplanData {
   id: number;
@@ -635,6 +637,10 @@ function EnhancedFloorplansPage() {
     );
   }
   
+  // Reference for the fullscreen functionality
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+
   // Render specific floorplan view
   return (
     <div className="flex flex-col h-full">
@@ -643,261 +649,302 @@ function EnhancedFloorplansPage() {
           <h1 className="text-xl md:text-2xl font-bold truncate">{floorplan.name}</h1>
           <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Advanced floorplan viewer with professional annotation and markup capabilities</p>
         </div>
-        {/* Add the marker stats legend in the top right */}
-        <div className="hidden md:block">
-          <MarkerStatsLegend projectId={floorplan.project_id} />
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowSidebar(!showSidebar)}
+            title={showSidebar ? "Hide equipment panel" : "Show equipment panel"}
+          >
+            {showSidebar ? <PanelRightClose size={16} /> : <PanelRight size={16} />}
+          </Button>
+          <FullScreenButton 
+            targetRef={contentRef} 
+            size="sm" 
+            variant="outline" 
+            className="hidden md:flex"
+          />
         </div>
       </div>
       
-      <div className="flex flex-col flex-1 mt-2 md:mt-4 p-2 md:p-4 bg-white rounded-lg shadow">
-        {/* Conditional rendering based on device type */}
-        {isMobile ? (
-          /* Mobile Toolbar - renders at the bottom via fixed positioning */
-          <MobileToolbar
-            currentTool={toolMode}
-            onToolSelect={handleToolSelect}
-            onZoomIn={() => {
-              setScale(prev => Math.min(prev * 1.2, 10));
-              toast({
-                title: 'Zooming In',
-                description: `Scale: ${(scale * 1.2).toFixed(1)}x`,
-                duration: 1000,
-              });
-            }}
-            onZoomOut={() => {
-              setScale(prev => Math.max(prev * 0.8, 0.1));
-              toast({
-                title: 'Zooming Out',
-                description: `Scale: ${(scale * 0.8).toFixed(1)}x`,
-                duration: 1000,
-              });
-            }}
-            onReset={() => {
-              setScale(1);
-              setTranslateX(0);
-              setTranslateY(0);
-              handleReloadViewer();
-              toast({
-                title: 'View Reset',
-                description: 'Zoom level and position reset to default',
-                duration: 1000,
-              });
-            }}
-          />
-        ) : (
-          /* Desktop Toolbar */
-          <div className="mb-2">
-            <TooltipProvider>
-              <AnnotationToolbar 
-                activeTool={toolMode}
-                onToolChange={(tool) => handleToolSelect(tool)}
-                onRotate={(direction: 'cw' | 'ccw') => {
-                  // Handle rotation
-                  toast({
-                    title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
-                    description: "Rotation feature implemented"
-                  });
+      <div ref={contentRef} className="flex flex-1 mt-2 md:mt-4 bg-white rounded-lg shadow overflow-hidden">
+        {/* Main content area with flexible layout */}
+        <div className="flex flex-col flex-grow p-2 md:p-4">
+          {/* Conditional rendering based on device type */}
+          {isMobile ? (
+            /* Mobile Toolbar - renders at the bottom via fixed positioning */
+            <MobileToolbar
+              currentTool={toolMode}
+              onToolSelect={handleToolSelect}
+              onZoomIn={() => {
+                setScale(prev => Math.min(prev * 1.2, 10));
+                toast({
+                  title: 'Zooming In',
+                  description: `Scale: ${(scale * 1.2).toFixed(1)}x`,
+                  duration: 1000,
+                });
+              }}
+              onZoomOut={() => {
+                setScale(prev => Math.max(prev * 0.8, 0.1));
+                toast({
+                  title: 'Zooming Out',
+                  description: `Scale: ${(scale * 0.8).toFixed(1)}x`,
+                  duration: 1000,
+                });
+              }}
+              onReset={() => {
+                setScale(1);
+                setTranslateX(0);
+                setTranslateY(0);
+                handleReloadViewer();
+                toast({
+                  title: 'View Reset',
+                  description: 'Zoom level and position reset to default',
+                  duration: 1000,
+                });
+              }}
+            />
+          ) : (
+            /* Desktop Toolbar */
+            <div className="mb-2">
+              <TooltipProvider>
+                <AnnotationToolbar 
+                  activeTool={toolMode}
+                  onToolChange={(tool) => handleToolSelect(tool)}
+                  onRotate={(direction: 'cw' | 'ccw') => {
+                    // Handle rotation
+                    toast({
+                      title: `Rotating ${direction === 'cw' ? 'clockwise' : 'counter-clockwise'}`,
+                      description: "Rotation feature implemented"
+                    });
+                  }}
+                  onZoomIn={() => {
+                    setScale(prev => Math.min(prev * 1.2, 10));
+                  }}
+                  onZoomOut={() => {
+                    setScale(prev => Math.max(prev * 0.8, 0.1));
+                  }}
+                  onZoomFit={() => {
+                    setScale(1);
+                    setTranslateX(0);
+                    setTranslateY(0);
+                    handleReloadViewer();
+                  }}
+                  onSave={() => {
+                    toast({
+                      title: 'Saving Annotations',
+                      description: "All annotations have been saved"
+                    });
+                  }}
+                  onDelete={() => {
+                    if (selectedMarkerId) {
+                      deleteMarkerMutation.mutate(selectedMarkerId);
+                    }
+                  }}
+                  onCopy={() => {
+                    toast({
+                      title: 'Copying Selection',
+                      description: "Selection copied to clipboard"
+                    });
+                  }}
+                  onExport={() => {
+                    // Directly call the export function from the viewer if available
+                    const event = new CustomEvent("export-floorplan");
+                    document.dispatchEvent(event);
+
+                    toast({
+                      title: 'Exporting Floorplan',
+                      description: "Preparing floorplan for export..."
+                    });
+                  }}
+                  onLayersToggle={() => {
+                    setShowLayersPanel(!showLayersPanel);
+                  }}
+                  onToggleLabels={() => {
+                    setShowAllLabels(!showAllLabels);
+                  }}
+                  showLayers={showLayersPanel}
+                  showAllLabels={showAllLabels}
+                  canDelete={!!selectedMarkerId}
+                  canCopy={!!selectedMarkerId}
+                  zoomLevel={scale}
+                />
+              </TooltipProvider>
+            </div>
+          )}
+          
+          <div className="flex flex-wrap justify-between mb-2 md:mb-4">
+            <div className="flex space-x-2 items-center">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleReloadViewer}
+              >
+                <RefreshCcw className="h-4 w-4 mr-2" />
+                Reload
+              </Button>
+            </div>
+            
+            <div className="flex space-x-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Equipment
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleToolSelect('access_point')}>
+                    <DoorClosed className="h-4 w-4 mr-2" />
+                    Access Point
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleToolSelect('camera')}>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Camera
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleToolSelect('intercom')}>
+                    <Phone className="h-4 w-4 mr-2" />
+                    Intercom
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleToolSelect('elevator')}>
+                    <ArrowUpDown className="h-4 w-4 mr-2" />
+                    Elevator
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => {
+                  // Trigger export via event
+                  const event = new CustomEvent("export-floorplan");
+                  document.dispatchEvent(event);
                 }}
-                onZoomIn={() => {
-                  setScale(prev => Math.min(prev * 1.2, 10));
-                }}
-                onZoomOut={() => {
-                  setScale(prev => Math.max(prev * 0.8, 0.1));
-                }}
-                onZoomFit={() => {
-                  setScale(1);
-                  setTranslateX(0);
-                  setTranslateY(0);
-                  handleReloadViewer();
-                }}
-                onSave={() => {
-                  toast({
-                    title: 'Saving Annotations',
-                    description: "All annotations have been saved"
-                  });
-                }}
-                onDelete={() => {
-                  if (selectedMarkerId) {
-                    deleteMarkerMutation.mutate(selectedMarkerId);
-                  }
-                }}
-                onCopy={() => {
-                  toast({
-                    title: 'Copying Selection',
-                    description: "Selection copied to clipboard"
-                  });
-                }}
-                onExport={() => {
-                  setShowExportDialog(true);
-                }}
-                onLayersToggle={() => {
-                  setShowLayersPanel(!showLayersPanel);
-                }}
-                onToggleLabels={() => {
-                  setShowAllLabels(!showAllLabels);
-                }}
-                showLayers={showLayersPanel}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <Tabs value={activeViewMode} onValueChange={(value) => setActiveViewMode(value as 'standard' | 'editor' | 'annotate')}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="standard" className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" /> Standard View
+                </TabsTrigger>
+                <TabsTrigger value="editor" className="flex items-center gap-2">
+                  <Edit className="h-4 w-4" /> PDF Editor
+                </TabsTrigger>
+                <TabsTrigger value="annotate" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" /> Equipment Markers
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          
+          <div className="flex-1 border rounded-lg overflow-hidden">
+            {/* Render the correct component based on the active view mode */}
+            {activeViewMode === 'standard' && (
+              <EnhancedFloorplanViewer
+                key={viewerKey}
+                floorplan={floorplan}
+                currentPage={currentPage}
+                toolMode={toolMode}
+                layers={layers || []}
+                onPageChange={setCurrentPage}
                 showAllLabels={showAllLabels}
-                canDelete={!!selectedMarkerId}
-                canCopy={!!selectedMarkerId}
-                zoomLevel={scale}
               />
-            </TooltipProvider>
+            )}
+            
+            {activeViewMode === 'editor' && (
+              <div className="h-full">
+                <EnhancedFloorplanEditor 
+                  floorplanId={floorplanId}
+                  projectId={projectId}
+                  onMarkersUpdated={() => {
+                    // Refresh marker stats and equipment data when markers are updated
+                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
+                    
+                    // Also refresh related equipment tables
+                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
+                    
+                    // Show toast notification
+                    toast({
+                      title: "Equipment list updated",
+                      description: "The equipment list has been updated with the changes from the floorplan."
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
+            {activeViewMode === 'annotate' && (
+              <EnhancedFloorplanViewer
+                key={`${viewerKey}-annotate`}
+                floorplan={floorplan}
+                currentPage={currentPage}
+                toolMode={toolMode}
+                layers={layers || []}
+                onPageChange={setCurrentPage}
+                showAllLabels={true}
+              />
+            )}
+          </div>
+          
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-2 md:mt-4 gap-2">
+            <div className="flex w-full sm:w-auto justify-center space-x-1 sm:space-x-2">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                className="p-2 sm:px-3"
+              >
+                <ChevronLeft className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Previous</span>
+              </Button>
+              <div className="flex items-center px-2">
+                <span className="text-xs sm:text-sm whitespace-nowrap">
+                  {currentPage}/{floorplan.page_count}
+                </span>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentPage >= floorplan.page_count}
+                onClick={() => setCurrentPage(prev => Math.min(floorplan.page_count, prev + 1))}
+                className="p-2 sm:px-3"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="h-4 w-4 sm:ml-2" />
+              </Button>
+            </div>
+            
+            <div className="w-full sm:w-auto flex justify-center sm:justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.history.back()}
+                className="w-full sm:w-auto"
+              >
+                <ChevronsLeft className="mr-1 sm:mr-2 h-4 w-4" />
+                Back to Project
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Equipment stats sidebar */}
+        {showSidebar && (
+          <div className="hidden md:block border-l w-72 p-3 overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-3">Equipment Legend</h3>
+            <MarkerStatsLegend projectId={floorplan.project_id} />
           </div>
         )}
-        
-        <div className="flex flex-wrap justify-between mb-2 md:mb-4">
-          <div className="flex space-x-2 items-center">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleReloadViewer}
-              className="ml-2"
-            >
-              <RefreshCcw className="h-4 w-4 mr-2" />
-              Reload Viewer
-            </Button>
-          </div>
-          
-          <div className="flex space-x-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Equipment
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleToolSelect('access_point')}>
-                  <DoorClosed className="h-4 w-4 mr-2" />
-                  Access Point
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('camera')}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Camera
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('intercom')}>
-                  <Phone className="h-4 w-4 mr-2" />
-                  Intercom
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleToolSelect('elevator')}>
-                  <ArrowUpDown className="h-4 w-4 mr-2" />
-                  Elevator
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        
-        <div className="mb-4">
-          <Tabs value={activeViewMode} onValueChange={(value) => setActiveViewMode(value as 'standard' | 'editor' | 'annotate')}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="standard" className="flex items-center gap-2">
-                <Eye className="h-4 w-4" /> Standard View
-              </TabsTrigger>
-              <TabsTrigger value="editor" className="flex items-center gap-2">
-                <Edit className="h-4 w-4" /> PDF Editor
-              </TabsTrigger>
-              <TabsTrigger value="annotate" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> Equipment Markers
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        
-        <div className="flex-1 border rounded-lg overflow-hidden">
-          {/* Render the correct component based on the active view mode */}
-          {activeViewMode === 'standard' && (
-            <EnhancedFloorplanViewer
-              key={viewerKey}
-              floorplan={floorplan}
-              currentPage={currentPage}
-              toolMode={toolMode}
-              layers={layers || []}
-              onPageChange={setCurrentPage}
-              showAllLabels={showAllLabels}
-            />
-          )}
-          
-          {activeViewMode === 'editor' && (
-            <div className="h-full">
-              <EnhancedFloorplanEditor 
-                floorplanId={floorplanId}
-                projectId={projectId}
-                onMarkersUpdated={() => {
-                  // Refresh marker stats and equipment data when markers are updated
-                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
-                  queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
-                  
-                  // Also refresh related equipment tables
-                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
-                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
-                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
-                  
-                  // Show toast notification
-                  toast({
-                    title: "Equipment list updated",
-                    description: "The equipment list has been updated with the changes from the floorplan."
-                  });
-                }}
-              />
-            </div>
-          )}
-          
-          {activeViewMode === 'annotate' && (
-            <EnhancedFloorplanViewer
-              key={`${viewerKey}-annotate`}
-              floorplan={floorplan}
-              currentPage={currentPage}
-              toolMode={toolMode}
-              layers={layers || []}
-              onPageChange={setCurrentPage}
-              showAllLabels={true}
-            />
-          )}
-        </div>
-        
-        <div className="flex flex-col sm:flex-row justify-between items-center mt-2 md:mt-4 gap-2">
-          <div className="flex w-full sm:w-auto justify-center space-x-1 sm:space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentPage <= 1}
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              className="p-2 sm:px-3"
-            >
-              <ChevronLeft className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Previous</span>
-            </Button>
-            <div className="flex items-center px-2">
-              <span className="text-xs sm:text-sm whitespace-nowrap">
-                {currentPage}/{floorplan.page_count}
-              </span>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentPage >= floorplan.page_count}
-              onClick={() => setCurrentPage(prev => Math.min(floorplan.page_count, prev + 1))}
-              className="p-2 sm:px-3"
-            >
-              <span className="hidden sm:inline">Next</span>
-              <ChevronRight className="h-4 w-4 sm:ml-2" />
-            </Button>
-          </div>
-          
-          <div className="w-full sm:w-auto flex justify-center sm:justify-end">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => window.history.back()}
-              className="w-full sm:w-auto"
-            >
-              <ChevronsLeft className="mr-1 sm:mr-2 h-4 w-4" />
-              Back to Project
-            </Button>
-          </div>
-        </div>
         
         {/* Mobile-only legend at the bottom */}
         <div className="mt-4 md:hidden">

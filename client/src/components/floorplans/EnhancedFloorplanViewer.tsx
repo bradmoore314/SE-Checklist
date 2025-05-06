@@ -1615,14 +1615,61 @@ export const EnhancedFloorplanViewer = ({
       }
     };
     
-    // Add event listener
+    // Add event listeners
     document.addEventListener('keydown', handleKeyDown);
+    
+    // Listen for export event from parent component
+    const handleExportEvent = () => {
+      exportAsPng();
+    };
+    
+    document.addEventListener('export-floorplan', handleExportEvent);
     
     // Cleanup
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('export-floorplan', handleExportEvent);
     };
-  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
+  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage, exportAsPng]);
+  
+  const exportAsPng = () => {
+    if (canvasRef.current && svgLayerRef.current) {
+      // Create a temporary canvas for the export
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (tempCtx && canvasRef.current) {
+        tempCanvas.width = canvasRef.current.width;
+        tempCanvas.height = canvasRef.current.height;
+        
+        // Draw the canvas content (PDF)
+        tempCtx.drawImage(canvasRef.current, 0, 0);
+        
+        // Convert SVG to image and draw it
+        const svgData = new XMLSerializer().serializeToString(svgLayerRef.current);
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        
+        const img = new Image();
+        img.onload = () => {
+          tempCtx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          
+          // Create download link
+          const link = document.createElement('a');
+          link.download = `${floorplan.name || 'floorplan'}_page${currentPage}.png`;
+          link.href = tempCanvas.toDataURL('image/png');
+          link.click();
+          
+          toast({
+            title: 'Export Complete',
+            description: 'Floorplan exported as PNG image',
+            duration: 3000
+          });
+        };
+        img.src = url;
+      }
+    }
+  };
   
   return (
     <div 
