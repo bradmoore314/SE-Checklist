@@ -15,6 +15,10 @@ import { SimpleEnhancedViewer } from '@/components/floorplans/SimpleEnhancedView
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { ChatbotProvider } from '@/hooks/use-chatbot';
+import { ChatbotButton } from '@/components/ai/ChatbotButton';
+import { ChatbotWindow } from '@/components/ai/ChatbotWindow';
+import { FullPageChatbot } from '@/components/ai/FullPageChatbot';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,8 +32,6 @@ import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/Annot
 import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
-import { ChatbotProvider } from '@/hooks/use-chatbot';
-import { ChatbotWindow } from '@/components/ai/ChatbotWindow';
 
 interface FloorplanData {
   id: number;
@@ -704,18 +706,22 @@ function EnhancedFloorplansPageWithChatbot() {
   const projectId = parseInt(params.projectId);
   const { toast } = useToast();
   
+  // Create a function to handle marker addition from chatbot
+  const handleAddMarker = (type: string, properties: any) => {
+    console.log("Adding marker from chatbot:", type, properties);
+    // You can trigger additional actions here
+    toast({
+      title: "AI Assistant",
+      description: `Added a new ${type} based on conversation`,
+    });
+  };
+  
   return (
-    <ChatbotProvider projectId={projectId} onAddMarker={(type, properties) => {
-      // This will be called when the chatbot wants to add a marker
-      console.log("Adding marker from chatbot:", type, properties);
-      // You can trigger additional actions here
-      toast({
-        title: "AI Assistant",
-        description: `Added a new ${type} based on conversation`,
-      });
-    }}>
+    <ChatbotProvider>
       <EnhancedFloorplansPage />
+      <ChatbotButton />
       <ChatbotWindow />
+      <FullPageChatbot />
     </ChatbotProvider>
   );
 }
