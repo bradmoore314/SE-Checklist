@@ -509,8 +509,12 @@ export const EnhancedFloorplanViewer = ({
           // Start collecting points
           setIsDrawing(true);
           setDrawingPoints([{ x: pdfCoords.x, y: pdfCoords.y }]);
+        } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
+          // For equipment markers that need configuration
+          setTempMarker(newMarker);
+          setIsEquipmentFormOpen(true);
         } else {
-          // For point markers that don't need sizing
+          // For other point markers that don't need sizing or configuration
           addMarkerMutation.mutate(newMarker);
           toast({
             title: 'Marker Added',
@@ -909,10 +913,56 @@ export const EnhancedFloorplanViewer = ({
         />
       )}
       
-      {isEquipmentFormOpen && selectedMarker && (
+      {isEquipmentFormOpen && tempMarker && (
         <EquipmentFormDialog
-          marker={selectedMarker}
-          onSave={(updatedMarker) => {
+          isOpen={isEquipmentFormOpen}
+          markerType={tempMarker.marker_type || ''}
+          projectId={floorplan.project_id}
+          position={{ 
+            x: tempMarker.position_x || 0, 
+            y: tempMarker.position_y || 0 
+          }}
+          onEquipmentCreated={(equipmentId, equipmentLabel) => {
+            // Update the temporary marker with equipment details and save
+            if (tempMarker) {
+              const updatedMarker = {
+                ...tempMarker,
+                equipment_id: equipmentId,
+                label: equipmentLabel
+              };
+              addMarkerMutation.mutate(updatedMarker);
+              
+              toast({
+                title: 'Equipment Added',
+                description: `Added ${tempMarker.marker_type} marker with equipment configuration`,
+                duration: 2000
+              });
+            }
+            setIsEquipmentFormOpen(false);
+            setTempMarker(null);
+          }}
+          onClose={() => {
+            setIsEquipmentFormOpen(false);
+            setTempMarker(null);
+          }}
+        />
+      )}
+      {isEquipmentFormOpen && selectedMarker && !tempMarker && (
+        <EquipmentFormDialog
+          isOpen={isEquipmentFormOpen}
+          markerType={selectedMarker.marker_type}
+          projectId={floorplan.project_id}
+          position={{ 
+            x: selectedMarker.position_x, 
+            y: selectedMarker.position_y 
+          }}
+          onEquipmentCreated={(equipmentId, equipmentLabel) => {
+            // Update the selected marker with new equipment details
+            const updatedMarker = {
+              ...selectedMarker,
+              equipment_id: equipmentId,
+              label: equipmentLabel
+            };
             updateMarkerMutation.mutate(updatedMarker);
             setIsEquipmentFormOpen(false);
           }}
