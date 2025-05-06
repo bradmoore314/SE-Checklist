@@ -515,20 +515,39 @@ function EnhancedFloorplansPage() {
               <div key={floorplan.id} className="relative group">
                 <Card className="cursor-pointer hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
-                    {/* Top controls - Shown on hover */}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-2">
-                      <div className="bg-white/90 rounded-md p-1 shadow-sm">
+                    {/* Top controls - Checkbox always visible, delete button on hover */}
+                    <div className="absolute top-2 right-2 z-10 flex gap-2">
+                      <div className="bg-white rounded-md p-1 shadow-sm">
                         <input 
                           type="checkbox" 
                           className="h-4 w-4" 
                           title="Select floorplan"
-                          onClick={(e) => e.stopPropagation()}
+                          checked={selectedFloorplans.has(floorplan.id)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const newSelectedFloorplans = new Set(selectedFloorplans);
+                            
+                            if (e.target.checked) {
+                              newSelectedFloorplans.add(floorplan.id);
+                            } else {
+                              newSelectedFloorplans.delete(floorplan.id);
+                            }
+                            
+                            setSelectedFloorplans(newSelectedFloorplans);
+                            
+                            // Update select all checkbox state
+                            if (projectFloorplans) {
+                              setSelectAllChecked(
+                                newSelectedFloorplans.size === projectFloorplans.length
+                              );
+                            }
+                          }}
                         />
                       </div>
                       <Button 
                         size="icon" 
                         variant="destructive" 
-                        className="h-6 w-6" 
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" 
                         title="Delete floorplan"
                         onClick={(e) => {
                           e.preventDefault();
