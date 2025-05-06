@@ -71,8 +71,8 @@ export const MobileToolbar = ({
           </div>
 
           {/* Tool grid */}
-          <div className="p-1">
-            <div className="grid grid-cols-5 gap-1 mb-2">
+          <div className="p-0.5">
+            <div className="grid grid-cols-6 gap-0.5 mb-1">
               <ToolButton 
                 icon={<DoorClosed />} 
                 label="Door" 
@@ -182,7 +182,7 @@ const ToolButton = ({
     <button
       onClick={onClick}
       className={`
-        relative flex flex-col items-center justify-center p-1 rounded-lg
+        relative flex flex-col items-center justify-center p-1 px-0.5 rounded-md max-w-[38px] w-full
         ${active 
           ? 'bg-primary/20 text-primary border-primary' 
           : functional 
@@ -195,7 +195,7 @@ const ToolButton = ({
       <div className="h-4 w-4 mb-0.5">
         {icon}
       </div>
-      <span className="text-[10px]">{label}</span>
+      <span className="text-[9px] leading-tight line-clamp-1">{label}</span>
       
       {/* Badge for non-functional tools */}
       {!functional && (
