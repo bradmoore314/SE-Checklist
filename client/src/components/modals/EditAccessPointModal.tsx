@@ -26,6 +26,7 @@ const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormI
 // Define the access point form schema
 const accessPointSchema = z.object({
   location: z.string().min(1, "Location is required"),
+  quick_config: z.string().min(1, "Quick config is required"), // Required legacy field
   reader_type: z.string().min(1, "Reader type is required"),
   lock_type: z.string().min(1, "Lock type is required"),
   monitoring_type: z.string().min(1, "Monitoring type is required"),
@@ -127,6 +128,7 @@ export default function EditAccessPointModal({
     resolver: zodResolver(accessPointSchema),
     defaultValues: {
       location: accessPoint.location,
+      quick_config: accessPoint.quick_config || 'Standard', // Add required legacy field
       reader_type: accessPoint.reader_type,
       lock_type: accessPoint.lock_type,
       monitoring_type: accessPoint.monitoring_type,
@@ -228,6 +230,9 @@ export default function EditAccessPointModal({
         <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Hidden quick_config field - required legacy field */}
+            <input type="hidden" {...form.register("quick_config")} />
+            
             {/* Location */}
             <FormField
               control={form.control}
