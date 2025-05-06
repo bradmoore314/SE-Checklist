@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -412,7 +413,11 @@ export default function Projects() {
                       Site Address
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter site address" {...field} />
+                      <AddressAutocomplete 
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Enter site address"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
