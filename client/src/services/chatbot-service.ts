@@ -1,254 +1,176 @@
-import { speechService } from '@/services/speech-service';
+import speechService from '@/services/speech-service';
 
-// Interface for handling message data
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
+/**
+ * Interface representing a chat message
+ */
+export interface ChatMessage {
+  role: 'user' | 'assistant';
   content: string;
-  timestamp: Date;
 }
 
-// Interface for chat session state
-interface ChatSession {
-  id: string;
-  messages: ChatMessage[];
-  context: Record<string, any>;
-  created: Date;
-  updated: Date;
-}
-
-// Interface for equipment configuration recommendation
-interface EquipmentRecommendation {
-  type: 'access_point' | 'camera' | 'elevator' | 'intercom';
-  location: string;
-  properties: Record<string, any>;
-  confidence: number;
-  explanation: string;
-}
-
+/**
+ * ChatbotService - Service for handling AI chatbot functionality
+ * Integrates with the speech service for voice capabilities
+ */
 class ChatbotService {
-  private apiEndpoint = '/api/gemini/chat';
-  private activeSession: ChatSession | null = null;
-
-  // Initialization with system prompt
-  constructor() {
-    this.resetSession();
-  }
-
+  private isListening: boolean = false;
+  
   /**
-   * Reset the current chat session
+   * Initialize the speech recognition capability
+   * @param onTranscript Callback function to receive transcription results
    */
-  resetSession() {
-    this.activeSession = {
-      id: this.generateId(),
-      messages: [
-        {
-          id: this.generateId(),
-          role: 'system',
-          content: `You are an AI-powered Security Equipment Configuration Assistant built into the Site Walk Checklist application. 
-          Your role is to help security professionals configure access points, cameras, elevators, and intercoms through natural 
-          conversation. Always introduce yourself at the start of a new session. Ask questions one at a time to gather all required 
-          configuration information based on the device type. Be friendly, professional, and focused on helping users configure 
-          their security equipment efficiently. After collecting all necessary information, provide a summary of the recommended 
-          configuration for the user to confirm before submitting.`,
-          timestamp: new Date()
-        }
-      ],
-      context: {},
-      created: new Date(),
-      updated: new Date()
-    };
-    
-    return this.activeSession;
-  }
-
-  /**
-   * Send a user message to the chatbot and get a response
-   * @param message User message text
-   * @param voiceEnabled Whether to enable voice response
-   * @returns Promise resolving to assistant response
-   */
-  async sendMessage(message: string, voiceEnabled = false): Promise<ChatMessage> {
-    if (!this.activeSession) {
-      this.resetSession();
-    }
-
-    // Add user message to session
-    const userMessage: ChatMessage = {
-      id: this.generateId(),
-      role: 'user',
-      content: message,
-      timestamp: new Date()
-    };
-    
-    this.activeSession!.messages.push(userMessage);
-    this.activeSession!.updated = new Date();
-    
-    try {
-      // Clone the messages without the system prompt for the UI
-      const uiMessages = [...this.activeSession!.messages];
-      
-      // Prepare API request with full context including system prompt
-      const response = await fetch(this.apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: this.activeSession!.messages,
-          context: this.activeSession!.context
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Create assistant message from response
-      const assistantMessage: ChatMessage = {
-        id: this.generateId(),
-        role: 'assistant',
-        content: data.content,
-        timestamp: new Date()
-      };
-      
-      // Add to session
-      this.activeSession!.messages.push(assistantMessage);
-      this.activeSession!.updated = new Date();
-      
-      // If context was provided in the response, update session context
-      if (data.context) {
-        this.activeSession!.context = {
-          ...this.activeSession!.context,
-          ...data.context
-        };
-      }
-      
-      // If voice is enabled, speak the response
-      if (voiceEnabled && speechService.isSynthesisSupported()) {
-        speechService.speak(assistantMessage.content);
-      }
-      
-      return assistantMessage;
-    } catch (error) {
-      console.error('Error sending message to chatbot:', error);
-      
-      // Create an error message
-      const errorMessage: ChatMessage = {
-        id: this.generateId(),
-        role: 'assistant',
-        content: 'I apologize, but I encountered an error processing your request. Please try again or contact support if the issue persists.',
-        timestamp: new Date()
-      };
-      
-      // Add to session
-      this.activeSession!.messages.push(errorMessage);
-      
-      return errorMessage;
-    }
-  }
-
-  /**
-   * Get the current chat session
-   * @returns Current chat session or null if none exists
-   */
-  getSession(): ChatSession | null {
-    return this.activeSession;
-  }
-
-  /**
-   * Get messages for UI display (excluding system prompts)
-   * @returns Array of chat messages for display
-   */
-  getMessages(): ChatMessage[] {
-    if (!this.activeSession) {
-      return [];
-    }
-    
-    // Filter out system messages for UI display
-    return this.activeSession.messages.filter(msg => msg.role !== 'system');
-  }
-
-  /**
-   * Get equipment recommendations based on the conversation
-   * @returns Promise resolving to equipment recommendations
-   */
-  async getEquipmentRecommendations(): Promise<EquipmentRecommendation[]> {
-    if (!this.activeSession) {
-      return [];
-    }
-
-    try {
-      const response = await fetch(`${this.apiEndpoint}/recommendations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: this.activeSession.messages,
-          context: this.activeSession.context
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.recommendations || [];
-    } catch (error) {
-      console.error('Error getting equipment recommendations:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Start voice recognition for user input
-   * @param onInterimResult Callback for interim results
-   * @param onFinalResult Callback for final result
-   * @param onError Callback for errors
-   */
-  startVoiceInput(
-    onInterimResult: (text: string) => void,
-    onFinalResult: (text: string) => void,
-    onError: (error: any) => void
-  ): void {
-    if (!speechService.isRecognitionSupported()) {
-      onError(new Error('Speech recognition is not supported in this browser'));
+  public initSpeechRecognition(onTranscript: (text: string) => void): void {
+    if (!this.isRecognitionSupported()) {
+      console.warn('Speech recognition is not supported in this browser');
       return;
     }
     
-    speechService.startListening(
-      { language: 'en-US', continuous: true, interimResults: true },
-      (result) => {
-        if (result.isFinal) {
-          onFinalResult(result.text);
-        } else {
-          onInterimResult(result.text);
-        }
-      },
-      onError
-    );
+    // Initialize listeners for speech recognition
+    const onResult = (transcript: string) => {
+      onTranscript(transcript);
+      this.isListening = false;
+    };
   }
 
   /**
-   * Stop voice recognition
+   * Start listening for speech input
+   * @param onTranscript Callback function to receive the transcript
+   * @returns Boolean indicating if listening started successfully
    */
-  stopVoiceInput(): void {
-    speechService.stopListening();
+  public startListening(onTranscript: (text: string) => void): boolean {
+    if (!this.isRecognitionSupported()) {
+      return false;
+    }
+    
+    const success = speechService.startListening(onTranscript);
+    this.isListening = success;
+    return success;
   }
-
+  
   /**
-   * Generate a unique ID for messages and sessions
-   * @returns Unique ID string
+   * Stop the speech recognition
    */
-  private generateId(): string {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15);
+  public stopListening(): void {
+    if (this.isListening) {
+      speechService.stopListening();
+      this.isListening = false;
+    }
+  }
+  
+  /**
+   * Check if browser supports speech recognition
+   */
+  public isRecognitionSupported(): boolean {
+    return speechService.isRecognitionSupported();
+  }
+  
+  /**
+   * Check if browser supports speech synthesis
+   */
+  public isSynthesisSupported(): boolean {
+    return speechService.isSynthesisSupported();
+  }
+  
+  /**
+   * Speak the given text using the speech synthesis API
+   * @param text Text to speak
+   * @param voiceIndex Optional index of the voice to use
+   * @returns Boolean indicating if speaking started successfully
+   */
+  public speakResponse(text: string, voiceIndex: number = 0): boolean {
+    if (!this.isSynthesisSupported()) {
+      return false;
+    }
+    
+    return speechService.speak(text, voiceIndex);
+  }
+  
+  /**
+   * Stop any ongoing speech
+   */
+  public stopSpeaking(): void {
+    speechService.stopSpeaking();
+  }
+  
+  /**
+   * Process a user message and get an AI response
+   * @param userMessage The user's message
+   * @param conversationHistory Previous messages for context
+   * @returns Promise resolving to the AI's response
+   */
+  public async processMessage(
+    userMessage: string, 
+    conversationHistory: ChatMessage[]
+  ): Promise<ChatMessage> {
+    try {
+      // For now, simulate a response
+      // In a real implementation, this would call the backend API
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            role: 'assistant',
+            content: this.generateDemoResponse(userMessage, conversationHistory)
+          });
+        }, 1000);
+      });
+    } catch (error) {
+      console.error('Error processing message:', error);
+      return {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again later.'
+      };
+    }
+  }
+  
+  /**
+   * Generate a simple demo response based on the user's message
+   * This is just a placeholder until we integrate with a real AI backend
+   */
+  private generateDemoResponse(message: string, history: ChatMessage[]): string {
+    const lowerMessage = message.toLowerCase();
+    
+    // Equipment configuration patterns
+    if (lowerMessage.includes('configure') || lowerMessage.includes('setup') || lowerMessage.includes('install')) {
+      if (lowerMessage.includes('camera')) {
+        return 'I can help you configure a security camera. Would you like to set up an indoor or outdoor camera?';
+      } else if (lowerMessage.includes('door') || lowerMessage.includes('access')) {
+        return 'Let\'s configure an access control point. Would you prefer a keypad, card reader, or biometric system?';
+      } else if (lowerMessage.includes('elevator')) {
+        return 'For elevator security, we should consider which floors need restricted access. How many floors need to be secured?';
+      } else if (lowerMessage.includes('intercom')) {
+        return 'Intercom systems are great for entrance communication. Do you need video capabilities with your intercom?';
+      } else {
+        return 'I can help you configure security equipment. What specific type of device are you looking to set up?';
+      }
+    }
+    
+    // Location-based patterns
+    if (lowerMessage.includes('where') || lowerMessage.includes('location') || lowerMessage.includes('place')) {
+      return 'The best placement for security equipment depends on the specific requirements. Would you like me to analyze your floorplan to suggest optimal locations?';
+    }
+    
+    // Integration patterns
+    if (lowerMessage.includes('integrate') || lowerMessage.includes('connect') || lowerMessage.includes('work with')) {
+      return 'Our security systems can integrate with various platforms. Which specific systems do you need to connect with?';
+    }
+    
+    // Help/assistance patterns
+    if (lowerMessage.includes('help') || lowerMessage.includes('how do i') || lowerMessage.includes('can you')) {
+      return 'I\'m here to help with your security equipment configuration. I can assist with cameras, access control, elevators, and intercoms. What would you like to know more about?';
+    }
+    
+    // Default responses
+    const defaultResponses = [
+      'I can help you configure security equipment for your project. What type of security system are you interested in?',
+      'Would you like me to help you select the appropriate security equipment for your needs?',
+      'I can assist with camera placement, access control configuration, and more. What are you working on today?',
+      'Tell me more about your security requirements, and I can recommend the best equipment configuration.'
+    ];
+    
+    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
   }
 }
 
-// Export a singleton instance
-export const chatbotService = new ChatbotService();
+// Create a singleton instance
+const chatbotService = new ChatbotService();
+export default chatbotService;

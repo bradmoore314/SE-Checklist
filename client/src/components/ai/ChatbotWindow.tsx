@@ -42,21 +42,30 @@ export function ChatbotWindow() {
     setIsLoading(true);
 
     try {
-      // This is where we would normally call the backend API
-      // For now, we'll just simulate a response after a delay
-      setTimeout(() => {
-        addMessage({
-          role: 'assistant',
-          content: 'I can help you configure security equipment. What kind of device would you like to set up?'
-        });
-        setIsLoading(false);
-      }, 1000);
+      // Import chatbotService dynamically to prevent circular dependency issues
+      const { default: chatbotService } = await import('@/services/chatbot-service');
+      
+      // Process the message through our chatbot service
+      const filteredMessages = messages
+        .filter(m => m.role !== 'system')
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      const response = await chatbotService.processMessage(input, filteredMessages as any);
+      
+      // Add the response to the chat
+      addMessage(response as any);
+      
+      // Optionally, speak the response if voice is enabled
+      // This could be tied to a setting in the future
+      // chatbotService.speakResponse(response.content);
+      
     } catch (error) {
       console.error('Error sending message to AI:', error);
       addMessage({
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again later.'
       });
+    } finally {
       setIsLoading(false);
     }
   };

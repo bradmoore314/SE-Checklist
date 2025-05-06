@@ -1,25 +1,38 @@
 import React from 'react';
-import { MessageSquareText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
 import { useChatbot } from '@/hooks/use-chatbot';
+import { motion } from 'framer-motion';
 
 /**
- * ChatbotButton - A floating action button to open the AI chatbot
- * This button appears in the bottom-right corner of the dashboard
+ * ChatbotButton - Floating button that opens the AI chatbot
  */
 export function ChatbotButton() {
-  const { openChatbot, isChatbotOpen } = useChatbot();
+  const { isChatbotOpen, openChatbot } = useChatbot();
+
+  // Don't show the button if the chatbot is already open
+  if (isChatbotOpen) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <Button
+    <motion.div
+      className="fixed bottom-6 right-6 z-50"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ 
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+        delay: 0.5
+      }}
+    >
+      <Button 
         onClick={openChatbot}
-        size="lg"
-        className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 shadow-lg transition-all duration-300 hover:scale-105"
-        aria-label="Open AI assistant"
+        className="h-14 w-14 rounded-full shadow-lg"
+        size="icon"
       >
-        <MessageSquareText className="h-6 w-6" />
+        <MessageSquare className="h-6 w-6" />
+        <span className="sr-only">Open AI Assistant</span>
       </Button>
-    </div>
+    </motion.div>
   );
 }

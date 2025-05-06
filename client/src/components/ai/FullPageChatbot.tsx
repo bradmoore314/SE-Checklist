@@ -1,22 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, ArrowLeft, Send, Mic, MicOff, Loader2, Share2, Download } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Send, Mic, MicOff, Loader2, X, MinusCircle } from 'lucide-react';
+import { useChatbot } from '@/hooks/use-chatbot';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useChatbot } from '@/hooks/use-chatbot';
-import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Card, CardHeader, CardContent, CardFooter, 
+  CardTitle, CardDescription 
+} from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * FullPageChatbot - Full page version of the AI chatbot with more advanced features
- * This is shown when users want to configure security equipment in detail
+ * FullPageChatbot component - Shows a full-screen version
+ * of the chatbot with additional features
  */
 export function FullPageChatbot() {
   const { 
+    isChatbotOpen, 
+    closeChatbot, 
     isFullScreen,
     toggleFullScreen,
-    closeChatbot,
     messages,
     addMessage,
     isListening,
@@ -26,15 +30,15 @@ export function FullPageChatbot() {
   } = useChatbot();
   
   const [input, setInput] = useState('');
-  const [activeTab, setActiveTab] = useState('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const [activeTab, setActiveTab] = useState('chat');
+  
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
+  
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
@@ -44,77 +48,96 @@ export function FullPageChatbot() {
     setIsLoading(true);
 
     try {
-      // This is where we would normally call the backend API
-      // For now, we'll just simulate a response after a delay
-      setTimeout(() => {
-        addMessage({
-          role: 'assistant',
-          content: 'I can help you configure detailed security equipment settings. What specifications are you looking for?'
-        });
-        setIsLoading(false);
-      }, 1000);
+      // Import chatbotService dynamically to prevent circular dependency issues
+      const { default: chatbotService } = await import('@/services/chatbot-service');
+      
+      // Process the message through our chatbot service
+      const filteredMessages = messages
+        .filter(m => m.role !== 'system')
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      const response = await chatbotService.processMessage(input, filteredMessages as any);
+      
+      // Add the response to the chat
+      addMessage(response as any);
+      
+      // Optionally, speak the response if voice is enabled
+      // This could be tied to a setting in the future
+      // chatbotService.speakResponse(response.content);
+      
     } catch (error) {
       console.error('Error sending message to AI:', error);
       addMessage({
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again later.'
       });
+    } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
-
-  if (!isFullScreen) return null;
-
+  
+  // If not full screen mode, or chatbot is closed, don't render 
+  if (!isFullScreen || !isChatbotOpen) return null;
+  
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-hidden">
-      <div className="flex flex-col h-full">
-        <header className="py-3 px-4 border-b flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" onClick={toggleFullScreen}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8 bg-primary/20">
-                <AvatarImage src="/logo.png" alt="AI" />
-                <AvatarFallback>AI</AvatarFallback>
-              </Avatar>
-              <h2 className="font-semibold text-lg">Security Equipment Configuration Assistant</h2>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 z-50 p-4 bg-background"
+      >
+        <Card className="flex flex-col h-full">
+          <CardHeader className="p-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src="/logo.png" alt="AI" />
+                  <AvatarFallback>AI</AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle>Security Equipment Assistant</CardTitle>
+                  <CardDescription>Configure your security equipment with AI</CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleFullScreen}
+                >
+                  <MinusCircle className="h-5 w-5" />
+                  <span className="sr-only">Minimize</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={closeChatbot}
+                >
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm">
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button variant="ghost" size="icon" onClick={closeChatbot}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
-        
-        <div className="flex flex-1 overflow-hidden">
-          <Tabs defaultValue="chat" className="flex flex-col w-full overflow-hidden" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="border-b rounded-none justify-start px-4 h-11">
-              <TabsTrigger value="chat" className="data-[state=active]:bg-primary/10">Chat</TabsTrigger>
-              <TabsTrigger value="equipment" className="data-[state=active]:bg-primary/10">Equipment</TabsTrigger>
-              <TabsTrigger value="floorplans" className="data-[state=active]:bg-primary/10">Floorplans</TabsTrigger>
-              <TabsTrigger value="summary" className="data-[state=active]:bg-primary/10">Summary</TabsTrigger>
+          </CardHeader>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <TabsList className="w-full justify-start border-b rounded-none px-4">
+              <TabsTrigger value="chat">Chat</TabsTrigger>
+              <TabsTrigger value="equipment">Equipment</TabsTrigger>
+              <TabsTrigger value="preferences">Preferences</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <TabsContent value="chat" className="flex-1 flex flex-col p-0 m-0">
+              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.filter(m => m.role !== 'system').map((message, index) => (
                   <div 
                     key={index} 
@@ -139,11 +162,11 @@ export function FullPageChatbot() {
                   </div>
                 )}
                 <div ref={messagesEndRef} />
-              </div>
+              </CardContent>
               
-              <div className="p-4 border-t">
+              <CardFooter className="p-4 border-t mt-auto">
                 <form 
-                  className="flex space-x-2"
+                  className="flex w-full space-x-2"
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSendMessage();
@@ -174,54 +197,90 @@ export function FullPageChatbot() {
                     Send
                   </Button>
                 </form>
+              </CardFooter>
+            </TabsContent>
+            
+            <TabsContent value="equipment" className="flex-1 p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="p-4">
+                  <CardTitle className="text-lg mb-2">Security Cameras</CardTitle>
+                  <CardDescription>
+                    Configure camera placement, resolution, and monitoring settings
+                  </CardDescription>
+                  <Button className="mt-4 w-full" variant="outline">Manage Cameras</Button>
+                </Card>
+                
+                <Card className="p-4">
+                  <CardTitle className="text-lg mb-2">Access Control</CardTitle>
+                  <CardDescription>
+                    Configure doors, card readers, and access permissions
+                  </CardDescription>
+                  <Button className="mt-4 w-full" variant="outline">Manage Access Points</Button>
+                </Card>
+                
+                <Card className="p-4">
+                  <CardTitle className="text-lg mb-2">Elevator Control</CardTitle>
+                  <CardDescription>
+                    Configure elevator security and floor access
+                  </CardDescription>
+                  <Button className="mt-4 w-full" variant="outline">Manage Elevators</Button>
+                </Card>
+                
+                <Card className="p-4">
+                  <CardTitle className="text-lg mb-2">Intercoms</CardTitle>
+                  <CardDescription>
+                    Configure entry communication systems
+                  </CardDescription>
+                  <Button className="mt-4 w-full" variant="outline">Manage Intercoms</Button>
+                </Card>
               </div>
             </TabsContent>
             
-            <TabsContent value="equipment" className="flex-1 p-4 overflow-y-auto">
-              <div className="grid gap-6">
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-medium mb-2">Configured Equipment</h3>
-                  <p className="text-muted-foreground text-sm">No equipment has been configured yet. Start a conversation with the AI to begin configuring security equipment.</p>
+            <TabsContent value="preferences" className="flex-1 p-4">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium">AI Assistant Preferences</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Customize how the AI assistant works for you
+                  </p>
                 </div>
-                <div className="grid gap-4">
-                  <h3 className="font-medium">Available Equipment Types</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {['Access Control Systems', 'Surveillance Cameras', 'Intrusion Detection', 'Fire Alarm Systems', 'Intercom Systems', 'Mass Notification'].map(type => (
-                      <Card key={type} className="cursor-pointer hover:border-primary transition-colors">
-                        <CardHeader className="p-4 pb-2">
-                          <h4 className="font-medium">{type}</h4>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                          <p className="text-sm text-muted-foreground">Click to browse equipment options</p>
-                        </CardContent>
-                      </Card>
-                    ))}
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Voice Recognition</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Enable voice input for the AI assistant
+                      </p>
+                    </div>
+                    <Button variant="outline">Enabled</Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Voice Output</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Have the AI assistant speak responses out loud
+                      </p>
+                    </div>
+                    <Button variant="outline">Disabled</Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Suggestion Mode</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Let the AI proactively suggest configurations
+                      </p>
+                    </div>
+                    <Button variant="outline">Enabled</Button>
                   </div>
                 </div>
               </div>
             </TabsContent>
-            
-            <TabsContent value="floorplans" className="flex-1 p-4 overflow-y-auto">
-              <div className="border rounded-lg p-8 text-center">
-                <h3 className="font-medium mb-2">Floorplan Integration</h3>
-                <p className="text-muted-foreground mb-4">Connect to the floorplan viewer to place equipment on your building layouts</p>
-                <Button>Open Floorplan Viewer</Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="summary" className="flex-1 p-4 overflow-y-auto">
-              <div className="border rounded-lg p-4 mb-6">
-                <h3 className="font-medium mb-2">Configuration Summary</h3>
-                <p className="text-muted-foreground text-sm">Your AI-assisted configuration will appear here</p>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline">Save Draft</Button>
-                <Button>Complete Configuration</Button>
-              </div>
-            </TabsContent>
           </Tabs>
-        </div>
-      </div>
-    </div>
+        </Card>
+      </motion.div>
+    </AnimatePresence>
   );
 }
