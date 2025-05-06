@@ -1041,6 +1041,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/intercoms/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       const intercomId = parseInt(req.params.id);
       if (isNaN(intercomId)) {
@@ -1051,6 +1055,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingIntercom = await storage.getIntercom(intercomId);
       if (!existingIntercom) {
         return res.status(404).json({ message: "Intercom not found" });
+      }
+      
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to the project this intercom belongs to
+      if (!userProjectIds.includes(existingIntercom.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to duplicate this intercom" });
       }
       
       // Create a copy with a modified location name
@@ -1074,9 +1087,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
+    }
+
+    // Get the existing intercom to check permissions
+    const existingIntercom = await storage.getIntercom(intercomId);
+    if (!existingIntercom) {
+      return res.status(404).json({ message: "Intercom not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this intercom belongs to
+    if (!userProjectIds.includes(existingIntercom.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to update this intercom" });
     }
 
     try {
@@ -1103,9 +1135,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
+    }
+    
+    // Get the intercom to check permissions before deleting
+    const intercom = await storage.getIntercom(intercomId);
+    if (!intercom) {
+      return res.status(404).json({ message: "Intercom not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this intercom belongs to
+    if (!userProjectIds.includes(intercom.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to delete this intercom" });
     }
 
     const success = await storage.deleteIntercom(intercomId);
