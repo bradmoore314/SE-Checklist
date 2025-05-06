@@ -127,6 +127,25 @@ export function ChatbotWindow() {
                 </div>
               )}
               
+              {/* Display equipment creation progress information */}
+              {equipmentCreation && !isLoading && (
+                <div className="flex justify-start">
+                  <div className="rounded-lg px-3 py-2 bg-green-50 border border-green-200">
+                    <div className="text-sm text-green-800">
+                      <p className="font-medium">
+                        Adding {equipmentCreation.currentStep && 
+                          equipmentCreation.currentStep.replace('_', ' ')}
+                      </p>
+                      {equipmentCreation.isComplete ? (
+                        <p className="text-xs mt-1">✓ Equipment added successfully</p>
+                      ) : (
+                        <p className="text-xs mt-1">Please answer the questions to continue</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messageEndRef} />
             </CardContent>
           </ScrollArea>
