@@ -101,6 +101,7 @@ function EnhancedFloorplansPage() {
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   const [showAllLabels, setShowAllLabels] = useState(false);
+  const [activeViewMode, setActiveViewMode] = useState<'standard' | 'editor' | 'annotate'>('standard');
   
   // Mobile detection added above at lines 64-81
   
@@ -637,17 +638,53 @@ function EnhancedFloorplansPage() {
           </div>
         </div>
         
+        <div className="mb-4">
+          <Tabs value={activeViewMode} onValueChange={(value) => setActiveViewMode(value as 'standard' | 'editor' | 'annotate')}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="standard" className="flex items-center gap-2">
+                <Eye className="h-4 w-4" /> Standard View
+              </TabsTrigger>
+              <TabsTrigger value="editor" className="flex items-center gap-2">
+                <Edit className="h-4 w-4" /> PDF Editor
+              </TabsTrigger>
+              <TabsTrigger value="annotate" className="flex items-center gap-2">
+                <Map className="h-4 w-4" /> Equipment Markers
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
         <div className="flex-1 border rounded-lg overflow-hidden">
-          {/* Enhanced viewer with professional PDF coordinate system and markup tools */}
-          <EnhancedFloorplanViewer
-            key={viewerKey}
-            floorplan={floorplan}
-            currentPage={currentPage}
-            toolMode={toolMode}
-            layers={layers || []}
-            onPageChange={setCurrentPage}
-            showAllLabels={showAllLabels}
-          />
+          {/* Render the correct component based on the active view mode */}
+          {activeViewMode === 'standard' && (
+            <EnhancedFloorplanViewer
+              key={viewerKey}
+              floorplan={floorplan}
+              currentPage={currentPage}
+              toolMode={toolMode}
+              layers={layers || []}
+              onPageChange={setCurrentPage}
+              showAllLabels={showAllLabels}
+            />
+          )}
+          
+          {activeViewMode === 'editor' && (
+            <div className="h-full">
+              <EnhancedFloorplanEditor />
+            </div>
+          )}
+          
+          {activeViewMode === 'annotate' && (
+            <EnhancedFloorplanViewer
+              key={`${viewerKey}-annotate`}
+              floorplan={floorplan}
+              currentPage={currentPage}
+              toolMode={toolMode}
+              layers={layers || []}
+              onPageChange={setCurrentPage}
+              showAllLabels={true}
+            />
+          )}
         </div>
         
         <div className="flex flex-col sm:flex-row justify-between items-center mt-2 md:mt-4 gap-2">
