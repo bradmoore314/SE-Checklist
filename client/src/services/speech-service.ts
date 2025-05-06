@@ -1,312 +1,227 @@
-/**
- * Speech Service - Provides browser-based speech recognition and synthesis
- * Uses the Web Speech API which is supported in most modern browsers
- * Now with continuous mode similar to Grok's Voice Mode
- */
-class SpeechService {
-  private recognition: any;
-  private synthesis: SpeechSynthesis;
-  private isListening: boolean = false;
-  private isSpeaking: boolean = false;
-  private continuousMode: boolean = false;
-  private onTranscriptCallback: ((text: string) => void) | null = null;
-  private autoRestartTimeout: NodeJS.Timeout | null = null;
+// SpeechRecognitionService - speech to text functionality in the browser
+export class SpeechRecognitionService {
+  recognition: SpeechRecognition | null = null;
+  isListening: boolean = false;
+  onResultCallback: ((text: string) => void) | null = null;
+  onEndCallback: (() => void) | null = null;
+  onErrorCallback: ((error: any) => void) | null = null;
+  isSupported: boolean = false;
+  
+  // Methods for compatibility with use-chatbot.tsx
+  isRecognitionSupported(): boolean {
+    return this.isSupported;
+  }
+  
+  isSynthesisSupported(): boolean {
+    return typeof window !== 'undefined' && !!window.speechSynthesis;
+  }
+  
+  startListening(callback: (text: string) => void): boolean {
+    this.onResult(callback);
+    this.start();
+    return this.isListening;
+  }
+  
+  startContinuousListening(callback: (text: string) => void): boolean {
+    this.onResult(callback);
+    if (this.recognition) {
+      this.recognition.continuous = true;
+    }
+    this.start();
+    return this.isListening;
+  }
+  
+  stopListening(): void {
+    this.stop();
+  }
+  
+  speak(text: string): void {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+  }
   
   constructor() {
-    // Initialize speech recognition if available
+    // Check if browser supports speech recognition
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
+        this.isSupported = true;
         this.recognition = new SpeechRecognition();
         this.recognition.continuous = false;
-        this.recognition.interimResults = true; // Enable interim results for more responsive feedback
+        this.recognition.interimResults = true;
         this.recognition.lang = 'en-US';
-      }
-      
-      // Initialize speech synthesis if available
-      if (window.speechSynthesis) {
-        this.synthesis = window.speechSynthesis;
-      }
-    }
-  }
-  
-  /**
-   * Check if the browser supports speech recognition
-   */
-  public isRecognitionSupported(): boolean {
-    return !!this.recognition;
-  }
-  
-  /**
-   * Check if the browser supports speech synthesis
-   */
-  public isSynthesisSupported(): boolean {
-    return !!this.synthesis;
-  }
-  
-  /**
-   * Start speech recognition in one-time mode
-   * @param onTranscript Callback function to receive transcription results
-   * @returns Boolean indicating if started successfully
-   */
-  public startListening(onTranscript: (text: string) => void): boolean {
-    if (!this.isRecognitionSupported() || this.isListening) {
-      return false;
-    }
-    
-    this.onTranscriptCallback = onTranscript;
-    this.continuousMode = false;
-    
-    return this.initializeRecognition();
-  }
-  
-  /**
-   * Start speech recognition in continuous mode (similar to Grok's Voice Mode)
-   * @param onTranscript Callback function to receive transcription results
-   * @returns Boolean indicating if started successfully
-   */
-  public startContinuousListening(onTranscript: (text: string) => void): boolean {
-    if (!this.isRecognitionSupported() || this.isListening) {
-      return false;
-    }
-    
-    this.onTranscriptCallback = onTranscript;
-    this.continuousMode = true;
-    
-    return this.initializeRecognition();
-  }
-  
-  /**
-   * Initialize the speech recognition with appropriate event handlers
-   * @returns Boolean indicating if started successfully
-   */
-  private initializeRecognition(): boolean {
-    if (!this.recognition) return false;
-    
-    let finalTranscript = '';
-    
-    this.recognition.onresult = (event: any) => {
-      let interimTranscript = '';
-      
-      // Build interim and final transcripts
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        const transcript = event.results[i][0].transcript;
         
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-      
-      // Only send final results if we have some content
-      if (finalTranscript && this.onTranscriptCallback) {
-        this.onTranscriptCallback(finalTranscript);
-        finalTranscript = '';
-        
-        // If not in continuous mode, stop after getting a result
-        if (!this.continuousMode) {
-          this.stopListening();
-        }
-      }
-    };
-    
-    this.recognition.onerror = (event: any) => {
-      console.error('Speech recognition error', event.error);
-      
-      // If it's a non-fatal error in continuous mode, attempt to restart
-      if (this.continuousMode && event.error !== 'aborted' && event.error !== 'not-allowed') {
-        this.restartRecognitionAfterDelay();
+        this.setupEventListeners();
       } else {
-        this.isListening = false;
+        console.warn('Speech recognition is not supported in this browser.');
+      }
+    }
+  }
+  
+  private setupEventListeners() {
+    if (!this.recognition) return;
+    
+    this.recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('');
+      
+      if (this.onResultCallback) {
+        this.onResultCallback(transcript);
       }
     };
     
     this.recognition.onend = () => {
-      // In continuous mode, automatically restart recognition
-      if (this.continuousMode && this.isListening) {
-        this.restartRecognitionAfterDelay();
-      } else {
-        this.isListening = false;
+      this.isListening = false;
+      if (this.onEndCallback) {
+        this.onEndCallback();
       }
     };
+    
+    this.recognition.onerror = (event) => {
+      this.isListening = false;
+      if (this.onErrorCallback) {
+        this.onErrorCallback(event.error);
+      }
+    };
+  }
+  
+  // Start listening for speech
+  start() {
+    if (!this.isSupported || !this.recognition) {
+      if (this.onErrorCallback) {
+        this.onErrorCallback('Speech recognition is not supported in this browser.');
+      }
+      return;
+    }
     
     try {
       this.recognition.start();
       this.isListening = true;
-      return true;
     } catch (error) {
-      console.error('Failed to start speech recognition', error);
-      return false;
-    }
-  }
-  
-  /**
-   * Restart recognition after a short delay (for continuous mode)
-   */
-  private restartRecognitionAfterDelay(): void {
-    if (this.autoRestartTimeout) {
-      clearTimeout(this.autoRestartTimeout);
-    }
-    
-    this.autoRestartTimeout = setTimeout(() => {
-      if (this.isListening && this.continuousMode) {
-        try {
-          this.recognition.start();
-        } catch (error) {
-          console.error('Failed to restart speech recognition', error);
-          this.isListening = false;
-        }
+      console.error('Error starting speech recognition:', error);
+      this.isListening = false;
+      if (this.onErrorCallback) {
+        this.onErrorCallback(error);
       }
-    }, 300); // Short delay to prevent rapid restarts
+    }
   }
   
-  /**
-   * Stop speech recognition
-   */
-  public stopListening(): void {
-    if (this.autoRestartTimeout) {
-      clearTimeout(this.autoRestartTimeout);
-      this.autoRestartTimeout = null;
-    }
-    
-    if (this.isRecognitionSupported() && this.isListening) {
+  // Stop listening for speech
+  stop() {
+    if (this.recognition && this.isListening) {
       try {
         this.recognition.stop();
+        this.isListening = false;
       } catch (error) {
-        console.error('Failed to stop speech recognition', error);
+        console.error('Error stopping speech recognition:', error);
       }
-      this.isListening = false;
-      this.continuousMode = false;
     }
   }
   
-  /**
-   * Check if continuous mode is active
-   */
-  public isContinuousMode(): boolean {
-    return this.continuousMode;
+  // Set callback for when speech is recognized
+  onResult(callback: (text: string) => void) {
+    this.onResultCallback = callback;
   }
   
-  /**
-   * Speak text using speech synthesis
-   * @param text Text to speak
-   * @param voiceIndex Optional index of the voice to use
-   * @param onComplete Optional callback when speech is complete
-   * @returns Boolean indicating if started successfully
-   */
-  public speak(text: string, voiceIndex: number = 0, onComplete?: () => void): boolean {
-    if (!this.isSynthesisSupported() || this.isSpeaking) {
-      return false;
+  // Set callback for when speech recognition ends
+  onEnd(callback: () => void) {
+    this.onEndCallback = callback;
+  }
+  
+  // Set callback for when an error occurs
+  onError(callback: (error: any) => void) {
+    this.onErrorCallback = callback;
+  }
+}
+
+// Add typings for the Web Speech API
+interface Window {
+  SpeechRecognition?: typeof SpeechRecognition;
+  webkitSpeechRecognition?: typeof SpeechRecognition;
+}
+
+// Synthesis service - text to speech functionality
+export class SpeechSynthesisService {
+  isSupported: boolean = false;
+  synthesis: SpeechSynthesis | null = null;
+  voices: SpeechSynthesisVoice[] = [];
+  
+  constructor() {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      this.isSupported = true;
+      this.synthesis = window.speechSynthesis;
+      
+      // Load voices
+      this.loadVoices();
+      
+      // Chrome loads voices asynchronously
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = this.loadVoices.bind(this);
+      }
+    } else {
+      console.warn('Speech synthesis is not supported in this browser.');
+    }
+  }
+  
+  private loadVoices() {
+    if (this.synthesis) {
+      this.voices = this.synthesis.getVoices();
+    }
+  }
+  
+  // Speak a message with the specified voice and options
+  speak(text: string, options: {
+    voice?: string;
+    rate?: number;
+    pitch?: number;
+    volume?: number;
+  } = {}) {
+    if (!this.isSupported) {
+      console.warn('Speech synthesis is not supported.');
+      return;
     }
     
-    try {
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Set voice if available
-      const voices = this.getVoices();
-      if (voices.length > 0) {
-        // Use a more natural sounding voice if available
-        const preferredVoices = voices.filter(voice => 
-          voice.name.includes('Google') || 
-          voice.name.includes('Natural') || 
-          voice.name.includes('Daniel') || 
-          voice.name.includes('Samantha')
-        );
-        
-        utterance.voice = preferredVoices.length > 0 
-          ? preferredVoices[0] 
-          : (voiceIndex < voices.length ? voices[voiceIndex] : voices[0]);
+    // Cancel any ongoing speech
+    if (this.synthesis) {
+      this.synthesis.cancel();
+    } else {
+      return;
+    }
+    
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Set voice (if specified and available)
+    if (options.voice && this.voices.length > 0) {
+      const voice = this.voices.find(v => v.name === options.voice);
+      if (voice) {
+        utterance.voice = voice;
       }
-      
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      
-      utterance.onstart = () => {
-        this.isSpeaking = true;
-        
-        // Temporarily pause speech recognition while speaking
-        // to prevent the AI from hearing itself
-        if (this.isListening) {
-          try {
-            this.recognition.stop();
-          } catch (error) {
-            // Ignore errors when stopping recognition
-          }
-        }
-      };
-      
-      utterance.onend = () => {
-        this.isSpeaking = false;
-        
-        // Restart speech recognition if it was active in continuous mode
-        if (this.continuousMode && this.isListening) {
-          try {
-            this.recognition.start();
-          } catch (error) {
-            console.error('Failed to restart speech recognition after speaking', error);
-          }
-        }
-        
-        if (onComplete) {
-          onComplete();
-        }
-      };
-      
-      utterance.onerror = (event) => {
-        console.error('Speech synthesis error', event);
-        this.isSpeaking = false;
-        
-        // Restart speech recognition if it was active in continuous mode
-        if (this.continuousMode && this.isListening) {
-          try {
-            this.recognition.start();
-          } catch (error) {
-            console.error('Failed to restart speech recognition after speaking error', error);
-          }
-        }
-      };
-      
+    }
+    
+    // Set other options if specified
+    if (options.rate !== undefined) utterance.rate = options.rate;
+    if (options.pitch !== undefined) utterance.pitch = options.pitch;
+    if (options.volume !== undefined) utterance.volume = options.volume;
+    
+    // Speak the utterance
+    if (this.synthesis) {
       this.synthesis.speak(utterance);
-      return true;
-    } catch (error) {
-      console.error('Failed to start speech synthesis', error);
-      return false;
     }
   }
   
-  /**
-   * Stop speech synthesis
-   */
-  public stopSpeaking(): void {
-    if (this.isSynthesisSupported() && this.isSpeaking) {
-      try {
-        this.synthesis.cancel();
-      } catch (error) {
-        console.error('Failed to stop speech synthesis', error);
-      }
-      this.isSpeaking = false;
-    }
+  // Get available voices
+  getVoices(): SpeechSynthesisVoice[] {
+    return this.voices;
   }
   
-  /**
-   * Get available speech synthesis voices
-   * @returns Array of available voices
-   */
-  public getVoices(): SpeechSynthesisVoice[] {
-    if (this.isSynthesisSupported()) {
-      return this.synthesis.getVoices();
+  // Stop all speaking
+  stop() {
+    if (this.isSupported && this.synthesis) {
+      this.synthesis.cancel();
     }
-    return [];
   }
 }
-
-// Declare the global interfaces for TypeScript
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
-
-export { SpeechService };

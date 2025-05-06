@@ -1,10 +1,21 @@
 import fetch from 'node-fetch';
+import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 
 // Access the API key from environment variables
 const API_KEY = process.env.GEMINI_API_KEY;
 
 // Define the API endpoint with the correct model
 const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+// Get a Gemini Pro model instance
+export function getGeminiProModel() {
+  if (!API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is not set');
+  }
+  
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  return genAI.getGenerativeModel({ model: 'gemini-2.0-pro' });
+}
 
 // Define the result types
 interface AnalysisResult {

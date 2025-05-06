@@ -1,8 +1,14 @@
-import { db } from '../db';
-import { v4 as uuidv4 } from 'uuid';
 import { getGeminiProModel } from '../utils/gemini';
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '../db';
+import { 
+  accessPoints, 
+  cameras, 
+  elevators, 
+  intercoms 
+} from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
-// Define types
 interface EquipmentField {
   name: string;
   value: string | null;
@@ -20,322 +26,265 @@ interface EquipmentItem {
   quantity: number;
 }
 
-interface ProcessResult {
+interface ProcessConfigurationRequest {
+  message: string;
+  projectId?: number;
+  currentItems: EquipmentItem[];
+}
+
+interface ProcessConfigurationResponse {
   response: string;
   updatedItems: EquipmentItem[];
 }
 
-// Field definitions for each equipment type
-const equipmentFieldDefinitions: Record<string, EquipmentField[]> = {
-  camera: [
-    { name: 'location', value: null, required: true, type: 'text' },
-    { name: 'camera_type', value: null, required: true, type: 'select', options: ['IP', 'Analog', 'Thermal', 'PTZ'] },
-    { name: 'mounting_type', value: null, required: false, type: 'select', options: ['Wall', 'Ceiling', 'Pole', 'Corner'] },
-    { name: 'resolution', value: null, required: false, type: 'select', options: ['1080p', '4K', '5MP', '8MP'] },
-    { name: 'field_of_view', value: null, required: false, type: 'text' },
-    { name: 'is_indoor', value: null, required: true, type: 'boolean' },
-    { name: 'import_to_gateway', value: null, required: false, type: 'boolean' },
-    { name: 'notes', value: null, required: false, type: 'text' }
-  ],
-  access_point: [
-    { name: 'location', value: null, required: true, type: 'text' },
-    { name: 'reader_type', value: null, required: true, type: 'select', options: ['HID', 'BLE', 'Biometric', 'Keypad'] },
-    { name: 'lock_type', value: null, required: true, type: 'select', options: ['Magnetic', 'Electric Strike', 'Deadbolt', 'Smart Lock'] },
-    { name: 'monitoring_type', value: null, required: true, type: 'select', options: ['24/7', 'Business Hours', 'None'] },
-    { name: 'operation_mode', value: null, required: false, type: 'select', options: ['Card Only', 'Card+PIN', 'Mobile', 'Multi-factor'] },
-    { name: 'lock_provider', value: null, required: false, type: 'text' },
-    { name: 'takeover', value: null, required: false, type: 'boolean' },
-    { name: 'fire_alarm_integration', value: null, required: false, type: 'boolean' },
-    { name: 'door_position_switch', value: null, required: false, type: 'boolean' },
-    { name: 'rex_type', value: null, required: false, type: 'select', options: ['Motion', 'Push Button', 'Touch Bar'] },
-    { name: 'quick_config', value: null, required: false, type: 'text' },
-    { name: 'notes', value: null, required: false, type: 'text' }
-  ],
-  elevator: [
-    { name: 'location', value: null, required: true, type: 'text' },
-    { name: 'title', value: null, required: false, type: 'text' },
-    { name: 'address', value: null, required: false, type: 'text' },
-    { name: 'reader_type', value: null, required: false, type: 'select', options: ['HID', 'BLE', 'Biometric', 'Keypad'] },
-    { name: 'notes', value: null, required: false, type: 'text' }
-  ],
-  intercom: [
-    { name: 'location', value: null, required: true, type: 'text' },
-    { name: 'intercom_type', value: null, required: true, type: 'select', options: ['IP', 'Analog', 'Wireless', 'Video'] },
-    { name: 'notes', value: null, required: false, type: 'text' }
-  ]
-};
+interface SubmitConfigurationRequest {
+  items: EquipmentItem[];
+  projectId?: number;
+}
 
-/**
- * Process a configuration message and update the scratchpad items accordingly
- */
-export async function processConfigurationMessage(
-  message: string, 
-  projectId?: number,
-  currentItems: EquipmentItem[] = []
-): Promise<ProcessResult> {
-  try {
-    // Get project information if projectId is provided
-    let projectInfo = null;
-    if (projectId) {
-      const [project] = await db.query(
-        'SELECT name, client FROM projects WHERE id = $1',
-        [projectId]
-      );
-      if (project) {
-        projectInfo = {
-          id: projectId,
-          name: project.name,
-          client: project.client
+interface SubmitConfigurationResponse {
+  success: boolean;
+  message: string;
+  createdEquipment: {
+    cameras: number;
+    accessPoints: number;
+    elevators: number;
+    intercoms: number;
+  };
+}
+
+class EquipmentConfigurationService {
+  /**
+   * Process a natural language request to update the equipment configuration
+   */
+  async processConfigurationMessage(
+    request: ProcessConfigurationRequest
+  ): Promise<ProcessConfigurationResponse> {
+    try {
+      const { message, currentItems, projectId } = request;
+      
+      // Use a GEMINI_API_KEY to use Gemini for processing natural language
+      const model = getGeminiProModel();
+      
+      // Prepare a context for the model with information about the current items
+      const context = {
+        currentItems: JSON.stringify(currentItems),
+        projectId: projectId || null
+      };
+      
+      // Create a prompt for the model
+      const prompt = `
+      You are an expert security equipment configuration assistant.
+      
+      User message: "${message}"
+      
+      Current equipment items: ${JSON.stringify(currentItems, null, 2)}
+      
+      Your task is to:
+      1. Understand what the user wants to do with their security equipment configuration.
+      2. Update the existing items or create new items based on the user's request.
+      3. Return a natural language response to the user explaining what you did.
+      
+      When creating new items:
+      - Generate a unique ID for each new item using UUID format.
+      - Set appropriate default values for required fields.
+      - Set isComplete to true/false based on whether all required fields are filled.
+      
+      For cameras:
+      - Required fields: location, camera_type
+      - Optional fields: resolution, mounting_type, field_of_view, is_indoor, import_to_gateway, notes
+      
+      For access points:
+      - Required fields: location, reader_type, lock_type, monitoring_type, quick_config
+      - Optional fields: takeover, lock_provider, interior_perimeter, exst_panel_location, exst_panel_type, installation_requirements, credential_type, strike_type, em_release, current_reader_model, current_panel_model, hinge_side, push_side, finish, mortise_type, cylinder_type, real_lock_type, notes
+      
+      For elevators:
+      - Required fields: elevator_type
+      - Optional fields: location, reader_type, floor_count, main_floor, shaft_count, shaft_speed, elevator_cab_model, notes
+      
+      For intercoms:
+      - Required fields: location, intercom_type
+      - Optional fields: notes
+      
+      Respond with a JSON object with:
+      1. "response": A human-friendly message explaining what changes you made.
+      2. "updatedItems": The updated array of equipment items.
+      
+      Format your response as valid JSON.
+      `;
+      
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      
+      // Parse the JSON response from the model
+      try {
+        const parsedResponse = JSON.parse(response);
+        return {
+          response: parsedResponse.response,
+          updatedItems: parsedResponse.updatedItems
+        };
+      } catch (error) {
+        console.error('Error parsing model response:', error);
+        // Fallback response
+        return {
+          response: "I'm sorry, I encountered an error processing your request. Please try again with a more specific instruction.",
+          updatedItems: currentItems
         };
       }
-    }
-
-    const model = getGeminiProModel();
-    
-    // Construct a helpful context message
-    const contextMessage = [
-      `You are a Security Equipment Configuration Assistant. You are helping configure security equipment for ${projectInfo ? `the "${projectInfo.name}" project for client "${projectInfo.client}"` : 'a project'}.`,
-      'The user is using an interactive tool that has a chat on the left and a scratchpad on the right.',
-      'Your job is to understand what the user wants to add, modify, or remove from their equipment configuration.',
-      'Each equipment item needs specific information to be completed.',
-      '',
-      'Current scratchpad items:',
-      currentItems.length > 0 
-        ? JSON.stringify(currentItems, null, 2) 
-        : 'No items yet',
-      '',
-      'Available equipment types:',
-      '- camera',
-      '- access_point',
-      '- elevator',
-      '- intercom',
-      '',
-      'Required fields for each type:',
-      JSON.stringify(
-        Object.entries(equipmentFieldDefinitions).reduce((acc, [type, fields]) => {
-          acc[type] = fields.filter(f => f.required).map(f => f.name);
-          return acc;
-        }, {} as Record<string, string[]>),
-        null, 2
-      ),
-      '',
-      'User message:',
-      message
-    ].join('\n');
-
-    // Define the prompt based on the operation we need
-    const promptForOperation = `
-Based on the user's message and current items, determine what operation(s) I need to perform:
-1. Add new equipment item(s)
-2. Edit existing item(s)
-3. Delete item(s)
-4. Fill in missing field values
-5. Answer a question about equipment configuration
-
-Return your analysis as a JSON object with the following structure:
-{
-  "operations": [
-    {
-      "type": "add"|"edit"|"delete"|"fill"|"answer",
-      "details": {
-        // For "add":
-        "equipmentType": "camera"|"access_point"|"elevator"|"intercom",
-        "quantity": number,
-        "name": string,
-        "fieldsToFill": [{"name": string, "value": string}]
-        
-        // For "edit":
-        "itemId": string,
-        "fieldsToUpdate": [{"name": string, "value": string}]
-        
-        // For "delete":
-        "itemId": string
-        
-        // For "fill":
-        "itemId": string,
-        "fieldsToFill": [{"name": string, "value": string}]
-        
-        // For "answer":
-        "question": string,
-        "answer": string
-      }
-    }
-  ]
-}
-`;
-
-    // Call the model to determine the operation
-    const operationResponse = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: contextMessage + '\n\n' + promptForOperation }] }],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 2048,
-      }
-    });
-
-    const operationText = operationResponse.response.text();
-    let operations = [];
-    
-    // Extract the JSON from the response
-    try {
-      // Find JSON block in response
-      const jsonMatch = operationText.match(/```json\n([\s\S]*?)\n```/) || 
-                         operationText.match(/({[\s\S]*})/);
-                         
-      if (jsonMatch && jsonMatch[1]) {
-        const jsonStr = jsonMatch[1].trim();
-        const parsed = JSON.parse(jsonStr);
-        operations = parsed.operations || [];
-      } else {
-        // Fallback if no JSON block found
-        const parsed = JSON.parse(operationText);
-        operations = parsed.operations || [];
-      }
     } catch (error) {
-      console.error('Failed to parse operations response:', error);
-      console.log('Raw response:', operationText);
-      operations = [];
+      console.error('Error in equipment configuration process:', error);
+      return {
+        response: "I'm sorry, I encountered an error processing your request. Please try again later.",
+        updatedItems: request.currentItems
+      };
     }
+  }
 
-    // Clone the current items to avoid mutations
-    let updatedItems = [...currentItems];
-    let responseMessage = '';
-
-    // Process each operation
-    for (const operation of operations) {
-      switch (operation.type) {
-        case 'add':
-          // Create a new item
-          const { equipmentType, quantity, name, fieldsToFill } = operation.details;
-          
-          if (!equipmentFieldDefinitions[equipmentType]) {
-            responseMessage += `I don't recognize the equipment type "${equipmentType}". `;
-            continue;
-          }
-          
-          // Create the new item with default fields
-          const newItem: EquipmentItem = {
-            id: uuidv4(),
-            type: equipmentType as any,
-            name: name || `New ${equipmentType}`,
-            fields: [...equipmentFieldDefinitions[equipmentType]], // Clone the fields
-            isComplete: false,
-            quantity: quantity || 1
-          };
-          
-          // Fill in any provided field values
-          if (fieldsToFill && Array.isArray(fieldsToFill)) {
-            for (const { name, value } of fieldsToFill) {
-              const fieldIndex = newItem.fields.findIndex(f => f.name === name);
-              if (fieldIndex >= 0 && value) {
-                newItem.fields[fieldIndex].value = value;
-              }
-            }
-          }
-          
-          // Add to the updated items
-          updatedItems.push(newItem);
-          responseMessage += `I've added ${quantity > 1 ? `${quantity} ` : ''}${name || `new ${equipmentType}`} to your configuration. `;
-          break;
-          
-        case 'edit':
-          // Update an existing item
-          const { itemId: editItemId, fieldsToUpdate } = operation.details;
-          const itemIndex = updatedItems.findIndex(item => item.id === editItemId);
-          
-          if (itemIndex < 0) {
-            responseMessage += `I couldn't find that item to edit. `;
-            continue;
-          }
-          
-          // Update the specified fields
-          if (fieldsToUpdate && Array.isArray(fieldsToUpdate)) {
-            for (const { name, value } of fieldsToUpdate) {
-              const fieldIndex = updatedItems[itemIndex].fields.findIndex(f => f.name === name);
-              if (fieldIndex >= 0) {
-                updatedItems[itemIndex].fields[fieldIndex].value = value;
-              }
-            }
-          }
-          
-          responseMessage += `I've updated the ${updatedItems[itemIndex].name}. `;
-          break;
-          
-        case 'delete':
-          // Remove an item
-          const { itemId: deleteItemId } = operation.details;
-          const deleteIndex = updatedItems.findIndex(item => item.id === deleteItemId);
-          
-          if (deleteIndex < 0) {
-            responseMessage += `I couldn't find that item to delete. `;
-            continue;
-          }
-          
-          const deletedName = updatedItems[deleteIndex].name;
-          updatedItems = updatedItems.filter(item => item.id !== deleteItemId);
-          responseMessage += `I've removed ${deletedName} from your configuration. `;
-          break;
-          
-        case 'fill':
-          // Fill in missing fields for an item
-          const { itemId: fillItemId, fieldsToFill: fillFields } = operation.details;
-          const fillIndex = updatedItems.findIndex(item => item.id === fillItemId);
-          
-          if (fillIndex < 0) {
-            responseMessage += `I couldn't find that item to update. `;
-            continue;
-          }
-          
-          // Update the specified fields
-          if (fillFields && Array.isArray(fillFields)) {
-            for (const { name, value } of fillFields) {
-              const fieldIndex = updatedItems[fillIndex].fields.findIndex(f => f.name === name);
-              if (fieldIndex >= 0) {
-                updatedItems[fillIndex].fields[fieldIndex].value = value;
-              }
-            }
-          }
-          
-          responseMessage += `I've updated the information for ${updatedItems[fillIndex].name}. `;
-          break;
-          
-        case 'answer':
-          // Just answer a question without changing anything
-          const { answer } = operation.details;
-          responseMessage += answer;
-          break;
+  /**
+   * Submit the final equipment configuration to be saved in the database
+   */
+  async submitConfiguration(
+    request: SubmitConfigurationRequest
+  ): Promise<SubmitConfigurationResponse> {
+    try {
+      const { items, projectId } = request;
+      
+      if (!projectId) {
+        throw new Error('Project ID is required');
       }
-    }
-
-    // If no operations were performed, provide a helpful response
-    if (!responseMessage) {
-      if (updatedItems.length === 0) {
-        responseMessage = "I'm ready to help you configure your security equipment. You can add equipment by saying something like 'Add 2 cameras to the main entrance' or 'I need an access point at the lobby door'.";
-      } else {
-        // Check for missing required fields and suggest
-        const incompleteItems = updatedItems.filter(item => {
-          return item.fields.some(field => field.required && !field.value);
-        });
+      
+      // Track created equipment
+      const createdEquipment = {
+        cameras: 0,
+        accessPoints: 0,
+        elevators: 0,
+        intercoms: 0
+      };
+      
+      // Process each item and insert into the appropriate database table
+      const createPromises = items.map(async (item) => {
+        // Common fields for all equipment types
+        const commonFields = {
+          project_id: projectId,
+          notes: item.fields.find(f => f.name === 'notes')?.value || null
+        };
         
-        if (incompleteItems.length > 0) {
-          const item = incompleteItems[0]; // Focus on one item at a time
-          const missingFields = item.fields
-            .filter(field => field.required && !field.value)
-            .map(field => field.name.replace('_', ' '));
-          
-          responseMessage = `Your ${item.name} needs more information. Please provide the ${missingFields.join(', ')}.`;
-        } else {
-          responseMessage = "Your configuration looks good! Is there anything specific you'd like to add or modify?";
+        try {
+          switch (item.type) {
+            case 'camera': {
+              // Extract camera-specific fields
+              const cameraData = {
+                ...commonFields,
+                location: item.fields.find(f => f.name === 'location')?.value || '',
+                camera_type: item.fields.find(f => f.name === 'camera_type')?.value || '',
+                resolution: item.fields.find(f => f.name === 'resolution')?.value || null,
+                mounting_type: item.fields.find(f => f.name === 'mounting_type')?.value || null,
+                field_of_view: item.fields.find(f => f.name === 'field_of_view')?.value || null,
+                is_indoor: item.fields.find(f => f.name === 'is_indoor')?.value === 'true' || null,
+                import_to_gateway: item.fields.find(f => f.name === 'import_to_gateway')?.value === 'true' || null
+              };
+              
+              const result = await db.insert(cameras).values(cameraData).returning();
+              createdEquipment.cameras++;
+              return result[0];
+            }
+            
+            case 'access_point': {
+              // Extract access point-specific fields
+              const accessPointData = {
+                ...commonFields,
+                location: item.fields.find(f => f.name === 'location')?.value || '',
+                reader_type: item.fields.find(f => f.name === 'reader_type')?.value || '',
+                lock_type: item.fields.find(f => f.name === 'lock_type')?.value || '',
+                monitoring_type: item.fields.find(f => f.name === 'monitoring_type')?.value || '',
+                quick_config: item.fields.find(f => f.name === 'quick_config')?.value || 'Standard',
+                takeover: item.fields.find(f => f.name === 'takeover')?.value || null,
+                lock_provider: item.fields.find(f => f.name === 'lock_provider')?.value || null,
+                interior_perimeter: item.fields.find(f => f.name === 'interior_perimeter')?.value || null,
+                exst_panel_location: item.fields.find(f => f.name === 'exst_panel_location')?.value || null,
+                exst_panel_type: item.fields.find(f => f.name === 'exst_panel_type')?.value || null,
+                installation_requirements: item.fields.find(f => f.name === 'installation_requirements')?.value || null,
+                credential_type: item.fields.find(f => f.name === 'credential_type')?.value || null,
+                strike_type: item.fields.find(f => f.name === 'strike_type')?.value || null,
+                em_release: item.fields.find(f => f.name === 'em_release')?.value || null,
+                current_reader_model: item.fields.find(f => f.name === 'current_reader_model')?.value || null,
+                current_panel_model: item.fields.find(f => f.name === 'current_panel_model')?.value || null,
+                hinge_side: item.fields.find(f => f.name === 'hinge_side')?.value || null,
+                push_side: item.fields.find(f => f.name === 'push_side')?.value || null,
+                finish: item.fields.find(f => f.name === 'finish')?.value || null,
+                mortise_type: item.fields.find(f => f.name === 'mortise_type')?.value || null,
+                cylinder_type: item.fields.find(f => f.name === 'cylinder_type')?.value || null,
+                real_lock_type: item.fields.find(f => f.name === 'real_lock_type')?.value || null
+              };
+              
+              const result = await db.insert(accessPoints).values(accessPointData).returning();
+              createdEquipment.accessPoints++;
+              return result[0];
+            }
+            
+            case 'elevator': {
+              // Extract elevator-specific fields
+              const elevatorData = {
+                ...commonFields,
+                location: item.fields.find(f => f.name === 'location')?.value || null,
+                reader_type: item.fields.find(f => f.name === 'reader_type')?.value || null,
+                elevator_type: item.fields.find(f => f.name === 'elevator_type')?.value || null,
+                floor_count: parseInt(item.fields.find(f => f.name === 'floor_count')?.value || '0') || null,
+                main_floor: parseInt(item.fields.find(f => f.name === 'main_floor')?.value || '1') || null,
+                shaft_count: parseInt(item.fields.find(f => f.name === 'shaft_count')?.value || '0') || null,
+                shaft_speed: item.fields.find(f => f.name === 'shaft_speed')?.value || null,
+                elevator_cab_model: item.fields.find(f => f.name === 'elevator_cab_model')?.value || null
+              };
+              
+              const result = await db.insert(elevators).values(elevatorData).returning();
+              createdEquipment.elevators++;
+              return result[0];
+            }
+            
+            case 'intercom': {
+              // Extract intercom-specific fields
+              const intercomData = {
+                ...commonFields,
+                location: item.fields.find(f => f.name === 'location')?.value || '',
+                intercom_type: item.fields.find(f => f.name === 'intercom_type')?.value || '',
+              };
+              
+              const result = await db.insert(intercoms).values(intercomData).returning();
+              createdEquipment.intercoms++;
+              return result[0];
+            }
+            
+            default:
+              throw new Error(`Unknown equipment type: ${item.type}`);
+          }
+        } catch (error) {
+          console.error(`Error creating ${item.type}:`, error);
+          throw error;
         }
-      }
+      });
+      
+      // Wait for all equipment to be created
+      await Promise.all(createPromises);
+      
+      return {
+        success: true,
+        message: `Successfully created ${createdEquipment.cameras} cameras, ${createdEquipment.accessPoints} access points, ${createdEquipment.elevators} elevators, and ${createdEquipment.intercoms} intercoms.`,
+        createdEquipment
+      };
+    } catch (error) {
+      console.error('Error in equipment configuration submission:', error);
+      return {
+        success: false,
+        message: `Error submitting equipment configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        createdEquipment: {
+          cameras: 0,
+          accessPoints: 0,
+          elevators: 0,
+          intercoms: 0
+        }
+      };
     }
-
-    return {
-      response: responseMessage,
-      updatedItems
-    };
-  } catch (error) {
-    console.error('Error processing configuration message:', error);
-    throw error;
   }
 }
+
+export const equipmentConfigurationService = new EquipmentConfigurationService();
