@@ -150,11 +150,36 @@ export default function EditAccessPointModal({
     setIsSubmitting(true);
     const { toast } = useToast();
     
+    // Log form validation status to help debug issues
+    console.log("Form validation state:", form.formState);
+    if (Object.keys(form.formState.errors).length > 0) {
+      console.log("Form validation errors:", form.formState.errors);
+      
+      // Create a list of validation errors to show in the toast
+      const errorMessages = Object.entries(form.formState.errors)
+        .map(([field, error]) => `${field}: ${error.message}`)
+        .join(', ');
+      
+      toast({
+        title: "Validation Error",
+        description: `Please fix the following issues: ${errorMessages}`,
+        variant: "destructive",
+      });
+      
+      setIsSubmitting(false);
+      return;
+    }
+    
     try {
       let resultData;
       
       if (isNewAccessPoint) {
         // Create a new access point
+        console.log("Creating new access point with data:", {
+          ...values,
+          project_id: accessPoint.project_id,
+        });
+        
         const response = await apiRequest("POST", "/api/access-points", {
           ...values,
           project_id: accessPoint.project_id,
@@ -167,6 +192,8 @@ export default function EditAccessPointModal({
         });
       } else {
         // Update existing access point
+        console.log("Updating access point with ID:", accessPoint.id);
+        
         const response = await apiRequest("PUT", `/api/access-points/${accessPoint.id}`, values);
         resultData = await response.json();
         
