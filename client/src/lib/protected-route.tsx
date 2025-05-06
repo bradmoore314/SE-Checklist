@@ -13,11 +13,11 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ path, component: Component }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
-  // Enable auth bypass in development mode
+  // Auth bypass is disabled by default, only enabled if explicitly set in local storage by recovery button
   const [authBypassEnabled, setAuthBypassEnabled] = useState(false);
   
-  // In development mode, bypass auth for easier debugging
-  const shouldBypassAuth = !isProduction || localStorage.getItem('allow_auth_bypass') === 'true';
+  // Only bypass auth if explicitly enabled (for recovery)
+  const shouldBypassAuth = localStorage.getItem('allow_auth_bypass') === 'true';
 
   // For error recovery - set a flag to bypass auth for production environments
   const enableAuthBypass = () => {

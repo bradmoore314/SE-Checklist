@@ -59,8 +59,8 @@ export function createAuthBypassMiddleware(config: AuthBypassConfig = defaultCon
     const allowProductionBypass = finalConfig.allowBypassInProduction || 
                                  process.env.ALLOW_INITIAL_SETUP === 'true';
     
-    // Determine if we should bypass auth - in development, always bypass for easier debugging
-    const shouldBypassAuth = isDevelopment || 
+    // Determine if we should bypass auth - only when explicitly requested via header and in development mode
+    const shouldBypassAuth = (isDevelopment && bypassHeaderPresent) || 
                            (allowProductionBypass && bypassHeaderPresent);
     
     // Bypass auth if conditions are met
