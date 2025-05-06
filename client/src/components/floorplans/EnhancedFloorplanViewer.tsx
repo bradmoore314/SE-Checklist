@@ -275,6 +275,11 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Call onMarkersUpdated callback if provided
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
     }
   });
 
@@ -287,6 +292,11 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
+      
+      // Call onMarkersUpdated callback if provided
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
     }
   });
 
@@ -301,6 +311,11 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Call onMarkersUpdated callback if provided
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
     }
   });
 
@@ -316,6 +331,11 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Call onMarkersUpdated callback if provided
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
     }
   });
 
