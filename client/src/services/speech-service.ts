@@ -9,28 +9,28 @@ class SpeechService {
   private isSpeaking: boolean = false;
   
   constructor() {
-    // Initialize SpeechRecognition
-    const SpeechRecognition = (window as any).SpeechRecognition || 
-                             (window as any).webkitSpeechRecognition;
-    
-    if (SpeechRecognition) {
-      this.recognition = new SpeechRecognition();
-      this.recognition.continuous = false;
-      this.recognition.interimResults = false;
-      this.recognition.lang = 'en-US';
-    } else {
-      this.recognition = null;
+    // Initialize speech recognition if available
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = false;
+        this.recognition.interimResults = false;
+        this.recognition.lang = 'en-US';
+      }
+      
+      // Initialize speech synthesis if available
+      if (window.speechSynthesis) {
+        this.synthesis = window.speechSynthesis;
+      }
     }
-    
-    // Initialize Speech Synthesis
-    this.synthesis = window.speechSynthesis;
   }
   
   /**
    * Check if the browser supports speech recognition
    */
   public isRecognitionSupported(): boolean {
-    return this.recognition !== null;
+    return !!this.recognition;
   }
   
   /**
@@ -46,39 +46,30 @@ class SpeechService {
    * @returns Boolean indicating if started successfully
    */
   public startListening(onTranscript: (text: string) => void): boolean {
-    if (!this.isRecognitionSupported()) {
-      console.warn('Speech recognition is not supported by this browser');
+    if (!this.isRecognitionSupported() || this.isListening) {
       return false;
     }
     
-    if (this.isListening) {
-      this.stopListening();
-    }
+    this.recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      onTranscript(transcript);
+    };
+    
+    this.recognition.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error);
+      this.isListening = false;
+    };
+    
+    this.recognition.onend = () => {
+      this.isListening = false;
+    };
     
     try {
-      // Set up speech recognition handlers
-      this.recognition.onresult = (event: any) => {
-        const result = event.results[0][0].transcript;
-        console.log('Speech recognition result:', result);
-        onTranscript(result);
-      };
-      
-      this.recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        this.isListening = false;
-      };
-      
-      this.recognition.onend = () => {
-        this.isListening = false;
-      };
-      
-      // Start listening
       this.recognition.start();
       this.isListening = true;
       return true;
     } catch (error) {
-      console.error('Failed to start speech recognition:', error);
-      this.isListening = false;
+      console.error('Failed to start speech recognition', error);
       return false;
     }
   }
@@ -91,7 +82,7 @@ class SpeechService {
       try {
         this.recognition.stop();
       } catch (error) {
-        console.error('Error stopping speech recognition:', error);
+        console.error('Failed to stop speech recognition', error);
       }
       this.isListening = false;
     }
@@ -104,27 +95,32 @@ class SpeechService {
    * @returns Boolean indicating if started successfully
    */
   public speak(text: string, voiceIndex: number = 0): boolean {
-    if (!this.isSynthesisSupported()) {
-      console.warn('Speech synthesis is not supported by this browser');
+    if (!this.isSynthesisSupported() || this.isSpeaking) {
       return false;
-    }
-    
-    if (this.isSpeaking) {
-      this.stopSpeaking();
     }
     
     try {
       const utterance = new SpeechSynthesisUtterance(text);
       
-      // Get available voices and select one
-      const voices = this.synthesis.getVoices();
+      // Set voice if available
+      const voices = this.getVoices();
       if (voices.length > 0) {
-        // Use a valid voice index
-        const validIndex = Math.min(voiceIndex, voices.length - 1);
-        utterance.voice = voices[validIndex];
+        // Use a more natural sounding voice if available
+        const preferredVoices = voices.filter(voice => 
+          voice.name.includes('Google') || 
+          voice.name.includes('Natural') || 
+          voice.name.includes('Daniel') || 
+          voice.name.includes('Samantha')
+        );
+        
+        utterance.voice = preferredVoices.length > 0 
+          ? preferredVoices[0] 
+          : (voiceIndex < voices.length ? voices[voiceIndex] : voices[0]);
       }
       
-      // Event handlers
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      
       utterance.onstart = () => {
         this.isSpeaking = true;
       };
@@ -134,15 +130,14 @@ class SpeechService {
       };
       
       utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
+        console.error('Speech synthesis error', event);
         this.isSpeaking = false;
       };
       
-      // Start speaking
       this.synthesis.speak(utterance);
       return true;
     } catch (error) {
-      console.error('Failed to start speech synthesis:', error);
+      console.error('Failed to start speech synthesis', error);
       return false;
     }
   }
@@ -151,8 +146,12 @@ class SpeechService {
    * Stop speech synthesis
    */
   public stopSpeaking(): void {
-    if (this.isSynthesisSupported()) {
-      this.synthesis.cancel();
+    if (this.isSynthesisSupported() && this.isSpeaking) {
+      try {
+        this.synthesis.cancel();
+      } catch (error) {
+        console.error('Failed to stop speech synthesis', error);
+      }
       this.isSpeaking = false;
     }
   }
@@ -169,6 +168,12 @@ class SpeechService {
   }
 }
 
-// Create a singleton instance
-const speechService = new SpeechService();
-export default speechService;
+// Declare the global interfaces for TypeScript
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+export { SpeechService };

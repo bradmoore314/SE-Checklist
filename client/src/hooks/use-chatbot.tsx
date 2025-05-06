@@ -1,9 +1,19 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ChatMessage } from '@/services/chatbot-service';
+import { createContext, ReactNode, useContext, useState, useEffect, useCallback } from "react";
+import { SpeechService } from "@/services/speech-service";
 
+// Initialize speech service
+const speechService = new SpeechService();
+
+// Define types for chat messages
+export interface ChatMessage {
+  content: string;
+  role: 'user' | 'assistant';
+}
+
+// Define the context type
 interface ChatbotContextProps {
   // Chat state
-  messages: Array<ChatMessage & { role: string }>;
+  messages: ChatMessage[];
   addMessage: (message: ChatMessage) => void;
   clearMessages: () => void;
   
@@ -23,147 +33,174 @@ interface ChatbotContextProps {
   setIsLoading: (isLoading: boolean) => void;
 }
 
+// Create initial context value
 const initialContext: ChatbotContextProps = {
+  // Chat state
   messages: [],
   addMessage: () => {},
   clearMessages: () => {},
+  
+  // UI state
   isChatbotOpen: false,
   openChatbot: () => {},
   closeChatbot: () => {},
   isFullScreen: false,
   toggleFullScreen: () => {},
+  
+  // Speech state
   isListening: false,
   toggleListening: () => {},
+  
+  // Loading state
   isLoading: false,
   setIsLoading: () => {},
 };
 
+// Create context
 export const ChatbotContext = createContext<ChatbotContextProps>(initialContext);
 
+// Define provider props
 interface ChatbotProviderProps {
   children: ReactNode;
 }
 
+// Create provider component
 export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) => {
   // Chat state
-  const [messages, setMessages] = useState<Array<ChatMessage & { role: string }>>([
-    {
-      role: 'system',
-      content: 'You are a helpful security equipment configuration assistant. Help users configure cameras, access control points, elevators, and intercoms.'
-    },
-    {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  // Add initial welcome message when the component mounts
+  useEffect(() => {
+    // This simulates a welcome message from the assistant
+    const welcomeMessage: ChatMessage = {
+      content: "Hello! I'm your Security Assistant. How can I help you with your security equipment today?",
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant for security equipment configuration. How can I help you today?'
+    };
+    
+    setMessages([welcomeMessage]);
+  }, []);
+  
+  // Add a message to the chat and handle response
+  const addMessage = useCallback((message: ChatMessage) => {
+    setMessages(prev => [...prev, message]);
+    
+    // If it's a user message, simulate getting a response
+    if (message.role === 'user') {
+      setIsLoading(true);
+      
+      // Simulate API response delay
+      setTimeout(() => {
+        // Here you would typically make an API call to get a response
+        // For now we'll just simulate a response
+        const aiResponse: ChatMessage = {
+          content: `I understand you're asking about "${message.content}". This is a placeholder response. In the actual implementation, this would be processed by our AI model.`,
+          role: 'assistant',
+        };
+        
+        setMessages(prev => [...prev, aiResponse]);
+        setIsLoading(false);
+        
+        // If text-to-speech is implemented, you could speak the response
+        // speechService.speak(aiResponse.content);
+      }, 1500);
     }
-  ]);
+  }, []);
+  
+  // Clear all messages
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+    
+    // Add back the welcome message
+    const welcomeMessage: ChatMessage = {
+      content: "Hello! I'm your Security Assistant. How can I help you with your security equipment today?",
+      role: 'assistant',
+    };
+    
+    setMessages([welcomeMessage]);
+  }, []);
   
   // UI state
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   
+  const openChatbot = useCallback(() => setIsChatbotOpen(true), []);
+  const closeChatbot = useCallback(() => {
+    setIsChatbotOpen(false);
+    setIsFullScreen(false);
+  }, []);
+  
+  const toggleFullScreen = useCallback(() => setIsFullScreen(prev => !prev), []);
+  
   // Speech state
   const [isListening, setIsListening] = useState(false);
   
-  // Loading state
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Add a new message to the chat
-  const addMessage = (message: ChatMessage) => {
-    setMessages(prev => [...prev, message as any]);
-  };
-  
-  // Clear all messages except the system and initial greeting
-  const clearMessages = () => {
-    setMessages([
-      {
-        role: 'system',
-        content: 'You are a helpful security equipment configuration assistant. Help users configure cameras, access control points, elevators, and intercoms.'
-      },
-      {
-        role: 'assistant',
-        content: 'Hello! I\'m your AI assistant for security equipment configuration. How can I help you today?'
-      }
-    ]);
-  };
-  
-  // Open the chatbot
-  const openChatbot = () => {
-    setIsChatbotOpen(true);
-  };
-  
-  // Close the chatbot
-  const closeChatbot = () => {
-    setIsChatbotOpen(false);
-    setIsFullScreen(false);
-    setIsListening(false);
-  };
-  
-  // Toggle full screen mode
-  const toggleFullScreen = () => {
-    setIsFullScreen(prev => !prev);
-  };
-  
-  // Toggle listening mode
-  const toggleListening = async () => {
-    // Import chatbotService dynamically to prevent circular dependency issues
-    const { default: chatbotService } = await import('@/services/chatbot-service');
+  // Toggle speech recognition
+  const toggleListening = useCallback(() => {
+    if (!speechService.isRecognitionSupported()) {
+      console.warn("Speech recognition not supported in this browser");
+      return;
+    }
     
     if (isListening) {
-      // Stop listening
-      chatbotService.stopListening();
+      speechService.stopListening();
       setIsListening(false);
     } else {
-      // Start listening and handle the transcript
-      const success = chatbotService.startListening((transcript) => {
-        // We'll handle the transcript in the ChatbotWindow component
-        // This will use the addMessage function to add the transcript as a user message
-        console.log('Transcript:', transcript);
+      const success = speechService.startListening((transcript) => {
+        // Add the transcript as a user message
+        if (transcript.trim()) {
+          addMessage({
+            content: transcript,
+            role: 'user',
+          });
+        }
+        // Stop listening after getting a transcript
+        speechService.stopListening();
         setIsListening(false);
       });
       
       setIsListening(success);
     }
-  };
+  }, [isListening, addMessage]);
   
-  // Clean up when component unmounts
-  useEffect(() => {
-    return () => {
-      // Import chatbotService dynamically to prevent circular dependency issues
-      import('@/services/chatbot-service').then(({ default: chatbotService }) => {
-        // Stop any ongoing speech or listening
-        chatbotService.stopListening();
-        chatbotService.stopSpeaking();
-      });
-    };
-  }, []);
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
   
-  const value = {
+  // Create context value
+  const contextValue: ChatbotContextProps = {
+    // Chat state
     messages,
     addMessage,
     clearMessages,
+    
+    // UI state
     isChatbotOpen,
     openChatbot,
     closeChatbot,
     isFullScreen,
     toggleFullScreen,
+    
+    // Speech state
     isListening,
     toggleListening,
+    
+    // Loading state
     isLoading,
     setIsLoading,
   };
   
   return (
-    <ChatbotContext.Provider value={value}>
+    <ChatbotContext.Provider value={contextValue}>
       {children}
     </ChatbotContext.Provider>
   );
 };
 
+// Custom hook to use the chatbot context
 export const useChatbot = () => {
   const context = useContext(ChatbotContext);
   
   if (!context) {
-    throw new Error('useChatbot must be used within a ChatbotProvider');
+    throw new Error("useChatbot must be used within a ChatbotProvider");
   }
   
   return context;
