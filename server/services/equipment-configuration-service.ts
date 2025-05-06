@@ -1,13 +1,6 @@
 import { getGeminiProModel } from '../utils/gemini';
+import { storage } from '../storage';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../db';
-import { 
-  accessPoints, 
-  cameras, 
-  elevators, 
-  intercoms 
-} from '@shared/schema';
-import { eq } from 'drizzle-orm';
 
 interface EquipmentField {
   name: string;
@@ -26,265 +19,263 @@ interface EquipmentItem {
   quantity: number;
 }
 
-interface ProcessConfigurationRequest {
-  message: string;
-  projectId?: number;
-  currentItems: EquipmentItem[];
+/**
+ * Process a configuration message with the Gemini model and update equipment items
+ */
+export async function processConfigurationMessage(
+  message: string,
+  projectId: number,
+  currentItems: EquipmentItem[]
+): Promise<{ response: string; updatedItems: EquipmentItem[] }> {
+  // Initialize Gemini model
+  const model = getGeminiProModel();
+  if (!model) {
+    throw new Error('Failed to initialize Gemini model. Please check your API key.');
+  }
+
+  try {
+    // Get project details
+    const project = await storage.getProject(projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    // Create a prompt with the current context
+    const prompt = createSystemPrompt(project, currentItems);
+
+    // Process with Gemini
+    const result = await model.generateContent({
+      contents: [
+        { role: 'user', parts: [{ text: prompt }] },
+        { role: 'model', parts: [{ text: 'I understand. I will help configure security equipment for the project.' }] },
+        { role: 'user', parts: [{ text: message }] }
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1024,
+      },
+    });
+
+    const response = result.response.text();
+    console.log('Gemini response:', response);
+
+    // Parse the response to extract any equipment modifications
+    const updatedItems = processGeminiResponse(response, currentItems);
+
+    return {
+      response,
+      updatedItems,
+    };
+  } catch (error) {
+    console.error('Error processing configuration with Gemini:', error);
+    throw error;
+  }
 }
 
-interface ProcessConfigurationResponse {
-  response: string;
-  updatedItems: EquipmentItem[];
+/**
+ * Create a system prompt for Gemini with current context
+ */
+function createSystemPrompt(project: any, currentItems: EquipmentItem[]): string {
+  const itemSummary = currentItems.length > 0
+    ? `Current equipment (${currentItems.length} items):\n${currentItems.map(item => 
+      `- ${item.name} (${item.type.replace('_', ' ')})${item.isComplete ? ' [Complete]' : ' [Incomplete]'}`
+    ).join('\n')}`
+    : 'No equipment items configured yet.';
+
+  return `
+You are an AI assistant helping to configure security equipment for a building security project.
+
+Project: ${project.name}
+Location: ${project.address || 'Unknown'}
+Client: ${project.client || 'Unknown'}
+
+${itemSummary}
+
+Your task is to help the user configure security equipment by:
+1. Understanding their natural language requests about adding, modifying, or removing security equipment
+2. Providing helpful explanations about security equipment types and configurations
+3. Answering questions about best practices for security equipment placement
+
+If the user asks to add new equipment, create a new entry with appropriate fields.
+If they want to modify existing equipment, update the relevant fields.
+If they ask to remove equipment, confirm before removing.
+
+Respond conversationally and provide specific equipment configuration suggestions.
+`;
 }
 
-interface SubmitConfigurationRequest {
-  items: EquipmentItem[];
-  projectId?: number;
+/**
+ * Process Gemini's response to extract equipment modifications
+ * In a real implementation, this would use more sophisticated NLP
+ * to understand Gemini's response and apply changes to equipment items
+ */
+function processGeminiResponse(response: string, currentItems: EquipmentItem[]): EquipmentItem[] {
+  // For now, this is a simple implementation that returns the original items
+  // In a real implementation, we would extract equipment modifications from the response
+  return [...currentItems];
 }
 
-interface SubmitConfigurationResponse {
-  success: boolean;
-  message: string;
-  createdEquipment: {
-    cameras: number;
-    accessPoints: number;
-    elevators: number;
-    intercoms: number;
+/**
+ * Submit and save equipment configuration to the database
+ */
+export async function submitConfiguration(
+  items: EquipmentItem[],
+  projectId: number
+): Promise<{ success: boolean; message: string; savedItems: any[] }> {
+  try {
+    // Get project details
+    const project = await storage.getProject(projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    // Validate all items are complete
+    const incompleteItems = items.filter(item => !item.isComplete);
+    if (incompleteItems.length > 0) {
+      throw new Error(`${incompleteItems.length} items have missing required fields`);
+    }
+
+    // Save each item to the appropriate database table
+    const savedItems = [];
+
+    for (const item of items) {
+      let savedItem;
+      
+      switch (item.type) {
+        case 'camera':
+          savedItem = await saveCamera(item, projectId);
+          break;
+        case 'access_point':
+          savedItem = await saveAccessPoint(item, projectId);
+          break;
+        case 'elevator':
+          savedItem = await saveElevator(item, projectId);
+          break;
+        case 'intercom':
+          savedItem = await saveIntercom(item, projectId);
+          break;
+      }
+
+      if (savedItem) {
+        savedItems.push(savedItem);
+      }
+    }
+
+    return {
+      success: true,
+      message: `Successfully saved ${savedItems.length} equipment items to project ${project.name}`,
+      savedItems,
+    };
+  } catch (error) {
+    console.error('Error saving equipment configuration:', error);
+    throw error;
+  }
+}
+
+/**
+ * Save a camera item to the database
+ */
+async function saveCamera(item: EquipmentItem, projectId: number) {
+  // Extract field values
+  const locationField = item.fields.find(f => f.name === 'location');
+  const cameraTypeField = item.fields.find(f => f.name === 'camera_type');
+  const resolutionField = item.fields.find(f => f.name === 'resolution');
+  const mountingTypeField = item.fields.find(f => f.name === 'mounting_type');
+  const fieldOfViewField = item.fields.find(f => f.name === 'field_of_view');
+  const isIndoorField = item.fields.find(f => f.name === 'is_indoor');
+  const importToGatewayField = item.fields.find(f => f.name === 'import_to_gateway');
+  const notesField = item.fields.find(f => f.name === 'notes');
+
+  // Create camera object
+  const camera = {
+    project_id: projectId,
+    location: locationField?.value || '',
+    camera_type: cameraTypeField?.value || '',
+    resolution: resolutionField?.value,
+    mounting_type: mountingTypeField?.value,
+    field_of_view: fieldOfViewField?.value,
+    is_indoor: isIndoorField?.value === 'true',
+    import_to_gateway: importToGatewayField?.value === 'true',
+    notes: notesField?.value,
   };
+
+  // Save to database
+  return await storage.createCamera(camera);
 }
 
-class EquipmentConfigurationService {
-  /**
-   * Process a natural language request to update the equipment configuration
-   */
-  async processConfigurationMessage(
-    request: ProcessConfigurationRequest
-  ): Promise<ProcessConfigurationResponse> {
-    try {
-      const { message, currentItems, projectId } = request;
-      
-      // Use a GEMINI_API_KEY to use Gemini for processing natural language
-      const model = getGeminiProModel();
-      
-      // Prepare a context for the model with information about the current items
-      const context = {
-        currentItems: JSON.stringify(currentItems),
-        projectId: projectId || null
-      };
-      
-      // Create a prompt for the model
-      const prompt = `
-      You are an expert security equipment configuration assistant.
-      
-      User message: "${message}"
-      
-      Current equipment items: ${JSON.stringify(currentItems, null, 2)}
-      
-      Your task is to:
-      1. Understand what the user wants to do with their security equipment configuration.
-      2. Update the existing items or create new items based on the user's request.
-      3. Return a natural language response to the user explaining what you did.
-      
-      When creating new items:
-      - Generate a unique ID for each new item using UUID format.
-      - Set appropriate default values for required fields.
-      - Set isComplete to true/false based on whether all required fields are filled.
-      
-      For cameras:
-      - Required fields: location, camera_type
-      - Optional fields: resolution, mounting_type, field_of_view, is_indoor, import_to_gateway, notes
-      
-      For access points:
-      - Required fields: location, reader_type, lock_type, monitoring_type, quick_config
-      - Optional fields: takeover, lock_provider, interior_perimeter, exst_panel_location, exst_panel_type, installation_requirements, credential_type, strike_type, em_release, current_reader_model, current_panel_model, hinge_side, push_side, finish, mortise_type, cylinder_type, real_lock_type, notes
-      
-      For elevators:
-      - Required fields: elevator_type
-      - Optional fields: location, reader_type, floor_count, main_floor, shaft_count, shaft_speed, elevator_cab_model, notes
-      
-      For intercoms:
-      - Required fields: location, intercom_type
-      - Optional fields: notes
-      
-      Respond with a JSON object with:
-      1. "response": A human-friendly message explaining what changes you made.
-      2. "updatedItems": The updated array of equipment items.
-      
-      Format your response as valid JSON.
-      `;
-      
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
-      
-      // Parse the JSON response from the model
-      try {
-        const parsedResponse = JSON.parse(response);
-        return {
-          response: parsedResponse.response,
-          updatedItems: parsedResponse.updatedItems
-        };
-      } catch (error) {
-        console.error('Error parsing model response:', error);
-        // Fallback response
-        return {
-          response: "I'm sorry, I encountered an error processing your request. Please try again with a more specific instruction.",
-          updatedItems: currentItems
-        };
-      }
-    } catch (error) {
-      console.error('Error in equipment configuration process:', error);
-      return {
-        response: "I'm sorry, I encountered an error processing your request. Please try again later.",
-        updatedItems: request.currentItems
-      };
-    }
-  }
+/**
+ * Save an access point item to the database
+ */
+async function saveAccessPoint(item: EquipmentItem, projectId: number) {
+  // Extract field values
+  const locationField = item.fields.find(f => f.name === 'location');
+  const readerTypeField = item.fields.find(f => f.name === 'reader_type');
+  const lockTypeField = item.fields.find(f => f.name === 'lock_type');
+  const monitoringTypeField = item.fields.find(f => f.name === 'monitoring_type');
+  const quickConfigField = item.fields.find(f => f.name === 'quick_config');
+  const takeoverField = item.fields.find(f => f.name === 'takeover');
+  const lockProviderField = item.fields.find(f => f.name === 'lock_provider');
+  const notesField = item.fields.find(f => f.name === 'notes');
 
-  /**
-   * Submit the final equipment configuration to be saved in the database
-   */
-  async submitConfiguration(
-    request: SubmitConfigurationRequest
-  ): Promise<SubmitConfigurationResponse> {
-    try {
-      const { items, projectId } = request;
-      
-      if (!projectId) {
-        throw new Error('Project ID is required');
-      }
-      
-      // Track created equipment
-      const createdEquipment = {
-        cameras: 0,
-        accessPoints: 0,
-        elevators: 0,
-        intercoms: 0
-      };
-      
-      // Process each item and insert into the appropriate database table
-      const createPromises = items.map(async (item) => {
-        // Common fields for all equipment types
-        const commonFields = {
-          project_id: projectId,
-          notes: item.fields.find(f => f.name === 'notes')?.value || null
-        };
-        
-        try {
-          switch (item.type) {
-            case 'camera': {
-              // Extract camera-specific fields
-              const cameraData = {
-                ...commonFields,
-                location: item.fields.find(f => f.name === 'location')?.value || '',
-                camera_type: item.fields.find(f => f.name === 'camera_type')?.value || '',
-                resolution: item.fields.find(f => f.name === 'resolution')?.value || null,
-                mounting_type: item.fields.find(f => f.name === 'mounting_type')?.value || null,
-                field_of_view: item.fields.find(f => f.name === 'field_of_view')?.value || null,
-                is_indoor: item.fields.find(f => f.name === 'is_indoor')?.value === 'true' || null,
-                import_to_gateway: item.fields.find(f => f.name === 'import_to_gateway')?.value === 'true' || null
-              };
-              
-              const result = await db.insert(cameras).values(cameraData).returning();
-              createdEquipment.cameras++;
-              return result[0];
-            }
-            
-            case 'access_point': {
-              // Extract access point-specific fields
-              const accessPointData = {
-                ...commonFields,
-                location: item.fields.find(f => f.name === 'location')?.value || '',
-                reader_type: item.fields.find(f => f.name === 'reader_type')?.value || '',
-                lock_type: item.fields.find(f => f.name === 'lock_type')?.value || '',
-                monitoring_type: item.fields.find(f => f.name === 'monitoring_type')?.value || '',
-                quick_config: item.fields.find(f => f.name === 'quick_config')?.value || 'Standard',
-                takeover: item.fields.find(f => f.name === 'takeover')?.value || null,
-                lock_provider: item.fields.find(f => f.name === 'lock_provider')?.value || null,
-                interior_perimeter: item.fields.find(f => f.name === 'interior_perimeter')?.value || null,
-                exst_panel_location: item.fields.find(f => f.name === 'exst_panel_location')?.value || null,
-                exst_panel_type: item.fields.find(f => f.name === 'exst_panel_type')?.value || null,
-                installation_requirements: item.fields.find(f => f.name === 'installation_requirements')?.value || null,
-                credential_type: item.fields.find(f => f.name === 'credential_type')?.value || null,
-                strike_type: item.fields.find(f => f.name === 'strike_type')?.value || null,
-                em_release: item.fields.find(f => f.name === 'em_release')?.value || null,
-                current_reader_model: item.fields.find(f => f.name === 'current_reader_model')?.value || null,
-                current_panel_model: item.fields.find(f => f.name === 'current_panel_model')?.value || null,
-                hinge_side: item.fields.find(f => f.name === 'hinge_side')?.value || null,
-                push_side: item.fields.find(f => f.name === 'push_side')?.value || null,
-                finish: item.fields.find(f => f.name === 'finish')?.value || null,
-                mortise_type: item.fields.find(f => f.name === 'mortise_type')?.value || null,
-                cylinder_type: item.fields.find(f => f.name === 'cylinder_type')?.value || null,
-                real_lock_type: item.fields.find(f => f.name === 'real_lock_type')?.value || null
-              };
-              
-              const result = await db.insert(accessPoints).values(accessPointData).returning();
-              createdEquipment.accessPoints++;
-              return result[0];
-            }
-            
-            case 'elevator': {
-              // Extract elevator-specific fields
-              const elevatorData = {
-                ...commonFields,
-                location: item.fields.find(f => f.name === 'location')?.value || null,
-                reader_type: item.fields.find(f => f.name === 'reader_type')?.value || null,
-                elevator_type: item.fields.find(f => f.name === 'elevator_type')?.value || null,
-                floor_count: parseInt(item.fields.find(f => f.name === 'floor_count')?.value || '0') || null,
-                main_floor: parseInt(item.fields.find(f => f.name === 'main_floor')?.value || '1') || null,
-                shaft_count: parseInt(item.fields.find(f => f.name === 'shaft_count')?.value || '0') || null,
-                shaft_speed: item.fields.find(f => f.name === 'shaft_speed')?.value || null,
-                elevator_cab_model: item.fields.find(f => f.name === 'elevator_cab_model')?.value || null
-              };
-              
-              const result = await db.insert(elevators).values(elevatorData).returning();
-              createdEquipment.elevators++;
-              return result[0];
-            }
-            
-            case 'intercom': {
-              // Extract intercom-specific fields
-              const intercomData = {
-                ...commonFields,
-                location: item.fields.find(f => f.name === 'location')?.value || '',
-                intercom_type: item.fields.find(f => f.name === 'intercom_type')?.value || '',
-              };
-              
-              const result = await db.insert(intercoms).values(intercomData).returning();
-              createdEquipment.intercoms++;
-              return result[0];
-            }
-            
-            default:
-              throw new Error(`Unknown equipment type: ${item.type}`);
-          }
-        } catch (error) {
-          console.error(`Error creating ${item.type}:`, error);
-          throw error;
-        }
-      });
-      
-      // Wait for all equipment to be created
-      await Promise.all(createPromises);
-      
-      return {
-        success: true,
-        message: `Successfully created ${createdEquipment.cameras} cameras, ${createdEquipment.accessPoints} access points, ${createdEquipment.elevators} elevators, and ${createdEquipment.intercoms} intercoms.`,
-        createdEquipment
-      };
-    } catch (error) {
-      console.error('Error in equipment configuration submission:', error);
-      return {
-        success: false,
-        message: `Error submitting equipment configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        createdEquipment: {
-          cameras: 0,
-          accessPoints: 0,
-          elevators: 0,
-          intercoms: 0
-        }
-      };
-    }
-  }
+  // Create access point object
+  const accessPoint = {
+    project_id: projectId,
+    location: locationField?.value || '',
+    reader_type: readerTypeField?.value || '',
+    lock_type: lockTypeField?.value || '',
+    monitoring_type: monitoringTypeField?.value || '',
+    quick_config: quickConfigField?.value || 'Standard',
+    takeover: takeoverField?.value,
+    lock_provider: lockProviderField?.value,
+    notes: notesField?.value,
+  };
+
+  // Save to database
+  return await storage.createAccessPoint(accessPoint);
 }
 
-export const equipmentConfigurationService = new EquipmentConfigurationService();
+/**
+ * Save an elevator item to the database
+ */
+async function saveElevator(item: EquipmentItem, projectId: number) {
+  // Extract field values
+  const locationField = item.fields.find(f => f.name === 'location');
+  const elevatorTypeField = item.fields.find(f => f.name === 'elevator_type');
+  const readerTypeField = item.fields.find(f => f.name === 'reader_type');
+  const floorCountField = item.fields.find(f => f.name === 'floor_count');
+  const notesField = item.fields.find(f => f.name === 'notes');
+
+  // Create elevator object
+  const elevator = {
+    project_id: projectId,
+    location: locationField?.value,
+    elevator_type: elevatorTypeField?.value,
+    reader_type: readerTypeField?.value,
+    floor_count: floorCountField?.value ? parseInt(floorCountField.value) : null,
+    notes: notesField?.value,
+  };
+
+  // Save to database
+  return await storage.createElevator(elevator);
+}
+
+/**
+ * Save an intercom item to the database
+ */
+async function saveIntercom(item: EquipmentItem, projectId: number) {
+  // Extract field values
+  const locationField = item.fields.find(f => f.name === 'location');
+  const intercomTypeField = item.fields.find(f => f.name === 'intercom_type');
+  const notesField = item.fields.find(f => f.name === 'notes');
+
+  // Create intercom object
+  const intercom = {
+    project_id: projectId,
+    location: locationField?.value || '',
+    intercom_type: intercomTypeField?.value || '',
+    notes: notesField?.value,
+  };
+
+  // Save to database
+  return await storage.createIntercom(intercom);
+}
