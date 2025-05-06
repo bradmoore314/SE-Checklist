@@ -2199,6 +2199,8 @@ export class DatabaseStorage implements IStorage {
       return {
         id: result.id,
         project_id: result.project_id,
+        form_type: result.form_type || 'kvg',
+        form_data: result.form_data || {},
         bdmOwner: result.bdm_owner || '',
         salesEngineer: result.sales_engineer || '',
         kvgSme: result.kvg_sme || '',
