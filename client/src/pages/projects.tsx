@@ -371,8 +371,8 @@ export default function Projects() {
             </DialogTitle>
           </DialogHeader>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <AutoDisabledForm {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
               <FormField
                 control={form.control}
                 name="name"
@@ -503,7 +503,7 @@ export default function Projects() {
                 </Button>
               </DialogFooter>
             </form>
-          </Form>
+          </AutoDisabledForm>
         </DialogContent>
       </Dialog>
     </div>
