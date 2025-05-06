@@ -21,7 +21,9 @@ import {
   Copy,
   FileOutput,
   Pipette,
-  BrainCircuit
+  BrainCircuit,
+  Pencil,
+  StickyNote
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -47,6 +49,7 @@ export type AnnotationTool =
   | 'camera'
   | 'intercom'
   | 'elevator'
+  | 'note'
   | 'delete';
 
 interface AnnotationToolbarProps {
@@ -120,6 +123,9 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
     text: 'placeholder',
     measure: 'partial',
     calibrate: 'partial',
+    
+    // Note tool - fully functional
+    note: 'functional',
     
     // Action tools - mixed functionality
     delete: canDelete ? 'functional' : 'disabled',
@@ -335,6 +341,16 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
               >
                 <Type className="h-4 w-4 mr-1" />
                 <span className="text-xs">Text</span>
+              </Button>
+
+              <Button
+                variant={activeTool === 'note' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onToolChange('note')}
+                className="h-9 w-full bg-yellow-50"
+              >
+                <StickyNote className="h-4 w-4 mr-1 text-yellow-600" />
+                <span className="text-xs">Note</span>
               </Button>
             </div>
           </div>
