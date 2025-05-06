@@ -114,8 +114,8 @@ autoDetectionRoutes.post('/projects/:projectId/floorplans/:floorplanId/auto-dete
       const pdfDoc = await PDFDocument.PDFDocument.load(pdfData);
       
       // Determine page number (use requested page or default to 1)
-      const pageNumber = page || 1;
-      if (pageNumber > pdfDoc.getPageCount()) {
+      const pageToUse = page || 1;
+      if (pageToUse > pdfDoc.getPageCount()) {
         return res.status(400).json({ error: 'Invalid page number' });
       }
       
@@ -136,14 +136,14 @@ autoDetectionRoutes.post('/projects/:projectId/floorplans/:floorplanId/auto-dete
       projectId,
       floorplanId,
       imageBase64,
-      pageNumber || 1
+      page || 1
     );
     
     // 4. Create the suggested equipment
     const equipment = await autoDetectionService.createEquipmentFromSuggestions(
       projectId,
       floorplanId,
-      pageNumber || 1,
+      page || 1,
       analysisResult.suggestions,
       autoPlace || false
     );

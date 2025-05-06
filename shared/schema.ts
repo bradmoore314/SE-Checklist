@@ -662,9 +662,9 @@ export const streams = pgTable("streams", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
-export type Stream = typeof streams.$inferSelect;
+export type CameraStream = typeof streams.$inferSelect;
 export const insertStreamSchema = createInsertSchema(streams).omit({ id: true, created_at: true, updated_at: true });
-export type InsertStream = z.infer<typeof insertStreamSchema>;
+export type InsertCameraStream = z.infer<typeof insertStreamSchema>;
 
 export const streamImages = pgTable("stream_images", {
   id: serial("id").primaryKey(),

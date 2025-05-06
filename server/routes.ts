@@ -19,6 +19,7 @@ import { recognizeSpeech, textToSpeech } from './speech-api';
 import chatbotGeminiService from './services/chatbot-gemini';
 import { setupEquipmentCreationRoutes } from './routes/equipment-creation-routes';
 import { setupEquipmentConfigurationRoutes } from './routes/equipment-configuration-routes';
+import { autoDetectionRoutes } from './routes/auto-detection-routes';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -136,6 +137,8 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Use auto-detection routes
+  app.use('/api', autoDetectionRoutes);
   // Health check endpoint for Azure monitoring
   app.get("/api/health", (req: Request, res: Response) => {
     res.status(200).json({
