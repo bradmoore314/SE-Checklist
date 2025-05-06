@@ -764,6 +764,15 @@ export default function AddElevatorModal({
                 )}
               />
             </div>
+            
+            {/* Image Upload Section */}
+            <div className="border rounded-lg p-4 pb-5 bg-gradient-to-r from-indigo-50 to-white">
+              <h3 className="text-lg font-semibold mb-4 text-indigo-600">Elevator Images</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Images will be available after saving the elevator details. You'll be able to upload photos or 
+                capture images using your device camera once the elevator record is created.
+              </p>
+            </div>
 
             <DialogFooter className="border-t border-neutral-200 pt-4">
               <Button

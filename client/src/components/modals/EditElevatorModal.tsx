@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ImageUploadSection from "@/components/ImageUploadSection";
 
 // Define the schema for the elevator form
 const elevatorSchema = z.object({
@@ -112,13 +114,14 @@ export default function EditElevatorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{isNewElevator ? "Add Elevator" : "Edit Elevator"}</DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Location */}
             <FormField
               control={form.control}
@@ -217,6 +220,16 @@ export default function EditElevatorModal({
               )}
             />
             
+            {/* Image Upload Section */}
+            <div className="space-y-2 pt-4">
+              <h3 className="text-sm font-medium">Elevator Images</h3>
+              <ImageUploadSection 
+                projectId={elevator.project_id}
+                equipmentId={elevator.id}
+                equipmentType="elevator"
+              />
+            </div>
+            
             {/* Submit/Cancel buttons */}
             <div className="flex justify-end gap-2">
               <Button
@@ -242,6 +255,7 @@ export default function EditElevatorModal({
             </div>
           </form>
         </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
