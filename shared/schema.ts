@@ -551,7 +551,7 @@ export const kvgFormData = pgTable('kvg_form_data', {
   propertyCategory: text('property_category'),
   maintenance: text('maintenance'),
   servicesRecommended: text('services_recommended'),
-  rspdigGdods: text('rspdig_gdods'),
+  rspndrGdods: text('rspndr_gdods'),
   
   // Incident Types - stored as JSON
   incidentTypes: json('incident_types'),
