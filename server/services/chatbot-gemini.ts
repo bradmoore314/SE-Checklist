@@ -1,417 +1,324 @@
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { AccessPoint, Camera, Elevator, Intercom } from "@shared/schema";
-import { projectQuestions } from "./project-questions-analysis";
+import { GoogleGenerativeAI, GenerativeModel, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-// Set up the Gemini API client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-// Use the newest Gemini model
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// Initialize Gemini API with API key from environment
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey!);
 
-// Message structure for chat
-interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
+// Define security settings for content safety
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+];
+
+// Define generation configuration
+const generationConfig = {
+  temperature: 0.7,
+  topK: 40,
+  topP: 0.95,
+  maxOutputTokens: 2048,
+};
+
+// Define message history types
+export interface ChatMessage {
+  role: 'user' | 'assistant';
   content: string;
 }
 
-// Interface for chat context
-interface ChatContext {
-  equipmentType?: 'access_point' | 'camera' | 'elevator' | 'intercom';
-  projectId?: number;
-  configStage?: 'initial' | 'collecting' | 'confirming' | 'complete';
-  collectedProperties?: Record<string, any>;
-  remainingQuestions?: string[];
-  confidence?: number;
-}
-
-// Interface for Recommendation
-interface EquipmentRecommendation {
-  type: string;
-  location: string;
-  properties: Record<string, any>;
-  confidence: number;
-  explanation: string;
-}
-
-/**
- * Process a chat message and get a response from the Gemini API
- */
-export async function processChatMessage(
-  messages: ChatMessage[],
-  context: ChatContext = {}
-): Promise<{ content: string; context: ChatContext }> {
-  try {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("Gemini API key not configured");
-    }
-
-    // Prepare chat history for Gemini API
-    const chatHistory = messages.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : msg.role,
-      parts: [{ text: msg.content }]
-    }));
-
-    // Get response from Gemini
-    const result = await model.generateContent({
-      contents: chatHistory,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 2048,
-        topP: 0.95,
-      },
-    });
-
-    const response = result.response;
-    const responseText = response.text();
-
-    // Analyze the response to update context
-    const updatedContext = analyzeResponseForContext(responseText, context, messages);
-
-    return {
-      content: responseText,
-      context: updatedContext
-    };
-  } catch (error) {
-    console.error("Error processing chat message with Gemini:", error);
-    return {
-      content: "I'm sorry, I encountered an error processing your request. Please try again or contact support if the issue persists.",
-      context
-    };
-  }
-}
-
-/**
- * Analyze the assistant's response to update the context
- */
-function analyzeResponseForContext(
-  response: string,
-  currentContext: ChatContext,
-  messages: ChatMessage[]
-): ChatContext {
-  const newContext: ChatContext = { ...currentContext };
-
-  // Determine equipment type if not already set
-  if (!newContext.equipmentType) {
-    if (response.toLowerCase().includes("access point") || 
-        response.toLowerCase().includes("door") || 
-        response.toLowerCase().includes("reader") || 
-        response.toLowerCase().includes("lock")) {
-      newContext.equipmentType = 'access_point';
-    } else if (response.toLowerCase().includes("camera") || 
-               response.toLowerCase().includes("video") || 
-               response.toLowerCase().includes("surveillance")) {
-      newContext.equipmentType = 'camera';
-    } else if (response.toLowerCase().includes("elevator") || 
-               response.toLowerCase().includes("lift")) {
-      newContext.equipmentType = 'elevator';
-    } else if (response.toLowerCase().includes("intercom") || 
-               response.toLowerCase().includes("communication")) {
-      newContext.equipmentType = 'intercom';
-    }
-  }
-
-  // Determine configuration stage
-  if (!newContext.configStage || newContext.configStage === 'initial') {
-    if (messages.length <= 3) {
-      newContext.configStage = 'initial';
-    } else {
-      newContext.configStage = 'collecting';
-    }
-  }
-
-  // Extract properties from the conversation
-  if (newContext.equipmentType && (newContext.configStage === 'collecting' || newContext.configStage === 'confirming')) {
-    newContext.collectedProperties = newContext.collectedProperties || {};
-    
-    // Look for location information
-    const locationMatch = response.match(/location[:\s]+([^\n.,?!]+)/i) || 
-                          messages[messages.length - 2]?.content.match(/location[:\s]+([^\n.,?!]+)/i);
-    if (locationMatch && locationMatch[1].trim()) {
-      newContext.collectedProperties.location = locationMatch[1].trim();
-    }
-    
-    // Extract properties based on equipment type
-    switch (newContext.equipmentType) {
-      case 'access_point':
-        extractAccessPointProperties(response, messages, newContext);
-        break;
-      case 'camera':
-        extractCameraProperties(response, messages, newContext);
-        break;
-      case 'elevator':
-        extractElevatorProperties(response, messages, newContext);
-        break;
-      case 'intercom':
-        extractIntercomProperties(response, messages, newContext);
-        break;
-    }
-  }
-
-  // Check if we're in confirmation stage
-  if (newContext.configStage === 'collecting' && 
-      (response.toLowerCase().includes("here's a summary") || 
-       response.toLowerCase().includes("to confirm") || 
-       response.toLowerCase().includes("is this correct"))) {
-    newContext.configStage = 'confirming';
-  }
-
-  // Check if configuration is complete
-  if (newContext.configStage === 'confirming' && 
-      (messages[messages.length - 2]?.content.toLowerCase().includes("yes") || 
-       messages[messages.length - 2]?.content.toLowerCase().includes("confirm") || 
-       messages[messages.length - 2]?.content.toLowerCase().includes("looks good"))) {
-    newContext.configStage = 'complete';
-  }
-
-  // Calculate confidence based on completion of required fields
-  newContext.confidence = calculateConfidence(newContext);
-
-  return newContext;
-}
-
-/**
- * Extract access point specific properties from the conversation
- */
-function extractAccessPointProperties(
-  response: string, 
-  messages: ChatMessage[], 
-  context: ChatContext
-) {
-  const props = context.collectedProperties || {};
-  const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content.toLowerCase() || '';
-  
-  // Reader type
-  const readerMatch = response.match(/reader type[:\s]+([^\n.,?!]+)/i) || 
-                      lastUserMessage.match(/reader[:\s]+([^\n.,?!]+)/i);
-  if (readerMatch && readerMatch[1].trim()) {
-    props.reader_type = readerMatch[1].trim();
-  }
-  
-  // Lock type
-  const lockMatch = response.match(/lock type[:\s]+([^\n.,?!]+)/i) || 
-                    lastUserMessage.match(/lock[:\s]+([^\n.,?!]+)/i);
-  if (lockMatch && lockMatch[1].trim()) {
-    props.lock_type = lockMatch[1].trim();
-  }
-  
-  // Monitoring type
-  const monitoringMatch = response.match(/monitoring[:\s]+([^\n.,?!]+)/i) || 
-                          lastUserMessage.match(/monitoring[:\s]+([^\n.,?!]+)/i);
-  if (monitoringMatch && monitoringMatch[1].trim()) {
-    props.monitoring_type = monitoringMatch[1].trim();
-  }
-  
-  // Interior/Perimeter
-  if (lastUserMessage.includes("interior") || response.toLowerCase().includes("interior")) {
-    props.interior_perimeter = "Interior";
-  } else if (lastUserMessage.includes("perimeter") || response.toLowerCase().includes("perimeter")) {
-    props.interior_perimeter = "Perimeter";
-  }
-  
-  // Lock provider
-  const providerMatch = response.match(/provider[:\s]+([^\n.,?!]+)/i) || 
-                        lastUserMessage.match(/provider[:\s]+([^\n.,?!]+)/i);
-  if (providerMatch && providerMatch[1].trim()) {
-    props.lock_provider = providerMatch[1].trim();
-  }
-  
-  // Crash bars
-  if (lastUserMessage.includes("crash bar") || response.toLowerCase().includes("crash bar")) {
-    props.crashbars = "Yes";
-  }
-  
-  // Notes
-  const notesMatch = response.match(/notes?[:\s]+([^\n]+)/i) || 
-                     lastUserMessage.match(/notes?[:\s]+([^\n]+)/i);
-  if (notesMatch && notesMatch[1].trim()) {
-    props.notes = notesMatch[1].trim();
-  }
-
-  context.collectedProperties = props;
-}
-
-/**
- * Extract camera specific properties from the conversation
- */
-function extractCameraProperties(
-  response: string, 
-  messages: ChatMessage[], 
-  context: ChatContext
-) {
-  const props = context.collectedProperties || {};
-  const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content.toLowerCase() || '';
-  
-  // Camera type
-  const typeMatch = response.match(/camera type[:\s]+([^\n.,?!]+)/i) || 
-                   lastUserMessage.match(/camera[:\s]+([^\n.,?!]+)/i);
-  if (typeMatch && typeMatch[1].trim()) {
-    props.camera_type = typeMatch[1].trim();
-  }
-  
-  // Resolution
-  const resolutionMatch = response.match(/resolution[:\s]+([^\n.,?!]+)/i) || 
-                          lastUserMessage.match(/resolution[:\s]+([^\n.,?!]+)/i);
-  if (resolutionMatch && resolutionMatch[1].trim()) {
-    props.resolution = resolutionMatch[1].trim();
-  }
-  
-  // Mounting type
-  const mountingMatch = response.match(/mounting[:\s]+([^\n.,?!]+)/i) || 
-                        lastUserMessage.match(/mounting[:\s]+([^\n.,?!]+)/i);
-  if (mountingMatch && mountingMatch[1].trim()) {
-    props.mounting_type = mountingMatch[1].trim();
-  }
-  
-  // Field of view
-  const fovMatch = response.match(/field of view[:\s]+([^\n.,?!]+)/i) || 
-                  lastUserMessage.match(/field of view[:\s]+([^\n.,?!]+)/i);
-  if (fovMatch && fovMatch[1].trim()) {
-    props.field_of_view = fovMatch[1].trim();
-  }
-  
-  // Indoor/Outdoor
-  if (lastUserMessage.includes("indoor") || response.toLowerCase().includes("indoor")) {
-    props.is_indoor = true;
-  } else if (lastUserMessage.includes("outdoor") || response.toLowerCase().includes("outdoor")) {
-    props.is_indoor = false;
-  }
-  
-  // Notes
-  const notesMatch = response.match(/notes?[:\s]+([^\n]+)/i) || 
-                     lastUserMessage.match(/notes?[:\s]+([^\n]+)/i);
-  if (notesMatch && notesMatch[1].trim()) {
-    props.notes = notesMatch[1].trim();
-  }
-
-  context.collectedProperties = props;
-}
-
-/**
- * Extract elevator specific properties from the conversation
- */
-function extractElevatorProperties(
-  response: string, 
-  messages: ChatMessage[], 
-  context: ChatContext
-) {
-  const props = context.collectedProperties || {};
-  const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content.toLowerCase() || '';
-  
-  // Elevator type
-  const typeMatch = response.match(/elevator type[:\s]+([^\n.,?!]+)/i) || 
-                    lastUserMessage.match(/elevator[:\s]+([^\n.,?!]+)/i);
-  if (typeMatch && typeMatch[1].trim()) {
-    props.elevator_type = typeMatch[1].trim();
-  }
-  
-  // Floor count
-  const floorMatch = response.match(/floors?[:\s]+(\d+)/i) || 
-                     lastUserMessage.match(/floors?[:\s]+(\d+)/i);
-  if (floorMatch && floorMatch[1].trim()) {
-    props.floor_count = parseInt(floorMatch[1].trim());
-  }
-  
-  // Bank name
-  const bankMatch = response.match(/bank[:\s]+([^\n.,?!]+)/i) || 
-                    lastUserMessage.match(/bank[:\s]+([^\n.,?!]+)/i);
-  if (bankMatch && bankMatch[1].trim()) {
-    props.bank_name = bankMatch[1].trim();
-  }
-  
-  // Notes
-  const notesMatch = response.match(/notes?[:\s]+([^\n]+)/i) || 
-                     lastUserMessage.match(/notes?[:\s]+([^\n]+)/i);
-  if (notesMatch && notesMatch[1].trim()) {
-    props.notes = notesMatch[1].trim();
-  }
-
-  context.collectedProperties = props;
-}
-
-/**
- * Extract intercom specific properties from the conversation
- */
-function extractIntercomProperties(
-  response: string, 
-  messages: ChatMessage[], 
-  context: ChatContext
-) {
-  const props = context.collectedProperties || {};
-  const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content.toLowerCase() || '';
-  
-  // Intercom type
-  const typeMatch = response.match(/intercom type[:\s]+([^\n.,?!]+)/i) || 
-                    lastUserMessage.match(/intercom[:\s]+([^\n.,?!]+)/i);
-  if (typeMatch && typeMatch[1].trim()) {
-    props.intercom_type = typeMatch[1].trim();
-  }
-  
-  // Notes
-  const notesMatch = response.match(/notes?[:\s]+([^\n]+)/i) || 
-                     lastUserMessage.match(/notes?[:\s]+([^\n]+)/i);
-  if (notesMatch && notesMatch[1].trim()) {
-    props.notes = notesMatch[1].trim();
-  }
-
-  context.collectedProperties = props;
-}
-
-/**
- * Calculate confidence score based on completion of required fields
- */
-function calculateConfidence(context: ChatContext): number {
-  if (!context.equipmentType || !context.collectedProperties) {
-    return 0;
-  }
-  
-  const props = context.collectedProperties;
-  let requiredFields: string[] = ['location'];
-  let completedFields = 0;
-  
-  // Add required fields based on equipment type
-  switch (context.equipmentType) {
-    case 'access_point':
-      requiredFields = [...requiredFields, 'reader_type', 'lock_type', 'monitoring_type'];
-      break;
-    case 'camera':
-      requiredFields = [...requiredFields, 'camera_type'];
-      break;
-    case 'elevator':
-      requiredFields = [...requiredFields, 'elevator_type'];
-      break;
-    case 'intercom':
-      requiredFields = [...requiredFields, 'intercom_type'];
-      break;
-  }
-  
-  // Count completed required fields
-  for (const field of requiredFields) {
-    if (props[field]) {
-      completedFields++;
-    }
-  }
-  
-  return completedFields / requiredFields.length;
-}
-
-/**
- * Generate equipment recommendations based on the chat context
- */
-export async function generateEquipmentRecommendations(
-  messages: ChatMessage[],
-  context: ChatContext
-): Promise<EquipmentRecommendation[]> {
-  if (!context.equipmentType || !context.collectedProperties || context.confidence < 0.5) {
-    return [];
-  }
-  
-  // Create a recommendation based on the collected information
-  const recommendation: EquipmentRecommendation = {
-    type: context.equipmentType,
-    location: context.collectedProperties.location || 'Unknown Location',
-    properties: { ...context.collectedProperties },
-    confidence: context.confidence,
-    explanation: "Generated based on your conversation with the AI assistant."
+export interface ChatContext {
+  securityEquipment?: {
+    type: string;
+    count: number;
+    location?: string;
+    details?: string;
+    confidence?: number;
+  }[];
+  buildingType?: string;
+  buildingSize?: {
+    floors: number;
+    squareFootage?: number;
   };
-  
-  return [recommendation];
+  specialRequirements?: string[];
 }
+
+/**
+ * ChatbotGeminiService - Provides AI functionality using Google's Gemini model
+ */
+export class ChatbotGeminiService {
+  private model: GenerativeModel;
+  private systemPrompt: string;
+  
+  constructor() {
+    // Initialize Gemini model
+    this.model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-pro-latest',
+      safetySettings,
+      generationConfig,
+    });
+    
+    // System prompt to set the assistant's behavior
+    this.systemPrompt = `You are a knowledgeable Security Equipment Assistant developed for a Site Walk Checklist application. Your job is to help security professionals configure and place security equipment during site assessments.
+
+## Your Capabilities:
+- Answer questions about security equipment (access points, cameras, elevators, intercoms)
+- Provide recommendations for equipment placement
+- Help users understand the best security solutions for different environments
+- Guide users through site assessment processes
+
+## Your Knowledge Areas:
+- Access control systems (card readers, keypads, biometric, etc.)
+- Video surveillance (IP cameras, PTZ, fixed, analytics)
+- Intrusion detection systems
+- Intercom and communication systems
+- Door hardware (electric strikes, magnetic locks, etc.)
+- Security industry best practices
+- Compliance requirements (fire codes, ADA, etc.)
+
+## Guidelines:
+1. Be concise but thorough in your responses.
+2. Ask clarifying questions when needed.
+3. Provide specific, actionable recommendations.
+4. When discussing equipment placement, consider factors like coverage areas, lighting conditions, and environmental factors.
+5. Always maintain a professional, helpful tone.
+6. If asked about specific brands or models, provide general information but avoid explicit endorsements.
+7. If you don't know something, admit it rather than making up information.
+8. Remember you are integrated with a Site Walk Checklist application that allows marking equipment locations on floorplans.
+
+## Special Instructions:
+- When suggesting equipment quantities or placements, explain your reasoning.
+- Prefer industry standard terminology.
+- Follow security industry best practices in your recommendations.
+- If the user describes their site, remember these details for future recommendations.
+- Help identify access points, cameras, and other equipment that should be marked on the floorplan.`;
+  }
+  
+  /**
+   * Process a chat message and return a response
+   * 
+   * @param messages Chat history
+   * @param context Optional context with information about the site
+   * @returns Response from the AI
+   */
+  async processMessage(messages: ChatMessage[], context?: ChatContext): Promise<string> {
+    try {
+      // Create a chat session
+      const chat = this.model.startChat({
+        history: [],
+        systemInstruction: this.systemPrompt,
+      });
+      
+      // Format context as a system message if provided
+      let formattedMessages = [...messages];
+      if (context) {
+        const contextMessage = this.formatContextAsMessage(context);
+        formattedMessages = [contextMessage, ...formattedMessages];
+      }
+      
+      // Send formatted messages to model
+      const result = await chat.sendMessageStream(this.formatMessagesForGemini(formattedMessages));
+      
+      // Process the response
+      let responseText = '';
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        responseText += chunkText;
+      }
+      
+      return responseText;
+    } catch (error) {
+      console.error('Error processing message with Gemini:', error);
+      return "I'm sorry, I encountered an error while processing your request. Please try again in a moment.";
+    }
+  }
+  
+  /**
+   * Format messages in the expected structure for Gemini
+   */
+  private formatMessagesForGemini(messages: ChatMessage[]): string {
+    // Convert message array to a single string with role prefixes
+    // This is one approach that works well with Gemini
+    return messages.map(msg => {
+      const prefix = msg.role === 'user' ? 'User: ' : 'Assistant: ';
+      return `${prefix}${msg.content}`;
+    }).join('\n\n');
+  }
+  
+  /**
+   * Format context data as a system message
+   */
+  private formatContextAsMessage(context: ChatContext): ChatMessage {
+    let contextText = 'Context information about the site:\n\n';
+    
+    if (context.buildingType) {
+      contextText += `Building type: ${context.buildingType}\n`;
+    }
+    
+    if (context.buildingSize) {
+      contextText += `Building size: ${context.buildingSize.floors} floors`;
+      if (context.buildingSize.squareFootage) {
+        contextText += `, ${context.buildingSize.squareFootage} square feet`;
+      }
+      contextText += '\n';
+    }
+    
+    if (context.specialRequirements && context.specialRequirements.length > 0) {
+      contextText += `Special requirements: ${context.specialRequirements.join(', ')}\n`;
+    }
+    
+    if (context.securityEquipment && context.securityEquipment.length > 0) {
+      contextText += '\nExisting security equipment:\n';
+      context.securityEquipment.forEach(item => {
+        contextText += `- ${item.count} ${item.type}`;
+        if (item.location) {
+          contextText += ` (${item.location})`;
+        }
+        if (item.details) {
+          contextText += `: ${item.details}`;
+        }
+        contextText += '\n';
+      });
+    }
+    
+    return {
+      role: 'user',
+      content: contextText,
+    };
+  }
+  
+  /**
+   * Extract equipment recommendations from AI message
+   * 
+   * @param message AI message to analyze
+   * @returns Array of security equipment objects extracted from the message
+   */
+  async extractEquipmentRecommendations(message: string): Promise<ChatContext['securityEquipment']> {
+    try {
+      // Create a new chat instance for the analysis
+      const analyzeChat = this.model.startChat({
+        history: [],
+        systemInstruction: `You are a parser that extracts security equipment recommendations from text. 
+        Extract and structure the information about security equipment mentioned in the given text.
+        Output ONLY a JSON array of objects with these properties:
+        - type: the type of security equipment (e.g., "camera", "access point", "intercom", "elevator", etc.)
+        - count: the number of equipment items recommended (integer)
+        - location: where the equipment should be placed (optional)
+        - details: any additional specification about the equipment (optional)
+        - confidence: a number between 0 and 1 indicating your confidence in this extraction (required)
+        
+        Only extract equipment that has specific recommendations for installation or placement.
+        If no security equipment recommendations are present, return an empty array.
+        Your output should be valid JSON and nothing else.`,
+      });
+      
+      // Send the message for analysis
+      const analysisResult = await analyzeChat.sendMessage(`Extract security equipment recommendations from this text:\n\n${message}`);
+      const analysisText = analysisResult.response.text();
+      
+      // Try to parse JSON from the response
+      try {
+        // Extract JSON from the response (it might be wrapped in code blocks)
+        const jsonMatch = analysisText.match(/```json\n([\s\S]*)\n```/) || 
+                          analysisText.match(/```\n([\s\S]*)\n```/) || 
+                          [null, analysisText];
+        
+        const jsonString = jsonMatch[1].trim();
+        const equipment = JSON.parse(jsonString);
+        
+        // Validate and clean up the extracted data
+        if (Array.isArray(equipment)) {
+          return equipment.map(item => ({
+            type: item.type || "unknown",
+            count: typeof item.count === 'number' ? item.count : 1,
+            location: item.location || undefined,
+            details: item.details || undefined,
+            confidence: item.confidence || 0.5
+          }));
+        }
+        return [];
+      } catch (parseError) {
+        console.error('Error parsing equipment JSON:', parseError);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error extracting equipment recommendations:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Analyze user query to understand equipment requirements
+   * 
+   * @param userQuery The user's query about security equipment
+   * @returns Context object with extracted information
+   */
+  async analyzeQuery(userQuery: string): Promise<ChatContext> {
+    try {
+      // Create a chat instance for analysis
+      const analyzeChat = this.model.startChat({
+        history: [],
+        systemInstruction: `You are an AI that analyzes queries about security equipment and building security.
+        Extract information about:
+        1. Building type and characteristics
+        2. Building size (floors, square footage)
+        3. Special security requirements
+        
+        Output ONLY a JSON object with these properties:
+        - buildingType: string (or null if not mentioned)
+        - buildingSize: object with properties:
+          - floors: number (or null if not mentioned)
+          - squareFootage: number (or null if not mentioned)
+        - specialRequirements: array of strings (or empty array if none mentioned)
+        
+        Your output should be valid JSON and nothing else.`,
+      });
+      
+      // Send the query for analysis
+      const analysisResult = await analyzeChat.sendMessage(`Analyze this query about security equipment: "${userQuery}"`);
+      const analysisText = analysisResult.response.text();
+      
+      // Try to parse JSON from the response
+      try {
+        // Extract JSON from the response (it might be wrapped in code blocks)
+        const jsonMatch = analysisText.match(/```json\n([\s\S]*)\n```/) || 
+                          analysisText.match(/```\n([\s\S]*)\n```/) || 
+                          [null, analysisText];
+        
+        const jsonString = jsonMatch[1].trim();
+        const analysis = JSON.parse(jsonString);
+        
+        // Create context object from analysis
+        return {
+          buildingType: analysis.buildingType || undefined,
+          buildingSize: analysis.buildingSize && (analysis.buildingSize.floors || analysis.buildingSize.squareFootage) ? {
+            floors: analysis.buildingSize.floors || 1,
+            squareFootage: analysis.buildingSize.squareFootage || undefined
+          } : undefined,
+          specialRequirements: Array.isArray(analysis.specialRequirements) ? analysis.specialRequirements : [],
+        };
+      } catch (parseError) {
+        console.error('Error parsing analysis JSON:', parseError);
+        return {};
+      }
+    } catch (error) {
+      console.error('Error analyzing query:', error);
+      return {};
+    }
+  }
+}
+
+// Create singleton instance
+const chatbotGeminiService = new ChatbotGeminiService();
+export default chatbotGeminiService;

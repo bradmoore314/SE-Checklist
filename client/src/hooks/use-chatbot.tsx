@@ -84,27 +84,65 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   const addMessage = useCallback((message: ChatMessage) => {
     setMessages(prev => [...prev, message]);
     
-    // If it's a user message, simulate getting a response
+    // If it's a user message, get a response from the API
     if (message.role === 'user') {
       setIsLoading(true);
       
-      // Simulate API response delay
-      setTimeout(() => {
-        // Here you would typically make an API call to get a response
-        // For now we'll just simulate a response
-        const aiResponse: ChatMessage = {
-          content: `I understand you're asking about "${message.content}". This is a placeholder response. In the actual implementation, this would be processed by our AI model.`,
-          role: 'assistant',
-        };
-        
-        setMessages(prev => [...prev, aiResponse]);
-        setIsLoading(false);
-        
-        // If text-to-speech is implemented, you could speak the response
-        // speechService.speak(aiResponse.content);
-      }, 1500);
+      // Prepare the message history to send to the API
+      const messageHistory = [...messages, message];
+      
+      // Call the API endpoint
+      fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: messageHistory,
+        }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // The API response contains the AI message and recommendations
+          const aiResponse: ChatMessage = {
+            content: data.message,
+            role: 'assistant',
+          };
+          
+          setMessages(prev => [...prev, aiResponse]);
+          
+          // If there are recommendations, we could process them here
+          // For example, update UI or store them for later use
+          if (data.recommendations && data.recommendations.length > 0) {
+            console.log('Equipment recommendations:', data.recommendations);
+          }
+          
+          // Text-to-speech for the response if browser supports it
+          if (speechService.isSynthesisSupported()) {
+            speechService.speak(aiResponse.content);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching chatbot response:', error);
+          
+          // Add an error message
+          const errorResponse: ChatMessage = {
+            content: 'Sorry, I encountered an error while processing your request. Please try again.',
+            role: 'assistant',
+          };
+          
+          setMessages(prev => [...prev, errorResponse]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-  }, []);
+  }, [messages]);
   
   // Clear all messages
   const clearMessages = useCallback(() => {
