@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2, Save, Plus, ListChecks } from 'lucide-react';
+import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2, Save, Plus, ListChecks, Sparkles, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -13,6 +13,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { UnplacedEquipmentPanel, UnplacedEquipment } from './UnplacedEquipmentPanel';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 
 // Configure pdfjs worker source - using specific version to avoid mismatches
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
@@ -63,6 +73,12 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
   const [showEquipmentPanel, setShowEquipmentPanel] = useState<boolean>(false);
   const [selectedExistingEquipment, setSelectedExistingEquipment] = useState<UnplacedEquipment | null>(null);
   const [placingExistingEquipment, setPlacingExistingEquipment] = useState<boolean>(false);
+  
+  // AI auto-detection states
+  const [aiDetectionDialogOpen, setAiDetectionDialogOpen] = useState<boolean>(false);
+  const [aiDetectionProcessing, setAiDetectionProcessing] = useState<boolean>(false);
+  const [aiDetectionResults, setAiDetectionResults] = useState<any>(null);
+  const [aiAutoPlace, setAiAutoPlace] = useState<boolean>(true);
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -424,6 +440,98 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
       description: "PDF file has been downloaded."
     });
   };
+  
+  // Function to run AI auto-detection
+  const runAiAutoDetection = async () => {
+    if (!projectId || !floorplanId) return;
+    
+    try {
+      setAiDetectionProcessing(true);
+      
+      // Get the current PDF page as an image
+      const canvas = document.querySelector('.react-pdf__Page__canvas') as HTMLCanvasElement;
+      if (!canvas) {
+        throw new Error('Could not capture PDF page');
+      }
+      
+      // Convert canvas to base64 image data
+      const imageBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
+      
+      // Call the API to auto-detect equipment
+      const response = await apiRequest('POST', `/api/floorplans/${floorplanId}/auto-detect`, {
+        projectId,
+        page: pageNumber,
+        autoPlace: aiAutoPlace,
+        imageBase64
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to run auto-detection');
+      }
+      
+      const result = await response.json();
+      setAiDetectionResults(result);
+      
+      // Add annotations for newly created equipment
+      if (result.equipment && result.equipment.length > 0) {
+        const newAnnotations = result.equipment
+          .filter((equip: any) => equip.position_x !== null && equip.position_y !== null)
+          .map((equip: any) => {
+            // Map equipment types to stamp types
+            const typeToStampMap: Record<string, string> = {
+              'camera': 'camera',
+              'access_point': 'door_access',
+              'intercom': 'intercom',
+              'elevator': 'door_access'
+            };
+            
+            const stampId = typeToStampMap[equip.type] || 'door_access';
+            const stampConfig = Object.values(STAMPS).flat().find(s => s.id === stampId);
+            
+            if (!stampConfig) return null;
+            
+            return {
+              id: Date.now() + Math.random(), // Ensure unique ID
+              type: 'stamp' as const,
+              x: equip.position_x,
+              y: equip.position_y,
+              color: stampConfig.color,
+              stampId: stampConfig.id,
+              stampLabel: equip.label || equip.type,
+              stampIcon: stampConfig.icon,
+              page: pageNumber
+            };
+          })
+          .filter(Boolean); // Remove nulls
+          
+        if (newAnnotations.length > 0) {
+          setAnnotations(prev => [...prev, ...newAnnotations as Annotation[]]);
+        }
+      }
+      
+      // Notify parent that markers have been updated
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
+      
+      toast({
+        title: "AI Detection Complete",
+        description: `Found and added ${result.equipment?.length || 0} equipment items`,
+      });
+      
+      // Close the dialog
+      setAiDetectionDialogOpen(false);
+    } catch (error) {
+      console.error('Error in AI detection:', error);
+      toast({
+        title: "AI Detection Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setAiDetectionProcessing(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -538,6 +646,22 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                       <ZoomIn className="h-4 w-4" />
                     </Button>
                   </div>
+
+                  {/* AI Auto-detection button */}
+                  {floorplanId && projectId && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                        onClick={() => setAiDetectionDialogOpen(true)}
+                        disabled={aiDetectionProcessing}
+                      >
+                        <Bot className="h-4 w-4 mr-1" />
+                        AI Auto-Detect
+                      </Button>
+                    </div>
+                  )}
                   
 
                   
