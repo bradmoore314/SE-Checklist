@@ -3,11 +3,12 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Layers } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import EquipmentFormDialog from './EquipmentFormDialog';
+import { LayerManager } from './LayerManager';
 
 // Ensure PDF.js worker is configured with matching version
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
