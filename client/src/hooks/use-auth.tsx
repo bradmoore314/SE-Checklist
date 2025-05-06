@@ -40,29 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     staleTime: 1000 * 60 * 60, // Cache for 1 hour
   });
 
-  // Add a function to bypass authentication for development purposes
+  // Empty bypass function that does nothing but shows a toast notification that auth bypass is disabled
   const bypassAuth = () => {
-    // Create a mock user object with admin privileges
-    const mockUser: User = {
-      id: 1,
-      username: "admin",
-      password: "hashed_password_not_needed_for_client", // This is not used in the client
-      email: "admin@example.com",
-      fullName: "Administrator",
-      role: "admin",
-      created_at: new Date(),
-      updated_at: new Date()
-    } as User; // Use type assertion since we're creating a mock
-    
-    // Set the mock user in the query cache
-    queryClient.setQueryData(["/api/user"], mockUser);
-    
     toast({
-      title: "Development Mode",
-      description: "Bypassed authentication for development purposes.",
+      title: "Authentication Required",
+      description: "Authentication bypass has been disabled. Please log in.",
+      variant: "destructive",
     });
     
-    return mockUser;
+    // Return an empty user object that won't actually be used
+    return null as unknown as User;
   };
 
   const {
@@ -171,55 +158,5 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   
-  // Add a development bypass auth function
-  const bypassAuth = async () => {
-    try {
-      console.log('Attempting to bypass authentication for development');
-      
-      // First try the dedicated dev login endpoint
-      try {
-        const response = await apiRequest('POST', '/api/dev-login');
-        if (response.ok) {
-          const userData = await response.json();
-          // Update the query client with the user data
-          queryClient.setQueryData(["/api/user"], userData);
-          console.log('Authentication bypass successful via dev-login');
-          return true;
-        }
-      } catch (devLoginError) {
-        console.warn('Dev login failed, trying second method:', devLoginError);
-      }
-      
-      // Fallback to a direct mock auth injection
-      const mockUser = {
-        id: 999,
-        username: 'dev-admin',
-        email: 'dev@example.com',
-        fullName: 'Development Admin',
-        role: 'admin',
-        created_at: new Date(),
-        updated_at: new Date()
-      };
-      
-      // Set the mock user in the query cache
-      queryClient.setQueryData(["/api/user"], mockUser);
-      
-      // Add a custom header to all future requests
-      const originalRequest = apiRequest;
-      (window as any).originalApiRequest = originalRequest;
-      
-      // We don't need to override apiRequest anymore as we've modified it to include bypass headers automatically
-      
-      console.log('Authentication bypass successful via mock user');
-      return true;
-    } catch (error) {
-      console.error('Error bypassing auth:', error);
-      return false;
-    }
-  };
-  
-  return {
-    ...context,
-    bypassAuth
-  };
+  return context;
 }
