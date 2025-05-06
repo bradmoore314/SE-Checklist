@@ -19,6 +19,7 @@ import DebugFloorplanTest from "@/pages/debug-floorplan-test";
 import FloorplansPage from "@/pages/floorplans-page";
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
+import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import CameraStreamGateway from "@/pages/camera-stream-gateway";
 import QuoteReviewPage from "@/pages/quote-review-page";
@@ -67,6 +68,8 @@ function Router() {
       <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
+      <ProtectedRoute path="/projects/:projectId/pdf-editor" component={ProfessionalPdfEditorPage} />
+      <ProtectedRoute path="/projects/:projectId/pdf-editor/:floorplanId" component={ProfessionalPdfEditorPage} />
       
       {/* Quote Review */}
       <ProtectedRoute path="/projects/:projectId/quote-review" component={QuoteReviewPage} />

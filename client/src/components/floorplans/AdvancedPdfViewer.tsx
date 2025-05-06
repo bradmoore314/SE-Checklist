@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { useResizeObserver } from '@/hooks/use-resize-observer';
-import * as PDFJS from 'pdfjs-dist';
-import { Loader2, ZoomIn, ZoomOut, Layers, Download, FileUp, Save, Undo, Redo } from 'lucide-react';
+import { Loader2, ZoomIn, ZoomOut, Layers, Download, FileUp, Save, Undo, Redo, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { 
@@ -25,8 +23,52 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
-import { AdvancedAnnotationToolbar } from './AdvancedAnnotationToolbar';
 import { cn } from '@/lib/utils';
+
+// Custom hook for resize observer
+function useResizeObserver<T extends Element>(ref: React.RefObject<T>) {
+  const [size, setSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      setSize({ width, height });
+    });
+
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return size;
+}
+
+// Temporary component until we create the actual AdvancedAnnotationToolbar
+function AdvancedAnnotationToolbar({ 
+  currentTool, 
+  onToolChange, 
+  onAddAnnotation, 
+  selectedAnnotationIds, 
+  pageNumber 
+}: { 
+  currentTool: string, 
+  onToolChange: (tool: any) => void, 
+  onAddAnnotation: (annotation: any) => void, 
+  selectedAnnotationIds: string[], 
+  pageNumber: number 
+}) {
+  return (
+    <Card className="h-full overflow-hidden">
+      <div className="p-4">
+        <h3 className="text-base font-medium">Annotation Tools</h3>
+        <p className="text-sm text-muted-foreground">
+          Select tools and options to annotate the PDF.
+        </p>
+      </div>
+    </Card>
+  );
+}
 
 // Configure pdfjs worker source - using specific version to avoid mismatches
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
@@ -135,9 +177,9 @@ export function AdvancedPdfViewer({
   }, [containerWidth]);
 
   // PDF document load success handler
-  const onDocumentLoadSuccess = useCallback(({ numPages, pdfDocument }: { numPages: number, pdfDocument: PDFJS.PDFDocumentProxy }) => {
-    setNumPages(numPages);
-    pdfDocumentRef.current = pdfDocument;
+  const onDocumentLoadSuccess = useCallback((document) => {
+    setNumPages(document.numPages);
+    pdfDocumentRef.current = document;
     setLoading(false);
   }, []);
 

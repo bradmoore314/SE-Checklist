@@ -576,6 +576,6 @@ export function AdvancedAnnotationToolbar({
           )}
         </div>
       </ScrollArea>
-    </div>
+    </Card>
   );
 }
