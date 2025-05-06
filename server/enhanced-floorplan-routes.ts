@@ -376,7 +376,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Get calibration for a floorplan page
-  app.get('/api/floorplans/:floorplanId/calibrations/:page', async (req: Request, res: Response) => {
+  app.get('/api/floorplans/:floorplanId/calibrations/:page', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId, page } = req.params;
       
@@ -402,7 +402,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Create/update calibration for a floorplan page
-  app.post('/api/floorplans/:floorplanId/calibrations/:page', async (req: Request, res: Response) => {
+  app.post('/api/floorplans/:floorplanId/calibrations/:page', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId, page } = req.params;
       const calibrationData = {
