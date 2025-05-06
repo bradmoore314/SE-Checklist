@@ -36,27 +36,27 @@ const EquipmentFormDialog = ({
 
   // Determine which form to show based on marker type
   const getEquipmentFormModal = () => {
-    // Default empty equipment templates
+    // Default empty equipment templates with first available option for each field
     const accessPoint = {
       id: 0,
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
       quick_config: 'Standard', // Required legacy field
-      reader_type: 'Standard Reader',
-      lock_type: 'Magnetic Lock',
-      monitoring_type: 'DPS',
-      lock_provider: null,
-      takeover: null,
-      interior_perimeter: null,
-      exst_panel_location: null,
-      exst_panel_type: null,
-      exst_reader_type: null,
-      new_panel_location: null,
-      new_panel_type: null,
-      new_reader_type: null,
-      noisy_prop: null,
-      crashbars: null,
-      real_lock_type: null,
+      reader_type: 'AIO', // First option in reader_type dropdown
+      lock_type: 'Standard', // First option in lock_type dropdown
+      monitoring_type: 'Prop', // First option in monitoring_type dropdown
+      lock_provider: 'Kastle', // First option in lock_provider dropdown
+      takeover: 'Yes', // First option in takeover dropdown
+      interior_perimeter: 'Interior', // First option in interior_perimeter dropdown
+      exst_panel_location: '',
+      exst_panel_type: '',
+      exst_reader_type: '',
+      new_panel_location: '',
+      new_panel_type: '',
+      new_reader_type: '',
+      noisy_prop: 'No', // Default to No
+      crashbars: 'No', // Default to No
+      real_lock_type: 'Mortise', // First option in real_lock_type dropdown
       notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
     };
 
@@ -64,9 +64,9 @@ const EquipmentFormDialog = ({
       id: 0,
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
-      camera_type: '',
-      mounting_type: '',
-      resolution: '',
+      camera_type: 'IP Camera', // First option in camera_type dropdown
+      mounting_type: 'Wall Mount', // First option in mounting_type dropdown
+      resolution: '4K', // First option in resolution dropdown
       notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
     };
 
@@ -74,10 +74,10 @@ const EquipmentFormDialog = ({
       id: 0,
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
-      manufacturer: '',
-      model: '',
-      number_of_floors: 0,
-      control_board_location: '',
+      manufacturer: 'Otis', // First option in manufacturer dropdown
+      model: 'Gen2', // First option in model dropdown
+      number_of_floors: 2, // Default reasonable value
+      control_board_location: 'Machine Room', // First option in control_board_location dropdown
       notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
     };
 
@@ -85,9 +85,9 @@ const EquipmentFormDialog = ({
       id: 0,
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
-      intercom_type: '',
-      connection_type: '',
-      mounting_type: '',
+      intercom_type: 'Audio Only', // First option in intercom_type dropdown
+      connection_type: 'IP', // First option in connection_type dropdown
+      mounting_type: 'Surface Mount', // First option in mounting_type dropdown
       notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
     };
 

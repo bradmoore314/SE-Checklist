@@ -265,10 +265,15 @@ export const EnhancedFloorplanViewer = ({
   // Mutations for CRUD operations
   const addMarkerMutation = useMutation({
     mutationFn: async (marker: Partial<MarkerData>) => {
-      const res = await apiRequest('POST', `/api/floorplans/${floorplan.id}/markers`, marker);
+      // Use the correct API endpoint (/api/floorplan-markers) that matches the server-side route
+      const res = await apiRequest('POST', `/api/floorplan-markers`, {
+        ...marker,
+        floorplan_id: floorplan.id  // Ensure floorplan_id is included
+      });
       return await res.json();
     },
     onSuccess: () => {
+      // Invalidate the queries to refresh the UI
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
@@ -276,35 +281,52 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
+      console.log("Marker added successfully, updating UI");
+      
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+    },
+    onError: (error) => {
+      console.error("Error adding marker:", error);
     }
   });
 
   const updateMarkerMutation = useMutation({
     mutationFn: async (marker: MarkerData) => {
-      const res = await apiRequest('PATCH', `/api/floorplans/${floorplan.id}/markers/${marker.id}`, marker);
+      // Use the correct API endpoint for updating markers
+      const res = await apiRequest('PUT', `/api/floorplan-markers/${marker.id}`, marker);
       return await res.json();
     },
     onSuccess: () => {
+      // Invalidate the queries to refresh the UI
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
+      });
+      
+      console.log("Marker updated successfully, updating UI");
       
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+    },
+    onError: (error) => {
+      console.error("Error updating marker:", error);
     }
   });
 
   const deleteMarkerMutation = useMutation({
     mutationFn: async (markerId: number) => {
-      await apiRequest('DELETE', `/api/floorplans/${floorplan.id}/markers/${markerId}`);
+      // Use the correct API endpoint for deleting markers
+      await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
     },
     onSuccess: () => {
+      // Invalidate the queries to refresh the UI
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
@@ -312,19 +334,31 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
+      console.log("Marker deleted successfully, updating UI");
+      
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+    },
+    onError: (error) => {
+      console.error("Error deleting marker:", error);
     }
   });
 
   const duplicateMarkerMutation = useMutation({
     mutationFn: async (marker: Partial<MarkerData>) => {
-      const res = await apiRequest('POST', `/api/floorplans/${floorplan.id}/markers/duplicate`, marker);
+      // For duplication, we actually create a new marker with the same properties
+      // using the standard create marker endpoint
+      const res = await apiRequest('POST', `/api/floorplan-markers`, {
+        ...marker,
+        floorplan_id: floorplan.id,  // Ensure floorplan_id is included
+        unique_id: uuidv4()  // Generate a new unique ID for the duplicated marker
+      });
       return await res.json();
     },
     onSuccess: () => {
+      // Invalidate the queries to refresh the UI
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
@@ -332,10 +366,15 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
+      console.log("Marker duplicated successfully, updating UI");
+      
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+    },
+    onError: (error) => {
+      console.error("Error duplicating marker:", error);
     }
   });
 
