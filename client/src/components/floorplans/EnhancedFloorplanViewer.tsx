@@ -1630,8 +1630,9 @@ export const EnhancedFloorplanViewer = ({
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('export-floorplan', handleExportEvent);
     };
-  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage, exportAsPng]);
+  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
   
+  // This function needs to be declared BEFORE the useEffect that uses it
   const exportAsPng = () => {
     if (canvasRef.current && svgLayerRef.current) {
       // Create a temporary canvas for the export
