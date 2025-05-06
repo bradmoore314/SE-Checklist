@@ -75,6 +75,7 @@ import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
 import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
 import crmRoutes from "./routes/crm-routes";
 import { dataverseIntegration } from "./services/dataverse-integration";
+import { setupAIRoutes } from "./routes/ai-routes";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -2864,6 +2865,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register CRM and Dataverse integration routes
   app.use(crmRoutes);
+  
+  // Set up AI routes
+  setupAIRoutes(app);
   
   // Initialize Dataverse integration
   dataverseIntegration.loadConfiguration().catch(err => {
