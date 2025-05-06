@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, Camera, X, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { AccessPoint } from "@shared/schema";
 
 // Create a custom FormItem with the form-item class for highlighting
@@ -155,13 +159,14 @@ export default function EditAccessPointModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Access Point</DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Location */}
             <FormField
               control={form.control}
@@ -564,6 +569,16 @@ export default function EditAccessPointModal({
               )}
             />
 
+            {/* Image Upload Section */}
+            <div className="space-y-2 pt-4">
+              <h3 className="text-sm font-medium">Access Point Images</h3>
+              <ImageUploadSection 
+                projectId={accessPoint.project_id}
+                equipmentId={accessPoint.id}
+                equipmentType="access_point"
+              />
+            </div>
+
             <div className="flex justify-end gap-2 pt-4">
               <Button 
                 type="button" 
@@ -583,6 +598,7 @@ export default function EditAccessPointModal({
             </div>
           </form>
         </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
