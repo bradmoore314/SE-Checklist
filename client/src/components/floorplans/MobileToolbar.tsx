@@ -71,8 +71,8 @@ export const MobileToolbar = ({
           </div>
 
           {/* Tool grid */}
-          <div className="p-2">
-            <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="p-1">
+            <div className="grid grid-cols-5 gap-1 mb-2">
               <ToolButton 
                 icon={<DoorClosed />} 
                 label="Door" 
@@ -132,28 +132,28 @@ export const MobileToolbar = ({
             </div>
             
             {/* Viewport controls */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
               <div className="flex justify-around">
                 <button 
                   onClick={onZoomIn}
-                  className="flex flex-col items-center py-2 px-4"
+                  className="flex flex-col items-center py-1 px-2"
                 >
-                  <ZoomIn className="h-6 w-6 mb-1" />
-                  <span className="text-xs">Zoom In</span>
+                  <ZoomIn className="h-4 w-4 mb-0.5" />
+                  <span className="text-[10px]">Zoom In</span>
                 </button>
                 <button 
                   onClick={onZoomOut}
-                  className="flex flex-col items-center py-2 px-4"
+                  className="flex flex-col items-center py-1 px-2"
                 >
-                  <ZoomOut className="h-6 w-6 mb-1" />
-                  <span className="text-xs">Zoom Out</span>
+                  <ZoomOut className="h-4 w-4 mb-0.5" />
+                  <span className="text-[10px]">Zoom Out</span>
                 </button>
                 <button 
                   onClick={onReset}
-                  className="flex flex-col items-center py-2 px-4"
+                  className="flex flex-col items-center py-1 px-2"
                 >
-                  <RotateCcw className="h-6 w-6 mb-1" />
-                  <span className="text-xs">Reset</span>
+                  <RotateCcw className="h-4 w-4 mb-0.5" />
+                  <span className="text-[10px]">Reset</span>
                 </button>
               </div>
             </div>
@@ -182,7 +182,7 @@ const ToolButton = ({
     <button
       onClick={onClick}
       className={`
-        relative flex flex-col items-center justify-center p-2 rounded-lg
+        relative flex flex-col items-center justify-center p-1 rounded-lg
         ${active 
           ? 'bg-primary/20 text-primary border-primary' 
           : functional 
@@ -192,14 +192,14 @@ const ToolButton = ({
       `}
       disabled={!functional}
     >
-      <div className="h-6 w-6 mb-1">
+      <div className="h-4 w-4 mb-0.5">
         {icon}
       </div>
-      <span className="text-xs">{label}</span>
+      <span className="text-[10px]">{label}</span>
       
       {/* Badge for non-functional tools */}
       {!functional && (
-        <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+        <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-[8px] rounded-full h-3 w-3 flex items-center justify-center">
           !
         </div>
       )}
