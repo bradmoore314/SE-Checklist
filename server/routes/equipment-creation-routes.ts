@@ -9,7 +9,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
    * Detect creation intent from a message
    * POST /api/equipment/detect-intent
    */
-  app.post('/api/equipment/detect-intent', (req: Request, res: Response) => {
+  app.post('/api/equipment/detect-intent', async (req: Request, res: Response) => {
     try {
       const { message } = req.body;
       
@@ -17,7 +17,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Message string is required' });
       }
       
-      const intent = equipmentCreationService.detectCreationIntent(message);
+      const intent = await equipmentCreationGeminiService.detectCreationIntent(message);
       res.json(intent);
     } catch (error) {
       console.error('Error detecting equipment creation intent:', error);
@@ -39,7 +39,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         });
       }
       
-      const session = await equipmentCreationService.startSession(
+      const session = await equipmentCreationGeminiService.startSession(
         project_id, 
         equipment_type, 
         quantity
@@ -69,7 +69,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Response string is required' });
       }
       
-      const result = await equipmentCreationService.processResponse(sessionId, response);
+      const result = await equipmentCreationGeminiService.processResponse(sessionId, response);
       res.json(result);
     } catch (error) {
       console.error('Error processing equipment creation response:', error);
@@ -89,7 +89,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Session ID is required' });
       }
       
-      const session = await equipmentCreationService.getSession(sessionId);
+      const session = await equipmentCreationGeminiService.getSession(sessionId);
       
       if (!session) {
         return res.status(404).json({ error: 'Session not found' });

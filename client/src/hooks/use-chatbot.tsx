@@ -40,7 +40,9 @@ interface ChatbotContextProps {
   
   // Speech state
   isListening: boolean;
+  isContinuousMode: boolean;
   toggleListening: () => void;
+  toggleContinuousMode: () => void;
   
   // Loading state
   isLoading: boolean;
@@ -69,7 +71,9 @@ const initialContext: ChatbotContextProps = {
   
   // Speech state
   isListening: false,
+  isContinuousMode: false,
   toggleListening: () => {},
+  toggleContinuousMode: () => {},
   
   // Loading state
   isLoading: false,
