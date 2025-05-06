@@ -1950,61 +1950,71 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`Attempting to fetch KVG form data for project ${projectId}`);
       
-      // Use a raw SQL query to fetch only the columns that exist in the database
-      const result = await db.execute(
-        `SELECT id, project_id, customer_type, voc_escalations, dispatch_responses, 
-         gdods_patrols, sgpp_patrols, forensic_investigations, app_users, audio_devices,
-         bdm_owner, sales_engineer, kvg_sme, customer_name, site_address, city, state, 
-         zip_code, crm_opportunity, quote_date, time_zone, opportunity_stage, opportunity_type, 
-         site_environment, region, customer_vertical, property_category, maintenance, 
-         services_recommended, incident_types, am_name, pm_name, created_at, updated_at
-         FROM kvg_form_data WHERE project_id = $1`,
-        [projectId]
-      );
+      // Use Drizzle ORM methods instead of raw SQL
+      const results = await db.select().from(kvgFormData).where(eq(kvgFormData.project_id, projectId));
       
-      console.log("Raw SQL Query executed");
+      console.log("KVG Form Data query executed");
       
-      if (result.rows.length === 0) {
+      // If no records found, return default empty object
+      if (results.length === 0) {
         console.log("No KVG Form Data found for project", projectId);
-        return undefined;
+        
+        // Return default empty form data
+        return {
+          id: 0,
+          project_id: projectId,
+          bdmOwner: '',
+          salesEngineer: '',
+          kvgSme: '',
+          customerName: '',
+          siteAddress: '',
+          cityStateZip: '',
+          crmOpportunity: '',
+          quoteDate: '',
+          numSites: 1,
+          technology: '',
+          installType: '',
+          vocEscalations: 0,
+          dispatchResponses: 0,
+          gdodsPatrols: 0,
+          sgppPatrols: 0,
+          forensicInvestigations: 0,
+          appUsers: 0,
+          audioDevices: 0,
+          amName: '',
+          pmName: '',
+          created_at: new Date(),
+          updated_at: new Date()
+        } as KvgFormData;
       }
       
-      const formData = result.rows[0];
+      const formData = results[0];
       console.log("KVG Form Data fetched successfully");
       
       // Map the database column names to our schema property names
       return {
         id: formData.id,
         project_id: formData.project_id,
-        bdmOwner: formData.bdm_owner,
-        salesEngineer: formData.sales_engineer,
-        kvgSme: formData.kvg_sme,
-        customerName: formData.customer_name,
-        siteAddress: formData.site_address,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zip_code,
-        crmOpportunity: formData.crm_opportunity,
-        quoteDate: formData.quote_date,
-        timeZone: formData.time_zone,
-        opportunityStage: formData.opportunity_stage,
-        opportunityType: formData.opportunity_type,
-        siteEnvironment: formData.site_environment,
-        region: formData.region,
-        customerVertical: formData.customer_vertical,
-        propertyCategory: formData.property_category,
-        maintenance: formData.maintenance,
-        servicesRecommended: formData.services_recommended,
-        incidentTypes: formData.incident_types,
-        amName: formData.am_name,
-        pmName: formData.pm_name,
-        vocEscalations: formData.voc_escalations,
-        dispatchResponses: formData.dispatch_responses,
-        gdodsPatrols: formData.gdods_patrols,
-        sgppPatrols: formData.sgpp_patrols,
-        forensicInvestigations: formData.forensic_investigations,
-        appUsers: formData.app_users,
-        audioDevices: formData.audio_devices,
+        bdmOwner: formData.bdm_owner || '',
+        salesEngineer: formData.sales_engineer || '',
+        kvgSme: formData.kvg_sme || '',
+        customerName: formData.customer_name || '',
+        siteAddress: formData.site_address || '',
+        cityStateZip: `${formData.city || ''}, ${formData.state || ''} ${formData.zip_code || ''}`,
+        crmOpportunity: formData.crm_opportunity || '',
+        quoteDate: formData.quote_date || '',
+        numSites: formData.num_sites || 1,
+        technology: formData.technology || '',
+        installType: formData.install_type || '',
+        vocEscalations: formData.voc_escalations || 0,
+        dispatchResponses: formData.dispatch_responses || 0,
+        gdodsPatrols: formData.gdods_patrols || 0,
+        sgppPatrols: formData.sgpp_patrols || 0,
+        forensicInvestigations: formData.forensic_investigations || 0,
+        appUsers: formData.app_users || 0,
+        audioDevices: formData.audio_devices || 0,
+        amName: formData.am_name || '',
+        pmName: formData.pm_name || '',
         created_at: formData.created_at,
         updated_at: formData.updated_at
       } as KvgFormData;
