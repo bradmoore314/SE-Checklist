@@ -81,6 +81,7 @@ interface EnhancedFloorplanViewerProps {
   layers: LayerData[];
   onPageChange: (page: number) => void;
   showAllLabels?: boolean;
+  onMarkersUpdated?: () => void;
 }
 
 export const EnhancedFloorplanViewer = ({
@@ -89,7 +90,8 @@ export const EnhancedFloorplanViewer = ({
   toolMode,
   layers,
   onPageChange,
-  showAllLabels = false
+  showAllLabels = false,
+  onMarkersUpdated
 }: EnhancedFloorplanViewerProps) => {
   // Hooks and refs
   const { toast } = useToast();

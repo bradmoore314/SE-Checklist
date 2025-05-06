@@ -107,7 +107,7 @@ function EnhancedFloorplansPage() {
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   const [showAllLabels, setShowAllLabels] = useState(false);
-  const [activeViewMode, setActiveViewMode] = useState<'standard' | 'editor' | 'annotate'>('standard');
+  // Single consolidated view mode - no longer need multiple view modes
   const [selectedFloorplans, setSelectedFloorplans] = useState<Set<number>>(new Set());
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   
@@ -829,72 +829,33 @@ function EnhancedFloorplansPage() {
             </div>
           </div>
           
-          <div className="mb-4">
-            <Tabs value={activeViewMode} onValueChange={(value) => setActiveViewMode(value as 'standard' | 'editor' | 'annotate')}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="standard" className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" /> Standard View
-                </TabsTrigger>
-                <TabsTrigger value="editor" className="flex items-center gap-2">
-                  <Edit className="h-4 w-4" /> PDF Editor
-                </TabsTrigger>
-                <TabsTrigger value="annotate" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" /> Equipment Markers
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
           <div className="flex-1 border rounded-lg overflow-hidden">
-            {/* Render the correct component based on the active view mode */}
-            {activeViewMode === 'standard' && (
-              <EnhancedFloorplanViewer
-                key={viewerKey}
-                floorplan={floorplan}
-                currentPage={currentPage}
-                toolMode={toolMode}
-                layers={layers || []}
-                onPageChange={setCurrentPage}
-                showAllLabels={showAllLabels}
-              />
-            )}
-            
-            {activeViewMode === 'editor' && (
-              <div className="h-full">
-                <EnhancedFloorplanEditor 
-                  floorplanId={floorplanId}
-                  projectId={projectId}
-                  onMarkersUpdated={() => {
-                    // Refresh marker stats and equipment data when markers are updated
-                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
-                    
-                    // Also refresh related equipment tables
-                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
-                    
-                    // Show toast notification
-                    toast({
-                      title: "Equipment list updated",
-                      description: "The equipment list has been updated with the changes from the floorplan."
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
-            {activeViewMode === 'annotate' && (
-              <EnhancedFloorplanViewer
-                key={`${viewerKey}-annotate`}
-                floorplan={floorplan}
-                currentPage={currentPage}
-                toolMode={toolMode}
-                layers={layers || []}
-                onPageChange={setCurrentPage}
-                showAllLabels={true}
-              />
-            )}
+            {/* Single consolidated view combining all functionality */}
+            <EnhancedFloorplanViewer
+              key={viewerKey}
+              floorplan={floorplan}
+              currentPage={currentPage}
+              toolMode={toolMode}
+              layers={layers || []}
+              onPageChange={setCurrentPage}
+              showAllLabels={showAllLabels}
+              onMarkersUpdated={() => {
+                // Refresh marker stats and equipment data when markers are updated
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
+                
+                // Also refresh related equipment tables
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
+                
+                // Show toast notification
+                toast({
+                  title: "Equipment list updated",
+                  description: "The equipment list has been updated with the changes from the floorplan."
+                });
+              }}
+            />
           </div>
           
           <div className="flex flex-col sm:flex-row justify-between items-center mt-2 md:mt-4 gap-2">
