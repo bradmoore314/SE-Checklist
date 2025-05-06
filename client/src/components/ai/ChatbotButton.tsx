@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Bot, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useChatbot } from '@/hooks/use-chatbot';
@@ -9,55 +9,46 @@ import { motion, AnimatePresence } from 'framer-motion';
  */
 export function ChatbotButton() {
   const { isChatbotOpen, openChatbot, closeChatbot } = useChatbot();
-  const [isHovered, setIsHovered] = useState(false);
-  
-  const handleClick = () => {
-    if (isChatbotOpen) {
-      closeChatbot();
-    } else {
-      openChatbot();
-    }
-  };
-  
+
   return (
-    <div className="fixed bottom-5 right-5 z-40">
-      <AnimatePresence>
-        {isHovered && !isChatbotOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            className="absolute right-14 top-2 bg-primary text-primary-foreground rounded-md py-1 px-3 whitespace-nowrap"
-          >
-            Ask Security Assistant
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
+    <AnimatePresence>
       <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-4 right-4 z-30"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       >
         <Button
           size="lg"
-          onClick={handleClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className="rounded-full h-12 w-12 shadow-lg"
+          className="rounded-full shadow-lg w-14 h-14 p-0 flex items-center justify-center"
+          onClick={isChatbotOpen ? closeChatbot : openChatbot}
         >
           <AnimatePresence mode="wait">
-            <motion.div
-              key={isChatbotOpen ? 'close' : 'open'}
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isChatbotOpen ? <X className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
-            </motion.div>
+            {isChatbotOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="h-6 w-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="open"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Bot className="h-6 w-6" />
+              </motion.div>
+            )}
           </AnimatePresence>
         </Button>
       </motion.div>
-    </div>
+    </AnimatePresence>
   );
 }
