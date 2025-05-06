@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, ChevronLeft, ChevronRight,
@@ -12,8 +11,6 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { EnhancedFloorplanViewer } from '@/components/floorplans/EnhancedFloorplanViewer';
-import { SimpleEnhancedViewer } from '@/components/floorplans/SimpleEnhancedViewer';
-import { EnhancedFloorplanEditor } from '@/components/floorplans/EnhancedFloorplanEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
