@@ -531,6 +531,10 @@ export const kvgFormData = pgTable('kvg_form_data', {
   id: serial('id').primaryKey(),
   project_id: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   
+  // Form type and data for API compatibility
+  form_type: text('form_type').default('kvg'),
+  form_data: json('form_data').default({}),
+  
   // Discovery tab fields
   bdmOwner: text('bdm_owner'),
   salesEngineer: text('sales_engineer'),

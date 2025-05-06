@@ -673,19 +673,27 @@ const KastleVideoGuardingPage: React.FC = () => {
     mutationFn: async (data: any) => {
       if (!currentProject?.id) throw new Error('No project selected');
       
+      // Add required form_type and form_data fields
+      const formPayload = {
+        ...data,
+        project_id: currentProject.id,
+        form_type: 'kvg',
+        form_data: { ...data } // Store a complete copy in form_data
+      };
+      
       // Check if form data already exists
       if (formDataFromDb?.id) {
         const res = await apiRequest(
           'PUT', 
           `/api/kvg-form-data/${formDataFromDb.id}`, 
-          { ...data, project_id: currentProject.id }
+          formPayload
         );
         return res.json();
       } else {
         const res = await apiRequest(
           'POST', 
           '/api/kvg-form-data', 
-          { ...data, project_id: currentProject.id }
+          formPayload
         );
         return res.json();
       }
