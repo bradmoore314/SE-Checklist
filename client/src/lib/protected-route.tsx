@@ -17,8 +17,8 @@ export function ProtectedRoute({ path, component: Component }: ProtectedRoutePro
     localStorage.getItem('allow_auth_bypass') === 'true'
   );
   
-  // Check if we should bypass auth based on environment and local storage
-  const shouldBypassAuth = !isProduction || authBypassEnabled;
+  // Check if we should bypass auth based only on explicit bypass flag
+  const shouldBypassAuth = authBypassEnabled;
 
   // For error recovery - set a flag to bypass auth for production environments
   const enableAuthBypass = () => {
