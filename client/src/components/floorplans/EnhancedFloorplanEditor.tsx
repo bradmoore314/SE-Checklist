@@ -648,49 +648,49 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                           renderAnnotationLayer={true}
                         />
                       </Document>
-                    
-                    {/* Render annotations for the current page */}
-                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                      {annotations
-                        .filter(ann => ann.page === pageNumber)
-                        .map(annotation => (
-                          <div 
-                            key={annotation.id}
-                            className={`absolute ${selectedAnnotation === annotation.id ? 'ring-2 ring-blue-500' : ''}`}
-                            style={{ 
-                              left: annotation.x,
-                              top: annotation.y,
-                              color: annotation.color,
-                              pointerEvents: 'auto',  // Make annotations clickable
-                              cursor: selectedTool === 'select' ? 'pointer' : 'default'
-                            }}
-                          >
-                            {annotation.type === 'stamp' && (
-                              <div className="flex flex-col items-center text-center">
-                                <div style={{ fontSize: '24px' }}>{annotation.stampIcon}</div>
-                                <div style={{ 
-                                  background: annotation.color,
-                                  color: 'white',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  fontSize: '12px',
-                                  fontWeight: 'bold'
-                                }}>
-                                  {annotation.stampLabel}
+                      
+                      {/* Render annotations for the current page */}
+                      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                        {annotations
+                          .filter(ann => ann.page === pageNumber)
+                          .map(annotation => (
+                            <div 
+                              key={annotation.id}
+                              className={`absolute ${selectedAnnotation === annotation.id ? 'ring-2 ring-blue-500' : ''}`}
+                              style={{ 
+                                left: annotation.x,
+                                top: annotation.y,
+                                color: annotation.color,
+                                pointerEvents: 'auto',  // Make annotations clickable
+                                cursor: selectedTool === 'select' ? 'pointer' : 'default'
+                              }}
+                            >
+                              {annotation.type === 'stamp' && (
+                                <div className="flex flex-col items-center text-center">
+                                  <div style={{ fontSize: '24px' }}>{annotation.stampIcon}</div>
+                                  <div style={{ 
+                                    background: annotation.color,
+                                    color: 'white',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {annotation.stampLabel}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                            
-                            {annotation.type === 'text' && (
-                              <div className="max-w-[200px] bg-white p-2 border rounded shadow-sm">
-                                {annotation.content}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                              )}
+                              
+                              {annotation.type === 'text' && (
+                                <div className="max-w-[200px] bg-white p-2 border rounded shadow-sm">
+                                  {annotation.content}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               </div>
             ) : (
