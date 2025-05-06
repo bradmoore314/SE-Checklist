@@ -612,21 +612,42 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                   )}
                 </div>
                 
-                {/* PDF rendering container */}
-                <div 
-                  className="border rounded-md overflow-auto relative bg-white"
-                  style={{ height: '600px' }}
-                  onClick={handleCanvasClick}
-                  ref={containerRef}
-                >
-                  <div style={{ position: 'relative', transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                      <Page 
-                        pageNumber={pageNumber} 
-                        renderTextLayer={true} 
-                        renderAnnotationLayer={true}
+                {/* Main content area - PDF + Equipment Panel */}
+                <div className="flex gap-4">
+                  {/* Unplaced equipment panel - shown when toggle is active */}
+                  {showEquipmentPanel && floorplanId && projectId && (
+                    <div className="w-1/4 border rounded-md bg-white">
+                      <UnplacedEquipmentPanel 
+                        projectId={projectId} 
+                        floorplanId={floorplanId}
+                        onSelectEquipment={(equipment) => {
+                          setSelectedExistingEquipment(equipment);
+                          setPlacingExistingEquipment(true);
+                          setSelectedTool('select'); // Switch to select tool
+                          toast({
+                            title: "Equipment selected",
+                            description: `Click on the floorplan to place ${equipment.type}: ${equipment.name || equipment.label || 'Unnamed'}`,
+                          });
+                        }}
                       />
-                    </Document>
+                    </div>
+                  )}
+                  
+                  {/* PDF rendering container */}
+                  <div 
+                    className={`border rounded-md overflow-auto relative bg-white ${showEquipmentPanel ? 'w-3/4' : 'w-full'}`}
+                    style={{ height: '600px' }}
+                    onClick={handleCanvasClick}
+                    ref={containerRef}
+                  >
+                    <div style={{ position: 'relative', transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+                      <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                        <Page 
+                          pageNumber={pageNumber} 
+                          renderTextLayer={true} 
+                          renderAnnotationLayer={true}
+                        />
+                      </Document>
                     
                     {/* Render annotations for the current page */}
                     <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -669,6 +690,7 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                         ))}
                     </div>
                   </div>
+                </div>
                 </div>
               </div>
             ) : (
