@@ -10,6 +10,14 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
 }
 
+// Define types for equipment creation
+export interface EquipmentCreation {
+  sessionId: string;
+  isComplete: boolean;
+  currentStep?: string;
+  createdEquipment?: any[];
+}
+
 // Define the context type
 interface ChatbotContextProps {
   // Chat state
