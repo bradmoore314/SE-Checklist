@@ -124,6 +124,9 @@ export const EnhancedFloorplanViewer = ({
   const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDraggingMarker, setIsDraggingMarker] = useState<boolean>(false);
+  const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
+  const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
   // Convert screen coordinates to PDF space coordinates
   const screenToPdfCoordinates = (screenX: number, screenY: number) => {
@@ -287,6 +290,9 @@ export const EnhancedFloorplanViewer = ({
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+      
+      // Show autosave feedback
+      showAutoSaveFeedback();
     },
     onError: (error) => {
       console.error("Error adding marker:", error);
