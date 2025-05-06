@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   Loader2, Plus, Layers, ZoomIn, Move, Ruler, ChevronsLeft, ChevronLeft, ChevronRight,
-  FileUp, Camera, RefreshCcw, DoorClosed, Phone, ArrowUpDown 
+  FileUp, Camera, RefreshCcw, DoorClosed, Phone, ArrowUpDown, Eye, Edit, MapPin
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -648,7 +648,7 @@ function EnhancedFloorplansPage() {
                 <Edit className="h-4 w-4" /> PDF Editor
               </TabsTrigger>
               <TabsTrigger value="annotate" className="flex items-center gap-2">
-                <Map className="h-4 w-4" /> Equipment Markers
+                <MapPin className="h-4 w-4" /> Equipment Markers
               </TabsTrigger>
             </TabsList>
           </Tabs>
