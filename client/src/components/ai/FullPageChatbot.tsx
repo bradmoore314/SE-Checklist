@@ -78,7 +78,14 @@ export function FullPageChatbot() {
               <Button variant="ghost" size="icon" onClick={toggleFullScreen}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <div className="text-lg font-medium">Security Assistant</div>
+              <div className="flex items-center">
+                <span className="text-lg font-medium">Security Assistant</span>
+                {equipmentCreation && (
+                  <span className="ml-2 text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                    Adding Equipment
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={clearMessages}>
@@ -108,9 +115,11 @@ export function FullPageChatbot() {
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                         {[
+                          "Add 3 access points to the main entrance",
+                          "Add 2 cameras to the parking lot",
                           "What access points do I need for a 5-story office building?",
-                          "Help me place cameras for optimal coverage",
                           "What are the best security solutions for a retail environment?",
+                          "Help me place cameras for optimal coverage",
                           "Explain the differences between magnetic locks and electric strikes"
                         ].map((suggestion, index) => (
                           <Button 
@@ -155,6 +164,25 @@ export function FullPageChatbot() {
                           <div className="h-2 w-2 rounded-full bg-current animate-bounce" />
                           <div className="h-2 w-2 rounded-full bg-current animate-bounce [animation-delay:0.2s]" />
                           <div className="h-2 w-2 rounded-full bg-current animate-bounce [animation-delay:0.4s]" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Equipment creation status indicator */}
+                  {equipmentCreation && !isLoading && (
+                    <div className="flex justify-start">
+                      <div className="rounded-lg px-4 py-3 bg-green-50 border border-green-200 max-w-[80%]">
+                        <div className="text-sm text-green-800">
+                          <p className="font-medium">
+                            Adding {equipmentCreation.currentStep && 
+                              equipmentCreation.currentStep.replace('_', ' ')}
+                          </p>
+                          {equipmentCreation.isComplete ? (
+                            <p className="text-xs mt-1">✓ Equipment added successfully</p>
+                          ) : (
+                            <p className="text-xs mt-1">Please answer the questions to continue</p>
+                          )}
                         </div>
                       </div>
                     </div>
