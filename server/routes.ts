@@ -1403,6 +1403,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(floorplan);
   });
 
+  app.delete("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const floorplanId = parseInt(req.params.id);
+      if (isNaN(floorplanId)) {
+        return res.status(400).json({ message: "Invalid floorplan ID" });
+      }
+      
+      // First, get the floorplan to check if it exists
+      const floorplan = await storage.getFloorplan(floorplanId);
+      if (!floorplan) {
+        return res.status(404).json({ message: "Floorplan not found" });
+      }
+      
+      // Delete all markers associated with this floorplan
+      const markers = await storage.getFloorplanMarkers(floorplanId);
+      for (const marker of markers) {
+        await storage.deleteFloorplanMarker(marker.id);
+      }
+      
+      // Delete the floorplan
+      const success = await storage.deleteFloorplan(floorplanId);
+      if (success) {
+        res.status(204).send();
+      } else {
+        res.status(500).json({ message: "Failed to delete floorplan" });
+      }
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to delete floorplan",
+        error: (error as Error).message 
+      });
+    }
+  });
+
   app.post("/api/floorplans", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const result = insertFloorplanSchema.safeParse(req.body);
