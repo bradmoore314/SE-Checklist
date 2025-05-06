@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,6 +30,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, Camera, X, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ImageUploadSection from "@/components/ImageUploadSection";
 
 interface LookupData {
   elevatorTypes?: string[];
@@ -176,15 +181,16 @@ export default function AddElevatorModal({
 
   return (
     <Dialog open={open || isOpen} onOpenChange={onOpenChange || onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">
             Add New Elevator
           </DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
             {/* Basic Information */}
             <div className="border rounded-lg p-4 pb-5 bg-gradient-to-r from-slate-50 to-white">
@@ -778,6 +784,7 @@ export default function AddElevatorModal({
             </DialogFooter>
           </form>
         </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
