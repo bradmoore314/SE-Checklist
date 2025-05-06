@@ -26,6 +26,7 @@ import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
 import GeminiTestPage from "@/pages/gemini-test-page";
+import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration-workspace-page";
 import MainLayout from "@/layouts/MainLayout";
 import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
@@ -78,8 +79,10 @@ function Router() {
       <ProtectedRoute path="/documentation" component={DocumentationPage} />
       <ProtectedRoute path="/feedback" component={FeedbackPage} />
       
-      {/* AI Testing */}
+      {/* AI Features */}
       <ProtectedRoute path="/gemini-test" component={GeminiTestPage} />
+      <ProtectedRoute path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      <ProtectedRoute path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
