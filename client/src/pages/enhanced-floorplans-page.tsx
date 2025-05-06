@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { EnhancedFloorplanViewer } from '@/components/floorplans/EnhancedFloorplanViewer';
 import { SimpleEnhancedViewer } from '@/components/floorplans/SimpleEnhancedViewer';
+import { EnhancedFloorplanEditor } from '@/components/floorplans/EnhancedFloorplanEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
