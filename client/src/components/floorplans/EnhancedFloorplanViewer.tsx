@@ -9,8 +9,8 @@ import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import EquipmentFormDialog from './EquipmentFormDialog';
 
-// Ensure PDF.js worker is configured
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+// Ensure PDF.js worker is configured with matching version
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // Define interfaces for props and marker data
 interface FloorplanData {
@@ -520,28 +520,32 @@ export const EnhancedFloorplanViewer = ({
       const strokeWidth = marker.line_width || 2;
       const opacity = marker.opacity || 1;
       
-      // Set type-specific colors if not overridden by marker.color
+      // Set type-specific colors based on user requirements
       if (!marker.color) {
         switch (marker.marker_type) {
           case 'access_point':
-            color = '#ef4444'; // Red for Card Access
-            fillColor = 'rgba(239, 68, 68, 0.1)'; // Light red fill
+            color = '#ef4444'; // Red for Access Points
+            fillColor = 'rgba(239, 68, 68, 0.9)'; // Solid red fill
             break;
           case 'camera':
             color = '#3b82f6'; // Blue for Cameras
-            fillColor = 'rgba(59, 130, 246, 0.1)'; // Light blue fill
+            fillColor = 'rgba(59, 130, 246, 0.9)'; // Solid blue fill
             break;
           case 'elevator':
             color = '#10b981'; // Green for Elevators
-            fillColor = 'rgba(16, 185, 129, 0.1)'; // Light green fill
+            fillColor = 'rgba(16, 185, 129, 0.9)'; // Solid green fill
             break;
           case 'intercom':
             color = '#eab308'; // Yellow for Intercoms
-            fillColor = 'rgba(234, 179, 8, 0.1)'; // Light yellow fill
+            fillColor = 'rgba(234, 179, 8, 0.9)'; // Solid yellow fill
+            break;
+          case 'turnstile':
+            color = '#f59e0b'; // Yellow/Orange for Turnstiles
+            fillColor = 'rgba(245, 158, 11, 0.9)'; // Solid yellow/orange fill
             break;
           case 'note':
-            color = '#f59e0b'; // Amber
-            fillColor = 'rgba(245, 158, 11, 0.1)'; // Light amber fill
+            color = '#f97316'; // Orange for Notes
+            fillColor = 'rgba(249, 115, 22, 0.9)'; // Solid orange fill
             break;
         }
       }
@@ -615,20 +619,17 @@ export const EnhancedFloorplanViewer = ({
           defs.appendChild(filter);
           group.appendChild(defs);
           
-          // Create a rectangular marker that displays the ID more prominently
-          // Main equipment marker rectangle with rounded corners
-          element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          element.setAttribute('x', `${x - 18}`); // Wider rectangle
-          element.setAttribute('y', `${y - 14}`);
-          element.setAttribute('width', '36'); // Increased width for better visibility
-          element.setAttribute('height', '28'); // Increased height
-          element.setAttribute('rx', '4'); // Rounded corners
+          // Create a circular marker as requested - for better visibility
+          element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          element.setAttribute('cx', `${x}`);
+          element.setAttribute('cy', `${y}`);
+          element.setAttribute('r', '16'); // Large enough to be visible and touch-friendly
           element.setAttribute('fill', markerFillColor);
           element.setAttribute('stroke', '#ffffff');
-          element.setAttribute('stroke-width', '1.5');
-          element.setAttribute('opacity', '0.9');
+          element.setAttribute('stroke-width', '2');
+          element.setAttribute('opacity', '1'); // Fully opaque for better visibility
           element.setAttribute('filter', `url(#${filterId})`);
-          element.setAttribute('class', 'marker-rectangle');
+          element.setAttribute('class', 'marker-circle');
           
           // Add marker number as the most prominent element
           const markerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
