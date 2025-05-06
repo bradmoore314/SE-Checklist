@@ -34,9 +34,8 @@ import { createAuthBypassMiddleware } from './auth-bypass';
 
 // Create the authentication middleware with configuration
 const skipForPublicPaths = createAuthBypassMiddleware({
-  // Allow bypassing authentication in production by default
-  // This will use ALLOW_INITIAL_SETUP env var if set
-  allowBypassInProduction: true,
+  // Only allow bypassing auth if explicitly requested by env var
+  allowBypassInProduction: false,
   
   // Define public routes that don't need auth
   publicRoutes: [
@@ -45,6 +44,8 @@ const skipForPublicPaths = createAuthBypassMiddleware({
     '/api/lookup',
     '/api/auth/microsoft/status',
     '/assets/',
+    '/api/health',
+    '/api/session-status',
     '/api/user'  // Allow unauthenticated user checks
   ]
 });
