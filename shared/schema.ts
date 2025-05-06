@@ -551,18 +551,19 @@ export const kvgFormData = pgTable('kvg_form_data', {
   propertyCategory: text('property_category'),
   maintenance: text('maintenance'),
   servicesRecommended: text('services_recommended'),
-  rspndrGdods: text('rspndr_gdods'),
+  // This column doesn't exist in the database
+  // rspndrGdods: text('rspndr_gdods'),
   
   // Incident Types - stored as JSON
   incidentTypes: json('incident_types'),
   
-  // Site Assessment tab fields
-  lightingRequirements: text('lighting_requirements'),
-  cameraFieldOfView: text('camera_field_of_view'),
-  networkConnectivity: text('network_connectivity'),
+  // Site Assessment tab fields - these columns don't exist in the actual database
+  // lightingRequirements: text('lighting_requirements'),
+  // cameraFieldOfView: text('camera_field_of_view'),
+  // networkConnectivity: text('network_connectivity'),
   
-  // Use Case tab fields
-  useCaseCommitment: text('use_case_commitment'),
+  // Use Case tab fields - these columns don't exist in the actual database
+  // useCaseCommitment: text('use_case_commitment'),
   
   // VOC Protocol tab fields
   amName: text('am_name'),
@@ -571,13 +572,14 @@ export const kvgFormData = pgTable('kvg_form_data', {
   escalationProcess2: text('escalation_process2'),
   escalationProcess3: text('escalation_process3'),
   
-  // Schedule fields
-  scheduleType: text('schedule_type'),
-  monitoringDaysOfWeek: text('monitoring_days_of_week'),
-  monitoringHours: text('monitoring_hours'),
-  scheduleNotes: text('schedule_notes'),
-  patrolFrequencyDays: text('patrol_frequency_days'),
-  patrolFrequencyHours: text('patrol_frequency_hours'),
+  // Schedule fields - these are handled differently in the database
+  // Comment out fields that don't exist in the actual database
+  // scheduleType: text('schedule_type'),
+  // monitoringDaysOfWeek: text('monitoring_days_of_week'),
+  // monitoringHours: text('monitoring_hours'),
+  // scheduleNotes: text('schedule_notes'),
+  // patrolFrequencyDays: text('patrol_frequency_days'),
+  // patrolFrequencyHours: text('patrol_frequency_hours'),
   
   // Project Deployment tab fields
   pmName: text('pm_name'),
