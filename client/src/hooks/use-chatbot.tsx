@@ -25,6 +25,12 @@ interface ChatbotContextProps {
   addMessage: (message: ChatMessage) => void;
   clearMessages: () => void;
   
+  // Equipment creation state
+  equipmentCreation: EquipmentCreation | null;
+  setEquipmentCreation: (session: EquipmentCreation | null) => void;
+  projectId: number | null;
+  setProjectId: (id: number | null) => void;
+  
   // UI state
   isChatbotOpen: boolean;
   openChatbot: () => void;
@@ -47,6 +53,12 @@ const initialContext: ChatbotContextProps = {
   messages: [],
   addMessage: () => {},
   clearMessages: () => {},
+  
+  // Equipment creation state
+  equipmentCreation: null,
+  setEquipmentCreation: () => {},
+  projectId: null,
+  setProjectId: () => {},
   
   // UI state
   isChatbotOpen: false,
@@ -77,6 +89,10 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   // Chat state
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   
+  // Equipment creation state
+  const [equipmentCreation, setEquipmentCreation] = useState<EquipmentCreation | null>(null);
+  const [projectId, setProjectId] = useState<number | null>(null);
+  
   // Add initial welcome message when the component mounts
   useEffect(() => {
     // This simulates a welcome message from the assistant
@@ -99,6 +115,19 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
       // Prepare the message history to send to the API
       const messageHistory = [...messages, message];
       
+      // Prepare context for the API request
+      const context: any = {};
+      
+      // If we're in an equipment creation session, include the session ID
+      if (equipmentCreation) {
+        context.equipmentCreationSessionId = equipmentCreation.sessionId;
+      }
+      
+      // If we have a project ID, include it
+      if (projectId) {
+        context.projectId = projectId;
+      }
+      
       // Call the API endpoint
       fetch('/api/ai/chat', {
         method: 'POST',
@@ -107,6 +136,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
         },
         body: JSON.stringify({
           messages: messageHistory,
+          context,
         }),
       })
         .then(response => {
@@ -116,7 +146,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           return response.json();
         })
         .then(data => {
-          // The API response contains the AI message and recommendations
+          // The API response contains the AI message
           const aiResponse: ChatMessage = {
             content: data.message,
             role: 'assistant',
@@ -124,8 +154,23 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           
           setMessages(prev => [...prev, aiResponse]);
           
-          // If there are recommendations, we could process them here
-          // For example, update UI or store them for later use
+          // Check for equipment creation data
+          if (data.equipmentCreation) {
+            console.log('Equipment creation data:', data.equipmentCreation);
+            
+            // Update the equipment creation session
+            setEquipmentCreation(data.equipmentCreation);
+            
+            // If the creation process is complete, clear the session
+            if (data.equipmentCreation.isComplete) {
+              // Wait a moment before clearing to allow the user to see the completion message
+              setTimeout(() => {
+                setEquipmentCreation(null);
+              }, 5000);
+            }
+          }
+          
+          // If there are recommendations, process them
           if (data.recommendations && data.recommendations.length > 0) {
             console.log('Equipment recommendations:', data.recommendations);
           }
@@ -150,7 +195,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           setIsLoading(false);
         });
     }
-  }, [messages]);
+  }, [messages, equipmentCreation, projectId]);
   
   // Clear all messages
   const clearMessages = useCallback(() => {
@@ -163,6 +208,9 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     };
     
     setMessages([welcomeMessage]);
+    
+    // Reset equipment creation state
+    setEquipmentCreation(null);
   }, []);
   
   // UI state
@@ -217,6 +265,12 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     messages,
     addMessage,
     clearMessages,
+    
+    // Equipment creation state
+    equipmentCreation,
+    setEquipmentCreation,
+    projectId,
+    setProjectId,
     
     // UI state
     isChatbotOpen,
