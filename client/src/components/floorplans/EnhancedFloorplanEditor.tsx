@@ -3,15 +3,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileUp, Download } from 'lucide-react';
+import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+
+// Configure pdfjs worker source
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface PdfEditorProps {
   floorplanId?: number;
   projectId?: number;
 }
 
-type StampType = {
+type StampConfig = {
   id: string;
   label: string;
   color: string;
@@ -33,19 +39,41 @@ type Annotation = {
 
 export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorProps) {
   const { toast } = useToast();
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [file, setFile] = useState<File | null>(null);
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [selectedTool, setSelectedTool] = useState<'select' | 'stamp' | 'text'>('select');
+  const [selectedStamp, setSelectedStamp] = useState<StampConfig | null>(null);
+  const [textInput, setTextInput] = useState<string>('');
+  const [selectedAnnotation, setSelectedAnnotation] = useState<number | null>(null);
+  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Load PDF
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  // Predefined stamps
+  const STAMPS: Record<string, StampConfig[]> = {
+    "Security Equipment": [
+      { id: "camera", label: "Camera", color: "#0369A1", icon: "📷" },
+      { id: "door_access", label: "Door Access", color: "#166534", icon: "🚪" },
+      { id: "motion_sensor", label: "Motion Sensor", color: "#9333EA", icon: "👁️" },
+      { id: "intercom", label: "Intercom", color: "#0891B2", icon: "🔊" }
+    ],
+    "Status Stamps": [
+      { id: "approved", label: "APPROVED", color: "#16A34A", icon: "✓" },
+      { id: "rejected", label: "REJECTED", color: "#DC2626", icon: "✗" },
+      { id: "pending", label: "PENDING", color: "#F59E0B", icon: "⏱️" },
+      { id: "revised", label: "REVISED", color: "#8B5CF6", icon: "⟳" }
+    ]
+  };
+
+  // Handle file selection
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
       
-      // Check if it's a PDF
-      if (file.type !== 'application/pdf') {
+      if (selectedFile.type !== 'application/pdf') {
         toast({
           title: "Invalid file type",
           description: "Please select a PDF file.",
@@ -54,24 +82,132 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorPro
         return;
       }
       
-      setPdfFile(file);
-      
-      // Create URL for the PDF
-      const url = URL.createObjectURL(file);
-      setPdfUrl(url);
+      setFile(selectedFile);
+      setPageNumber(1);
+      setAnnotations([]);
       
       toast({
         title: "PDF loaded",
-        description: `${file.name} loaded successfully.`
+        description: `${selectedFile.name} loaded successfully.`
       });
-      
-      // For demo, set a random number of pages
-      setTotalPages(Math.floor(Math.random() * 5) + 1);
     }
   };
 
-  const handleDownload = async () => {
-    if (!pdfFile) {
+  // Handle document load success
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+
+  // Handle page navigation
+  const changePage = (offset: number) => {
+    setPageNumber(prevPageNumber => {
+      const newPageNumber = prevPageNumber + offset;
+      return Math.max(1, Math.min(numPages || 1, newPageNumber));
+    });
+  };
+
+  // Handle canvas click for adding annotations
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    
+    // Get coordinates relative to the container
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    
+    if (selectedTool === 'stamp' && selectedStamp) {
+      // Add a stamp annotation
+      const newAnnotation: Annotation = {
+        id: Date.now(),
+        type: 'stamp',
+        x,
+        y,
+        color: selectedStamp.color,
+        stampId: selectedStamp.id,
+        stampLabel: selectedStamp.label,
+        stampIcon: selectedStamp.icon,
+        page: pageNumber
+      };
+      
+      setAnnotations([...annotations, newAnnotation]);
+      
+      toast({
+        title: "Stamp added",
+        description: `${selectedStamp.label} stamp added to the PDF.`
+      });
+    } else if (selectedTool === 'text' && textInput.trim()) {
+      // Add a text annotation
+      const newAnnotation: Annotation = {
+        id: Date.now(),
+        type: 'text',
+        x,
+        y,
+        content: textInput,
+        color: '#000000',
+        page: pageNumber
+      };
+      
+      setAnnotations([...annotations, newAnnotation]);
+      
+      toast({
+        title: "Text added",
+        description: "Text annotation added to the PDF."
+      });
+    } else if (selectedTool === 'select') {
+      // Handle selection logic
+      let found = false;
+      
+      // Find if we clicked on an annotation
+      for (let i = annotations.length - 1; i >= 0; i--) {
+        const annotation = annotations[i];
+        if (annotation.page !== pageNumber) continue;
+        
+        // Simple hit testing (could be improved)
+        const hitSize = 50; // Size of hit area
+        if (
+          x >= annotation.x - hitSize/2 && 
+          x <= annotation.x + hitSize/2 && 
+          y >= annotation.y - hitSize/2 && 
+          y <= annotation.y + hitSize/2
+        ) {
+          setSelectedAnnotation(annotation.id);
+          found = true;
+          break;
+        }
+      }
+      
+      if (!found) {
+        setSelectedAnnotation(null);
+      }
+    }
+  };
+
+  // Delete selected annotation
+  const deleteSelectedAnnotation = () => {
+    if (selectedAnnotation === null) return;
+    
+    setAnnotations(annotations.filter(a => a.id !== selectedAnnotation));
+    setSelectedAnnotation(null);
+    
+    toast({
+      title: "Annotation deleted",
+      description: "Annotation has been removed."
+    });
+  };
+
+  // Select a stamp
+  const selectStamp = (category: string, stampIndex: number) => {
+    setSelectedStamp(STAMPS[category][stampIndex]);
+    setSelectedTool('stamp');
+  };
+
+  // Handle zoom controls
+  const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 2.0));
+  const zoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
+
+  // Handle PDF download
+  const handleDownload = () => {
+    if (!file) {
       toast({
         title: "No PDF loaded",
         description: "Please load a PDF file first.",
@@ -80,13 +216,16 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorPro
       return;
     }
 
-    // Create a download link for the PDF
+    // In a real implementation, we would use pdf-lib to apply annotations before download
+    // For now, we'll just download the original file
+    const url = URL.createObjectURL(file);
     const a = document.createElement('a');
-    a.href = pdfUrl as string;
-    a.download = pdfFile.name;
+    a.href = url;
+    a.download = file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     
     toast({
       title: "PDF downloaded",
@@ -97,85 +236,220 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorPro
   return (
     <div className="flex flex-col gap-4 p-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle>Enhanced Floorplan Editor</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
+            {/* File upload/download controls */}
             <div className="flex gap-4 items-center">
-              <div>
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="w-full"
-                >
-                  <FileUp className="h-4 w-4 mr-2" />
-                  Upload PDF
-                </Button>
-                <Input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                  accept=".pdf"
-                />
-              </div>
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+              >
+                <FileUp className="h-4 w-4 mr-2" />
+                Upload PDF
+              </Button>
+              <Input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".pdf"
+              />
               
               <Button
                 onClick={handleDownload}
                 variant="outline"
-                disabled={!pdfFile}
-                className="w-full"
+                disabled={!file}
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download PDF
               </Button>
             </div>
             
-            {pdfUrl && (
-              <div className="mt-4 border rounded-md p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <span className="font-medium">PDF Preview</span>
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
+            {/* PDF viewer */}
+            {file ? (
+              <div className="flex flex-col gap-4">
+                {/* Toolbar */}
+                <div className="flex gap-2 p-2 bg-muted rounded-md">
+                  {/* Tool selection */}
+                  <div className="flex gap-2 border-r pr-2">
                     <Button
-                      variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage <= 1}
+                      variant={selectedTool === 'select' ? 'default' : 'outline'}
+                      onClick={() => setSelectedTool('select')}
+                    >
+                      Select
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={selectedTool === 'text' ? 'default' : 'outline'}
+                      onClick={() => setSelectedTool('text')}
+                    >
+                      <Type className="h-4 w-4 mr-1" />
+                      Text
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={selectedTool === 'stamp' ? 'default' : 'outline'}
+                      onClick={() => setSelectedTool('stamp')}
+                    >
+                      <StampIcon className="h-4 w-4 mr-1" />
+                      Stamp
+                    </Button>
+                  </div>
+                  
+                  {/* Page navigation */}
+                  <div className="flex items-center gap-2 border-r pr-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => changePage(-1)}
+                      disabled={pageNumber <= 1}
                     >
                       Previous
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage >= totalPages}
+                    <span className="text-sm">
+                      Page {pageNumber} of {numPages || '-'}
+                    </span>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => changePage(1)}
+                      disabled={!numPages || pageNumber >= numPages}
                     >
                       Next
                     </Button>
                   </div>
+                  
+                  {/* Zoom controls */}
+                  <div className="flex items-center gap-2 border-r pr-2">
+                    <Button size="sm" variant="outline" onClick={zoomOut}>
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm">{Math.round(scale * 100)}%</span>
+                    <Button size="sm" variant="outline" onClick={zoomIn}>
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {/* Annotation-specific controls */}
+                  {selectedTool === 'text' && (
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="text-input" className="text-sm">Text:</Label>
+                      <Input
+                        id="text-input"
+                        value={textInput}
+                        onChange={(e) => setTextInput(e.target.value)}
+                        className="h-8 text-sm"
+                        placeholder="Enter text annotation..."
+                      />
+                    </div>
+                  )}
+                  
+                  {selectedTool === 'stamp' && (
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm">Stamp:</Label>
+                      <select 
+                        className="h-8 rounded-md border text-sm" 
+                        onChange={(e) => {
+                          const [category, index] = e.target.value.split('|');
+                          selectStamp(category, parseInt(index));
+                        }}
+                        value={selectedStamp ? `${Object.keys(STAMPS).find(cat => 
+                          STAMPS[cat].some(s => s.id === selectedStamp.id))}|${
+                          STAMPS[Object.keys(STAMPS).find(cat => 
+                            STAMPS[cat].some(s => s.id === selectedStamp.id)) || '']
+                            .findIndex(s => s.id === selectedStamp.id)}` : ''}
+                      >
+                        <option value="">Select a stamp</option>
+                        {Object.entries(STAMPS).map(([category, stamps]) => (
+                          <optgroup label={category} key={category}>
+                            {stamps.map((stamp, index) => (
+                              <option value={`${category}|${index}`} key={stamp.id}>
+                                {stamp.icon} {stamp.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  
+                  {/* Delete button for selected annotations */}
+                  {selectedAnnotation !== null && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={deleteSelectedAnnotation}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  )}
                 </div>
                 
-                <div className="relative border rounded-md h-[600px] bg-gray-50 overflow-hidden">
-                  <iframe 
-                    src={`${pdfUrl}#page=${currentPage}`}
-                    className="w-full h-full"
-                    title="PDF Viewer"
-                  />
-                  
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-secondary rounded-md px-3 py-1 shadow text-sm">
-                    <p>PDF annotation tools coming soon!</p>
+                {/* PDF rendering container */}
+                <div 
+                  className="border rounded-md overflow-auto relative bg-white"
+                  style={{ height: '600px' }}
+                  onClick={handleCanvasClick}
+                  ref={containerRef}
+                >
+                  <div style={{ position: 'relative', transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                      <Page 
+                        pageNumber={pageNumber} 
+                        renderTextLayer={true} 
+                        renderAnnotationLayer={true}
+                      />
+                    </Document>
+                    
+                    {/* Render annotations for the current page */}
+                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                      {annotations
+                        .filter(ann => ann.page === pageNumber)
+                        .map(annotation => (
+                          <div 
+                            key={annotation.id}
+                            className={`absolute ${selectedAnnotation === annotation.id ? 'ring-2 ring-blue-500' : ''}`}
+                            style={{ 
+                              left: annotation.x,
+                              top: annotation.y,
+                              color: annotation.color,
+                              pointerEvents: 'auto',  // Make annotations clickable
+                              cursor: selectedTool === 'select' ? 'pointer' : 'default'
+                            }}
+                          >
+                            {annotation.type === 'stamp' && (
+                              <div className="flex flex-col items-center text-center">
+                                <div style={{ fontSize: '24px' }}>{annotation.stampIcon}</div>
+                                <div style={{ 
+                                  background: annotation.color,
+                                  color: 'white',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold'
+                                }}>
+                                  {annotation.stampLabel}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {annotation.type === 'text' && (
+                              <div className="max-w-[200px] bg-white p-2 border rounded shadow-sm">
+                                {annotation.content}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            )}
-            
-            {!pdfUrl && (
+            ) : (
               <div className="flex flex-col items-center justify-center border rounded-md p-8 mt-4 bg-muted/20">
                 <p className="text-muted-foreground text-center mb-2">No PDF file loaded</p>
                 <p className="text-sm text-muted-foreground text-center">
