@@ -58,7 +58,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-blue-50 group even:bg-gray-50/30",
       className
     )}
     {...props}
@@ -73,7 +73,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] [.bg-red-600_&]:text-white [.bg-red-700_&]:text-white",
+      "h-12 px-4 text-left align-middle font-semibold text-sm tracking-wide bg-slate-50 first:rounded-tl-lg last:rounded-tr-lg text-gray-700 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] [.bg-red-600_&]:text-white [.bg-red-700_&]:text-white border-b shadow-sm",
       className
     )}
     {...props}
@@ -88,7 +88,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "px-4 py-3 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] group-hover:bg-gray-50/70 transition-colors text-gray-700",
       className
     )}
     {...props}
