@@ -16,7 +16,7 @@ import {
 import { registerEnhancedFloorplanRoutes } from './enhanced-floorplan-routes';
 import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
 import { recognizeSpeech, textToSpeech } from './speech-api';
-import { processChatMessage, generateEquipmentRecommendations } from './services/chatbot-gemini';
+import chatbotGeminiService from './services/chatbot-gemini';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2828,7 +2828,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const result = await processChatMessage(messages, context || {});
+      const result = await chatbotGeminiService.processMessage(messages, context || {});
       res.json(result);
     } catch (error) {
       console.error("Error processing chat message:", error);
@@ -2851,7 +2851,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const recommendations = await generateEquipmentRecommendations(messages, context || {});
+      const response = await chatbotGeminiService.processMessage(messages, context || {});
+      const recommendations = await chatbotGeminiService.extractEquipmentRecommendations(response);
       res.json({ recommendations });
     } catch (error) {
       console.error("Error generating equipment recommendations:", error);
