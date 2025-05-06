@@ -700,6 +700,21 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
             </TooltipTrigger>
             <TooltipContent side="bottom">Elevator</TooltipContent>
           </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={activeTool === 'note' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => onToolChange('note')}
+                className={`h-8 w-8 rounded-md ${activeTool !== 'note' ? 'bg-yellow-50 hover:bg-yellow-100' : ''}`}
+              >
+                <StickyNote className={`h-4 w-4 ${activeTool !== 'note' ? 'text-yellow-600' : ''}`} />
+                <span className="absolute -top-1 -right-1 text-[10px] bg-yellow-500 text-white rounded-full w-4 h-4 flex items-center justify-center">N</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Quick Note</TooltipContent>
+          </Tooltip>
 
           <Separator orientation="vertical" className="h-8 mx-1" />
           
