@@ -6,8 +6,8 @@ const isProduction = import.meta.env.PROD;
 // Log the auth state
 console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
 
-// Allow for user auto-login in certain environments
-const allowAuthBypass = !isProduction || localStorage.getItem('allow_auth_bypass') === 'true';
+// Only allow auth bypass with explicit flag in local storage
+const allowAuthBypass = localStorage.getItem('allow_auth_bypass') === 'true';
 
 // Custom error handler to make error messages more user-friendly
 async function handleApiError(res: Response): Promise<void> {
@@ -91,23 +91,6 @@ export const getQueryFn: <T>(options: {
         // Handle according to the options
         if (unauthorizedBehavior === "returnNull") {
           return null;
-        }
-        
-        // If we don't want to return null, but want to support auth bypass,
-        // we might create a mock user
-        if (allowAuthBypass) {
-          console.log(`Bypassing auth for ${url} in ${isProduction ? 'production' : 'development'}`);
-          
-          // For user endpoint, we'll return a fake admin user
-          if (url === '/api/user') {
-            return {
-              id: 999,
-              username: 'admin',
-              email: 'admin@example.com',
-              fullName: 'Admin User',
-              role: 'admin',
-            };
-          }
         }
         
         // Otherwise throw as normal
