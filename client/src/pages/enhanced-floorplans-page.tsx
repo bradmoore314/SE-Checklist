@@ -312,7 +312,8 @@ function EnhancedFloorplansPage() {
       const response = await apiRequest('POST', '/api/floorplans', {
         name: floorplanName,
         pdf_data: base64,
-        project_id: projectId
+        project_id: projectId,
+        page_count: 1 // Default to 1 page, will be updated after processing if needed
       });
       
       // Handle various error responses
