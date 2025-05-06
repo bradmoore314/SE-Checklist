@@ -1,36 +1,4 @@
-import { GoogleGenerativeAI, GenerativeModel, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-
-// Initialize Gemini API with API key from environment
-const apiKey = process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey!);
-
-// Define security settings for content safety
-const safetySettings = [
-  {
-    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-];
-
-// Define generation configuration
-const generationConfig = {
-  temperature: 0.7,
-  topK: 40,
-  topP: 0.95,
-  maxOutputTokens: 2048,
-};
+import fetch from 'node-fetch';
 
 // Define message history types
 export interface ChatMessage {
@@ -55,19 +23,25 @@ export interface ChatContext {
 }
 
 /**
- * ChatbotGeminiService - Provides AI functionality using Google's Gemini model
+ * ChatbotGeminiService - Provides AI functionality using Google's Gemini model via direct API calls
+ * 
+ * IMPORTANT NOTE: Always use the specific Gemini API endpoint:
+ * https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=GEMINI_API_KEY
  */
 export class ChatbotGeminiService {
-  private model: GenerativeModel;
+  private apiKey: string | undefined;
+  private apiEndpoint: string;
   private systemPrompt: string;
   
   constructor() {
-    // Initialize Gemini model
-    this.model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-pro-latest',
-      safetySettings,
-      generationConfig,
-    });
+    this.apiKey = process.env.GEMINI_API_KEY;
+    
+    if (!this.apiKey) {
+      console.warn('GEMINI_API_KEY not found in environment. Gemini AI services will not function correctly.');
+    }
+
+    // Set the specific API endpoint as requested by the user
+    this.apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;
     
     // System prompt to set the assistant's behavior
     this.systemPrompt = `You are a knowledgeable Security Equipment Assistant developed for a Site Walk Checklist application. Your job is to help security professionals configure and place security equipment during site assessments.
@@ -106,13 +80,118 @@ export class ChatbotGeminiService {
   }
   
   /**
-   * Process a chat message and return a response
+   * Process a chat message by making a direct API call to Gemini
    * 
    * @param messages Chat history
    * @param context Optional context with information about the site
    * @returns Response from the AI
    */
   async processMessage(messages: ChatMessage[], context?: ChatContext): Promise<string> {
+    try {
+      // If we're in local fallback mode due to API issues
+      if (!this.apiKey || messages.length === 0) {
+        return this.generateLocalResponse(messages, context);
+      }
+      
+      // Format messages for the Gemini API
+      const formattedMessages = this.formatMessagesForGemini(messages, context);
+      
+      // Call the Gemini API directly
+      const response = await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: formattedMessages,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 2048,
+          },
+          safetySettings: [
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            }
+          ]
+        })
+      });
+      
+      // Handle API response
+      if (!response.ok) {
+        console.error(`Gemini API error: ${response.status} ${response.statusText}`);
+        return this.generateLocalResponse(messages, context);
+      }
+      
+      const data = await response.json();
+      
+      // Extract text from the response
+      if (data && 
+          data.candidates && 
+          data.candidates[0] && 
+          data.candidates[0].content && 
+          data.candidates[0].content.parts && 
+          data.candidates[0].content.parts[0] && 
+          data.candidates[0].content.parts[0].text) {
+        return data.candidates[0].content.parts[0].text;
+      } else {
+        console.error('Unexpected response format from Gemini API:', JSON.stringify(data));
+        return this.generateLocalResponse(messages, context);
+      }
+    } catch (error) {
+      console.error('Error calling Gemini API:', error);
+      return this.generateLocalResponse(messages, context);
+    }
+  }
+  
+  /**
+   * Format messages for the Gemini API
+   */
+  private formatMessagesForGemini(messages: ChatMessage[], context?: ChatContext): any[] {
+    const formattedMessages = [];
+    
+    // Add system message with context if available
+    formattedMessages.push({
+      role: "user",
+      parts: [{ text: this.systemPrompt + (context ? `\n\nAdditional context: ${JSON.stringify(context)}` : '') }]
+    });
+    
+    formattedMessages.push({
+      role: "model",
+      parts: [{ text: "I'll help you with security equipment recommendations for your site assessment." }]
+    });
+    
+    // Add conversation history
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
+      formattedMessages.push({
+        role: message.role === 'user' ? 'user' : 'model',
+        parts: [{ text: message.content }]
+      });
+    }
+    
+    return formattedMessages;
+  }
+  
+  /**
+   * Generate a local response when API is unavailable
+   */
+  private generateLocalResponse(messages: ChatMessage[], context?: ChatContext): string {
+    // Fall back to the local logic if API is unavailable
     try {
       // Get the last user message
       const lastMessage = messages[messages.length - 1];
@@ -141,7 +220,7 @@ export class ChatbotGeminiService {
         return this.generateDefaultResponse(userMessage, equipment, buildingInfo);
       }
     } catch (error) {
-      console.error('Error processing message:', error);
+      console.error('Error generating local response:', error);
       return "I'm here to help with your security equipment needs. Could you please provide more specific details about what you're looking for?";
     }
   }
@@ -208,6 +287,13 @@ export class ChatbotGeminiService {
       if (match && match[1]) {
         buildingInfo.buildingType = match[1].trim();
         break;
+      }
+    }
+    
+    // Check for location mentions
+    if (message.includes('frisco') || message.includes('texas')) {
+      if (!buildingInfo.buildingType) {
+        buildingInfo.buildingType = 'building in Frisco, Texas';
       }
     }
     
@@ -284,64 +370,7 @@ export class ChatbotGeminiService {
   }
   
   /**
-   * Format messages in the expected structure for Gemini
-   */
-  private formatMessagesForGemini(messages: ChatMessage[]): string {
-    // Convert message array to a single string with role prefixes
-    // This is one approach that works well with Gemini
-    return messages.map(msg => {
-      const prefix = msg.role === 'user' ? 'User: ' : 'Assistant: ';
-      return `${prefix}${msg.content}`;
-    }).join('\n\n');
-  }
-  
-  /**
-   * Format context data as a system message
-   */
-  private formatContextAsMessage(context: ChatContext): ChatMessage {
-    let contextText = 'Context information about the site:\n\n';
-    
-    if (context.buildingType) {
-      contextText += `Building type: ${context.buildingType}\n`;
-    }
-    
-    if (context.buildingSize) {
-      contextText += `Building size: ${context.buildingSize.floors} floors`;
-      if (context.buildingSize.squareFootage) {
-        contextText += `, ${context.buildingSize.squareFootage} square feet`;
-      }
-      contextText += '\n';
-    }
-    
-    if (context.specialRequirements && context.specialRequirements.length > 0) {
-      contextText += `Special requirements: ${context.specialRequirements.join(', ')}\n`;
-    }
-    
-    if (context.securityEquipment && context.securityEquipment.length > 0) {
-      contextText += '\nExisting security equipment:\n';
-      context.securityEquipment.forEach(item => {
-        contextText += `- ${item.count} ${item.type}`;
-        if (item.location) {
-          contextText += ` (${item.location})`;
-        }
-        if (item.details) {
-          contextText += `: ${item.details}`;
-        }
-        contextText += '\n';
-      });
-    }
-    
-    return {
-      role: 'user',
-      content: contextText,
-    };
-  }
-  
-  /**
    * Extract equipment recommendations from AI message
-   * 
-   * @param message AI message to analyze
-   * @returns Array of security equipment objects extracted from the message
    */
   async extractEquipmentRecommendations(message: string): Promise<ChatContext['securityEquipment']> {
     // Simple regex-based extraction to avoid API limitations
@@ -449,9 +478,6 @@ export class ChatbotGeminiService {
   
   /**
    * Analyze user query to understand equipment requirements
-   * 
-   * @param userQuery The user's query about security equipment
-   * @returns Context object with extracted information
    */
   async analyzeQuery(userQuery: string): Promise<ChatContext> {
     try {
@@ -492,6 +518,17 @@ export class ChatbotGeminiService {
             context.specialRequirements.push(`Located in ${match[1].trim()}`);
           }
           break;
+        }
+      }
+      
+      // Check for Frisco, Texas specifically
+      if (userQuery.toLowerCase().includes('frisco') || userQuery.toLowerCase().includes('texas')) {
+        if (!context.buildingType) {
+          context.buildingType = 'building in Frisco, Texas';
+        } else if (!context.specialRequirements) {
+          context.specialRequirements = ['Located in Frisco, Texas'];
+        } else {
+          context.specialRequirements.push('Located in Frisco, Texas');
         }
       }
       
