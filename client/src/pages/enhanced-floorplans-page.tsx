@@ -65,6 +65,10 @@ function EnhancedFloorplansPage() {
   const projectId = parseInt(params.projectId);
   const floorplanId = params.floorplanId ? parseInt(params.floorplanId) : undefined;
   
+  // Reference for the fullscreen functionality - MUST be declared before any conditional returns
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+  
   // Mobile detection state
   const [isMobile, setIsMobile] = useState(false);
   
@@ -617,9 +621,7 @@ function EnhancedFloorplansPage() {
     );
   }
   
-  // Reference for the fullscreen functionality - must be declared before any conditional returns
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [showSidebar, setShowSidebar] = useState(true);
+  // Reference for the fullscreen functionality - already moved to top of component
   
   // Show error if specific floorplan not found
   if (!floorplan) {
