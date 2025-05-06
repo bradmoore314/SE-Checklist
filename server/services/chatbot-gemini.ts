@@ -205,53 +205,103 @@ export class ChatbotGeminiService {
    * @returns Array of security equipment objects extracted from the message
    */
   async extractEquipmentRecommendations(message: string): Promise<ChatContext['securityEquipment']> {
+    // Simple regex-based extraction to avoid API limitations
     try {
-      // Create a new chat instance for the analysis
-      const analyzeChat = this.model.startChat({
-        history: [],
-        systemInstruction: `You are a parser that extracts security equipment recommendations from text. 
-        Extract and structure the information about security equipment mentioned in the given text.
-        Output ONLY a JSON array of objects with these properties:
-        - type: the type of security equipment (e.g., "camera", "access point", "intercom", "elevator", etc.)
-        - count: the number of equipment items recommended (integer)
-        - location: where the equipment should be placed (optional)
-        - details: any additional specification about the equipment (optional)
-        - confidence: a number between 0 and 1 indicating your confidence in this extraction (required)
-        
-        Only extract equipment that has specific recommendations for installation or placement.
-        If no security equipment recommendations are present, return an empty array.
-        Your output should be valid JSON and nothing else.`,
-      });
+      // We'll use a simpler approach that doesn't require a second API call
+      // This helps avoid API rate limits and potential errors
+      const equipment: ChatContext['securityEquipment'] = [];
       
-      // Send the message for analysis
-      const analysisResult = await analyzeChat.sendMessage(`Extract security equipment recommendations from this text:\n\n${message}`);
-      const analysisText = analysisResult.response.text();
-      
-      // Try to parse JSON from the response
-      try {
-        // Extract JSON from the response (it might be wrapped in code blocks)
-        const jsonMatch = analysisText.match(/```json\n([\s\S]*)\n```/) || 
-                          analysisText.match(/```\n([\s\S]*)\n```/) || 
-                          [null, analysisText];
-        
-        const jsonString = jsonMatch[1].trim();
-        const equipment = JSON.parse(jsonString);
-        
-        // Validate and clean up the extracted data
-        if (Array.isArray(equipment)) {
-          return equipment.map(item => ({
-            type: item.type || "unknown",
-            count: typeof item.count === 'number' ? item.count : 1,
-            location: item.location || undefined,
-            details: item.details || undefined,
-            confidence: item.confidence || 0.5
-          }));
-        }
-        return [];
-      } catch (parseError) {
-        console.error('Error parsing equipment JSON:', parseError);
-        return [];
+      // Look for mentions of cameras
+      const cameraMatches = message.match(/(\d+)\s+(?:camera|cameras)/gi);
+      if (cameraMatches && cameraMatches.length > 0) {
+        const match = cameraMatches[0].match(/(\d+)/);
+        const count = match ? parseInt(match[1]) : 1;
+        equipment.push({
+          type: 'camera',
+          count: count,
+          confidence: 0.8
+        });
+      } else if (message.toLowerCase().includes('camera')) {
+        equipment.push({
+          type: 'camera',
+          count: 1,
+          confidence: 0.6
+        });
       }
+      
+      // Look for mentions of access points
+      const accessPointMatches = message.match(/(\d+)\s+(?:access point|access points|card reader|card readers)/gi);
+      if (accessPointMatches && accessPointMatches.length > 0) {
+        const match = accessPointMatches[0].match(/(\d+)/);
+        const count = match ? parseInt(match[1]) : 1;
+        equipment.push({
+          type: 'access_point',
+          count: count,
+          confidence: 0.8
+        });
+      } else if (message.toLowerCase().includes('access point') || message.toLowerCase().includes('card reader')) {
+        equipment.push({
+          type: 'access_point',
+          count: 1,
+          confidence: 0.6
+        });
+      }
+      
+      // Look for mentions of intercoms
+      const intercomMatches = message.match(/(\d+)\s+(?:intercom|intercoms)/gi);
+      if (intercomMatches && intercomMatches.length > 0) {
+        const match = intercomMatches[0].match(/(\d+)/);
+        const count = match ? parseInt(match[1]) : 1;
+        equipment.push({
+          type: 'intercom',
+          count: count,
+          confidence: 0.8
+        });
+      } else if (message.toLowerCase().includes('intercom')) {
+        equipment.push({
+          type: 'intercom',
+          count: 1,
+          confidence: 0.6
+        });
+      }
+      
+      // Look for mentions of elevators
+      const elevatorMatches = message.match(/(\d+)\s+(?:elevator|elevators)/gi);
+      if (elevatorMatches && elevatorMatches.length > 0) {
+        const match = elevatorMatches[0].match(/(\d+)/);
+        const count = match ? parseInt(match[1]) : 1;
+        equipment.push({
+          type: 'elevator',
+          count: count,
+          confidence: 0.8
+        });
+      } else if (message.toLowerCase().includes('elevator')) {
+        equipment.push({
+          type: 'elevator',
+          count: 1,
+          confidence: 0.6
+        });
+      }
+      
+      // Also look for mentions of specific locations
+      for (const item of equipment) {
+        // Look for common location patterns
+        const locationPatterns = [
+          new RegExp(`${item.type}\\s+(?:at|in|on|for)\\s+the\\s+([\\w\\s]+)`, 'i'),
+          new RegExp(`place\\s+(?:a|the|\\d+)\\s+${item.type}\\s+(?:at|in|on)\\s+the\\s+([\\w\\s]+)`, 'i'),
+          new RegExp(`install\\s+(?:a|the|\\d+)\\s+${item.type}\\s+(?:at|in|on)\\s+the\\s+([\\w\\s]+)`, 'i')
+        ];
+        
+        for (const pattern of locationPatterns) {
+          const match = message.match(pattern);
+          if (match && match[1]) {
+            item.location = match[1].trim();
+            break;
+          }
+        }
+      }
+      
+      return equipment;
     } catch (error) {
       console.error('Error extracting equipment recommendations:', error);
       return [];
@@ -266,52 +316,98 @@ export class ChatbotGeminiService {
    */
   async analyzeQuery(userQuery: string): Promise<ChatContext> {
     try {
-      // Create a chat instance for analysis
-      const analyzeChat = this.model.startChat({
-        history: [],
-        systemInstruction: `You are an AI that analyzes queries about security equipment and building security.
-        Extract information about:
-        1. Building type and characteristics
-        2. Building size (floors, square footage)
-        3. Special security requirements
-        
-        Output ONLY a JSON object with these properties:
-        - buildingType: string (or null if not mentioned)
-        - buildingSize: object with properties:
-          - floors: number (or null if not mentioned)
-          - squareFootage: number (or null if not mentioned)
-        - specialRequirements: array of strings (or empty array if none mentioned)
-        
-        Your output should be valid JSON and nothing else.`,
-      });
+      // Use regex patterns to extract key information from the query
+      // This approach avoids making a second API call
+      const context: ChatContext = {};
       
-      // Send the query for analysis
-      const analysisResult = await analyzeChat.sendMessage(`Analyze this query about security equipment: "${userQuery}"`);
-      const analysisText = analysisResult.response.text();
+      // Extract building type
+      const buildingTypePatterns = [
+        /(?:in|for|at)\s+(?:a|the)\s+([\w\s-]+building|[\w\s-]+facility|[\w\s-]+complex|[\w\s-]+office|[\w\s-]+warehouse|[\w\s-]+mall|[\w\s-]+store|[\w\s-]+school|[\w\s-]+hospital|[\w\s-]+hotel)/i,
+        /(?:the|a|my|our)\s+([\w\s-]+building|[\w\s-]+facility|[\w\s-]+complex|[\w\s-]+office|[\w\s-]+warehouse|[\w\s-]+mall|[\w\s-]+store|[\w\s-]+school|[\w\s-]+hospital|[\w\s-]+hotel)/i,
+      ];
       
-      // Try to parse JSON from the response
-      try {
-        // Extract JSON from the response (it might be wrapped in code blocks)
-        const jsonMatch = analysisText.match(/```json\n([\s\S]*)\n```/) || 
-                          analysisText.match(/```\n([\s\S]*)\n```/) || 
-                          [null, analysisText];
-        
-        const jsonString = jsonMatch[1].trim();
-        const analysis = JSON.parse(jsonString);
-        
-        // Create context object from analysis
-        return {
-          buildingType: analysis.buildingType || undefined,
-          buildingSize: analysis.buildingSize && (analysis.buildingSize.floors || analysis.buildingSize.squareFootage) ? {
-            floors: analysis.buildingSize.floors || 1,
-            squareFootage: analysis.buildingSize.squareFootage || undefined
-          } : undefined,
-          specialRequirements: Array.isArray(analysis.specialRequirements) ? analysis.specialRequirements : [],
-        };
-      } catch (parseError) {
-        console.error('Error parsing analysis JSON:', parseError);
-        return {};
+      for (const pattern of buildingTypePatterns) {
+        const match = userQuery.match(pattern);
+        if (match && match[1]) {
+          context.buildingType = match[1].trim();
+          break;
+        }
       }
+      
+      // Extract location information
+      const locationPatterns = [
+        /(?:in|at|near|around)\s+([\w\s,-]+),\s*(\w{2})/i,  // "in Austin, TX"
+        /(?:in|at|near|around)\s+([\w\s,-]+)/i,  // "in Downtown Seattle"
+      ];
+      
+      for (const pattern of locationPatterns) {
+        const match = userQuery.match(pattern);
+        if (match && match[1]) {
+          if (!context.buildingType) {
+            context.buildingType = match[1].trim();
+          } else {
+            // If we already have a building type, consider this as special requirement
+            if (!context.specialRequirements) {
+              context.specialRequirements = [];
+            }
+            context.specialRequirements.push(`Located in ${match[1].trim()}`);
+          }
+          break;
+        }
+      }
+      
+      // Extract floor information
+      const floorPattern = /(\d+)[\s-]*(?:floor|story|floors|stories)/i;
+      const floorMatch = userQuery.match(floorPattern);
+      
+      if (floorMatch && floorMatch[1]) {
+        const floors = parseInt(floorMatch[1]);
+        if (!context.buildingSize) {
+          context.buildingSize = { floors };
+        } else {
+          context.buildingSize.floors = floors;
+        }
+      }
+      
+      // Extract square footage
+      const sqftPatterns = [
+        /(\d+)[,\s]*(?:sq\.?\s*ft\.?|square\s*feet|square\s*foot)/i,
+        /(\d+)[,\s]*(?:sqft|sf)/i,
+      ];
+      
+      for (const pattern of sqftPatterns) {
+        const match = userQuery.match(pattern);
+        if (match && match[1]) {
+          const squareFootage = parseInt(match[1].replace(/,/g, ''));
+          if (!context.buildingSize) {
+            context.buildingSize = { floors: 1, squareFootage };
+          } else {
+            context.buildingSize.squareFootage = squareFootage;
+          }
+          break;
+        }
+      }
+      
+      // Extract special requirements
+      const specialReqPatterns = [
+        /need(?:s|ed)?\s+to\s+be\s+([\w\s]+)/i,
+        /require(?:s|d)?\s+([\w\s]+)/i,
+        /(?:high|enhanced)\s+security\s+(?:area|zone|for)\s+([\w\s]+)/i,
+        /compliance\s+with\s+([\w\s]+)/i,
+      ];
+      
+      if (!context.specialRequirements) {
+        context.specialRequirements = [];
+      }
+      
+      for (const pattern of specialReqPatterns) {
+        const match = userQuery.match(pattern);
+        if (match && match[1]) {
+          context.specialRequirements.push(match[1].trim());
+        }
+      }
+      
+      return context;
     } catch (error) {
       console.error('Error analyzing query:', error);
       return {};
