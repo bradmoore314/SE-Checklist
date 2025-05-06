@@ -1,2219 +1,924 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { useAuth } from '@/hooks/use-auth';
+import { useRef, useEffect, useState } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { useDevice } from '@/hooks/use-device';
-import { 
-  ChevronDown, 
-  Loader2, 
-  Plus, 
-  PlusCircle, 
-  X, 
-  Edit, 
-  Trash, 
-  Check, 
-  FileUp,
-  Download,
-  ZoomIn,
-  Copy,
-  ZoomOut,
-  Minimize,
-  Info,
-  MoreHorizontal
-} from 'lucide-react';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { ButtonGroup } from '@/components/ui/button-group';
-import { Document, Page } from 'react-pdf';
-// Import worker configuration from dedicated file
-import '@/lib/pdf-worker';
+import { Loader2, Layers, ZoomIn, ZoomOut, CheckSquare } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
+import { AnnotationTool } from './AnnotationToolbar';
+import { CalibrationDialog } from './CalibrationDialog';
+import { LayerManager } from './LayerManager';
+import EquipmentFormDialog from './EquipmentFormDialog';
 
-// Import PDF-specific styles
-import '@/styles/pdf.css';
+// Ensure PDF.js worker is configured
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// Import the equipment-specific modals
-import AddAccessPointModal from '@/components/modals/AddAccessPointModal';
-import AddCameraModal from '@/components/modals/AddCameraModal';
-import AddElevatorModal from '@/components/modals/AddElevatorModal';
-import AddIntercomModal from '@/components/modals/AddIntercomModal';
-
-// Type definition for floorplan
-interface Floorplan {
+// Define interfaces
+interface FloorplanData {
   id: number;
   project_id: number;
   name: string;
   pdf_data: string;
   page_count: number;
-  created_at: string;
-  updated_at: string;
 }
 
-// Type definition for marker
-interface FloorplanMarker {
+interface LayerData {
+  id: number;
+  floorplan_id: number;
+  name: string;
+  color: string;
+  visible: boolean;
+  order_index: number;
+}
+
+interface MarkerData {
+  id: number;
+  floorplan_id: number;
+  unique_id: string;
+  page: number;
+  marker_type: string;
+  equipment_id?: number;
+  layer_id?: number;
+  position_x: number;
+  position_y: number;
+  end_x?: number;
+  end_y?: number;
+  width?: number;
+  height?: number;
+  rotation?: number;
+  color?: string;
+  fill_color?: string;
+  opacity?: number;
+  line_width?: number;
+  label?: string;
+  text_content?: string;
+  font_size?: number;
+  font_family?: string;
+  points?: Array<{x: number, y: number}>;
+  author_id?: number;
+  author_name?: string;
+  version: number;
+  parent_id?: number;
+}
+
+interface CalibrationData {
   id: number;
   floorplan_id: number;
   page: number;
-  marker_type: 'access_point' | 'camera' | 'elevator' | 'intercom' | 'note';
-  equipment_id: number;
-  position_x: number;
-  position_y: number;
-  label: string | null;
-  created_at: string;
+  real_world_distance: number;
+  pdf_distance: number;
+  unit: string;
+  start_x: number;
+  start_y: number;
+  end_x: number;
+  end_y: number;
 }
 
-// Props for the component
-interface FixedFloorplanViewerProps {
-  projectId: number;
-  onMarkersUpdated?: () => void;
+interface EnhancedFloorplanViewerProps {
+  floorplan: FloorplanData;
+  currentPage: number;
+  toolMode: AnnotationTool; 
+  layers: LayerData[];
+  onPageChange: (page: number) => void;
+  showAllLabels?: boolean;
 }
 
-// Helper function to get a readable name for a marker type
-const getMarkerTypeName = (type: string): string => {
-  switch (type) {
-    case 'access_point': return 'Access Point';
-    case 'camera': return 'Camera';
-    case 'elevator': return 'Elevator';
-    case 'intercom': return 'Intercom';
-    case 'note': return 'Note';
-    default: return type;
-  }
-};
-
-// The component
-const FixedFloorplanViewer: React.FC<FixedFloorplanViewerProps> = ({ projectId, onMarkersUpdated }) => {
-  // Refs for the container and PDF elements
-  const containerRef = useRef<HTMLDivElement>(null);
-  const pdfDocumentRef = useRef<HTMLDivElement>(null);
-  
-  // Auth context for login
-  const { user, bypassAuth } = useAuth();
+export const EnhancedFloorplanViewer = ({
+  floorplan,
+  currentPage,
+  toolMode,
+  layers,
+  onPageChange,
+  showAllLabels = false
+}: EnhancedFloorplanViewerProps) => {
+  // Hooks and refs
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const svgLayerRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  // Get device-specific data (allows syncing between floorplan markers and device forms)
-  const { 
-    accessPoints, 
-    cameras, 
-    elevators, 
-    intercoms,
-    createAccessPoint,
-    createCamera,
-    createElevator,
-    createIntercom,
-  } = useDevice();
-  
-  // Function to get next marker number for a specific type
-  const getNextMarkerNumber = (type: string): number => {
-    const typeMarkers = (markers as FloorplanMarker[]).filter(m => m.marker_type === type);
-    
-    // If no markers of this type exist, start at 1
-    if (typeMarkers.length === 0) return 1;
-    
-    // Find the highest number and increment
-    const numbers = typeMarkers.map(m => {
-      // Extract number from label if it exists
-      if (m.label && /^\d+$/.test(m.label)) {
-        return parseInt(m.label, 10);
-      }
-      return 0;
-    });
-    
-    const maxNumber = Math.max(...numbers);
-    return maxNumber + 1;
-  };
-  
-  // Get marker number (index + 1) for a specific marker type
-  const getMarkerNumber = (markerId: number): number => {
-    try {
-      // Safety check - make sure markers array exists
-      if (!markers || !Array.isArray(markers) || markers.length === 0) {
-        console.log("No markers available to determine number");
-        return 1; // Default to 1 if no markers
-      }
-      
-      const marker = markers.find(m => m.id === markerId);
-      if (!marker) {
-        console.log(`Marker with ID ${markerId} not found, defaulting to 1`);
-        return 1;
-      }
-      
-      // For notes, use the label text directly
-      if (marker.marker_type === 'note') {
-        return 0; // Notes don't get numbers
-      }
-      
-      // Get all markers of the same type
-      const typeMarkers = markers.filter(m => m.marker_type === marker.marker_type);
-      
-      if (typeMarkers.length === 0) {
-        console.log(`No markers of type ${marker.marker_type} found, defaulting to 1`);
-        return 1;
-      }
-      
-      // Sort by creation date with defensive programming against missing dates
-      typeMarkers.sort((a, b) => {
-        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return dateA - dateB;
-      });
-      
-      // Find index of this marker and use its position for the number
-      const index = typeMarkers.findIndex(m => m.id === markerId);
-      
-      // Return 1-based index with safety check
-      return index >= 0 ? index + 1 : 1;
-    } catch (error) {
-      console.error("Error in getMarkerNumber:", error);
-      return 1; // Default to 1 on error
-    }
-  };
-  
-  // Zoom control functions with safety limits to prevent PDF.js errors
-  const MAX_ZOOM = 2.5; // Reduced from 3.0 to prevent PDF.js "sendWithPromise" errors
-  const MIN_ZOOM = 0.25;
-  
-  const zoomIn = () => {
-    // Apply a more conservative upper limit to prevent PDF.js from breaking
-    // This prevents the "Cannot read properties of null (reading 'sendWithPromise')" error
-    setPdfScale(prev => {
-      const newScale = prev + 0.1;
-      if (newScale > MAX_ZOOM) {
-        // Show warning toast when reaching max zoom
-        toast({
-          title: "Maximum zoom reached",
-          description: "You've reached the maximum safe zoom level",
-          variant: "default",
-        });
-        return MAX_ZOOM;
-      }
-      return newScale;
-    });
-  };
-  
-  const zoomOut = () => {
-    setPdfScale(prev => Math.max(MIN_ZOOM, prev - 0.1));
-  };
-  
-  const resetZoom = () => {
-    setPdfScale(1.0);
-  };
-  
-  // State for floorplan data and selection
-  const [selectedFloorplanId, setSelectedFloorplanId] = useState<number | null>(null);
-  const [pdfScale, setPdfScale] = useState<number>(1);
-  
-  // State for upload dialog
-  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false);
-  const [newFloorplanName, setNewFloorplanName] = useState<string>('');
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  
-  // State for marker placement
+  // State management
+  const [pdfDocument, setPdfDocument] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
+  const [scale, setScale] = useState<number>(1);
+  const [translateX, setTranslateX] = useState<number>(0);
+  const [translateY, setTranslateY] = useState<number>(0);
+  const [viewportDimensions, setViewportDimensions] = useState({width: 0, height: 0});
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
+  const [pdfToViewportScale, setPdfToViewportScale] = useState<number>(1);
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
-  const [markerDialogOpen, setMarkerDialogOpen] = useState<boolean>(false);
-  const [noteDialogOpen, setNoteDialogOpen] = useState<boolean>(false);
-  const [markerType, setMarkerType] = useState<string>('access_point');
-  const [markerLabel, setMarkerLabel] = useState<string>('');
-  const [newMarkerPosition, setNewMarkerPosition] = useState<{ x: number, y: number } | null>(null);
-  
-  // State for marker interactions
-  const [draggedMarker, setDraggedMarker] = useState<number | null>(null);
-  const [resizingMarker, setResizingMarker] = useState<number | null>(null);
-  const [initialResizeData, setInitialResizeData] = useState<{
-    size: { width: number, height: number };
-    mousePos: { x: number, y: number };
-  } | null>(null);
-  
-  // Default marker sizes
-  const defaultMarkerSizes: Record<string, number | { width: number, height: number }> = {
-    'access_point': 36,
-    'camera': 36,
-    'elevator': 36,
-    'intercom': 36,
-    'note': { width: 150, height: 40 }
-  };
-  
-  // State for marker sizes (specifically for resizable notes)
-  const [markerSize, setMarkerSize] = useState<Record<number, { width: number, height: number }>>({});
-  
-  // State for equipment marker scale - this affects all numbered markers (access points, cameras, etc.)
-  const [equipmentMarkerScale, setEquipmentMarkerScale] = useState<number>(1.0);
-  
-  // State for equipment modal
-  const [showAddEquipmentModal, setShowAddEquipmentModal] = useState<boolean>(false);
-  const [selectedEquipmentType, setSelectedEquipmentType] = useState<string | null>(null);
-  
-  // Fetch floorplans for this project
-  const { 
-    data: floorplans = [], 
-    isLoading: isLoadingFloorplans 
-  } = useQuery<Floorplan[]>({
-    queryKey: ['/api/projects', projectId, 'floorplans'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch floorplans');
-      }
-      return response.json();
-    }
-  });
-  
-  // Check for authentication when the component loads
-  useEffect(() => {
-    // If no user is found, use bypass authentication in development
-    if (!user) {
-      console.log('Component loaded without auth, using bypass authentication');
-      bypassAuth();
-    }
-  }, [user, bypassAuth]);
+  const [tempMarker, setTempMarker] = useState<Partial<MarkerData> | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
+  const [isCalibrationDialogOpen, setIsCalibrationDialogOpen] = useState<boolean>(false);
+  const [calibrationStep, setCalibrationStep] = useState<'start' | 'end' | 'distance'>('start');
+  const [calibrationPoints, setCalibrationPoints] = useState<{start?: {x: number, y: number}, end?: {x: number, y: number}}>({});
+  const [isEquipmentFormOpen, setIsEquipmentFormOpen] = useState<boolean>(false);
+  const [activeLayer, setActiveLayer] = useState<LayerData | null>(null);
+  const [contextMenuOpen, setContextMenuOpen] = useState<boolean>(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
+  const [isLayerManagerOpen, setIsLayerManagerOpen] = useState<boolean>(false);
+  const [layerOpacity, setLayerOpacity] = useState<number>(0.5);
+  const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Auto-select the first floorplan if none is selected
-  useEffect(() => {
-    if (floorplans.length > 0 && !selectedFloorplanId) {
-      setSelectedFloorplanId(floorplans[0].id);
+  // Convert screen coordinates to PDF space coordinates
+  const screenToPdfCoordinates = (screenX: number, screenY: number) => {
+    if (!containerRef.current) return { x: 0, y: 0 };
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    // Adjust for container position and current translation
+    const containerX = screenX - rect.left - translateX;
+    const containerY = screenY - rect.top - translateY;
+    
+    // Convert to PDF coordinates by dividing by the scale factor
+    return {
+      x: containerX / pdfToViewportScale,
+      y: containerY / pdfToViewportScale
+    };
+  };
+
+  // DEFINE RENDER PAGE FUNCTION FIRST
+  const renderPage = async (pageNum: number) => {
+    if (!pdfDocument || !canvasRef.current || !svgLayerRef.current || pageNum < 1 || pageNum > pdfDocument.numPages) {
+      return;
     }
-  }, [floorplans, selectedFloorplanId]);
-  
-  // Get the selected floorplan object
-  const selectedFloorplan = (floorplans as Floorplan[]).find(f => f.id === selectedFloorplanId) || null;
-  
-  // Fetch markers for the selected floorplan
+
+    setIsLoading(true);
+    
+    try {
+      const page = await pdfDocument.getPage(pageNum);
+      
+      const viewport = page.getViewport({ scale: scale });
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      
+      if (!context) {
+        console.error('Could not get canvas context');
+        return;
+      }
+      
+      // Update canvas and SVG dimensions
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      setViewportDimensions({ width: viewport.width, height: viewport.height });
+      
+      // Calculate scale from PDF points to viewport pixels
+      const scaleFactor = viewport.width / page.getViewport({ scale: 1 }).width;
+      setPdfToViewportScale(scaleFactor);
+      
+      // Render PDF page
+      await page.render({
+        canvasContext: context,
+        viewport: viewport,
+      }).promise;
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error rendering PDF page:', error);
+      setIsLoading(false);
+      toast({
+        title: 'Rendering Error',
+        description: 'Could not render the floorplan page.',
+        variant: 'destructive',
+        duration: 3000
+      });
+    }
+  };
+
+  // DEFINE EXPORT FUNCTION FIRST
+  const exportAsPng = () => {
+    if (canvasRef.current && svgLayerRef.current) {
+      // Create a temporary canvas for the export
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (tempCtx && canvasRef.current) {
+        tempCanvas.width = canvasRef.current.width;
+        tempCanvas.height = canvasRef.current.height;
+        
+        // Draw the canvas content (PDF)
+        tempCtx.drawImage(canvasRef.current, 0, 0);
+        
+        // Convert SVG to image and draw it
+        const svgData = new XMLSerializer().serializeToString(svgLayerRef.current);
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        
+        const img = new Image();
+        img.onload = () => {
+          tempCtx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          
+          // Create download link
+          const link = document.createElement('a');
+          link.download = `${floorplan.name || 'floorplan'}_page${currentPage}.png`;
+          link.href = tempCanvas.toDataURL('image/png');
+          link.click();
+          
+          toast({
+            title: 'Export Complete',
+            description: 'Floorplan exported as PNG image',
+            duration: 3000
+          });
+        };
+        img.src = url;
+      }
+    }
+  };
+
+  // Handle marker clicks
+  const handleMarkerClick = (marker: MarkerData) => {
+    setSelectedMarker(prevMarker => 
+      prevMarker?.id === marker.id ? null : marker
+    );
+  };
+
+  // Query Hooks
   const { 
     data: markers = [], 
-    isLoading: isLoadingMarkers 
-  } = useQuery<FloorplanMarker[]>({
-    queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'],
+    isLoading: isLoadingMarkers, 
+    refetch: refetchMarkers 
+  } = useQuery({
+    queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
     queryFn: async () => {
-      if (!selectedFloorplan) return [];
-      
-      const response = await apiRequest('GET', `/api/floorplans/${selectedFloorplan.id}/markers`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch markers');
-      }
-      return response.json();
+      const res = await apiRequest('GET', `/api/floorplans/${floorplan.id}/markers?page=${currentPage}`);
+      return await res.json();
     },
-    enabled: !!selectedFloorplan
+    enabled: !!floorplan.id
   });
-  
-  // Force the markers to refresh with sequential numbers when markers list changes
-  useEffect(() => {
-    // Safety check for markers
-    if (!markers || !Array.isArray(markers) || markers.length === 0) {
-      console.log("No markers available for numbering");
-      return;
-    }
-    
-    // Wait for DOM to update with new markers, using a longer delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      try {
-        // Get all marker elements from the DOM
-        const markerElements = document.querySelectorAll('[id^="marker-"]');
-        console.log(`Found ${markerElements.length} marker elements in DOM`);
-        
-        if (markerElements.length === 0) {
-          console.log("No marker elements found in DOM yet, may need another render cycle");
-          return;
-        }
-        
-        // Group markers by type for more efficient processing
-        const markersByType = markers.reduce((groups, marker) => {
-          if (!groups[marker.marker_type]) {
-            groups[marker.marker_type] = [];
-          }
-          groups[marker.marker_type].push(marker);
-          return groups;
-        }, {} as Record<string, FloorplanMarker[]>);
-        
-        // Pre-sort each type group by creation date
-        Object.keys(markersByType).forEach(type => {
-          markersByType[type].sort((a, b) => {
-            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-            return dateA - dateB;
-          });
-        });
-        
-        // Update each marker element
-        markerElements.forEach((element) => {
-          try {
-            // Extract the ID from the element
-            const idPart = element.id.replace('marker-', '');
-            const markerId = parseInt(idPart);
-            
-            if (isNaN(markerId)) {
-              console.warn(`Invalid marker ID format: ${element.id}`);
-              return;
-            }
-            
-            // Find the marker data
-            const marker = markers.find(m => m.id === markerId);
-            if (!marker) {
-              console.warn(`Marker with ID ${markerId} not found in data`);
-              return;
-            }
-            
-            // Skip notes, they don't get numbers
-            if (marker.marker_type === 'note') {
-              return;
-            }
-            
-            // Get the type group this marker belongs to
-            const typeGroup = markersByType[marker.marker_type] || [];
-            
-            // Find position in the pre-sorted group
-            const position = typeGroup.findIndex(m => m.id === markerId);
-            
-            // Only update if necessary and if we have a valid position
-            if (position >= 0) {
-              const newNumber = (position + 1).toString();
-              if (element.textContent !== newNumber) {
-                element.textContent = newNumber;
-              }
-            }
-          } catch (elemError) {
-            console.error("Error processing marker element:", elemError);
-          }
-        });
-      } catch (error) {
-        console.error("Error in marker numbering effect:", error);
-      }
-    }, 150); // Increased delay to ensure DOM is ready
-    
-    return () => clearTimeout(timer);
-  }, [markers]);
-  
-  // The worker is already initialized via the import above
-  // No need for additional worker configuration
-  
-  // Handle floorplan changes
-  useEffect(() => {
-    if (selectedFloorplan) {
-      console.log('Selected floorplan changed:', selectedFloorplan.name);
-    }
-  }, [selectedFloorplan]);
-  
-  // Mutation for uploading a floorplan
-  const uploadFloorplanMutation = useMutation({
-    mutationFn: async (data: { name: string, pdf_data: string, project_id: number, page_count: number }) => {
-      const response = await apiRequest('POST', '/api/floorplans', data);
-      if (!response.ok) {
-        throw new Error('Failed to upload floorplan');
-      }
-      return response.json();
+
+  const {
+    data: calibrationData,
+    isLoading: isLoadingCalibration,
+  } = useQuery({
+    queryKey: [`/api/floorplans/${floorplan.id}/calibration`, currentPage],
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/floorplans/${floorplan.id}/calibration?page=${currentPage}`);
+      return await res.json();
     },
-    onSuccess: (data) => {
-      // Reset upload form
-      setNewFloorplanName('');
-      setPdfFile(null);
-      setUploadDialogOpen(false);
-      
-      // Refresh floorplans list
-      queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
-      
-      // Select the new floorplan
-      setSelectedFloorplanId(data.id);
-      
-      toast({
-        title: "Success",
-        description: `Floorplan "${data.name}" uploaded successfully`,
-      });
-    },
-    onError: (error) => {
-      console.error('Upload error:', error);
-      toast({
-        title: "Upload Failed",
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: "destructive",
-      });
-    }
+    enabled: !!floorplan.id
   });
-  
-  // Mutation for deleting a floorplan
-  const deleteFloorplanMutation = useMutation({
-    mutationFn: async (floorplanId: number) => {
-      const response = await apiRequest('DELETE', `/api/floorplans/${floorplanId}`);
-      if (!response.ok) {
-        throw new Error('Failed to delete floorplan');
-      }
-      return response.json();
+
+  // Mutations for CRUD operations
+  const addMarkerMutation = useMutation({
+    mutationFn: async (marker: Partial<MarkerData>) => {
+      const res = await apiRequest('POST', `/api/floorplans/${floorplan.id}/markers`, marker);
+      return await res.json();
     },
     onSuccess: () => {
-      // Reset selection
-      setSelectedFloorplanId(null);
-      
-      // Refresh floorplans list
-      queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
-      
-      toast({
-        title: "Success",
-        description: "Floorplan deleted successfully",
+      queryClient.invalidateQueries({
+        queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
-    },
-    onError: (error) => {
-      toast({
-        title: "Deletion Failed",
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: "destructive",
+      queryClient.invalidateQueries({
+        queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
     }
   });
-  
-  // Mutation for creating a marker
-  const createMarkerMutation = useMutation({
-    mutationFn: async (data: {
-      floorplan_id: number,
-      page: number,
-      marker_type: string,
-      equipment_id: number,
-      position_x: number,
-      position_y: number,
-      label: string | null
-    }) => {
-      console.log('Creating marker with data:', data);
-      
-      // Check for authentication
-      if (!user) {
-        console.log('No user found, using bypass authentication for development');
-        // Use the bypass auth feature for development
-        bypassAuth();
-      }
-      
-      // Validate required fields before API call
-      if (data.floorplan_id === undefined || data.floorplan_id === null) {
-        throw new Error('floorplan_id is required');
-      }
-      if (data.marker_type === undefined || data.marker_type === null) {
-        throw new Error('marker_type is required');
-      }
-      if (data.equipment_id === undefined || data.equipment_id === null) {
-        throw new Error('equipment_id is required');
-      }
-      if (data.position_x === undefined || data.position_x === null) {
-        throw new Error('position_x is required');
-      }
-      if (data.position_y === undefined || data.position_y === null) {
-        throw new Error('position_y is required');
-      }
-      
-      // Additional validation for specific marker types
-      if (data.marker_type === 'note' && data.equipment_id !== -1) {
-        console.warn('Notes should have equipment_id set to -1, fixing...');
-        data.equipment_id = -1;
-      }
-      
-      try {
-        const response = await apiRequest('POST', '/api/floorplan-markers', data);
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          console.error('Marker creation API error:', { 
-            status: response.status, 
-            data: errorData,
-            sentData: data
-          });
-          
-          // If we get an auth error, try logging in automatically and retry
-          if (response.status === 401) {
-            console.log('Authentication error, trying to bypass for development');
-            bypassAuth();
-            // Retry the request
-            const retryResponse = await apiRequest('POST', '/api/floorplan-markers', data);
-            if (!retryResponse.ok) {
-              throw new Error(`API Error after auth retry (${retryResponse.status})`);
-            }
-            return retryResponse.json();
-          }
-          
-          throw new Error(`API Error (${response.status}): ${errorData?.message || response.statusText}`);
-        }
-        
-        return response.json();
-      } catch (error) {
-        console.error('Error creating marker:', error);
-        throw error;
-      }
+
+  const updateMarkerMutation = useMutation({
+    mutationFn: async (marker: MarkerData) => {
+      const res = await apiRequest('PATCH', `/api/floorplans/${floorplan.id}/markers/${marker.id}`, marker);
+      return await res.json();
     },
-    onSuccess: (data) => {
-      console.log('Marker created successfully:', data);
-      
-      // Reset marker adding state
-      setIsAddingMarker(false);
-      setMarkerDialogOpen(false);
-      setMarkerLabel('');
-      setNewMarkerPosition(null);
-      
-      // Refresh markers list
-      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      
-      // Notify parent component
-      if (onMarkersUpdated) {
-        onMarkersUpdated();
-      }
-      
-      toast({
-        title: "Success",
-        description: "Marker added successfully",
-      });
-    },
-    onError: (error) => {
-      console.error('Marker creation error:', error);
-      
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to add marker',
-        variant: "destructive",
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
     }
   });
-  
-  // Mutation for deleting a marker
+
   const deleteMarkerMutation = useMutation({
     mutationFn: async (markerId: number) => {
-      const response = await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
-      if (!response.ok) {
-        throw new Error('Failed to delete marker');
-      }
-      return response.json();
+      await apiRequest('DELETE', `/api/floorplans/${floorplan.id}/markers/${markerId}`);
     },
     onSuccess: () => {
-      // Refresh markers list
-      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      
-      // Notify parent component
-      if (onMarkersUpdated) {
-        onMarkersUpdated();
-      }
-      
-      toast({
-        title: "Success",
-        description: "Marker deleted successfully",
+      queryClient.invalidateQueries({
+        queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to delete marker',
-        variant: "destructive",
+      queryClient.invalidateQueries({
+        queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
     }
   });
-  
-  // Handle file selection for upload
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setPdfFile(e.target.files[0]);
-    }
-  };
-  
-  // Handle floorplan upload
-  const handleUploadFloorplan = async () => {
-    if (!newFloorplanName || !pdfFile) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide a name and select a PDF file",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    // Make sure we're uploading a PDF file
-    if (!pdfFile.type.includes('pdf')) {
-      toast({
-        title: "Invalid File Type",
-        description: "Please select a PDF file (application/pdf)",
-        variant: "destructive",
+  const duplicateMarkerMutation = useMutation({
+    mutationFn: async (marker: Partial<MarkerData>) => {
+      const res = await apiRequest('POST', `/api/floorplans/${floorplan.id}/markers/duplicate`, marker);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
       });
-      return;
+      queryClient.invalidateQueries({
+        queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
+      });
     }
+  });
 
-    // Read the file as a data URL
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64Data = e.target?.result as string;
-      
-      // Extract just the base64 data part
-      const base64Content = base64Data.split(',')[1];
-      
-      // Using a default page count of 1, which will be updated after the PDF is loaded
-      await uploadFloorplanMutation.mutateAsync({
-        name: newFloorplanName,
-        pdf_data: base64Content,
-        project_id: projectId,
-        page_count: 1 // Default value, will be updated when the PDF is loaded
+  const saveCalibrationMutation = useMutation({
+    mutationFn: async (calibrationData: Partial<CalibrationData>) => {
+      const res = await apiRequest('POST', `/api/floorplans/${floorplan.id}/calibration`, calibrationData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/floorplans/${floorplan.id}/calibration`, currentPage],
       });
+      toast({
+        title: 'Calibration Saved',
+        description: 'The floorplan has been calibrated successfully.',
+        duration: 3000
+      });
+    }
+  });
+
+  // Load and render PDF document
+  useEffect(() => {
+    if (!floorplan?.pdf_data) return;
+    
+    // Show loading state
+    setIsLoading(true);
+    
+    // Convert base64 to byte array
+    const pdfData = atob(floorplan.pdf_data);
+    const pdfBytes = new Uint8Array(pdfData.length);
+    for (let i = 0; i < pdfData.length; i++) {
+      pdfBytes[i] = pdfData.charCodeAt(i);
+    }
+    
+    // Load PDF document
+    pdfjsLib.getDocument({ data: pdfBytes }).promise.then((pdf) => {
+      setPdfDocument(pdf);
+      setIsLoading(false);
+      renderPage(currentPage);
+    }).catch(error => {
+      console.error('Error loading PDF:', error);
+      setIsLoading(false);
+      toast({
+        title: 'Error Loading PDF',
+        description: 'Could not load the floorplan PDF. Please try again.',
+        variant: 'destructive',
+        duration: 5000
+      });
+    });
+  }, [floorplan, toast, currentPage]);
+
+  // Render current page when it changes
+  useEffect(() => {
+    if (pdfDocument) {
+      renderPage(currentPage);
+    }
+  }, [currentPage, pdfDocument, scale]);
+
+  // Listen for window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (pdfDocument) {
+        renderPage(currentPage);
+      }
     };
-    reader.readAsDataURL(pdfFile);
-  };
-  
-  // Handle floorplan selection change
-  const handleFloorplanChange = (floorplanId: string) => {
-    setSelectedFloorplanId(parseInt(floorplanId, 10));
-  };
-  
-  // Handle PDF document loaded event
-  const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    console.log(`PDF document loaded successfully with ${numPages} pages`);
     
-    // Update the page count in our local state if needed
-    if (selectedFloorplan && selectedFloorplan.page_count !== numPages) {
-      console.log(`Updating page count from ${selectedFloorplan.page_count} to ${numPages}`);
-    }
-  };
-  
-  // Handle PDF document load error
-  const handleDocumentLoadError = (error: Error) => {
-    console.error('PDF document load error:', error);
-    toast({
-      title: "Error Loading PDF",
-      description: `${error.message}. Check console for details.`,
-      variant: "destructive",
-    });
-  };
-  
-  // Handle marker placement on PDF
-  const handlePdfClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isAddingMarker || !pdfDocumentRef.current) return;
-    
-    // Get the PDF container's position and dimensions
-    const rect = pdfDocumentRef.current.getBoundingClientRect();
-    
-    // Calculate the position in PDF coordinates
-    // We divide by pdfScale to convert screen coordinates back to PDF coordinates
-    const x = Math.round((e.clientX - rect.left) / pdfScale);
-    const y = Math.round((e.clientY - rect.top) / pdfScale);
-    
-    console.log(`Clicked on PDF at (${x}, ${y}) with scale ${pdfScale}`);
-    
-    // Store the PDF-space coordinates
-    setNewMarkerPosition({ x, y });
-    
-    if (markerType === 'note') {
-      setNoteDialogOpen(true);
-    } else {
-      if (['access_point', 'camera', 'elevator', 'intercom'].includes(markerType)) {
-        setSelectedEquipmentType(markerType);
-        setShowAddEquipmentModal(true);
-      } else {
-        // For other marker types or if we want to just add a simple marker
-        setMarkerDialogOpen(true);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [pdfDocument, currentPage]);
+
+  // Pan and zoom event handlers
+  useEffect(() => {
+    const handleMouseWheel = (e: WheelEvent) => {
+      if (containerRef.current && containerRef.current.contains(e.target as Node)) {
+        e.preventDefault();
       }
-    }
-  };
-  
-  // Handle opening the equipment modal to add a marker from scratch
-  const handleAddEquipment = (type: string) => {
-    setMarkerType(type);
-    setIsAddingMarker(true);
-  };
-  
-  // Handle starting the drag of a marker
-  const handleMarkerMouseDown = (
-    e: MouseEvent | React.MouseEvent<HTMLDivElement>, 
-    markerId: number, 
-    isResizeHandle = false
-  ) => {
-    console.log("MOUSE DOWN START", markerId, isResizeHandle);
+    };
     
-    // Ensure event propagation is stopped
-    if ('stopPropagation' in e) {
-      e.stopPropagation();
-    }
+    // Prevent default browser zoom on trackpad/wheel to avoid competing behaviors
+    window.addEventListener('wheel', handleMouseWheel, { passive: false });
     
-    // Prevent default behavior like text selection
-    if ('preventDefault' in e) {
-      e.preventDefault();
-    }
-    
-    if (isResizeHandle) {
-      // We're resizing a marker
-      setResizingMarker(markerId);
-      
-      // Get the current size of the marker
-      const marker = markers.find(m => m.id === markerId);
-      if (marker) {
-        const size = markerSize[markerId] || 
-          (typeof defaultMarkerSizes[marker.marker_type] === 'object'
-            ? defaultMarkerSizes[marker.marker_type] as { width: number, height: number }
-            : { width: defaultMarkerSizes[marker.marker_type] as number, height: defaultMarkerSizes[marker.marker_type] as number }
-          );
-        
-        // Get mouse position from appropriate event
-        const clientX = 'clientX' in e ? e.clientX : 0;
-        const clientY = 'clientY' in e ? e.clientY : 0;
-        
-        setInitialResizeData({
-          size,
-          mousePos: { x: clientX, y: clientY }
-        });
-      }
-      
-      // Add resize event listeners
-      document.addEventListener('mousemove', handleResizeMouseMove);
-      document.addEventListener('mouseup', handleResizeMouseUp);
-    } else {
-      // New simplified drag implementation
-      console.log(`Started dragging marker ${markerId}`);
-      
-      // Get the marker data
-      const marker = markers.find(m => m.id === markerId);
-      if (!marker) {
-        console.error('Marker not found:', markerId);
-        return;
-      }
-      
-      // Store original coordinates for the drag operation
-      const originalX = marker.position_x;
-      const originalY = marker.position_y;
-      
-      // Track initial mouse position
-      const initialMouseX = 'clientX' in e ? e.clientX : 0;
-      const initialMouseY = 'clientY' in e ? e.clientY : 0;
-      
-      console.log('Initial marker position:', { x: originalX, y: originalY });
-      console.log('Initial mouse position:', { x: initialMouseX, y: initialMouseY });
-      
-      // Set the dragged marker ID in state
-      setDraggedMarker(markerId);
-      
-      // Function to handle mouse move during drag
-      const handleDrag = (moveEvent: MouseEvent) => {
-        // Calculate how far the mouse has moved since the drag started
-        const deltaX = moveEvent.clientX - initialMouseX;
-        const deltaY = moveEvent.clientY - initialMouseY;
-        
-        // Calculate the new position, adjusting for scale
-        const newX = originalX + (deltaX / pdfScale);
-        const newY = originalY + (deltaY / pdfScale);
-        
-        console.log('Dragging to:', { newX, newY, deltaX, deltaY });
-        
-        // Apply the position visually
-        const markerEl = document.getElementById(`marker-${markerId}`);
-        if (markerEl) {
-          markerEl.style.left = `${newX}px`;
-          markerEl.style.top = `${newY}px`;
-        }
-      };
-      
-      // Function to handle the end of the drag
-      const handleDragEnd = (upEvent: MouseEvent) => {
-        console.log('Drag ended');
-        
-        // Calculate final position
-        const deltaX = upEvent.clientX - initialMouseX;
-        const deltaY = upEvent.clientY - initialMouseY;
-        
-        const finalX = Math.floor(originalX + (deltaX / pdfScale));
-        const finalY = Math.floor(originalY + (deltaY / pdfScale));
-        
-        console.log('Final marker position:', { x: finalX, y: finalY });
-        
-        // Update the marker position in the database
-        updateMarkerPosition(markerId, finalX, finalY)
-          .then(() => console.log('Updated marker position in database'))
-          .catch(error => console.error('Failed to update marker position:', error));
-        
-        // Clean up
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('mouseup', handleDragEnd);
-        setDraggedMarker(null);
-      };
-      
-      // Add the event listeners
-      document.addEventListener('mousemove', handleDrag);
-      document.addEventListener('mouseup', handleDragEnd);
-    }
-  };
-  
-  // Handle dragging a marker
-  function handleDragMouseMove(e: MouseEvent) {
-    if (draggedMarker === null) {
-      console.log('No dragged marker in handleDragMouseMove');
-      return;
-    }
-    
-    if (!pdfDocumentRef.current) {
-      console.log('No PDF document reference in handleDragMouseMove');
-      return;
-    }
-    
-    // Prevent default behavior to avoid text selection during drag
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const marker = markers.find(m => m.id === draggedMarker);
-    if (!marker) {
-      console.log('Marker not found in markers array during drag move');
-      return;
-    }
-    
-    // Get PDF container position
-    const rect = pdfDocumentRef.current.getBoundingClientRect();
-    
-    // Calculate position in PDF coordinates, adjusting for scale
-    // We divide by pdfScale to convert from screen coordinates to PDF coordinates
-    const x = Math.floor((e.clientX - rect.left) / pdfScale);
-    const y = Math.floor((e.clientY - rect.top) / pdfScale);
-    
-    // Make sure the position is within bounds of the PDF
-    if (x < 0 || y < 0 || !Number.isInteger(x) || !Number.isInteger(y)) {
-      console.log('Position out of bounds during drag move:', { x, y });
-      return;
-    }
-    
-    console.log(`Dragging marker to (${x}, ${y}) at scale ${pdfScale}`);
-    
-    // Update marker position visually - use direct DOM manipulation for smoother dragging
-    const markerElement = document.getElementById(`marker-${draggedMarker}`);
-    if (markerElement) {
-      markerElement.style.left = `${x}px`;
-      markerElement.style.top = `${y}px`;
-    } else {
-      console.log(`Could not find marker element with ID: marker-${draggedMarker}`);
-    }
-  }
-  
-  // Handle releasing a marker after dragging
-  function handleDragMouseUp(e: MouseEvent) {
-    console.log('Drag ended - handleDragMouseUp called');
-    
-    // Prevent default behavior 
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Always clean up event listeners first to prevent memory leaks
-    document.removeEventListener('mousemove', handleDragMouseMove);
-    document.removeEventListener('mouseup', handleDragMouseUp);
-    
-    // If we don't have a dragged marker or PDF ref, exit early
-    if (draggedMarker === null || !pdfDocumentRef.current) {
-      console.log('No dragged marker or PDF ref - exiting early');
-      setDraggedMarker(null);
-      return;
-    }
-    
-    const marker = markers.find(m => m.id === draggedMarker);
-    if (!marker) {
-      console.log('Marker not found in markers array - exiting');
-      setDraggedMarker(null);
-      return;
-    }
-    
-    // Get PDF container position
-    const rect = pdfDocumentRef.current.getBoundingClientRect();
-    console.log('PDF container rect:', rect);
-    
-    // Calculate position in PDF coordinates, accounting for scale
-    // We divide by pdfScale to convert from screen coordinates to PDF coordinates
-    // This ensures the marker position is stored in the PDF's coordinate system
-    const x = Math.floor((e.clientX - rect.left) / pdfScale);
-    const y = Math.floor((e.clientY - rect.top) / pdfScale);
-    console.log('Calculated coordinates:', { x, y, clientX: e.clientX, clientY: e.clientY, scale: pdfScale });
-    
-    // Store the marker ID before resetting state
-    const markerId = draggedMarker;
-    
-    // Reset dragged marker state immediately to avoid UI issues
-    setDraggedMarker(null);
-    
-    // Make sure the position is within bounds of the PDF and valid
-    if (x >= 0 && y >= 0 && Number.isInteger(x) && Number.isInteger(y)) {
-      // Log the update
-      console.log(`Updating marker ${markerId} position to:`, { x, y });
-      
-      // Show a toast to indicate the update is happening
-      toast({
-        title: "Updating marker position",
-        description: "Saving new position to database",
-      });
-      
-      try {
-        // Update marker position in database with integer values
-        updateMarkerPosition(markerId, x, y)
-          .then(() => {
-            console.log('Marker position update successful');
-          })
-          .catch(err => {
-            console.error("Error in marker position update:", err);
+    return () => {
+      window.removeEventListener('wheel', handleMouseWheel);
+    };
+  }, [scale, translateX, translateY]);
+
+  // Keyboard handler for marker operations
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only process if we have a selected marker
+      if (selectedMarker) {
+        // Delete marker with Delete key
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          deleteMarkerMutation.mutate(selectedMarker.id);
+          setSelectedMarker(null);
+          toast({
+            title: 'Marker Deleted',
+            description: 'Marker has been removed from the floorplan',
+            duration: 2000,
           });
-      } catch (error) {
-        console.error('Error calling updateMarkerPosition:', error);
-      }
-    } else {
-      console.log('Invalid position - outside PDF bounds');
-      toast({
-        title: "Invalid position",
-        description: "Marker position must be within the floorplan boundaries",
-        variant: "destructive"
-      });
-    }
-  }
-  
-  // Handle resizing a marker (for notes)
-  function handleResizeMouseMove(e: MouseEvent) {
-    if (resizingMarker === null || !initialResizeData) return;
-    
-    const marker = markers.find(m => m.id === resizingMarker);
-    if (!marker || marker.marker_type !== 'note') return;
-    
-    // Calculate delta considering the PDF scale
-    const dx = (e.clientX - initialResizeData.mousePos.x) / pdfScale;
-    const dy = (e.clientY - initialResizeData.mousePos.y) / pdfScale;
-    
-    const newWidth = Math.max(100, initialResizeData.size.width + dx);
-    const newHeight = Math.max(30, initialResizeData.size.height + dy);
-    
-    // Update marker size visually
-    const markerElement = document.getElementById(`marker-${resizingMarker}`);
-    if (markerElement) {
-      markerElement.style.width = `${newWidth}px`;
-      markerElement.style.height = `${newHeight}px`;
-    }
-  }
-  
-  // Handle releasing a marker after resizing
-  function handleResizeMouseUp(e: MouseEvent) {
-    if (resizingMarker === null || !initialResizeData) {
-      setResizingMarker(null);
-      setInitialResizeData(null);
-      document.removeEventListener('mousemove', handleResizeMouseMove);
-      document.removeEventListener('mouseup', handleResizeMouseUp);
-      return;
-    }
-    
-    const marker = markers.find(m => m.id === resizingMarker);
-    if (!marker || marker.marker_type !== 'note') {
-      setResizingMarker(null);
-      setInitialResizeData(null);
-      document.removeEventListener('mousemove', handleResizeMouseMove);
-      document.removeEventListener('mouseup', handleResizeMouseUp);
-      return;
-    }
-    
-    // Calculate delta considering the PDF scale
-    const dx = (e.clientX - initialResizeData.mousePos.x) / pdfScale;
-    const dy = (e.clientY - initialResizeData.mousePos.y) / pdfScale;
-    
-    const newWidth = Math.max(100, initialResizeData.size.width + dx);
-    const newHeight = Math.max(30, initialResizeData.size.height + dy);
-    
-    // Save the new size in state
-    setMarkerSize({
-      ...markerSize,
-      [resizingMarker]: { width: newWidth, height: newHeight }
-    });
-    
-    // We could save the size to the database here, but currently the schema doesn't support that
-    // Instead, we're just keeping it in component state
-    
-    setResizingMarker(null);
-    setInitialResizeData(null);
-    document.removeEventListener('mousemove', handleResizeMouseMove);
-    document.removeEventListener('mouseup', handleResizeMouseUp);
-  }
-  
-  // Update marker position in the database
-  const updateMarkerPosition = async (markerId: number, x: number, y: number) => {
-    try {
-      // Make sure we have authentication
-      await bypassAuth();
-      
-      // Find the marker in the current markers list
-      const marker = markers.find(m => m.id === markerId);
-      if (!marker) {
-        console.error('Cannot update position: Marker not found:', markerId);
-        return;
-      }
-      
-      // Log the update
-      console.log(`Updating marker ${markerId} position to:`, { x, y });
-      
-      // Use our API request helper function that handles auth
-      const response = await apiRequest('PUT', `/api/floorplan-markers/${markerId}`, {
-        floorplan_id: marker.floorplan_id,
-        page: marker.page,
-        marker_type: marker.marker_type,
-        equipment_id: marker.equipment_id,
-        position_x: x,
-        position_y: y,
-        label: marker.label
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API Error (${response.status})`);
-      }
-      
-      // Refresh markers list
-      queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan?.id, 'markers'] });
-      
-      // Success toast
-      toast({
-        title: "Position updated",
-        description: "Marker position saved successfully", 
-      });
-      
-      // Call onMarkersUpdated if provided
-      if (onMarkersUpdated) {
-        onMarkersUpdated();
-      }
-    } catch (error) {
-      console.error('Error updating marker position:', error);
-      toast({
-        title: "Error updating position",
-        description: error instanceof Error ? error.message : "Failed to update marker position.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  // Create a new marker
-  const handleCreateMarker = async () => {
-    if (!selectedFloorplan || !newMarkerPosition) {
-      console.error('Missing required data for creating marker');
-      return;
-    }
-    
-    // Get auto-generated label if none provided
-    let label = markerLabel;
-    if (!label && markerType !== 'note') {
-      // Auto-number the marker based on type
-      label = getNextMarkerNumber(markerType).toString();
-    }
-    
-    // Default equipment ID for non-note markers
-    const defaultEquipmentId = -1;
-    
-    // Create the marker with integer positions 
-    await createMarkerMutation.mutateAsync({
-      floorplan_id: selectedFloorplan.id,
-      page: 1, // Default to first page for now
-      marker_type: markerType,
-      equipment_id: defaultEquipmentId,
-      position_x: Math.floor(newMarkerPosition.x),
-      position_y: Math.floor(newMarkerPosition.y),
-      label
-    });
-  };
-
-  // Create a new marker with associated equipment
-
-  const handleCreateMarkerWithEquipment = async (equipmentId: number) => {
-    if (!selectedFloorplan || !newMarkerPosition) {
-      console.error('Missing required data for creating marker');
-      toast({
-        title: "Error",
-        description: "Missing floorplan or position data required for marker creation",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!equipmentId) {
-      console.error('Invalid equipment ID received:', equipmentId);
-      toast({
-        title: "Error",
-        description: "Invalid equipment ID. Access point creation may have failed.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    try {
-      // No need to bypass auth, we added authentication check in server API endpoint
-      
-      // Calculate the next sequential number for this marker type
-      let sequentialNumber = getNextMarkerNumber(selectedEquipmentType || 'access_point');
-      
-      // Use the sequential number as the label
-      const label = sequentialNumber.toString();
-      
-      console.log(`Creating ${selectedEquipmentType} marker with equipment ID ${equipmentId} and sequential number: ${sequentialNumber}`);
-      
-      // Create the marker with integer positions
-      const markerData = {
-        floorplan_id: selectedFloorplan.id,
-        page: 1, // Default to first page for now
-        marker_type: selectedEquipmentType!,
-        equipment_id: equipmentId,
-        position_x: Math.floor(newMarkerPosition.x),
-        position_y: Math.floor(newMarkerPosition.y),
-        label
-      };
-      
-      // First try using the mutation
-      try {
-        await createMarkerMutation.mutateAsync(markerData);
-        
-        // Refresh the markers data
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
-        
-        // If onMarkersUpdated callback exists, call it
-        if (onMarkersUpdated) {
-          onMarkersUpdated();
         }
         
-        toast({
-          title: "Success",
-          description: `Added ${selectedEquipmentType} marker with ID #${label}`,
-        });
-      } catch (mutationError) {
-        console.error('Mutation failed, trying direct API call:', mutationError);
-        
-        // If the mutation fails, try a direct API call as fallback
-        const response = await apiRequest('POST', '/api/floorplan-markers', markerData);
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          console.error('Direct API call also failed:', errorData);
-          throw new Error(errorData?.message || `Failed to create marker (${response.status})`);
+        // Duplicate marker with Ctrl+D
+        if (e.key === 'd' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault(); // Prevent browser's default bookmark action
+          // Clone the marker with a slight offset
+          duplicateMarkerMutation.mutate({
+            ...selectedMarker,
+            id: undefined, // Remove ID so a new one is generated
+            position_x: selectedMarker.position_x + 20, 
+            position_y: selectedMarker.position_y + 20,
+          });
+          toast({
+            title: 'Marker Duplicated',
+            description: 'Created a copy of the selected marker',
+            duration: 2000,
+          });
         }
-        
-        // Refresh the markers data
-        queryClient.invalidateQueries({ queryKey: ['/api/floorplans', selectedFloorplan.id, 'markers'] });
-        
+      }
+      
+      // Global shortcuts
+      
+      // Reset view with Ctrl+0
+      if (e.key === '0' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        setScale(1);
+        setTranslateX(0);
+        setTranslateY(0);
+        renderPage(currentPage);
         toast({
-          title: "Success",
-          description: `Added ${selectedEquipmentType} marker with ID #${label} (via fallback)`,
+          title: 'Zoom Reset',
+          description: 'Restored default view',
+          duration: 1000,
         });
       }
-      
-      // Reset the state
-      setNewMarkerPosition(null);
-      setShowAddEquipmentModal(false);
-      setSelectedEquipmentType(null);
-    } catch (error) {
-      console.error('Error creating marker after all attempts:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create marker on floorplan",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  // Get marker color based on type
-  const getMarkerColor = (type: string) => {
-    switch (type) {
-      case 'access_point':
-        // Changed from teal to red as requested
-        return '#dc2626';
-      case 'camera':
-        // Blue
-        return '#3b82f6';
-      case 'elevator':
-        // Purple
-        return '#a855f7';
-      case 'intercom':
-        // Pink
-        return '#ec4899';
-      case 'note':
-        // Amber/Yellow background with red border
-        return '#f59e0b';
-      default:
-        // Gray fallback
-        return '#6b7280';
-    }
-  };
-
-  // Get text color for marker (white for most, red for notes)
-  const getMarkerTextColor = (type: string) => {
-    switch (type) {
-      case 'note':
-        // Red text for notes
-        return '#dc2626';
-      default:
-        // White text for others
-        return '#ffffff';
-    }
-  };
-  
-  // Get border color for marker (same as background, except for notes)
-  const getMarkerBorderColor = (type: string) => {
-    if (type === 'note') {
-      // Red border for notes
-      return '#dc2626';
-    }
+    };
     
-    // Same as background for others
-    return getMarkerColor(type);
-  };
-  
-  // Function to export floorplan with markers as PDF
-  const exportFloorplanWithMarkers = async () => {
-    if (!selectedFloorplan || !containerRef.current) {
-      toast({
-        title: "Error",
-        description: "No floorplan selected or container not available",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Add event listeners
+    document.addEventListener('keydown', handleKeyDown);
     
-    // Show loading toast
-    toast({
-      title: "Preparing Export",
-      description: "Creating floorplan export with markers...",
-    });
+    // Listen for export event from parent component
+    const handleExportEvent = () => {
+      exportAsPng();
+    };
     
-    try {
-      // Import required libraries
-      const html2canvasModule = await import('html2canvas');
-      const html2canvas = html2canvasModule.default;
-      const { jsPDF } = await import('jspdf');
+    document.addEventListener('export-floorplan', handleExportEvent);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('export-floorplan', handleExportEvent);
+    };
+  }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
 
-      // Get the entire PDF container with markers
-      const pdfContainer = containerRef.current.querySelector('.pdf-container') as HTMLElement;
-      if (!pdfContainer) {
-        throw new Error('PDF container not found');
-      }
-
-      // First, we'll get the PDF canvas directly - this is the rendered PDF content
-      const pdfCanvas = pdfContainer.querySelector('.pdf-page canvas') as HTMLCanvasElement;
-      if (!pdfCanvas) {
-        throw new Error('PDF canvas not found');
-      }
-
-      // Get the dimensions of the PDF canvas (actual PDF dimensions)
-      const pdfWidth = pdfCanvas.width;
-      const pdfHeight = pdfCanvas.height;
+  // Mouse handling for pan/zoom and marker placement
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button === 0) { // Left click
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
       
-      // Create a new canvas to combine the PDF and markers
-      const combinedCanvas = document.createElement('canvas');
-      combinedCanvas.width = pdfWidth;
-      combinedCanvas.height = pdfHeight;
-      const ctx = combinedCanvas.getContext('2d');
+      const x = e.clientX;
+      const y = e.clientY;
       
-      if (!ctx) {
-        throw new Error('Failed to get canvas context');
-      }
-      
-      // First draw the PDF canvas to our combined canvas
-      ctx.drawImage(pdfCanvas, 0, 0);
-      
-      // Use html2canvas to capture the exact appearance of all markers
-      const markersContainer = pdfContainer.querySelector('.markers-container') as HTMLElement;
-      if (markersContainer) {
-        // Temporarily show all markers at full opacity for capturing
-        const markers = markersContainer.querySelectorAll('[id^="marker-"]');
+      if (toolMode === 'pan' || e.button === 1) { // Middle click or pan tool
+        setIsDragging(true);
+        setDragStart({ x, y });
+      } else if (toolMode === 'select') {
+        // Check if clicking on a marker for selection
+        // This will be handled by the marker click handler
+      } else {
+        // We're in an annotation tool mode - prepare to add a marker
+        const pdfCoords = screenToPdfCoordinates(x, y);
         
-        // Draw all markers on the canvas manually
-        for (const marker of Array.from(markers)) {
-          const markerElement = marker as HTMLElement;
-          const markerRect = markerElement.getBoundingClientRect();
-          const containerRect = pdfContainer.getBoundingClientRect();
-          
-          // Calculate the position relative to the PDF container
-          const relX = markerRect.left - containerRect.left + markerRect.width / 2;
-          const relY = markerRect.top - containerRect.top + markerRect.height / 2;
-          
-          // Convert to PDF coordinates
-          const x = relX / pdfScale;
-          const y = relY / pdfScale;
-          
-          // Get marker styling from the actual marker
-          const backgroundColor = getComputedStyle(markerElement).backgroundColor;
-          const textColor = getComputedStyle(markerElement).color;
-          const borderColor = getComputedStyle(markerElement).borderColor;
-          const label = markerElement.innerText.trim();
-          const isCircular = getComputedStyle(markerElement).borderRadius === '50%';
-          
-          if (isCircular) {
-            // Draw circular marker
-            const radius = markerRect.width / 2 / pdfScale;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = backgroundColor;
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = borderColor;
-            ctx.stroke();
-            
-            // Draw the label text
-            ctx.fillStyle = textColor;
-            ctx.font = 'bold 14px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(label, x, y);
-          } else {
-            // Draw rectangular note
-            const width = markerRect.width / pdfScale;
-            const height = markerRect.height / pdfScale;
-            
-            ctx.fillStyle = backgroundColor;
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = 2;
-            
-            // Draw rectangle with rounded corners
-            ctx.beginPath();
-            ctx.roundRect(x - width/2, y - height/2, width, height, 4);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Draw the text (simplistic approach)
-            ctx.fillStyle = textColor;
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(label || "Note", x, y);
-          }
+        // Create temporary marker based on tool mode
+        const newMarker: Partial<MarkerData> = {
+          floorplan_id: floorplan.id,
+          unique_id: uuidv4(),
+          page: currentPage,
+          marker_type: toolMode,
+          position_x: pdfCoords.x,
+          position_y: pdfCoords.y,
+          version: 1,
+          layer_id: activeLayer?.id
+        };
+        
+        // For shapes that need dragging to size them
+        if (['rectangle', 'ellipse', 'line'].includes(toolMode)) {
+          setIsAddingMarker(true);
+          setTempMarker(newMarker);
+        } else if (toolMode === 'polyline' || toolMode === 'polygon') {
+          // Start collecting points
+          setIsDrawing(true);
+          setDrawingPoints([{ x: pdfCoords.x, y: pdfCoords.y }]);
+        } else {
+          // For point markers that don't need sizing
+          addMarkerMutation.mutate(newMarker);
+          toast({
+            title: 'Marker Added',
+            description: `Added ${toolMode} marker to floorplan`,
+            duration: 2000
+          });
         }
       }
+    }
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    
+    if (isDragging && toolMode === 'pan') {
+      // Panning the view
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
       
-      // Create a PDF with the combined canvas
-      const imgData = combinedCanvas.toDataURL('image/png');
+      setTranslateX(prev => prev + deltaX);
+      setTranslateY(prev => prev + deltaY);
+      setDragStart({ x: e.clientX, y: e.clientY });
+    } else if (isAddingMarker && tempMarker) {
+      // Sizing a shape marker
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // Calculate PDF dimensions (keeping aspect ratio)
-      const pdf = new jsPDF({
-        orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
-        unit: 'mm',
-        format: [pdfWidth * 0.264583, pdfHeight * 0.264583] // Convert pixels to mm
+      setTempMarker(prev => {
+        if (!prev) return null;
+        
+        return {
+          ...prev,
+          end_x: pdfCoords.x,
+          end_y: pdfCoords.y,
+          width: Math.abs(pdfCoords.x - (prev.position_x || 0)),
+          height: Math.abs(pdfCoords.y - (prev.position_y || 0))
+        };
       });
+    } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
+      // Update preview for polyline/polygon
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      const lastPoint = drawingPoints[drawingPoints.length - 1];
       
-      // Add the image to the PDF
-      pdf.addImage(
-        imgData, 
-        'PNG', 
-        0, 
-        0, 
-        pdf.internal.pageSize.getWidth(), 
-        pdf.internal.pageSize.getHeight()
+      // Only update if mouse moved significantly (avoid excessive updates)
+      const distance = Math.sqrt(
+        Math.pow(pdfCoords.x - lastPoint.x, 2) + 
+        Math.pow(pdfCoords.y - lastPoint.y, 2)
       );
       
-      // Download the PDF
-      const filename = `${selectedFloorplan.name}_with_markers.pdf`;
-      pdf.save(filename);
-      
-      toast({
-        title: "Export Successful",
-        description: `Exported as ${filename}`,
-      });
-    } catch (error) {
-      console.error('Error exporting floorplan with markers:', error);
-      toast({
-        title: "Export Failed",
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: "destructive",
-      });
+      if (distance > 5 / pdfToViewportScale) { // 5px in screen space
+        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfCoords.x, y: pdfCoords.y }]);
+      }
     }
   };
   
-  // Loading state
-  if (isLoadingFloorplans) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading floorplans...</span>
-      </div>
-    );
-  }
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (isAddingMarker && tempMarker) {
+      // Finalize shape marker
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      
+      // Calculate width/height/end points
+      const width = Math.abs(pdfCoords.x - (tempMarker.position_x || 0));
+      const height = Math.abs(pdfCoords.y - (tempMarker.position_y || 0));
+      
+      // Only add if the shape has some size
+      if (width > 5 / pdfToViewportScale || height > 5 / pdfToViewportScale) {
+        const finalMarker = {
+          ...tempMarker,
+          end_x: pdfCoords.x,
+          end_y: pdfCoords.y,
+          width,
+          height,
+          color: activeLayer?.color || '#ff0000',
+          fill_color: activeLayer?.color ? `${activeLayer.color}80` : '#ff000080', // Add 50% opacity
+          opacity: 0.8,
+          line_width: 2
+        };
+        
+        addMarkerMutation.mutate(finalMarker);
+        
+        toast({
+          title: 'Shape Added',
+          description: `Added ${toolMode} to floorplan`,
+          duration: 2000
+        });
+      }
+      
+      setIsAddingMarker(false);
+      setTempMarker(null);
+    } else if (toolMode === 'polyline' || toolMode === 'polygon') {
+      // Continue collecting points - don't finalize yet
+      // Double-click will finalize (handled in handleDoubleClick)
+    } else {
+      setIsDragging(false);
+    }
+  };
   
-  // Render the component
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
+      // Finalize polyline or polygon with at least 2 points
+      if (drawingPoints.length >= 2) {
+        const finalMarker = {
+          floorplan_id: floorplan.id,
+          unique_id: uuidv4(),
+          page: currentPage,
+          marker_type: toolMode,
+          position_x: drawingPoints[0].x,
+          position_y: drawingPoints[0].y,
+          points: drawingPoints,
+          color: activeLayer?.color || '#ff0000',
+          line_width: 2,
+          opacity: 0.8,
+          version: 1,
+          layer_id: activeLayer?.id
+        };
+        
+        addMarkerMutation.mutate(finalMarker);
+        
+        toast({
+          title: `${toolMode === 'polyline' ? 'Polyline' : 'Polygon'} Added`,
+          description: `Added ${toolMode} to floorplan`,
+          duration: 2000
+        });
+      }
+      
+      setIsDrawing(false);
+      setDrawingPoints([]);
+    }
+  };
+  
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    
+    // Get mouse position relative to container
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const mouseX = e.clientX - rect.left - translateX;
+    const mouseY = e.clientY - rect.top - translateY;
+    
+    // Calculate new scale
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = Math.max(0.1, Math.min(10, scale * delta));
+    
+    // Calculate new translate to zoom toward mouse position
+    const scaleRatio = newScale / scale;
+    const newTranslateX = translateX + mouseX - mouseX * scaleRatio;
+    const newTranslateY = translateY + mouseY - mouseY * scaleRatio;
+    
+    setScale(newScale);
+    setTranslateX(newTranslateX);
+    setTranslateY(newTranslateY);
+  };
+
+  // Main component render
   return (
-    <div className="flex flex-col h-full" ref={containerRef}>
-      {floorplans.length === 0 ? (
-        <Card className="p-6 text-center">
-          <CardHeader>
-            <CardTitle>No Floorplans Found</CardTitle>
-            <CardDescription>
-              Upload a floorplan PDF to get started
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => setUploadDialogOpen(true)}
-              className="mt-4"
-            >
-              <FileUp className="w-4 h-4 mr-2" />
-              Upload Floorplan
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {/* Floorplan selection and controls */}
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-lg">Floorplan Controls</CardTitle>
-                  <CardDescription>
-                    Select a floorplan and manage markers
-                  </CardDescription>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  <Select
-                    value={selectedFloorplanId?.toString() || ''}
-                    onValueChange={handleFloorplanChange}
-                  >
-                    <SelectTrigger className="w-[240px]">
-                      <SelectValue placeholder="Select a floorplan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {floorplans.map((floorplan: Floorplan) => (
-                        <SelectItem 
-                          key={floorplan.id} 
-                          value={floorplan.id.toString()}
-                        >
-                          {floorplan.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  <Button 
-                    onClick={() => setUploadDialogOpen(true)}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <FileUp className="w-4 h-4 mr-2" />
-                    Upload
-                  </Button>
-                  
-                  {selectedFloorplan && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Actions <ChevronDown className="w-4 h-4 ml-2" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem 
-                          onClick={exportFloorplanWithMarkers}
-                          className="flex items-center"
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Export with Markers
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                          onClick={() => {
-                            if (window.confirm(`Are you sure you want to delete "${selectedFloorplan.name}"?`)) {
-                              deleteFloorplanMutation.mutate(selectedFloorplan.id);
-                            }
-                          }}
-                          className="text-red-500 flex items-center"
-                        >
-                          <Trash className="w-4 h-4 mr-2" />
-                          Delete Floorplan
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="pb-2">
-              {/* Marker counts and types */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex justify-between items-center">
-                        <span>Access Points</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {markers.filter((m: FloorplanMarker) => m.marker_type === 'access_point').length}
-                        </Badge>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Door readers, credentials
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex justify-between items-center">
-                        <span>Cameras</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {markers.filter((m: FloorplanMarker) => m.marker_type === 'camera').length}
-                        </Badge>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Security cameras, video surveillance
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex justify-between items-center">
-                        <span>Elevators</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {markers.filter((m: FloorplanMarker) => m.marker_type === 'elevator').length}
-                        </Badge>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Elevator access control
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex justify-between items-center">
-                        <span>Intercoms</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {markers.filter((m: FloorplanMarker) => m.marker_type === 'intercom').length}
-                        </Badge>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Entry phones, visitor stations
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex justify-between items-center">
-                        <span>Notes</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {markers.filter((m: FloorplanMarker) => m.marker_type === 'note').length}
-                        </Badge>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Text notes and annotations
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              
-              {/* Marker controls */}
-              <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
-                <div>
-                  <ButtonGroup variant="outline" size="sm">
-                    <Button 
-                      variant={isAddingMarker && markerType === 'access_point' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setMarkerType('access_point');
-                        setIsAddingMarker(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                      Add Access Point
-                    </Button>
-                    
-                    <Button 
-                      variant={isAddingMarker && markerType === 'camera' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setMarkerType('camera');
-                        setIsAddingMarker(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                      Add Camera
-                    </Button>
-                    
-                    <Button 
-                      variant={isAddingMarker && markerType === 'elevator' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setMarkerType('elevator');
-                        setIsAddingMarker(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <div className="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
-                      Add Elevator
-                    </Button>
-                    
-                    <Button 
-                      variant={isAddingMarker && markerType === 'intercom' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setMarkerType('intercom');
-                        setIsAddingMarker(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <div className="w-3 h-3 rounded-full bg-pink-500 mr-2"></div>
-                      Add Intercom
-                    </Button>
-                    
-                    <Button 
-                      variant={isAddingMarker && markerType === 'note' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setMarkerType('note');
-                        setIsAddingMarker(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <div className="w-3 h-3 rounded-full bg-amber-500 border border-red-500 mr-2"></div>
-                      Add Note
-                    </Button>
-                  </ButtonGroup>
-                  
-                  {isAddingMarker && (
-                    <div className="mt-2 flex items-center">
-                      <Badge variant="outline" className="bg-amber-50">
-                        Click on the floorplan to place a {getMarkerTypeName(markerType)}
-                      </Badge>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => setIsAddingMarker(false)}
-                        className="h-6 ml-2"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <ButtonGroup variant="outline" size="sm">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={zoomIn}
-                          >
-                            <ZoomIn className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Zoom In</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={zoomOut}
-                          >
-                            <ZoomOut className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Zoom Out</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={resetZoom}
-                          >
-                            <Minimize className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Reset Zoom</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </ButtonGroup>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* PDF viewer */}
-          {selectedFloorplan ? (
-            <Card className="overflow-hidden">
-              <CardContent className="p-0 relative">
-                <div 
-                  className="overflow-auto p-4 relative min-h-[600px] pdf-container"
-                  onClick={handlePdfClick}
-                  style={{ 
-                    cursor: isAddingMarker ? 'crosshair' : 'default' 
-                  }}
-                >
-                  <div 
-                    ref={pdfDocumentRef}
-                    style={{
-                      transform: `scale(${pdfScale})`,
-                      transformOrigin: 'top left',
-                      position: 'relative',
-                      background: 'white'
-                    }}
-                  >
-                    {selectedFloorplan?.pdf_data ? (
-                      <Document
-                        file={`data:application/pdf;base64,${selectedFloorplan.pdf_data}`}
-                        onLoadSuccess={handleDocumentLoadSuccess}
-                        onLoadError={handleDocumentLoadError}
-                        className="react-pdf__Document bg-white"
-                        options={{
-                          cMapUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/cmaps/',
-                          cMapPacked: true,
-                          standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/',
-                          // Add these options to improve stability and prevent sendWithPromise errors
-                          isEvalSupported: false,
-                          disableStream: true,
-                          disableAutoFetch: true
-                        }}
-                        loading={
-                          <div className="flex flex-col items-center justify-center p-8">
-                            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                            <p className="text-sm text-muted-foreground">Loading PDF...</p>
-                          </div>
-                        }
-                        error={
-                          <div className="flex flex-col items-center justify-center p-8 text-red-500 border border-red-200 rounded-md">
-                            <p className="font-semibold mb-2">Error loading PDF</p>
-                            <p className="text-sm">The PDF file could not be loaded. Try uploading again.</p>
-                          </div>
-                        }
-                        noData={
-                          <div className="flex flex-col items-center justify-center p-8 text-amber-500 border border-amber-200 rounded-md">
-                            <p className="font-semibold mb-2">No PDF Data</p>
-                            <p className="text-sm">The floorplan may be corrupted. Try uploading again.</p>
-                          </div>
-                        }
-                      >
-                        <Page 
-                          pageNumber={1} 
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                          scale={pdfScale}
-                          canvasBackground="white"
-                          className="pdf-page"
-                          // The error component must be a React node, not a function
-                          error={
-                            <div className="p-4 border border-red-300 rounded bg-red-50 text-red-700">
-                              <p>Error rendering page</p>
-                              <p className="text-sm mt-2">Try resetting the zoom level.</p>
-                            </div>
-                          }
-                        />
-                      </Document>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center p-8 border border-dashed border-slate-200 rounded-md">
-                        <p className="text-slate-500 mb-2">No Floorplan Selected</p>
-                        <p className="text-sm text-slate-400">Please select or upload a floorplan</p>
-                      </div>
-                    )}
-                    
-                    {/* Separate component for markers to fix syntax issues */}
-                    <div className="absolute inset-0 overflow-visible markers-container">
-                      {!isLoadingMarkers && markers.map((marker: FloorplanMarker) => {
-                      const isNote = marker.marker_type === 'note';
-                      const markerNumber = marker.label || getMarkerNumber(marker.id).toString();
-                      const backgroundColor = getMarkerColor(marker.marker_type);
-                      const textColor = getMarkerTextColor(marker.marker_type);
-                      const borderColor = getMarkerBorderColor(marker.marker_type);
-                      
-                      // Default size for this marker type
-                      const defaultSize = defaultMarkerSizes[marker.marker_type];
-                      
-                      // Calculate actual size
-                      let width, height;
-                      if (isNote) {
-                        // Notes can be resized, check if we have a custom size
-                        const customSize = markerSize[marker.id];
-                        if (customSize) {
-                          width = customSize.width;
-                          height = customSize.height;
-                        } else if (typeof defaultSize === 'object') {
-                          width = defaultSize.width;
-                          height = defaultSize.height;
-                        } else {
-                          width = defaultSize as number;
-                          height = defaultSize as number;
-                        }
-                      } else {
-                        // Regular markers are always square
-                        const size = typeof defaultSize === 'number' ? defaultSize : defaultSize.width;
-                        const scaledSize = size * equipmentMarkerScale;
-                        width = scaledSize;
-                        height = scaledSize;
-                      }
-                      
-                      return (
-                        <div
-                          key={marker.id}
-                          id={`marker-${marker.id}`}
-                          className={`absolute flex items-center justify-center select-none group ${
-                            isNote ? 'flex-col' : ''
-                          } ${marker.id === draggedMarker ? 'z-20' : 'z-10'}`}
-                          style={{
-                            left: `${marker.position_x}px`,
-                            top: `${marker.position_y}px`,
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            backgroundColor: backgroundColor,
-                            color: textColor,
-                            border: `2px solid ${borderColor}`,
-                            borderRadius: isNote ? '4px' : '50%',
-                            cursor: 'move',
-                            fontSize: isNote ? '12px' : '14px',
-                            fontWeight: 'bold',
-                            // Maintain consistent sizing regardless of zoom
-                            transform: `translate(-50%, -50%)`,
-                            transformOrigin: 'center',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                            position: 'absolute',
-                            zIndex: 1000
-                          }}
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault(); 
-                            handleMarkerMouseDown(e.nativeEvent, marker.id);
-                          }}
-                        >
-                          {marker.label !== null ? (
-                            isNote ? (
-                              <div className="p-2 w-full h-full overflow-hidden whitespace-normal break-words">
-                                {marker.label}
-                                
-                                {/* Add resize handle for notes */}
-                                <div
-                                  className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize"
-                                  style={{
-                                    backgroundColor: borderColor,
-                                    borderTopLeftRadius: '4px'
-                                  }}
-                                  onMouseDown={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    handleMarkerMouseDown(e.nativeEvent, marker.id, true);
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              marker.label
-                            )
-                          ) : (
-                            // Direct string conversion to ensure we always render a string not a number
-                            getMarkerNumber(marker.id).toString()
-                          )}
-                          
-                          {/* Tooltip with marker context menu - only visible on hover */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="absolute -top-3 -right-3 h-6 w-6 p-0 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                              >
-                                <MoreHorizontal className="h-3 w-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem 
-                                onClick={() => {
-                                  // Edit marker implementation
-                                  toast({
-                                    title: "Edit Marker",
-                                    description: "Editing functionality is coming soon",
-                                  });
-                                }}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  // Duplicate marker at a slightly offset position
-                                  if (selectedFloorplan) {
-                                    const offsetX = marker.position_x + 20;
-                                    const offsetY = marker.position_y + 20;
-                                    
-                                    createMarkerMutation.mutate({
-                                      floorplan_id: selectedFloorplan.id,
-                                      page: marker.page,
-                                      marker_type: marker.marker_type,
-                                      equipment_id: marker.equipment_id,
-                                      position_x: offsetX,
-                                      position_y: offsetY,
-                                      label: marker.label
-                                    });
-                                    
-                                    toast({
-                                      title: "Marker Duplicated",
-                                      description: "Created a copy with slight offset"
-                                    });
-                                  }
-                                }}
-                              >
-                                <Copy className="mr-2 h-4 w-4" />
-                                <span>Duplicate</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                className="text-red-500"
-                                onClick={() => {
-                                  if (window.confirm('Are you sure you want to delete this marker?')) {
-                                    deleteMarkerMutation.mutate(marker.id);
-                                  }
-                                }}
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="text-center p-6">
-              <CardContent>
-                <p className="text-muted-foreground">Please select a floorplan to view</p>
-              </CardContent>
-            </Card>
-          )}
+    <div 
+      ref={containerRef}
+      className="relative w-full h-full overflow-hidden bg-gray-100"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onWheel={handleWheel}
+      onDoubleClick={handleDoubleClick}
+    >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
       
-      {/* Upload Dialog */}
-      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upload Floorplan</DialogTitle>
-            <DialogDescription>
-              Upload a PDF floorplan to add to this project
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="Enter a name for this floorplan"
-                value={newFloorplanName}
-                onChange={(e) => setNewFloorplanName(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="pdf-file">PDF File</Label>
-              <Input
-                id="pdf-file"
-                type="file"
-                accept=".pdf,application/pdf"
-                onChange={handleFileChange}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleUploadFloorplan} 
-              disabled={uploadFloorplanMutation.isPending}
-            >
-              {uploadFloorplanMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Upload
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Marker Dialog */}
-      <Dialog open={markerDialogOpen} onOpenChange={setMarkerDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add {getMarkerTypeName(markerType)}</DialogTitle>
-            <DialogDescription>
-              Enter details for this marker
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="label">Label</Label>
-              <Input
-                id="label"
-                placeholder="Enter a label for this marker"
-                value={markerLabel}
-                onChange={(e) => setMarkerLabel(e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">
-                Leave blank for auto-numbering
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setMarkerDialogOpen(false);
-              setIsAddingMarker(false);
-            }}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateMarker} 
-              disabled={createMarkerMutation.isPending}
-            >
-              {createMarkerMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Add Marker
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Note Dialog */}
-      <Dialog open={noteDialogOpen} onOpenChange={setNoteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Note</DialogTitle>
-            <DialogDescription>
-              Enter text for this note
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="note-text">Note Text</Label>
-              <Textarea
-                id="note-text"
-                placeholder="Enter note text"
-                value={markerLabel}
-                onChange={(e) => setMarkerLabel(e.target.value)}
-                rows={4}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setNoteDialogOpen(false);
-              setIsAddingMarker(false);
-            }}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateMarker} 
-              disabled={createMarkerMutation.isPending || !markerLabel}
-            >
-              {createMarkerMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Add Note
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Equipment modals */}
-      {selectedEquipmentType === 'access_point' && (
-        <AddAccessPointModal
-          open={showAddEquipmentModal}
-          onOpenChange={setShowAddEquipmentModal}
-          onCancel={() => {
-            setShowAddEquipmentModal(false);
-            setIsAddingMarker(false);
+      <div
+        className="relative transform-gpu transition-transform duration-75"
+        style={{
+          transform: `translate(${translateX}px, ${translateY}px)`
+        }}
+      >
+        <canvas ref={canvasRef} className="block" />
+        <svg
+          ref={svgLayerRef}
+          className="absolute top-0 left-0 pointer-events-auto"
+          style={{
+            width: viewportDimensions.width,
+            height: viewportDimensions.height
           }}
-          onSave={(id) => handleCreateMarkerWithEquipment(id)}
-          projectId={projectId}
+        >
+          {/* Render markers here based on their type */}
+          {markers.map((marker: MarkerData) => {
+            // Skip markers on hidden layers
+            const markerLayer = layers.find(l => l.id === marker.layer_id);
+            if (markerLayer && !markerLayer.visible) return null;
+            
+            // Apply styling
+            const markerColor = marker.color || (markerLayer ? markerLayer.color : '#ff0000');
+            const fillColor = marker.fill_color || (markerColor + '80'); // Add 50% opacity
+            const isSelected = selectedMarker?.id === marker.id;
+            const strokeWidth = marker.line_width || 2;
+            const selectedStrokeWidth = strokeWidth * 1.5;
+            
+            // Base classnames and props
+            const baseClassName = `marker-group cursor-pointer ${isSelected ? 'selected-marker' : ''}`;
+            const baseProps = {
+              onClick: (e: React.MouseEvent) => {
+                e.stopPropagation();
+                handleMarkerClick(marker);
+              }
+            };
+            
+            // Render different marker types
+            switch (marker.marker_type) {
+              case 'access_point':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    {...baseProps}
+                  >
+                    <circle 
+                      r="12" 
+                      fill={fillColor}
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                    />
+                    <text 
+                      fontSize="14" 
+                      textAnchor="middle" 
+                      dominantBaseline="middle" 
+                      fill="#FFFFFF"
+                    >AP</text>
+                    {(isSelected || showAllLabels) && marker.label && (
+                      <text 
+                        fontSize="11" 
+                        y="24" 
+                        textAnchor="middle" 
+                        fill={markerColor}
+                        stroke="#FFFFFF" 
+                        strokeWidth="0.5"
+                        paintOrder="stroke"
+                      >{marker.label}</text>
+                    )}
+                  </g>
+                );
+              
+              case 'camera':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    {...baseProps}
+                  >
+                    <rect 
+                      x="-10" 
+                      y="-10" 
+                      width="20" 
+                      height="20"
+                      fill={fillColor}
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      rx="2"
+                    />
+                    <text 
+                      fontSize="12" 
+                      textAnchor="middle" 
+                      dominantBaseline="middle" 
+                      fill="#FFFFFF"
+                    >C</text>
+                    {(isSelected || showAllLabels) && marker.label && (
+                      <text 
+                        fontSize="11" 
+                        y="24" 
+                        textAnchor="middle" 
+                        fill={markerColor}
+                        stroke="#FFFFFF" 
+                        strokeWidth="0.5"
+                        paintOrder="stroke"
+                      >{marker.label}</text>
+                    )}
+                  </g>
+                );
+              
+              // Other marker types follow similar pattern...
+              
+              default:
+                return null;
+            }
+          })}
+        </svg>
+      </div>
+      
+      {/* Controls Panel */}
+      <div className="absolute top-4 right-4 flex flex-col gap-2 bg-white bg-opacity-80 p-2 rounded shadow">
+        <button 
+          onClick={() => {
+            const newScale = Math.min(10, scale * 1.2);
+            setScale(newScale);
+            renderPage(currentPage);
+          }}
+          className="p-2 rounded hover:bg-gray-200"
+          title="Zoom In"
+        >
+          <ZoomIn size={20} />
+        </button>
+        <button 
+          onClick={() => {
+            const newScale = Math.max(0.1, scale * 0.8);
+            setScale(newScale);
+            renderPage(currentPage);
+          }}
+          className="p-2 rounded hover:bg-gray-200"
+          title="Zoom Out"
+        >
+          <ZoomOut size={20} />
+        </button>
+        <button 
+          onClick={() => {
+            setScale(1);
+            setTranslateX(0);
+            setTranslateY(0);
+            renderPage(currentPage);
+          }}
+          className="p-2 rounded hover:bg-gray-200"
+          title="Reset View"
+        >
+          <CheckSquare size={20} />
+        </button>
+        <button
+          onClick={() => setIsLayerManagerOpen(true)}
+          className="p-2 rounded hover:bg-gray-200"
+          title="Manage Layers"
+        >
+          <Layers size={20} />
+        </button>
+      </div>
+      
+      {/* Page Controls */}
+      {floorplan.page_count > 1 && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white bg-opacity-80 px-4 py-2 rounded shadow">
+          <button
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-200 disabled:opacity-50 rounded"
+          >
+            Prev
+          </button>
+          <span>Page {currentPage} of {floorplan.page_count}</span>
+          <button
+            onClick={() => onPageChange(Math.min(floorplan.page_count, currentPage + 1))}
+            disabled={currentPage === floorplan.page_count}
+            className="px-3 py-1 bg-gray-200 disabled:opacity-50 rounded"
+          >
+            Next
+          </button>
+        </div>
+      )}
+      
+      {/* Dialogs and overlay components */}
+      {isLayerManagerOpen && (
+        <LayerManager 
+          floorplanId={floorplan.id}
+          layers={layers}
+          activeLayer={activeLayer}
+          onSetActiveLayer={setActiveLayer}
+          onClose={() => setIsLayerManagerOpen(false)}
         />
       )}
       
-      {selectedEquipmentType === 'camera' && (
-        <AddCameraModal
-          open={showAddEquipmentModal}
-          onOpenChange={setShowAddEquipmentModal}
-          onCancel={() => {
-            setShowAddEquipmentModal(false);
-            setIsAddingMarker(false);
+      {isCalibrationDialogOpen && (
+        <CalibrationDialog 
+          calibrationPoints={calibrationPoints}
+          onSave={(data) => {
+            saveCalibrationMutation.mutate({
+              floorplan_id: floorplan.id,
+              page: currentPage,
+              start_x: calibrationPoints.start?.x,
+              start_y: calibrationPoints.start?.y,
+              end_x: calibrationPoints.end?.x,
+              end_y: calibrationPoints.end?.y,
+              real_world_distance: data.distance,
+              pdf_distance: Math.sqrt(
+                Math.pow((calibrationPoints.end?.x || 0) - (calibrationPoints.start?.x || 0), 2) +
+                Math.pow((calibrationPoints.end?.y || 0) - (calibrationPoints.start?.y || 0), 2)
+              ),
+              unit: data.unit
+            });
+            setIsCalibrationDialogOpen(false);
           }}
-          onSave={(id) => handleCreateMarkerWithEquipment(id)}
-          projectId={projectId}
+          onClose={() => {
+            setIsCalibrationDialogOpen(false);
+            setCalibrationStep('start');
+          }}
+          calibrationStep={calibrationStep}
+          setCalibrationStep={(step) => setCalibrationStep(step)}
         />
       )}
       
-      {selectedEquipmentType === 'elevator' && (
-        <AddElevatorModal
-          open={showAddEquipmentModal}
-          onOpenChange={setShowAddEquipmentModal}
-          onCancel={() => {
-            setShowAddEquipmentModal(false);
-            setIsAddingMarker(false);
+      {isEquipmentFormOpen && selectedMarker && (
+        <EquipmentFormDialog
+          marker={selectedMarker}
+          onSave={(updatedMarker) => {
+            updateMarkerMutation.mutate(updatedMarker);
+            setIsEquipmentFormOpen(false);
           }}
-          onSave={(id) => handleCreateMarkerWithEquipment(id)}
-          projectId={projectId}
-        />
-      )}
-      
-      {selectedEquipmentType === 'intercom' && (
-        <AddIntercomModal
-          open={showAddEquipmentModal}
-          onOpenChange={setShowAddEquipmentModal}
-          onCancel={() => {
-            setShowAddEquipmentModal(false);
-            setIsAddingMarker(false);
-          }}
-          onSave={(id) => handleCreateMarkerWithEquipment(id)}
-          projectId={projectId}
+          onClose={() => setIsEquipmentFormOpen(false)}
         />
       )}
     </div>
   );
 };
-
-export default FixedFloorplanViewer;
