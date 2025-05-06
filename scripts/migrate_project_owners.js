@@ -5,11 +5,10 @@
 
 import { storage } from '../server/storage.js';
 
-// Helper function to get all users (since storage.getUsers() doesn't exist)
+// Helper function to get all users
 async function getAllUsers() {
-  // Grab the users from the storage's users Map
-  // This is a workaround since there's no direct method in storage
-  return Array.from(storage.users.values());
+  // Query the database directly since we're using DatabaseStorage
+  return await storage.getAllUsers();
 }
 
 async function migrateProjectOwners() {
