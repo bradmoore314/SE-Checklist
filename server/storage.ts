@@ -1949,11 +1949,65 @@ export class DatabaseStorage implements IStorage {
   async getKvgFormData(projectId: number): Promise<KvgFormData | undefined> {
     try {
       console.log(`Attempting to fetch KVG form data for project ${projectId}`);
-      const query = db.select().from(kvgFormData).where(eq(kvgFormData.project_id, projectId));
-      console.log("SQL Query:", query.toSQL());
-      const [formData] = await query;
-      console.log("KVG Form Data fetched successfully:", formData ? "data found" : "no data found");
-      return formData;
+      
+      // Use a raw SQL query to fetch only the columns that exist in the database
+      const result = await db.execute(
+        `SELECT id, project_id, customer_type, voc_escalations, dispatch_responses, 
+         gdods_patrols, sgpp_patrols, forensic_investigations, app_users, audio_devices,
+         bdm_owner, sales_engineer, kvg_sme, customer_name, site_address, city, state, 
+         zip_code, crm_opportunity, quote_date, time_zone, opportunity_stage, opportunity_type, 
+         site_environment, region, customer_vertical, property_category, maintenance, 
+         services_recommended, incident_types, am_name, pm_name, created_at, updated_at
+         FROM kvg_form_data WHERE project_id = $1`,
+        [projectId]
+      );
+      
+      console.log("Raw SQL Query executed");
+      
+      if (result.rows.length === 0) {
+        console.log("No KVG Form Data found for project", projectId);
+        return undefined;
+      }
+      
+      const formData = result.rows[0];
+      console.log("KVG Form Data fetched successfully");
+      
+      // Map the database column names to our schema property names
+      return {
+        id: formData.id,
+        project_id: formData.project_id,
+        bdmOwner: formData.bdm_owner,
+        salesEngineer: formData.sales_engineer,
+        kvgSme: formData.kvg_sme,
+        customerName: formData.customer_name,
+        siteAddress: formData.site_address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zip_code,
+        crmOpportunity: formData.crm_opportunity,
+        quoteDate: formData.quote_date,
+        timeZone: formData.time_zone,
+        opportunityStage: formData.opportunity_stage,
+        opportunityType: formData.opportunity_type,
+        siteEnvironment: formData.site_environment,
+        region: formData.region,
+        customerVertical: formData.customer_vertical,
+        propertyCategory: formData.property_category,
+        maintenance: formData.maintenance,
+        servicesRecommended: formData.services_recommended,
+        incidentTypes: formData.incident_types,
+        amName: formData.am_name,
+        pmName: formData.pm_name,
+        vocEscalations: formData.voc_escalations,
+        dispatchResponses: formData.dispatch_responses,
+        gdodsPatrols: formData.gdods_patrols,
+        sgppPatrols: formData.sgpp_patrols,
+        forensicInvestigations: formData.forensic_investigations,
+        appUsers: formData.app_users,
+        audioDevices: formData.audio_devices,
+        created_at: formData.created_at,
+        updated_at: formData.updated_at
+      } as KvgFormData;
     } catch (error) {
       console.error("Error fetching KVG form data:", error);
       throw error;
@@ -1961,18 +2015,207 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createKvgFormData(insertFormData: InsertKvgFormData): Promise<KvgFormData> {
-    const [formData] = await db.insert(kvgFormData).values(insertFormData).returning();
-    return formData;
+    try {
+      // Map our schema property names to database column names
+      const dbFormData: any = {
+        project_id: insertFormData.project_id,
+        bdm_owner: insertFormData.bdmOwner,
+        sales_engineer: insertFormData.salesEngineer,
+        kvg_sme: insertFormData.kvgSme,
+        customer_name: insertFormData.customerName,
+        site_address: insertFormData.siteAddress,
+        city: insertFormData.city,
+        state: insertFormData.state,
+        zip_code: insertFormData.zipCode,
+        crm_opportunity: insertFormData.crmOpportunity,
+        quote_date: insertFormData.quoteDate,
+        time_zone: insertFormData.timeZone,
+        opportunity_stage: insertFormData.opportunityStage,
+        opportunity_type: insertFormData.opportunityType,
+        site_environment: insertFormData.siteEnvironment,
+        region: insertFormData.region,
+        customer_vertical: insertFormData.customerVertical,
+        property_category: insertFormData.propertyCategory,
+        maintenance: insertFormData.maintenance,
+        services_recommended: insertFormData.servicesRecommended,
+        incident_types: insertFormData.incidentTypes,
+        am_name: insertFormData.amName,
+        pm_name: insertFormData.pmName,
+        voc_escalations: insertFormData.vocEscalations,
+        dispatch_responses: insertFormData.dispatchResponses,
+        gdods_patrols: insertFormData.gdodsPatrols,
+        sgpp_patrols: insertFormData.sgppPatrols,
+        forensic_investigations: insertFormData.forensicInvestigations,
+        app_users: insertFormData.appUsers,
+        audio_devices: insertFormData.audioDevices
+      };
+      
+      // Create placeholders for all columns and values for the SQL statement
+      const columns = Object.keys(dbFormData).join(', ');
+      const placeholders = Object.keys(dbFormData).map((_, i) => `$${i + 1}`).join(', ');
+      const values = Object.values(dbFormData);
+      
+      // Execute raw SQL insert
+      const result = await db.execute(
+        `INSERT INTO kvg_form_data (${columns}) 
+         VALUES (${placeholders})
+         RETURNING *`,
+        values
+      );
+      
+      if (result.rows.length === 0) {
+        throw new Error("Failed to insert KVG form data");
+      }
+      
+      const formData = result.rows[0];
+      
+      // Map the database column names back to our schema property names
+      return {
+        id: formData.id,
+        project_id: formData.project_id,
+        bdmOwner: formData.bdm_owner,
+        salesEngineer: formData.sales_engineer,
+        kvgSme: formData.kvg_sme,
+        customerName: formData.customer_name,
+        siteAddress: formData.site_address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zip_code,
+        crmOpportunity: formData.crm_opportunity,
+        quoteDate: formData.quote_date,
+        timeZone: formData.time_zone,
+        opportunityStage: formData.opportunity_stage,
+        opportunityType: formData.opportunity_type,
+        siteEnvironment: formData.site_environment,
+        region: formData.region,
+        customerVertical: formData.customer_vertical,
+        propertyCategory: formData.property_category,
+        maintenance: formData.maintenance,
+        servicesRecommended: formData.services_recommended,
+        incidentTypes: formData.incident_types,
+        amName: formData.am_name,
+        pmName: formData.pm_name,
+        vocEscalations: formData.voc_escalations,
+        dispatchResponses: formData.dispatch_responses,
+        gdodsPatrols: formData.gdods_patrols,
+        sgppPatrols: formData.sgpp_patrols,
+        forensicInvestigations: formData.forensic_investigations,
+        appUsers: formData.app_users,
+        audioDevices: formData.audio_devices,
+        created_at: formData.created_at,
+        updated_at: formData.updated_at
+      } as KvgFormData;
+    } catch (error) {
+      console.error("Error creating KVG form data:", error);
+      throw error;
+    }
   }
 
   async updateKvgFormData(id: number, updateFormData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined> {
-    const now = new Date();
-    const [formData] = await db
-      .update(kvgFormData)
-      .set({ ...updateFormData, updated_at: now })
-      .where(eq(kvgFormData.id, id))
-      .returning();
-    return formData;
+    try {
+      // Map our schema property names to database column names
+      const dbFormData: any = {};
+      
+      if (updateFormData.bdmOwner !== undefined) dbFormData.bdm_owner = updateFormData.bdmOwner;
+      if (updateFormData.salesEngineer !== undefined) dbFormData.sales_engineer = updateFormData.salesEngineer;
+      if (updateFormData.kvgSme !== undefined) dbFormData.kvg_sme = updateFormData.kvgSme;
+      if (updateFormData.customerName !== undefined) dbFormData.customer_name = updateFormData.customerName;
+      if (updateFormData.siteAddress !== undefined) dbFormData.site_address = updateFormData.siteAddress;
+      if (updateFormData.city !== undefined) dbFormData.city = updateFormData.city;
+      if (updateFormData.state !== undefined) dbFormData.state = updateFormData.state;
+      if (updateFormData.zipCode !== undefined) dbFormData.zip_code = updateFormData.zipCode;
+      if (updateFormData.crmOpportunity !== undefined) dbFormData.crm_opportunity = updateFormData.crmOpportunity;
+      if (updateFormData.quoteDate !== undefined) dbFormData.quote_date = updateFormData.quoteDate;
+      if (updateFormData.timeZone !== undefined) dbFormData.time_zone = updateFormData.timeZone;
+      if (updateFormData.opportunityStage !== undefined) dbFormData.opportunity_stage = updateFormData.opportunityStage;
+      if (updateFormData.opportunityType !== undefined) dbFormData.opportunity_type = updateFormData.opportunityType;
+      if (updateFormData.siteEnvironment !== undefined) dbFormData.site_environment = updateFormData.siteEnvironment;
+      if (updateFormData.region !== undefined) dbFormData.region = updateFormData.region;
+      if (updateFormData.customerVertical !== undefined) dbFormData.customer_vertical = updateFormData.customerVertical;
+      if (updateFormData.propertyCategory !== undefined) dbFormData.property_category = updateFormData.propertyCategory;
+      if (updateFormData.maintenance !== undefined) dbFormData.maintenance = updateFormData.maintenance;
+      if (updateFormData.servicesRecommended !== undefined) dbFormData.services_recommended = updateFormData.servicesRecommended;
+      if (updateFormData.incidentTypes !== undefined) dbFormData.incident_types = updateFormData.incidentTypes;
+      if (updateFormData.amName !== undefined) dbFormData.am_name = updateFormData.amName;
+      if (updateFormData.pmName !== undefined) dbFormData.pm_name = updateFormData.pmName;
+      if (updateFormData.vocEscalations !== undefined) dbFormData.voc_escalations = updateFormData.vocEscalations;
+      if (updateFormData.dispatchResponses !== undefined) dbFormData.dispatch_responses = updateFormData.dispatchResponses;
+      if (updateFormData.gdodsPatrols !== undefined) dbFormData.gdods_patrols = updateFormData.gdodsPatrols;
+      if (updateFormData.sgppPatrols !== undefined) dbFormData.sgpp_patrols = updateFormData.sgppPatrols;
+      if (updateFormData.forensicInvestigations !== undefined) dbFormData.forensic_investigations = updateFormData.forensicInvestigations;
+      if (updateFormData.appUsers !== undefined) dbFormData.app_users = updateFormData.appUsers;
+      if (updateFormData.audioDevices !== undefined) dbFormData.audio_devices = updateFormData.audioDevices;
+      
+      // Add updated_at timestamp
+      dbFormData.updated_at = new Date();
+      
+      // If there's nothing to update, return
+      if (Object.keys(dbFormData).length === 0) {
+        return await this.getKvgFormData(id);
+      }
+      
+      // Create SET clause for SQL update
+      const setClause = Object.keys(dbFormData)
+        .map((key, i) => `${key} = $${i + 2}`)
+        .join(', ');
+      
+      const values = [id, ...Object.values(dbFormData)];
+      
+      // Execute raw SQL update
+      const result = await db.execute(
+        `UPDATE kvg_form_data
+         SET ${setClause}
+         WHERE id = $1
+         RETURNING *`,
+        values
+      );
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      const formData = result.rows[0];
+      
+      // Map the database column names back to our schema property names
+      return {
+        id: formData.id,
+        project_id: formData.project_id,
+        bdmOwner: formData.bdm_owner,
+        salesEngineer: formData.sales_engineer,
+        kvgSme: formData.kvg_sme,
+        customerName: formData.customer_name,
+        siteAddress: formData.site_address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zip_code,
+        crmOpportunity: formData.crm_opportunity,
+        quoteDate: formData.quote_date,
+        timeZone: formData.time_zone,
+        opportunityStage: formData.opportunity_stage,
+        opportunityType: formData.opportunity_type,
+        siteEnvironment: formData.site_environment,
+        region: formData.region,
+        customerVertical: formData.customer_vertical,
+        propertyCategory: formData.property_category,
+        maintenance: formData.maintenance,
+        servicesRecommended: formData.services_recommended,
+        incidentTypes: formData.incident_types,
+        amName: formData.am_name,
+        pmName: formData.pm_name,
+        vocEscalations: formData.voc_escalations,
+        dispatchResponses: formData.dispatch_responses,
+        gdodsPatrols: formData.gdods_patrols,
+        sgppPatrols: formData.sgpp_patrols,
+        forensicInvestigations: formData.forensic_investigations,
+        appUsers: formData.app_users,
+        audioDevices: formData.audio_devices,
+        created_at: formData.created_at,
+        updated_at: formData.updated_at
+      } as KvgFormData;
+    } catch (error) {
+      console.error("Error updating KVG form data:", error);
+      throw error;
+    }
   }
 
   // KVG Streams
