@@ -631,36 +631,21 @@ export const EnhancedFloorplanViewer = ({
           element.setAttribute('filter', `url(#${filterId})`);
           element.setAttribute('class', 'marker-circle');
           
-          // Add marker number as the most prominent element
+          // Add marker number as the only text element - simple white consecutive number as requested
           const markerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
           markerLabel.setAttribute('x', `${x}`);
-          markerLabel.setAttribute('y', `${y - 2}`); // Positioned above the center for ID
+          markerLabel.setAttribute('y', `${y + 1}`); // Centered
           markerLabel.setAttribute('text-anchor', 'middle');
           markerLabel.setAttribute('dominant-baseline', 'central');
-          markerLabel.setAttribute('font-size', '14px'); // Larger font
+          markerLabel.setAttribute('font-size', '14px'); // Clear and legible size
           markerLabel.setAttribute('font-weight', 'bold');
-          markerLabel.setAttribute('fill', textColor);
-          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.6)');
-          markerLabel.setAttribute('stroke-width', '0.8');
+          markerLabel.setAttribute('fill', '#ffffff'); // Always white text
+          markerLabel.setAttribute('stroke', 'rgba(0,0,0,0.5)'); // Thin dark outline for contrast
+          markerLabel.setAttribute('stroke-width', '0.5');
           markerLabel.setAttribute('paint-order', 'stroke');
           markerLabel.setAttribute('class', 'marker-number');
           markerLabel.setAttribute('pointer-events', 'none');
-          markerLabel.textContent = markerNumber.toString();
-          
-          // Add type text below the ID
-          const typeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          typeText.setAttribute('x', `${x}`);
-          typeText.setAttribute('y', `${y + 8}`); // Positioned below the center
-          typeText.setAttribute('text-anchor', 'middle');
-          typeText.setAttribute('dominant-baseline', 'central');
-          typeText.setAttribute('font-size', '10px');
-          typeText.setAttribute('font-weight', 'bold');
-          typeText.setAttribute('fill', textColor);
-          typeText.setAttribute('stroke', 'rgba(0,0,0,0.4)');
-          typeText.setAttribute('stroke-width', '0.5');
-          typeText.setAttribute('paint-order', 'stroke');
-          typeText.setAttribute('pointer-events', 'none');
-          typeText.textContent = typeSymbol;
+          markerLabel.textContent = markerNumber.toString(); // Just the consecutive number
           
           // We're not using the small circles as requested
           
@@ -816,7 +801,6 @@ export const EnhancedFloorplanViewer = ({
           // Assemble all elements
           group.appendChild(element);
           group.appendChild(markerLabel);
-          group.appendChild(typeText);
           
           // Add click event to the group
           group.addEventListener('click', () => handleMarkerClick(marker));
