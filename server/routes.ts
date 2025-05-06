@@ -211,6 +211,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/projects", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     try {
       const result = insertProjectSchema.safeParse(req.body);
       if (!result.success) {
@@ -220,7 +224,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Create the project
       const project = await storage.createProject(result.data);
+      
+      // Associate the project with the current user as admin
+      await storage.addProjectCollaborator({
+        project_id: project.id,
+        user_id: req.user.id,
+        permission: 'admin'
+      });
+
       res.status(201).json(project);
     } catch (error) {
       res.status(500).json({ 
