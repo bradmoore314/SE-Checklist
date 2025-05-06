@@ -83,8 +83,73 @@ app.use((req, res, next) => {
   next();
 });
 
+// Function to ensure projects are associated with users
+async function migrateProjectOwners() {
+  try {
+    console.log('Checking project ownership associations...');
+    
+    // Get all projects
+    const projects = await storage.getProjects();
+    if (projects.length === 0) {
+      console.log('No projects found in the system. Migration not needed.');
+      return;
+    }
+    
+    // Track how many projects were updated
+    let updatedCount = 0;
+    
+    // For each project, check if it has owners
+    for (const project of projects) {
+      const collaborators = await storage.getProjectCollaborators(project.id);
+      
+      if (collaborators.length === 0) {
+        // Project has no owners, find a suitable owner
+        
+        // Try to find an admin user
+        let users = await storage.getUsers();
+        let adminUser = users.find(user => user?.role === 'admin');
+        
+        if (adminUser) {
+          // Add the admin user as the owner
+          await storage.addProjectCollaborator({
+            project_id: project.id,
+            user_id: adminUser.id,
+            permission: 'admin'
+          });
+          updatedCount++;
+          console.log(`Added admin user (ID: ${adminUser.id}) as owner for project ${project.id} (${project.name})`);
+        } else if (users.length > 0) {
+          // If no admin, add the first user
+          const firstUser = users[0];
+          await storage.addProjectCollaborator({
+            project_id: project.id,
+            user_id: firstUser.id,
+            permission: 'admin'
+          });
+          updatedCount++;
+          console.log(`Added user ${firstUser.username} (ID: ${firstUser.id}) as owner for project ${project.id} (${project.name})`);
+        } else {
+          console.log(`No users found to associate with project ${project.id} (${project.name})`);
+        }
+      }
+    }
+    
+    if (updatedCount > 0) {
+      console.log(`Migration complete: Associated ${updatedCount} projects with users.`);
+    } else {
+      console.log('No projects needed ownership updates.');
+    }
+  } catch (error) {
+    console.error('Error during project owner migration:', error);
+  }
+}
+
 (async () => {
   const server = await registerRoutes(app);
+  
+  // After routes are registered but before starting the server,
+  // run the migration to ensure projects are associated with users
+  await migrateProjectOwners();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
