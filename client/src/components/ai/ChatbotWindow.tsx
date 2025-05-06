@@ -1,288 +1,184 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, Maximize2, Minimize2, Send, Mic, MicOff, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Send, Mic, MicOff, Maximize2, X } from 'lucide-react';
-import { useChatbot } from './ChatbotProvider';
-import { MicrophoneIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
-import { useToast } from '@/hooks/use-toast';
+import { useChatbot } from '@/hooks/use-chatbot';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-const ChatbotWindow: React.FC = () => {
-  const { isOpen, isExpanded, closeChatbot, expandChatbot, projectId } = useChatbot();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+/**
+ * ChatbotWindow - The floating window for the AI chatbot
+ */
+export function ChatbotWindow() {
+  const { 
+    isChatbotOpen, 
+    closeChatbot, 
+    isFullScreen, 
+    toggleFullScreen,
+    messages,
+    addMessage,
+    isListening,
+    toggleListening,
+    isLoading,
+    setIsLoading
+  } = useChatbot();
+  
+  const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      // Initial welcome message
-      const welcomeMessage: ChatMessage = {
-        id: 'welcome',
-        role: 'assistant',
-        content: 'Hi! I can help you configure security equipment. How can I assist you today?',
-        timestamp: new Date()
-      };
-      setMessages([welcomeMessage]);
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [isOpen, messages.length]);
-
-  useEffect(() => {
-    // Scroll to bottom whenever messages change
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputMessage(e.target.value);
-  };
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
 
-  const sendMessage = async () => {
-    if (inputMessage.trim() === '' || isProcessing) return;
-
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: inputMessage,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsProcessing(true);
+    const userMessage = { role: 'user', content: input };
+    addMessage(userMessage as any);
+    setInput('');
+    setIsLoading(true);
 
     try {
-      // Make API call to backend for AI response
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage.content,
-          projectId: projectId,
-          history: messages.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response from AI');
-      }
-
-      const data = await response.json();
-      
-      const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-      
-      // Optional: Speak the response if text-to-speech is enabled
-      if (isSpeaking) {
-        speakText(data.response);
-      }
-      
+      // This is where we would normally call the backend API
+      // For now, we'll just simulate a response after a delay
+      setTimeout(() => {
+        addMessage({
+          role: 'assistant',
+          content: 'I can help you configure security equipment. What kind of device would you like to set up?'
+        });
+        setIsLoading(false);
+      }, 1000);
     } catch (error) {
-      console.error('Error in chat:', error);
-      toast({
-        title: "Error",
-        description: "Failed to get a response. Please try again.",
-        variant: "destructive"
+      console.error('Error sending message to AI:', error);
+      addMessage({
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again later.'
       });
-    } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSendMessage();
     }
   };
 
-  const toggleRecording = async () => {
-    if (isRecording) {
-      // Stop recording
-      setIsRecording(false);
-      // Here you would stop the recording and process the audio
-      // For now, we'll simulate this with a timeout
-      setIsProcessing(true);
-      setTimeout(() => {
-        const simulatedText = "Show me options for camera placement in the lobby area";
-        setInputMessage(simulatedText);
-        setIsProcessing(false);
-        toast({
-          title: "Speech Recognition",
-          description: "This is a simulation. In production, we would use the Google Speech API.",
-        });
-      }, 1500);
-    } else {
-      // Start recording
-      setIsRecording(true);
-      
-      try {
-        // In production, you would integrate with the speech recognition service
-        toast({
-          title: "Speech Recognition",
-          description: "Speak now... (This is a simulation)",
-        });
-        
-        // Simulate recording for a few seconds
-        setTimeout(() => {
-          toggleRecording();
-        }, 3000);
-        
-      } catch (error) {
-        console.error('Error starting recording:', error);
-        setIsRecording(false);
-        toast({
-          title: "Error",
-          description: "Failed to start speech recognition. Please try again.",
-          variant: "destructive"
-        });
-      }
-    }
-  };
-  
-  const speakText = (text: string) => {
-    // Using the browser's built-in speech synthesis
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-      window.speechSynthesis.speak(utterance);
-    } else {
-      console.error('Text-to-speech not supported in this browser');
-    }
-  };
-  
-  const toggleSpeaking = () => {
-    setIsSpeaking(!isSpeaking);
-    if (isSpeaking) {
-      window.speechSynthesis.cancel(); // Stop any ongoing speech
-    }
+  const windowVariants = {
+    open: { opacity: 1, y: 0, scale: 1 },
+    closed: { opacity: 0, y: 20, scale: 0.9 }
   };
 
-  if (!isOpen) return null;
+  if (!isChatbotOpen) return null;
 
   return (
-    <Card className={`fixed bottom-4 right-4 z-50 shadow-lg transition-all duration-300 ${
-      isExpanded ? 'w-full md:w-3/4 lg:w-2/3 h-[80vh]' : 'w-80 h-96'
-    }`}>
-      <CardHeader className="p-4 flex flex-row items-center justify-between bg-primary/10 rounded-t-lg">
-        <div>
-          <CardTitle className="text-lg">AI Assistant</CardTitle>
-          <CardDescription>Configure security equipment with voice</CardDescription>
-        </div>
-        <div className="flex gap-1">
-          {!isExpanded ? (
-            <Button variant="ghost" size="icon" onClick={expandChatbot}>
-              <Maximize2 className="h-4 w-4" />
-            </Button>
-          ) : null}
-          <Button variant="ghost" size="icon" onClick={closeChatbot}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0 flex-grow overflow-hidden">
-        <ScrollArea className="h-[calc(100%-2rem)]">
-          <div className="p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.role === 'assistant' ? 'justify-start' : 'justify-end'
-                }`}
+    <AnimatePresence>
+      <motion.div
+        initial="closed"
+        animate="open"
+        exit="closed"
+        variants={windowVariants}
+        transition={{ duration: 0.3 }}
+        className={`fixed ${
+          isFullScreen ? 'inset-0 p-4' : 'bottom-24 right-6 w-96 h-[600px]'
+        } z-50`}
+      >
+        <Card className="flex flex-col h-full shadow-xl border-primary/20">
+          <CardHeader className="py-3 px-4 border-b flex flex-row justify-between items-center space-y-0">
+            <div className="flex items-center space-x-2">
+              <Avatar className="h-8 w-8 bg-primary/20">
+                <AvatarImage src="/logo.png" alt="AI" />
+                <AvatarFallback>AI</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-medium text-sm">Security Equipment Assistant</h3>
+              </div>
+            </div>
+            <div className="flex space-x-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleFullScreen}
+                className="h-8 w-8"
               >
-                <div
-                  className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                    message.role === 'assistant'
-                      ? 'bg-secondary text-secondary-foreground'
-                      : 'bg-primary text-primary-foreground'
+                {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={closeChatbot}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.filter(m => m.role !== 'system').map((message, index) => (
+              <div 
+                key={index} 
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    message.role === 'user' 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  <span className="text-xs opacity-50 block mt-1">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  {message.content}
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg bg-muted">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-      </CardContent>
-      <CardFooter className="p-3 border-t">
-        <div className="flex items-center w-full gap-2">
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={toggleRecording}
-            className={isRecording ? 'bg-red-100 text-red-500 animate-pulse' : ''}
-          >
-            {isRecording ? (
-              <MicrophoneIcon className="h-4 w-4" />
-            ) : (
-              <MicrophoneIcon className="h-4 w-4" />
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleSpeaking}
-          >
-            {isSpeaking ? (
-              <SpeakerWaveIcon className="h-4 w-4" />
-            ) : (
-              <SpeakerXMarkIcon className="h-4 w-4" />
-            )}
-          </Button>
-          <Input
-            placeholder="Type your message..."
-            value={inputMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyPress}
-            disabled={isProcessing}
-            className="flex-grow"
-          />
-          <Button
-            onClick={sendMessage}
-            disabled={inputMessage.trim() === '' || isProcessing}
-            size="icon"
-          >
-            {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
+          </CardContent>
+          <CardFooter className="p-3 border-t">
+            <form 
+              className="flex w-full space-x-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage();
+              }}
+            >
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message..."
+                className="flex-1"
+                disabled={isLoading}
+              />
+              <Button 
+                type="button"
+                size="icon"
+                variant={isListening ? "destructive" : "outline"}
+                onClick={toggleListening}
+                disabled={isLoading}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+              <Button 
+                type="submit"
+                size="icon"
+                disabled={!input.trim() || isLoading}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          </CardFooter>
+        </Card>
+      </motion.div>
+    </AnimatePresence>
   );
-};
-
-export default ChatbotWindow;
+}
