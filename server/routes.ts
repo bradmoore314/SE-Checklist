@@ -2106,8 +2106,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/kvg-form-data", isAuthenticated, async (req: Request, res: Response) => {
     try {
+      console.log("Received KVG form data:", JSON.stringify(req.body, null, 2));
       const result = insertKvgFormDataSchema.safeParse(req.body);
       if (!result.success) {
+        console.log("Validation errors:", JSON.stringify(result.error.errors, null, 2));
         return res.status(400).json({ 
           message: "Invalid KVG form data", 
           errors: result.error.errors 
@@ -2145,8 +2147,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      console.log("Received PUT KVG form data:", JSON.stringify(req.body, null, 2));
       const result = insertKvgFormDataSchema.partial().safeParse(req.body);
       if (!result.success) {
+        console.log("PUT Validation errors:", JSON.stringify(result.error.errors, null, 2));
         return res.status(400).json({ 
           message: "Invalid KVG form data", 
           errors: result.error.errors 

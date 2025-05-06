@@ -681,6 +681,8 @@ const KastleVideoGuardingPage: React.FC = () => {
         form_data: { ...data } // Store a complete copy in form_data
       };
       
+      console.log("Sending form payload:", formPayload);
+      
       // Check if form data already exists
       if (formDataFromDb?.id) {
         const res = await apiRequest(
