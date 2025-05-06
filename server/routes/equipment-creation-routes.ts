@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import equipmentCreationService from '../services/equipment-creation-service';
+import equipmentCreationGeminiService from '../services/equipment-creation-gemini';
 
 /**
  * Register equipment creation API routes
