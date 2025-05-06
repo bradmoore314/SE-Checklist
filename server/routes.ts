@@ -690,9 +690,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
+    }
+    
+    // Get the camera to check permissions before deleting
+    const camera = await storage.getCamera(cameraId);
+    if (!camera) {
+      return res.status(404).json({ message: "Camera not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this camera belongs to
+    if (!userProjectIds.includes(camera.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to delete this camera" });
     }
 
     const success = await storage.deleteCamera(cameraId);
@@ -705,9 +724,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Elevator endpoints
   app.get("/api/projects/:projectId/elevators", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
     }
 
     const project = await storage.getProject(projectId);
@@ -720,6 +752,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
@@ -729,11 +765,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!elevator) {
       return res.status(404).json({ message: "Elevator not found" });
     }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this elevator belongs to
+    if (!userProjectIds.includes(elevator.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to access this elevator" });
+    }
 
     res.json(elevator);
   });
 
   app.post("/api/elevators", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       const result = insertElevatorSchema.safeParse(req.body);
       if (!result.success) {
@@ -741,6 +790,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Invalid elevator data", 
           errors: result.error.errors 
         });
+      }
+
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to this project
+      if (!userProjectIds.includes(result.data.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to add elevators to this project" });
       }
 
       // Verify project exists
@@ -760,6 +818,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/elevators/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       const elevatorId = parseInt(req.params.id);
       if (isNaN(elevatorId)) {
@@ -770,6 +832,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingElevator = await storage.getElevator(elevatorId);
       if (!existingElevator) {
         return res.status(404).json({ message: "Elevator not found" });
+      }
+      
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to the project this elevator belongs to
+      if (!userProjectIds.includes(existingElevator.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to duplicate this elevator" });
       }
       
       // Create a copy with a modified location name
@@ -794,9 +865,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
+    }
+
+    // Get the existing elevator to check permissions
+    const existingElevator = await storage.getElevator(elevatorId);
+    if (!existingElevator) {
+      return res.status(404).json({ message: "Elevator not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this elevator belongs to
+    if (!userProjectIds.includes(existingElevator.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to update this elevator" });
     }
 
     try {
@@ -823,9 +913,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/elevators/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const elevatorId = parseInt(req.params.id);
     if (isNaN(elevatorId)) {
       return res.status(400).json({ message: "Invalid elevator ID" });
+    }
+    
+    // Get the elevator to check permissions before deleting
+    const elevator = await storage.getElevator(elevatorId);
+    if (!elevator) {
+      return res.status(404).json({ message: "Elevator not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this elevator belongs to
+    if (!userProjectIds.includes(elevator.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to delete this elevator" });
     }
 
     const success = await storage.deleteElevator(elevatorId);
@@ -838,9 +947,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Intercom endpoints
   app.get("/api/projects/:projectId/intercoms", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
     }
 
     const project = await storage.getProject(projectId);
@@ -853,6 +975,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/intercoms/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const intercomId = parseInt(req.params.id);
     if (isNaN(intercomId)) {
       return res.status(400).json({ message: "Invalid intercom ID" });
@@ -862,11 +988,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!intercom) {
       return res.status(404).json({ message: "Intercom not found" });
     }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this intercom belongs to
+    if (!userProjectIds.includes(intercom.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to access this intercom" });
+    }
 
     res.json(intercom);
   });
 
   app.post("/api/intercoms", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       const result = insertIntercomSchema.safeParse(req.body);
       if (!result.success) {
@@ -874,6 +1013,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Invalid intercom data", 
           errors: result.error.errors 
         });
+      }
+      
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to this project
+      if (!userProjectIds.includes(result.data.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to add intercoms to this project" });
       }
 
       // Verify project exists
