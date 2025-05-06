@@ -1176,10 +1176,8 @@ const KastleVideoGuardingPage: React.FC = () => {
                     className={`w-full flex items-center justify-start gap-3 py-4 ${selectedTab === key ? 'bg-muted' : ''}`}
                     onClick={() => handleTabSelection(key)}
                   >
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br text-white shadow-sm" style={{
-                      backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                      "--tw-gradient-from-color": tab.color.split(" ")[0] as string,
-                      "--tw-gradient-to": tab.color.split(" ")[1]
+                    <span className="flex items-center justify-center w-8 h-8 rounded-full text-white shadow-sm" style={{
+                      background: `linear-gradient(to bottom right, ${tab.color.split(" ")[0]}, ${tab.color.split(" ")[1]})`
                     }}>
                       <span className="text-lg">{tab.icon}</span>
                     </span>
@@ -1556,8 +1554,8 @@ const KastleVideoGuardingPage: React.FC = () => {
                                                   } else {
                                                     const days = current ? current.split(',') : [];
                                                     days.push(day);
-                                                    const order = {Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7};
-                                                    days.sort((a, b) => order[a] - order[b]);
+                                                    const order: Record<string, number> = {Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7};
+                                                    days.sort((a, b) => (order[a] || 0) - (order[b] || 0));
                                                     newValue = days.join(',');
                                                   }
                                                   updateStream(stream.id, "monitoringDaysOfWeek", newValue);
@@ -2301,8 +2299,8 @@ const KastleVideoGuardingPage: React.FC = () => {
                                 const days = current ? current.split(',') : [];
                                 days.push(day);
                                 // Sort days of week in correct order
-                                const order = {Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7};
-                                days.sort((a, b) => order[a] - order[b]);
+                                const order: Record<string, number> = {Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7};
+                                days.sort((a, b) => (order[a] || 0) - (order[b] || 0));
                                 newValue = days.join(',');
                               }
                               handleFormChange("monitoringDaysOfWeek", newValue);
