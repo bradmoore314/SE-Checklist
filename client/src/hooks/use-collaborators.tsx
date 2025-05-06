@@ -4,7 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectCollaborator, PERMISSION } from "@shared/schema";
 
 export interface AddCollaboratorData {
-  user_id: number;
+  user_id?: number;
+  email?: string;
   permission: string;
 }
 

@@ -2901,6 +2901,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You don't have permission to add collaborators to this project" });
       }
 
+      // Check if email is provided instead of user_id
+      if (req.body.email && !req.body.user_id) {
+        console.log("Looking up user by email:", req.body.email);
+        // Look up the user by email
+        const user = await storage.getUserByEmail(req.body.email);
+        if (!user) {
+          return res.status(404).json({ message: "User with this email not found" });
+        }
+        
+        // Set the user_id in the request body
+        req.body.user_id = user.id;
+        console.log("Found user by email, ID:", user.id);
+      }
+
       // Validate the request body
       const result = insertProjectCollaboratorSchema.safeParse(req.body);
       if (!result.success) {
@@ -2931,8 +2945,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...result.data,
         project_id: projectId
       });
-
-      res.status(201).json(collaborator);
+      
+      // Return collaborator with user info for improved UX
+      res.status(201).json({
+        ...collaborator,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          fullName: user.fullName
+        }
+      });
     } catch (error) {
       console.error("Error adding project collaborator:", error);
       res.status(500).json({ 

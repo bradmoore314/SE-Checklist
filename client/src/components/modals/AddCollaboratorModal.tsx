@@ -67,34 +67,14 @@ export function AddCollaboratorModal({
 
   const handleSubmit = async (data: FormData) => {
     try {
-      // Look up the user by email
-      const response = await fetch(`/api/lookup/users?email=${encodeURIComponent(data.email)}`);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          setUserNotFoundError(true);
-          toast({
-            title: "User not found",
-            description: "No user found with this email address. They must register first.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw new Error("Failed to look up user");
-      }
-      
-      const user = await response.json();
-      
+      // Send email directly to the server
+      // The server will look up the user or return appropriate error
       onAddCollaborator({
-        user_id: user.id,
+        email: data.email,
         permission: data.permission,
       });
       
-      toast({
-        title: "Success",
-        description: `Added ${user.fullName || user.username} as a collaborator with ${data.permission} permission.`,
-      });
-      
+      // Close the modal - success toast will be shown by the mutation
       form.reset();
       onClose();
     } catch (error) {
