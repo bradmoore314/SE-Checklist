@@ -173,16 +173,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Project endpoints
   app.get("/api/projects", isAuthenticated, async (req: Request, res: Response) => {
-    const projects = await storage.getProjects();
+    // Only return projects the user has access to
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    // Get projects based on user permission
+    const projects = await storage.getProjectsForUser(req.user.id);
     res.json(projects);
   });
 
   app.get("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
     }
 
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
+    }
+    
     const project = await storage.getProject(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -212,9 +231,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to update this project" });
     }
 
     try {
@@ -241,9 +273,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to delete this project" });
+    }
+    
+    // For additional security, check if the user has admin rights for this project
+    const permission = await storage.getUserProjectPermission(req.user.id, projectId);
+    if (permission !== 'admin' && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Only project admins can delete projects" });
     }
 
     const success = await storage.deleteProject(projectId);
@@ -256,9 +307,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Access Point endpoints
   app.get("/api/projects/:projectId/access-points", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
     }
 
     const project = await storage.getProject(projectId);
@@ -411,9 +475,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Camera endpoints
   app.get("/api/projects/:projectId/cameras", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
     }
 
     const project = await storage.getProject(projectId);
@@ -426,6 +503,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
@@ -435,11 +516,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!camera) {
       return res.status(404).json({ message: "Camera not found" });
     }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this camera belongs to
+    if (!userProjectIds.includes(camera.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to access this camera" });
+    }
 
     res.json(camera);
   });
 
   app.post("/api/cameras", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       // Extract image data first if present
       const { image_data, ...cameraData } = req.body;
@@ -450,6 +544,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Invalid camera data", 
           errors: result.error.errors 
         });
+      }
+
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to this project
+      if (!userProjectIds.includes(result.data.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to add cameras to this project" });
       }
 
       // Verify project exists
@@ -490,6 +593,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/cameras/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     try {
       const cameraId = parseInt(req.params.id);
       if (isNaN(cameraId)) {
@@ -500,6 +607,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingCamera = await storage.getCamera(cameraId);
       if (!existingCamera) {
         return res.status(404).json({ message: "Camera not found" });
+      }
+      
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to the project this camera belongs to
+      if (!userProjectIds.includes(existingCamera.project_id)) {
+        return res.status(403).json({ message: "You don't have permission to duplicate this camera" });
       }
       
       // Create a copy with a modified location name
@@ -526,9 +642,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const cameraId = parseInt(req.params.id);
     if (isNaN(cameraId)) {
       return res.status(400).json({ message: "Invalid camera ID" });
+    }
+
+    // Get the existing camera to check permissions
+    const existingCamera = await storage.getCamera(cameraId);
+    if (!existingCamera) {
+      return res.status(404).json({ message: "Camera not found" });
+    }
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to the project this camera belongs to
+    if (!userProjectIds.includes(existingCamera.project_id)) {
+      return res.status(403).json({ message: "You don't have permission to update this camera" });
     }
 
     try {
