@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import chatbotGeminiService, { ChatMessage, ChatContext } from '../services/chatbot-gemini';
+import chatbotGeminiService, { ChatMessage, ChatContext } from '../services/chatbot-gemini-direct';
 
 /**
  * Register AI chatbot API routes
