@@ -617,6 +617,10 @@ function EnhancedFloorplansPage() {
     );
   }
   
+  // Reference for the fullscreen functionality - must be declared before any conditional returns
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+  
   // Show error if specific floorplan not found
   if (!floorplan) {
     return (
@@ -636,10 +640,6 @@ function EnhancedFloorplansPage() {
       </div>
     );
   }
-  
-  // Reference for the fullscreen functionality
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [showSidebar, setShowSidebar] = useState(true);
 
   // Render specific floorplan view
   return (
