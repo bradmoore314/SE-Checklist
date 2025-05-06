@@ -231,34 +231,62 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   
   // Speech state
   const [isListening, setIsListening] = useState(false);
+  const [isContinuousMode, setIsContinuousMode] = useState(false);
   
-  // Toggle speech recognition
+  // Handle speech recognition transcript
+  const handleTranscript = useCallback((transcript: string) => {
+    // Add the transcript as a user message
+    if (transcript.trim()) {
+      addMessage({
+        content: transcript,
+        role: 'user',
+      });
+    }
+  }, [addMessage]);
+  
+  // Toggle regular (one-time) speech recognition
   const toggleListening = useCallback(() => {
     if (!speechService.isRecognitionSupported()) {
       console.warn("Speech recognition not supported in this browser");
       return;
     }
     
+    // If continuous mode is active, turn it off first
+    if (isContinuousMode) {
+      speechService.stopListening();
+      setIsContinuousMode(false);
+    }
+    
     if (isListening) {
       speechService.stopListening();
       setIsListening(false);
     } else {
-      const success = speechService.startListening((transcript) => {
-        // Add the transcript as a user message
-        if (transcript.trim()) {
-          addMessage({
-            content: transcript,
-            role: 'user',
-          });
-        }
-        // Stop listening after getting a transcript
-        speechService.stopListening();
-        setIsListening(false);
-      });
-      
+      const success = speechService.startListening(handleTranscript);
       setIsListening(success);
     }
-  }, [isListening, addMessage]);
+  }, [isListening, isContinuousMode, handleTranscript]);
+  
+  // Toggle continuous speech recognition (Grok-like Voice Mode)
+  const toggleContinuousMode = useCallback(() => {
+    if (!speechService.isRecognitionSupported()) {
+      console.warn("Speech recognition not supported in this browser");
+      return;
+    }
+    
+    // Stop any existing listening
+    speechService.stopListening();
+    
+    if (isContinuousMode) {
+      // Turn off continuous mode
+      setIsContinuousMode(false);
+      setIsListening(false);
+    } else {
+      // Start continuous mode
+      const success = speechService.startContinuousListening(handleTranscript);
+      setIsContinuousMode(success);
+      setIsListening(success);
+    }
+  }, [isContinuousMode, handleTranscript]);
   
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
@@ -285,7 +313,9 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     
     // Speech state
     isListening,
+    isContinuousMode,
     toggleListening,
+    toggleContinuousMode,
     
     // Loading state
     isLoading,

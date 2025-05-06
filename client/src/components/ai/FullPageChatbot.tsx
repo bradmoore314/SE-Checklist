@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Mic, MicOff, Send, X, Minimize, ArrowLeft } from 'lucide-react';
+import { Mic, MicOff, Send, X, Minimize, ArrowLeft, Radio, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useChatbot } from '@/hooks/use-chatbot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 /**
  * FullPageChatbot component - Displays a full-screen chat interface for in-depth interaction
@@ -21,7 +24,9 @@ export function FullPageChatbot() {
     isFullScreen,
     toggleFullScreen,
     isListening,
+    isContinuousMode,
     toggleListening,
+    toggleContinuousMode,
     isLoading,
     equipmentCreation,
     projectId
@@ -193,29 +198,65 @@ export function FullPageChatbot() {
               </ScrollArea>
               
               <CardFooter className="p-4 border-t flex gap-2">
-                <Button 
-                  variant={isListening ? "default" : "outline"}
-                  size="icon"
-                  onClick={toggleListening}
-                  className="flex-shrink-0"
-                >
-                  {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant={isListening && !isContinuousMode ? "default" : "outline"}
+                        size="icon"
+                        onClick={toggleListening}
+                        className="flex-shrink-0"
+                        disabled={isContinuousMode}
+                      >
+                        {isListening && !isContinuousMode ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isContinuousMode 
+                        ? "One-time listening disabled while Voice Mode is active" 
+                        : isListening 
+                          ? "Stop listening" 
+                          : "Start one-time listening"
+                      }
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant={isContinuousMode ? "default" : "outline"}
+                        size="icon"
+                        onClick={toggleContinuousMode}
+                        className={`flex-shrink-0 ${isContinuousMode ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                      >
+                        {isContinuousMode ? <Radio className="h-5 w-5 animate-pulse" /> : <Headphones className="h-5 w-5" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isContinuousMode 
+                        ? "Voice Mode active - Turn off continuous listening" 
+                        : "Turn on Voice Mode - Similar to Grok's Voice Mode"
+                      }
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 <Input
                   ref={inputRef}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type your question or request..."
+                  placeholder={isContinuousMode ? "Listening for your voice..." : "Type your question or request..."}
                   className="flex-1"
-                  disabled={isLoading}
+                  disabled={isLoading || isContinuousMode}
                 />
                 
                 <Button 
                   variant="default" 
                   onClick={handleSendMessage}
-                  disabled={inputText.trim() === '' || isLoading}
+                  disabled={(inputText.trim() === '' && !isContinuousMode) || isLoading}
                   className="flex-shrink-0"
                 >
                   <Send className="h-5 w-5 mr-2" />
@@ -231,18 +272,48 @@ export function FullPageChatbot() {
                 <div className="space-y-6">
                   <div>
                     <h4 className="text-lg font-medium mb-2">Voice Settings</h4>
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="text-muted-foreground mb-3">
+                    <div className="bg-muted/50 p-4 rounded-lg space-y-4">
+                      <p className="text-muted-foreground">
                         Configure speech recognition and voice synthesis settings.
                       </p>
+                      
                       <div className="flex flex-col gap-4">
-                        <Button variant="outline" className="w-full justify-start">
-                          <Mic className="h-4 w-4 mr-2" />
-                          Calibrate Microphone
-                        </Button>
-                        <Button variant="outline" className="w-full justify-start">
-                          Test Voice Output
-                        </Button>
+                        <div className="flex items-center space-x-4 rounded-md border p-4">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-medium leading-none">Voice Mode</p>
+                            <p className="text-sm text-muted-foreground">
+                              Continuous conversation similar to Grok's Voice Mode
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              id="voice-mode"
+                              checked={isContinuousMode}
+                              onCheckedChange={toggleContinuousMode}
+                            />
+                            <Label htmlFor="voice-mode" className={isContinuousMode ? "text-green-600" : ""}>
+                              {isContinuousMode ? "Active" : "Disabled"}
+                            </Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 rounded-md border p-4">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-medium leading-none">Voice Settings</p>
+                            <p className="text-sm text-muted-foreground">
+                              Calibrate microphone and test voice synthesis
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Mic className="h-4 w-4 mr-2" />
+                              Calibrate
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              Test Voice
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
