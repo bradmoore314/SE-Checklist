@@ -1918,73 +1918,12 @@ export const EnhancedFloorplanViewer = ({
           )}
         </div>
         
-        {/* Layers Panel Button */}
+        {/* Layers Management */}
         <div className="layers-panel mt-4">
-          <button 
-            onClick={() => {
-              toast({
-                title: 'Layers Panel',
-                description: (
-                  <div className="flex flex-col gap-2">
-                    <p className="font-bold">Available Layers:</p>
-                    <div className="max-h-40 overflow-y-auto">
-                      {layers.length > 0 ? (
-                        <ul className="space-y-1">
-                          {layers.map(layer => (
-                            <li key={layer.id} className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: layer.color }}
-                              />
-                              <span>{layer.name}</span>
-                              <input 
-                                type="checkbox"
-                                checked={layer.visible}
-                                onChange={() => {
-                                  // This would ideally update the layer visibility
-                                  toast({
-                                    title: 'Layer Toggled',
-                                    description: `Layer "${layer.name}" visibility toggled`,
-                                    duration: 1000
-                                  });
-                                }}
-                              />
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No layers created yet</p>
-                      )}
-                    </div>
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={() => {
-                          toast({
-                            title: 'Feature Coming Soon',
-                            description: 'Layer management will be implemented in the next update.',
-                            duration: 3000
-                          });
-                        }}
-                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                      >
-                        Add Layer
-                      </button>
-                    </div>
-                  </div>
-                ),
-                duration: 8000,
-              });
-            }}
-            title="Manage Layers"
-            className="layer-button"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-            <span>Layers</span>
-          </button>
+          <div className="flex items-center">
+            <LayerManager floorplanId={floorplan.id} />
+            <span className="ml-2">Layers</span>
+          </div>
         </div>
         
         {/* Export Button */}
