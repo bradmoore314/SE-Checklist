@@ -1154,11 +1154,10 @@ const KastleVideoGuardingPage: React.FC = () => {
               className="w-full flex items-center justify-between border-2 py-6 rounded-xl shadow-sm bg-gradient-to-r from-gray-50 to-gray-100"
             >
               <div className="flex items-center">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br mr-3 text-white shadow-sm" style={{
-                  backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                  "--tw-gradient-from": getTabInfo(selectedTab).color.split(" ")[0],
-                  "--tw-gradient-to": getTabInfo(selectedTab).color.split(" ")[1]
-                }}>
+                <span className="flex items-center justify-center w-10 h-10 rounded-full mr-3 text-white shadow-sm" 
+                  style={{
+                    background: `linear-gradient(to bottom right, ${getTabInfo(selectedTab).color.split(" ")[0]}, ${getTabInfo(selectedTab).color.split(" ")[1]})`
+                  }}>
                   <span className="text-xl">{getTabInfo(selectedTab).icon}</span>
                 </span>
                 <span className="font-medium text-lg">{getTabInfo(selectedTab).title}</span>
@@ -1179,7 +1178,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   >
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br text-white shadow-sm" style={{
                       backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                      "--tw-gradient-from": tab.color.split(" ")[0],
+                      "--tw-gradient-from-color": tab.color.split(" ")[0] as string,
                       "--tw-gradient-to": tab.color.split(" ")[1]
                     }}>
                       <span className="text-lg">{tab.icon}</span>
