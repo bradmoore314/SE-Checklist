@@ -28,8 +28,8 @@ import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/Annot
 import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
-import { ChatbotProvider } from '@/components/ai/ChatbotProvider';
-import ChatbotWindow from '@/components/ai/ChatbotWindow';
+import { ChatbotProvider } from '@/hooks/use-chatbot';
+import { ChatbotWindow } from '@/components/ai/ChatbotWindow';
 
 interface FloorplanData {
   id: number;

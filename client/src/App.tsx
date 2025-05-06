@@ -31,6 +31,10 @@ import { SiteWalkProvider } from "@/context/SiteWalkContext";
 import { ProjectProvider } from "@/context/ProjectContext";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
+import { ChatbotProvider } from "./hooks/use-chatbot";
+import { ChatbotButton } from "./components/ai/ChatbotButton";
+import { ChatbotWindow } from "./components/ai/ChatbotWindow";
+import { FullPageChatbot } from "./components/ai/FullPageChatbot";
 
 function Router() {
   return (
@@ -89,9 +93,14 @@ function App() {
       <AuthProvider>
         <ProjectProvider>
           <SiteWalkProvider>
-            <MainLayout>
-              <Router />
-            </MainLayout>
+            <ChatbotProvider>
+              <MainLayout>
+                <Router />
+                <ChatbotButton />
+                <ChatbotWindow />
+                <FullPageChatbot />
+              </MainLayout>
+            </ChatbotProvider>
           </SiteWalkProvider>
         </ProjectProvider>
         <Toaster />
