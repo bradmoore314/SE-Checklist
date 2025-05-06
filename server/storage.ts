@@ -1995,6 +1995,8 @@ export class DatabaseStorage implements IStorage {
       return {
         id: formData.id,
         project_id: formData.project_id,
+        form_type: formData.form_type || 'kvg',
+        form_data: formData.form_data || {},
         bdmOwner: formData.bdm_owner || '',
         salesEngineer: formData.sales_engineer || '',
         kvgSme: formData.kvg_sme || '',
@@ -2028,9 +2030,15 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Creating new KVG form data:", JSON.stringify(insertFormData, null, 2));
       
+      // Handle form_type and form_data if provided
+      const form_type = insertFormData.form_type || 'kvg';
+      const form_data = insertFormData.form_data || {};
+      
       // Use Drizzle ORM to insert the data
       const [result] = await db.insert(kvgFormData).values({
         project_id: insertFormData.project_id,
+        form_type,
+        form_data,
         bdm_owner: insertFormData.bdmOwner || '',
         sales_engineer: insertFormData.salesEngineer || '',
         kvg_sme: insertFormData.kvgSme || '',
@@ -2075,6 +2083,8 @@ export class DatabaseStorage implements IStorage {
       return {
         id: result.id,
         project_id: result.project_id,
+        form_type: result.form_type || 'kvg',
+        form_data: result.form_data || {},
         bdmOwner: result.bdm_owner || '',
         salesEngineer: result.sales_engineer || '',
         kvgSme: result.kvg_sme || '',
@@ -2124,6 +2134,10 @@ export class DatabaseStorage implements IStorage {
       
       // Prepare update data
       const updateData: Record<string, any> = {};
+      
+      // Handle form_type and form_data if provided
+      if (updateFormData.form_type !== undefined) updateData.form_type = updateFormData.form_type;
+      if (updateFormData.form_data !== undefined) updateData.form_data = updateFormData.form_data;
       
       // Map our schema property names to database column names
       if (updateFormData.bdmOwner !== undefined) updateData.bdm_owner = updateFormData.bdmOwner;
