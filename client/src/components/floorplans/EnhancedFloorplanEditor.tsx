@@ -526,6 +526,20 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                     </Button>
                   </div>
                   
+                  {/* Equipment panel toggle */}
+                  {floorplanId && projectId && (
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant={showEquipmentPanel ? "default" : "outline"}
+                        onClick={() => setShowEquipmentPanel(!showEquipmentPanel)}
+                      >
+                        <ListChecks className="h-4 w-4 mr-2" />
+                        Unplaced Equipment
+                      </Button>
+                    </div>
+                  )}
+                  
                   {/* Annotation-specific controls */}
                   {selectedTool === 'text' && (
                     <div className="flex items-center gap-2">
