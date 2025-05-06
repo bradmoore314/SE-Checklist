@@ -50,9 +50,11 @@ type AccessPointFormValues = z.infer<typeof accessPointSchema>;
 interface EditAccessPointModalProps {
   isOpen: boolean;
   accessPoint: AccessPoint;
-  onSave: () => void;
+  onSave: (id: number, data: AccessPoint) => void;
   onClose: () => void;
   selectedField?: string | null;
+  fromFloorplan?: boolean;
+  isNewAccessPoint?: boolean;
 }
 
 export default function EditAccessPointModal({
@@ -60,7 +62,9 @@ export default function EditAccessPointModal({
   accessPoint,
   onSave,
   onClose,
-  selectedField
+  selectedField,
+  fromFloorplan = false,
+  isNewAccessPoint = false
 }: EditAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
@@ -144,15 +148,44 @@ export default function EditAccessPointModal({
 
   const onSubmit = async (values: AccessPointFormValues) => {
     setIsSubmitting(true);
+    const { toast } = useToast();
     
     try {
-      await apiRequest("PUT", `/api/access-points/${accessPoint.id}`, values);
+      let resultData;
       
-      // Call onSave to refresh the parent component
-      onSave();
+      if (isNewAccessPoint) {
+        // Create a new access point
+        const response = await apiRequest("POST", "/api/access-points", {
+          ...values,
+          project_id: accessPoint.project_id,
+        });
+        resultData = await response.json();
+        
+        toast({
+          title: "Success",
+          description: "Access point created successfully",
+        });
+      } else {
+        // Update existing access point
+        const response = await apiRequest("PUT", `/api/access-points/${accessPoint.id}`, values);
+        resultData = await response.json();
+        
+        toast({
+          title: "Success", 
+          description: "Access point updated successfully",
+        });
+      }
+      
+      // Call onSave with the created/updated access point id and data
+      onSave(resultData.id, resultData);
     } catch (error) {
-      console.error("Error updating access point:", error);
-      // Here you could handle errors, show a notification, etc.
+      console.error("Error saving access point:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to save access point. Please check all required fields.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -594,7 +627,14 @@ export default function EditAccessPointModal({
                 disabled={isSubmitting}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isNewAccessPoint ? "Creating..." : "Updating..."}
+                  </>
+                ) : (
+                  isNewAccessPoint ? "Create Access Point" : "Save Changes"
+                )}
               </Button>
             </div>
           </form>
