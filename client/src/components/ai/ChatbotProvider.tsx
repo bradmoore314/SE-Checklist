@@ -1,10 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import ChatbotWindow from './ChatbotWindow';
-import FullPageChatbot from './FullPageChatbot';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatbotContextType {
   isOpen: boolean;
   isExpanded: boolean;
+  projectId?: number;
   openChatbot: () => void;
   closeChatbot: () => void;
   expandChatbot: () => void;
@@ -12,52 +12,61 @@ interface ChatbotContextType {
   addEquipmentFromChat: (type: string, properties: Record<string, any>) => void;
 }
 
+// Create context with a default value
+const ChatbotContext = createContext<ChatbotContextType | null>(null);
+
 interface ChatbotProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   projectId?: number;
   onAddMarker?: (type: string, properties: Record<string, any>) => void;
 }
 
-const ChatbotContext = createContext<ChatbotContextType>({
-  isOpen: false,
-  isExpanded: false,
-  openChatbot: () => {},
-  closeChatbot: () => {},
-  expandChatbot: () => {},
-  minimizeChatbot: () => {},
-  addEquipmentFromChat: () => {},
-});
-
-export const useChatbot = () => useContext(ChatbotContext);
-
 export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ 
   children, 
   projectId,
-  onAddMarker 
+  onAddMarker
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { toast } = useToast();
 
-  const openChatbot = () => setIsOpen(true);
+  const openChatbot = () => {
+    setIsOpen(true);
+  };
+
   const closeChatbot = () => {
     setIsOpen(false);
     setIsExpanded(false);
   };
-  
-  const expandChatbot = () => setIsExpanded(true);
-  const minimizeChatbot = () => setIsExpanded(false);
+
+  const expandChatbot = () => {
+    setIsExpanded(true);
+  };
+
+  const minimizeChatbot = () => {
+    setIsExpanded(false);
+  };
 
   const addEquipmentFromChat = (type: string, properties: Record<string, any>) => {
+    // Call the onAddMarker callback if provided
     if (onAddMarker) {
       onAddMarker(type, properties);
+    } else {
+      // If no callback is provided, just show a toast
+      toast({
+        title: 'Adding Equipment',
+        description: `Adding ${type} with properties from AI chat`,
+      });
     }
   };
 
+  // Provide the context value to all children
   return (
     <ChatbotContext.Provider
       value={{
         isOpen,
         isExpanded,
+        projectId,
         openChatbot,
         closeChatbot,
         expandChatbot,
@@ -66,31 +75,15 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({
       }}
     >
       {children}
-      
-      {isOpen && !isExpanded && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <ChatbotWindow
-            projectId={projectId}
-            onExpand={expandChatbot}
-            onMinimize={closeChatbot}
-            onAddMarker={onAddMarker}
-          />
-        </div>
-      )}
-      
-      {isOpen && isExpanded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="w-[90vw] h-[90vh] max-w-6xl">
-            <FullPageChatbot
-              projectId={projectId}
-              onClose={minimizeChatbot}
-              onAddMarker={onAddMarker}
-            />
-          </div>
-        </div>
-      )}
     </ChatbotContext.Provider>
   );
 };
 
-export default ChatbotProvider;
+// Custom hook to use the chatbot context
+export const useChatbot = () => {
+  const context = useContext(ChatbotContext);
+  if (!context) {
+    throw new Error('useChatbot must be used within a ChatbotProvider');
+  }
+  return context;
+};

@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { chatbotService } from '@/services/chatbot-service';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Card,
   CardContent,
@@ -11,28 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Mic, 
-  MicOff, 
-  Send, 
-  Maximize2, 
-  Minimize2, 
-  MessageSquare,
-  X,
-  RefreshCw,
-  Camera,
-  BrainCircuit,
-  Check,
-  AlertCircle
-} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2, Send, Mic, MicOff, Maximize2, X } from 'lucide-react';
+import { useChatbot } from './ChatbotProvider';
+import { MicrophoneIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatMessage {
@@ -42,456 +23,264 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-interface ChatbotWindowProps {
-  projectId?: number;
-  onExpand?: () => void;
-  onMinimize?: () => void;
-  onAddMarker?: (type: string, properties: Record<string, any>) => void;
-  isExpanded?: boolean;
-  className?: string;
-}
-
-const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
-  projectId,
-  onExpand,
-  onMinimize,
-  onAddMarker,
-  isExpanded = false,
-  className = '',
-}) => {
+const ChatbotWindow: React.FC = () => {
+  const { isOpen, isExpanded, closeChatbot, expandChatbot, projectId } = useChatbot();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isListening, setIsListening] = useState(false);
-  const [isRecognitionSupported, setIsRecognitionSupported] = useState(false);
-  const [isSynthesisSupported, setIsSynthesisSupported] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [interimResult, setInterimResult] = useState('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [pendingRecommendation, setPendingRecommendation] = useState<any>(null);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Initialize on mount
   useEffect(() => {
-    setIsRecognitionSupported(chatbotService.isRecognitionSupported());
-    setIsSynthesisSupported(chatbotService.isSynthesisSupported());
-    
-    // Load existing chat session or start a new one
-    const session = chatbotService.getSession();
-    if (session) {
-      setMessages(chatbotService.getMessages());
-    } else {
-      // Start with assistant greeting
-      sendInitialGreeting();
+    if (isOpen && messages.length === 0) {
+      // Initial welcome message
+      const welcomeMessage: ChatMessage = {
+        id: 'welcome',
+        role: 'assistant',
+        content: 'Hi! I can help you configure security equipment. How can I assist you today?',
+        timestamp: new Date()
+      };
+      setMessages([welcomeMessage]);
     }
-  }, []);
+  }, [isOpen, messages.length]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
+    // Scroll to bottom whenever messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(e.target.value);
   };
 
-  const sendInitialGreeting = async () => {
-    setIsLoading(true);
-    try {
-      const response = await chatbotService.sendMessage("Hi", false);
-      setMessages([response]);
-    } catch (error) {
-      console.error('Error sending initial greeting:', error);
-      toast({
-        title: 'Error',
-        description: 'Could not initialize the chatbot assistant.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const sendMessage = async () => {
+    if (inputMessage.trim() === '' || isProcessing) return;
 
-  const handleSendMessage = async () => {
-    if (!input.trim() && !interimResult.trim()) return;
-    
-    const messageText = input.trim() || interimResult.trim();
-    setInput('');
-    setInterimResult('');
-    
-    // Add user message to the UI immediately
     const userMessage: ChatMessage = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: `user-${Date.now()}`,
       role: 'user',
-      content: messageText,
-      timestamp: new Date(),
+      content: inputMessage,
+      timestamp: new Date()
     };
-    setMessages((prev) => [...prev, userMessage]);
-    
-    // Send to service and get response
-    setIsLoading(true);
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+    setIsProcessing(true);
+
     try {
-      const response = await chatbotService.sendMessage(messageText, isSynthesisSupported);
-      setMessages((prev) => [...prev, response]);
-      
-      // Check if we have a complete equipment recommendation
-      const session = chatbotService.getSession();
-      if (session?.context?.configStage === 'complete' && session?.context?.confidence && session?.context?.confidence > 0.7) {
-        const recommendations = await chatbotService.getEquipmentRecommendations();
-        if (recommendations && recommendations.length > 0) {
-          setPendingRecommendation(recommendations[0]);
-          setShowConfirmation(true);
-        }
+      // Make API call to backend for AI response
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          projectId: projectId,
+          history: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response from AI');
       }
+
+      const data = await response.json();
+      
+      const assistantMessage: ChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: data.response,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Optional: Speak the response if text-to-speech is enabled
+      if (isSpeaking) {
+        speakText(data.response);
+      }
+      
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error in chat:', error);
       toast({
-        title: 'Error',
-        description: 'Could not send message to the assistant.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to get a response. Please try again.",
+        variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const toggleListening = () => {
-    if (isListening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  };
-
-  const startListening = () => {
-    setIsListening(true);
-    chatbotService.startVoiceInput(
-      (text) => setInterimResult(text),
-      (text) => {
-        setInput(text);
-        stopListening();
-        // Auto-send after voice recognition if we got a result
-        if (text.trim()) {
-          setTimeout(() => {
-            handleSendMessage();
-          }, 500);
-        }
-      },
-      (error) => {
-        console.error('Speech recognition error:', error);
-        toast({
-          title: 'Speech Recognition Error',
-          description: error.message || 'An error occurred with speech recognition',
-          variant: 'destructive',
-        });
-        stopListening();
-      }
-    );
-  };
-
-  const stopListening = () => {
-    setIsListening(false);
-    chatbotService.stopVoiceInput();
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      sendMessage();
     }
   };
 
-  const resetChat = () => {
-    chatbotService.resetSession();
-    setMessages([]);
-    setPendingRecommendation(null);
-    setShowConfirmation(false);
-    sendInitialGreeting();
-  };
-
-  const confirmRecommendation = () => {
-    if (pendingRecommendation && onAddMarker) {
-      onAddMarker(
-        pendingRecommendation.type,
-        pendingRecommendation.properties
-      );
+  const toggleRecording = async () => {
+    if (isRecording) {
+      // Stop recording
+      setIsRecording(false);
+      // Here you would stop the recording and process the audio
+      // For now, we'll simulate this with a timeout
+      setIsProcessing(true);
+      setTimeout(() => {
+        const simulatedText = "Show me options for camera placement in the lobby area";
+        setInputMessage(simulatedText);
+        setIsProcessing(false);
+        toast({
+          title: "Speech Recognition",
+          description: "This is a simulation. In production, we would use the Google Speech API.",
+        });
+      }, 1500);
+    } else {
+      // Start recording
+      setIsRecording(true);
       
-      toast({
-        title: 'Success',
-        description: `${pendingRecommendation.type.replace('_', ' ')} was added to the floorplan.`,
-        variant: 'default',
-      });
-      
-      resetChat();
+      try {
+        // In production, you would integrate with the speech recognition service
+        toast({
+          title: "Speech Recognition",
+          description: "Speak now... (This is a simulation)",
+        });
+        
+        // Simulate recording for a few seconds
+        setTimeout(() => {
+          toggleRecording();
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Error starting recording:', error);
+        setIsRecording(false);
+        toast({
+          title: "Error",
+          description: "Failed to start speech recognition. Please try again.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+  
+  const speakText = (text: string) => {
+    // Using the browser's built-in speech synthesis
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error('Text-to-speech not supported in this browser');
+    }
+  };
+  
+  const toggleSpeaking = () => {
+    setIsSpeaking(!isSpeaking);
+    if (isSpeaking) {
+      window.speechSynthesis.cancel(); // Stop any ongoing speech
     }
   };
 
-  const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-    if (isMinimized && onMinimize) {
-      onMinimize();
-    }
-  };
-
-  const handleExpand = () => {
-    if (onExpand) {
-      onExpand();
-    }
-  };
-
-  if (isMinimized) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="default"
-                size="icon"
-                className="h-12 w-12 rounded-full shadow-lg"
-                onClick={toggleMinimize}
-              >
-                <MessageSquare className="h-6 w-6" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Open AI Assistant</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
-    <Card 
-      className={`${className} ${isExpanded ? 'w-full h-full' : 'w-80 h-96'} 
-                 flex flex-col shadow-xl transition-all duration-300 overflow-hidden`}
-    >
-      <CardHeader className="p-3 flex flex-row items-center justify-between space-y-0 bg-gradient-to-r from-primary/80 to-primary/60">
-        <div className="flex items-center space-x-2">
-          <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-          <CardTitle className="text-lg font-semibold text-primary-foreground">AI Assistant</CardTitle>
+    <Card className={`fixed bottom-4 right-4 z-50 shadow-lg transition-all duration-300 ${
+      isExpanded ? 'w-full md:w-3/4 lg:w-2/3 h-[80vh]' : 'w-80 h-96'
+    }`}>
+      <CardHeader className="p-4 flex flex-row items-center justify-between bg-primary/10 rounded-t-lg">
+        <div>
+          <CardTitle className="text-lg">AI Assistant</CardTitle>
+          <CardDescription>Configure security equipment with voice</CardDescription>
         </div>
-        <div className="flex space-x-1">
-          {isExpanded ? (
-            <Button variant="ghost" size="icon" onClick={onMinimize} className="h-7 w-7 text-primary-foreground">
-              <Minimize2 className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button variant="ghost" size="icon" onClick={handleExpand} className="h-7 w-7 text-primary-foreground">
+        <div className="flex gap-1">
+          {!isExpanded ? (
+            <Button variant="ghost" size="icon" onClick={expandChatbot}>
               <Maximize2 className="h-4 w-4" />
             </Button>
-          )}
-          <Button variant="ghost" size="icon" onClick={toggleMinimize} className="h-7 w-7 text-primary-foreground">
+          ) : null}
+          <Button variant="ghost" size="icon" onClick={closeChatbot}>
             <X className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      
-      {showConfirmation ? (
-        <CardContent className="flex-grow p-4 overflow-auto flex flex-col">
-          <div className="bg-muted p-3 rounded-lg mb-4">
-            <h3 className="font-medium text-lg mb-2 flex items-center">
-              <Check className="h-5 w-5 mr-2 text-green-500" />
-              Configuration Complete
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              The AI assistant has gathered all the necessary information for your {pendingRecommendation?.type.replace('_', ' ')}.
-            </p>
-            
-            <div className="bg-background p-3 rounded-lg mb-4">
-              <h4 className="font-medium mb-2">Configuration Summary</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-medium">Type:</span>
-                  <span className="text-muted-foreground">
-                    {pendingRecommendation?.type.replace('_', ' ')}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Location:</span>
-                  <span className="text-muted-foreground">
-                    {pendingRecommendation?.properties.location || 'Not specified'}
-                  </span>
-                </div>
-                
-                {pendingRecommendation?.type === 'access_point' && (
-                  <>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Reader Type:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.reader_type || 'Not specified'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Lock Type:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.lock_type || 'Not specified'}
-                      </span>
-                    </div>
-                  </>
-                )}
-                
-                {pendingRecommendation?.type === 'camera' && (
-                  <>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Camera Type:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.camera_type || 'Not specified'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Mounting:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.mounting_type || 'Not specified'}
-                      </span>
-                    </div>
-                  </>
-                )}
-                
-                {pendingRecommendation?.type === 'intercom' && (
-                  <div className="flex justify-between">
-                    <span className="font-medium">Intercom Type:</span>
-                    <span className="text-muted-foreground">
-                      {pendingRecommendation?.properties.intercom_type || 'Not specified'}
-                    </span>
-                  </div>
-                )}
-                
-                {pendingRecommendation?.type === 'elevator' && (
-                  <>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Elevator Type:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.elevator_type || 'Not specified'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Floor Count:</span>
-                      <span className="text-muted-foreground">
-                        {pendingRecommendation?.properties.floor_count || 'Not specified'}
-                      </span>
-                    </div>
-                  </>
-                )}
-                
-                {pendingRecommendation?.properties.notes && (
-                  <div className="flex justify-between">
-                    <span className="font-medium">Notes:</span>
-                    <span className="text-muted-foreground">
-                      {pendingRecommendation?.properties.notes}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex space-x-2 justify-end">
-              <Button variant="outline" size="sm" onClick={resetChat}>
-                Start Over
-              </Button>
-              <Button size="sm" onClick={confirmRecommendation}>
-                Add to Floorplan
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      ) : (
-        <>
-          <CardContent className="flex-grow p-3 overflow-auto">
-            <div className="space-y-4">
-              {messages.map((message) => (
+      <CardContent className="p-0 flex-grow overflow-hidden">
+        <ScrollArea className="h-[calc(100%-2rem)]">
+          <div className="p-4 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${
+                  message.role === 'assistant' ? 'justify-start' : 'justify-end'
+                }`}
+              >
                 <div
-                  key={message.id}
-                  className={`flex ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                  className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                    message.role === 'assistant'
+                      ? 'bg-secondary text-secondary-foreground'
+                      : 'bg-primary text-primary-foreground'
                   }`}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <p className="text-sm">{message.content}</p>
-                  </div>
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="max-w-[80%] rounded-lg p-3 bg-muted">
-                    <div className="flex space-x-2 items-center">
-                      <div className="w-2 h-2 rounded-full bg-primary/40 animate-bounce"></div>
-                      <div className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 rounded-full bg-primary/80 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {interimResult && (
-                <div className="flex justify-end">
-                  <div className="max-w-[80%] rounded-lg p-3 bg-primary/40 text-primary-foreground">
-                    <p className="text-sm italic">{interimResult}</p>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          </CardContent>
-          
-          <CardFooter className="p-3 border-t">
-            <div className="w-full flex space-x-2 items-center">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={resetChat}
-                className="h-8 w-8 flex-shrink-0"
-                title="Reset conversation"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-              
-              <div className="relative w-full">
-                <Input
-                  type="text"
-                  placeholder={isListening ? 'Listening...' : 'Type a message...'}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={isLoading || isListening}
-                  className="pr-20"
-                />
-                <div className="absolute right-1 top-1 flex space-x-1">
-                  {isRecognitionSupported && (
-                    <Button
-                      variant={isListening ? "default" : "ghost"}
-                      size="icon"
-                      onClick={toggleListening}
-                      className="h-6 w-6 flex-shrink-0"
-                      disabled={isLoading}
-                      title={isListening ? "Stop listening" : "Start voice input"}
-                    >
-                      {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleSendMessage}
-                    className="h-6 w-6 flex-shrink-0"
-                    disabled={isLoading || (!input.trim() && !interimResult.trim())}
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <span className="text-xs opacity-50 block mt-1">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
               </div>
-            </div>
-          </CardFooter>
-        </>
-      )}
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+      </CardContent>
+      <CardFooter className="p-3 border-t">
+        <div className="flex items-center w-full gap-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={toggleRecording}
+            className={isRecording ? 'bg-red-100 text-red-500 animate-pulse' : ''}
+          >
+            {isRecording ? (
+              <MicrophoneIcon className="h-4 w-4" />
+            ) : (
+              <MicrophoneIcon className="h-4 w-4" />
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleSpeaking}
+          >
+            {isSpeaking ? (
+              <SpeakerWaveIcon className="h-4 w-4" />
+            ) : (
+              <SpeakerXMarkIcon className="h-4 w-4" />
+            )}
+          </Button>
+          <Input
+            placeholder="Type your message..."
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+            disabled={isProcessing}
+            className="flex-grow"
+          />
+          <Button
+            onClick={sendMessage}
+            disabled={inputMessage.trim() === '' || isProcessing}
+            size="icon"
+          >
+            {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 };

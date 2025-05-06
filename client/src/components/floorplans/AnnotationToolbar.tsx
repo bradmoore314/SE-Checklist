@@ -20,12 +20,14 @@ import {
   Layers,
   Copy,
   FileOutput,
-  Pipette
+  Pipette,
+  BrainCircuit
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import ChatbotButton from './ChatbotButton';
 
 export type AnnotationTool = 
   | 'select' 
@@ -282,6 +284,13 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 <MoveHorizontal className="h-4 w-4 mr-1 text-orange-600" />
                 <span className="text-xs">Elevator</span>
               </Button>
+            </div>
+            
+            <div className="mt-2">
+              <h4 className="text-xs font-medium mb-1 text-muted-foreground">AI Assistant</h4>
+              <div className="flex">
+                <ChatbotButton className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
+              </div>
             </div>
           </div>
           
@@ -675,6 +684,11 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
             </TooltipTrigger>
             <TooltipContent side="bottom">Elevator</TooltipContent>
           </Tooltip>
+
+          <Separator orientation="vertical" className="h-8 mx-1" />
+          
+          {/* AI Assistant Button */}
+          <ChatbotButton className="h-8 w-8 rounded-md bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
         </div>
         
         {/* File operations */}

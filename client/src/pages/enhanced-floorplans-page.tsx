@@ -28,6 +28,8 @@ import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/Annot
 import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
+import { ChatbotProvider } from '@/components/ai/ChatbotProvider';
+import ChatbotWindow from '@/components/ai/ChatbotWindow';
 
 interface FloorplanData {
   id: number;
@@ -696,4 +698,26 @@ function EnhancedFloorplansPage() {
   );
 }
 
-export default EnhancedFloorplansPage;
+// Wrap the component with ChatbotProvider
+function EnhancedFloorplansPageWithChatbot() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = parseInt(params.projectId);
+  const { toast } = useToast();
+  
+  return (
+    <ChatbotProvider projectId={projectId} onAddMarker={(type, properties) => {
+      // This will be called when the chatbot wants to add a marker
+      console.log("Adding marker from chatbot:", type, properties);
+      // You can trigger additional actions here
+      toast({
+        title: "AI Assistant",
+        description: `Added a new ${type} based on conversation`,
+      });
+    }}>
+      <EnhancedFloorplansPage />
+      <ChatbotWindow />
+    </ChatbotProvider>
+  );
+}
+
+export default EnhancedFloorplansPageWithChatbot;
