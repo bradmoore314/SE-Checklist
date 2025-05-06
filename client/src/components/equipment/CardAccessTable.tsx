@@ -140,15 +140,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.location, {
       id: 'location',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">LOCATION</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">LOCATION</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
       ),
       cell: ({ row, getValue }) => (
-        <div className="font-medium">{getValue()}</div>
+        <div className="font-medium text-gray-800">{getValue()}</div>
       ),
       meta: {
         className: "w-1/5",
@@ -158,12 +162,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.quick_config, {
       id: 'quickConfig',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">QUICK CONFIG</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">QUICK CONFIG</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
+      ),
+      cell: ({ row, getValue }) => (
+        <div className="text-gray-700">{getValue()}</div>
       ),
       meta: {
         inputType: "text"
@@ -172,12 +183,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.reader_type, {
       id: 'readerType',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">READER TYPE</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">READER TYPE</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
+      ),
+      cell: ({ row, getValue }) => (
+        <div className="text-gray-700">{getValue()}</div>
       ),
       meta: {
         inputType: "text"
@@ -186,12 +204,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.lock_type, {
       id: 'lockType',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">LOCK TYPE</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">LOCK TYPE</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
+      ),
+      cell: ({ row, getValue }) => (
+        <div className="text-gray-700">{getValue()}</div>
       ),
       meta: {
         inputType: "text"
@@ -200,12 +225,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.monitoring_type, {
       id: 'monitoringType',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">MONITORING</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">MONITORING</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
+      ),
+      cell: ({ row, getValue }) => (
+        <div className="text-gray-700">{getValue()}</div>
       ),
       meta: {
         inputType: "text"
@@ -214,10 +246,14 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.takeover, {
       id: 'takeover',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">TAKEOVER</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">TAKEOVER</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
       ),
@@ -226,9 +262,9 @@ export default function CardAccessTable({
         return (
           <div>
             {takeover === "Yes" ? (
-              <Badge variant="default" className="bg-red-600">Yes</Badge>
+              <Badge variant="default" className="bg-red-600 font-medium">Yes</Badge>
             ) : (
-              <Badge variant="secondary">No</Badge>
+              <Badge variant="secondary" className="font-medium">No</Badge>
             )}
           </div>
         );
@@ -241,12 +277,19 @@ export default function CardAccessTable({
     columnHelper.accessor(ap => ap.interior_perimeter, {
       id: 'interiorPerimeter',
       header: ({ column }) => (
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            <span className="font-semibold">INT/PER</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            className="p-0 hover:bg-transparent group text-gray-700" 
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="font-semibold text-sm tracking-wide">INT/PER</span>
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-gray-500 group-hover:text-gray-700 transition-colors" />
           </Button>
         </div>
+      ),
+      cell: ({ row, getValue }) => (
+        <div className="text-gray-700">{getValue()}</div>
       ),
       meta: {
         inputType: "text"
@@ -254,14 +297,14 @@ export default function CardAccessTable({
     }),
     columnHelper.display({
       id: "actions",
-      header: () => <span className="font-semibold">ACTIONS</span>,
+      header: () => <span className="font-semibold text-sm tracking-wide text-gray-700">ACTIONS</span>,
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-end gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onShowImages(row.original)}
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
           >
             <FileCog className="h-4 w-4" />
           </Button>
@@ -269,7 +312,7 @@ export default function CardAccessTable({
             variant="ghost"
             size="icon"
             onClick={() => onEdit(row.original)}
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -277,7 +320,7 @@ export default function CardAccessTable({
             variant="ghost"
             size="icon"
             onClick={() => duplicateMutation.mutate(row.original.id)}
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
           >
             <Copy className="h-4 w-4" />
           </Button>
@@ -289,7 +332,7 @@ export default function CardAccessTable({
                 deleteMutation.mutate(row.original.id);
               }
             }}
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full text-gray-500 hover:text-red-700 hover:bg-red-50"
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -303,27 +346,46 @@ export default function CardAccessTable({
   ];
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between p-4">
-        <CardTitle className="text-xl font-medium">Card Access Points</CardTitle>
-        <div className="flex gap-2">
+    <Card className="shadow-sm border-gray-100">
+      <CardHeader className="flex flex-row items-center justify-between p-5 bg-white border-b border-gray-100">
+        <div>
+          <CardTitle className="text-xl font-medium text-gray-800">Card Access Points</CardTitle>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage access point equipment for this project
+          </p>
+        </div>
+        <div className="flex gap-3">
           <EquipmentExportButton 
             data={accessPoints}
             equipmentType="Access Points"
             projectName={project?.name || "Project"}
             disabled={isLoading || accessPoints.length === 0}
           />
-          <Button onClick={onAdd} className="bg-red-600 hover:bg-red-700 text-white">
+          <Button 
+            onClick={onAdd} 
+            className="bg-red-600 hover:bg-red-700 text-white shadow-sm transition-all"
+          >
             <Plus className="mr-2 h-4 w-4" /> Add Access Point
           </Button>
         </div>
       </CardHeader>
       <CardContent className="p-0 pb-4">
         {isLoading ? (
-          <div className="flex justify-center py-8">Loading access points...</div>
+          <div className="flex justify-center items-center py-12">
+            <div className="flex flex-col items-center">
+              <div className="h-10 w-10 border-t-2 border-b-2 border-gray-300 rounded-full animate-spin mb-3"></div>
+              <p className="text-gray-500">Loading access points...</p>
+            </div>
+          </div>
         ) : isError ? (
           <div className="flex justify-center py-8 text-destructive">
-            Error loading access points
+            <div className="flex flex-col items-center">
+              <div className="rounded-full bg-red-100 p-3 mb-3">
+                <span className="text-red-500 text-xl">!</span>
+              </div>
+              <p className="text-red-600 font-medium">Error loading access points</p>
+              <p className="text-sm text-gray-500 mt-1">Please try again later</p>
+            </div>
           </div>
         ) : (
           <DataTable
