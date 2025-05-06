@@ -3,6 +3,9 @@ import { createInsertSchema } from "drizzle-zod";
 import { pgTable, serial, text, timestamp, integer, boolean, json, real, uuid, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+// Import equipment creation schema
+export * from './schema-equipment-creation';
+
 // Users
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
