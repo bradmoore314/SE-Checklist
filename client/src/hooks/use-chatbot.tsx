@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useContext, useState, useEffect, useCallback } from "react";
-import { SpeechService } from "@/services/speech-service";
+import { SpeechRecognitionService } from "@/services/speech-service";
 
 // Initialize speech service
-const speechService = new SpeechService();
+const speechService = new SpeechRecognitionService();
 
 // Define types for chat messages
 export interface ChatMessage {

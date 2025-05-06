@@ -18,6 +18,7 @@ import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
 import { recognizeSpeech, textToSpeech } from './speech-api';
 import chatbotGeminiService from './services/chatbot-gemini';
 import { setupEquipmentCreationRoutes } from './routes/equipment-creation-routes';
+import { setupEquipmentConfigurationRoutes } from './routes/equipment-configuration-routes';
 import { 
   insertProjectSchema, 
   insertAccessPointSchema,
@@ -2873,6 +2874,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up equipment creation routes for chatbot integration
   setupEquipmentCreationRoutes(app);
+  
+  // Set up equipment configuration routes
+  setupEquipmentConfigurationRoutes(app);
   
   // Initialize Dataverse integration
   dataverseIntegration.loadConfiguration().catch(err => {

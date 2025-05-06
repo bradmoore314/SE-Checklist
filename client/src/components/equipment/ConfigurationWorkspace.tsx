@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Check, X, Trash2, AlertCircle, PlusCircle, Edit, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useChatbot } from '@/hooks/use-chatbot';
-import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'wouter';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Check, AlertTriangle, Send, Mic, MicOff, Plus, Trash2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
+import { useParams, useLocation } from 'wouter';
+import { SpeechRecognitionService } from '@/services/speech-service';
 
-// Define types for equipment items in the scratchpad
 interface EquipmentField {
   name: string;
   value: string | null;
@@ -31,483 +33,535 @@ interface EquipmentItem {
 }
 
 export function ConfigurationWorkspace() {
-  // State for the scratchpad items
-  const [scratchpadItems, setScratchpadItems] = useState<EquipmentItem[]>([]);
-  const [currentMessage, setCurrentMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState<{ content: string; role: 'user' | 'assistant' }[]>([
-    {
-      role: 'assistant',
-      content: 'Welcome to the Equipment Configuration Workspace. How can I help you configure your security equipment today?'
-    }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const [editingField, setEditingField] = useState<{ itemId: string; fieldName: string } | null>(null);
-  const [editingValue, setEditingValue] = useState('');
-  const [overallProgress, setOverallProgress] = useState(0);
-  const [projectId, setProjectId] = useState<number | null>(null);
-  
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const [location, setLocation] = useLocation();
-  
+  const [items, setItems] = useState<EquipmentItem[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [inputMessage, setInputMessage] = useState('');
+  const [conversation, setConversation] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const conversationEndRef = useRef<HTMLDivElement>(null);
+  const [speechService] = useState(() => new SpeechRecognitionService());
+  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [, navigate] = useLocation();
+  const params = useParams();
+
   // Get project ID from URL if available
   useEffect(() => {
-    const path = location;
-    const match = path.match(/\/projects\/(\d+)/);
-    if (match && match[1]) {
-      setProjectId(Number(match[1]));
+    if (params && params.projectId) {
+      setProjectId(parseInt(params.projectId, 10));
     }
-  }, [location]);
-  
-  // Fetch project data if project ID is available
-  const { data: projectData } = useQuery({
-    queryKey: projectId ? ['/api/projects', projectId] : null,
-    enabled: !!projectId,
-  });
+  }, [params]);
 
-  // Load saved scratchpad from localStorage
+  // Scroll to bottom of conversation
   useEffect(() => {
-    const savedScratchpad = localStorage.getItem('equipment-scratchpad');
-    if (savedScratchpad) {
-      try {
-        const parsed = JSON.parse(savedScratchpad);
-        setScratchpadItems(parsed);
-      } catch (e) {
-        console.error('Failed to load saved scratchpad data', e);
+    if (conversationEndRef.current) {
+      conversationEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [conversation]);
+
+  // Set up speech recognition
+  useEffect(() => {
+    speechService.onResult((transcript) => {
+      setInputMessage(prev => prev + ' ' + transcript);
+    });
+
+    speechService.onEnd(() => {
+      setIsListening(false);
+    });
+
+    speechService.onError((error) => {
+      console.error('Speech recognition error:', error);
+      setIsListening(false);
+      toast({
+        title: 'Speech Recognition Error',
+        description: 'There was an error with speech recognition. Please try again.',
+        variant: 'destructive',
+      });
+    });
+
+    return () => {
+      if (isListening) {
+        speechService.stop();
       }
-    }
-  }, []);
+    };
+  }, [speechService]);
 
-  // Save scratchpad to localStorage whenever it changes
-  useEffect(() => {
-    if (scratchpadItems.length > 0) {
-      localStorage.setItem('equipment-scratchpad', JSON.stringify(scratchpadItems));
+  const toggleListening = () => {
+    if (isListening) {
+      speechService.stop();
+      setIsListening(false);
+    } else {
+      speechService.start();
+      setIsListening(true);
     }
-  }, [scratchpadItems]);
-  
-  // Calculate overall progress whenever scratchpad changes
-  useEffect(() => {
-    if (scratchpadItems.length === 0) {
-      setOverallProgress(0);
+  };
+
+  const calculateItemCompletion = (item: EquipmentItem) => {
+    const requiredFields = item.fields.filter(field => field.required);
+    const completedRequiredFields = requiredFields.filter(field => field.value !== null && field.value !== '');
+    const isComplete = requiredFields.length === completedRequiredFields.length;
+    
+    return {
+      ...item,
+      isComplete
+    };
+  };
+
+  const handleMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!inputMessage.trim()) return;
+    
+    // Add user message to conversation
+    const userMessage = inputMessage.trim();
+    setConversation(prev => [...prev, { role: 'user', content: userMessage }]);
+    setInputMessage('');
+    setIsProcessing(true);
+    
+    try {
+      // Call the API to process the message
+      const response = await apiRequest('POST', '/api/equipment/process-configuration', {
+        message: userMessage,
+        projectId,
+        currentItems: items
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Add assistant response to conversation
+        setConversation(prev => [...prev, { role: 'assistant', content: data.response }]);
+        
+        // Update items with processed items
+        const updatedItems = data.updatedItems.map(calculateItemCompletion);
+        setItems(updatedItems);
+        
+        // If there's only one item, select it
+        if (updatedItems.length === 1 && !selectedItemId) {
+          setSelectedItemId(updatedItems[0].id);
+        }
+      } else {
+        throw new Error(data.message || 'Error processing request');
+      }
+    } catch (error) {
+      console.error('Error processing configuration message:', error);
+      setConversation(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, there was an error processing your request. Please try again.' 
+      }]);
+      
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleFieldChange = (itemId: string, fieldName: string, value: string | null) => {
+    setItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === itemId) {
+          const updatedItem = {
+            ...item,
+            fields: item.fields.map(field => 
+              field.name === fieldName ? { ...field, value } : field
+            )
+          };
+          return calculateItemCompletion(updatedItem);
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleDeleteItem = (itemId: string) => {
+    setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    if (selectedItemId === itemId) {
+      setSelectedItemId(null);
+    }
+  };
+
+  const handleNameChange = (itemId: string, name: string) => {
+    setItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === itemId) {
+          return { ...item, name };
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleSubmitConfiguration = async () => {
+    if (items.length === 0) {
+      toast({
+        title: 'No Equipment',
+        description: 'There is no equipment to submit. Please add some equipment first.',
+        variant: 'destructive',
+      });
       return;
     }
     
-    const totalFields = scratchpadItems.reduce((acc, item) => 
-      acc + item.fields.filter(f => f.required).length, 0);
-      
-    const completedFields = scratchpadItems.reduce((acc, item) => 
-      acc + item.fields.filter(f => f.required && f.value).length, 0);
+    const incompleteItems = items.filter(item => !item.isComplete);
+    if (incompleteItems.length > 0) {
+      toast({
+        title: 'Incomplete Equipment',
+        description: `${incompleteItems.length} equipment item(s) are incomplete. Please fill in all required fields.`,
+        variant: 'destructive',
+      });
+      return;
+    }
     
-    const progress = totalFields > 0 ? (completedFields / totalFields) * 100 : 0;
-    setOverallProgress(progress);
-    
-    // Update completion status for each item
-    setScratchpadItems(prev => prev.map(item => {
-      const requiredFields = item.fields.filter(f => f.required);
-      const completedRequiredFields = requiredFields.filter(f => f.value);
-      const isComplete = requiredFields.length > 0 && completedRequiredFields.length === requiredFields.length;
-      
-      return {
-        ...item,
-        isComplete
-      };
-    }));
-  }, [scratchpadItems]);
-
-  // Auto-scroll chat to bottom when new messages arrive
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
-
-  // Process user message and update scratchpad
-  const processMessage = async (message: string) => {
-    // Add user message to chat
-    setChatMessages(prev => [...prev, { role: 'user', content: message }]);
-    setCurrentMessage('');
-    setIsLoading(true);
+    if (!projectId) {
+      toast({
+        title: 'No Project Selected',
+        description: 'Please select a project before submitting.',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     try {
-      // Call API to process the message
-      const response = await fetch('/api/equipment/process-configuration', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message,
-          projectId: projectId || undefined,
-          currentItems: scratchpadItems
-        }),
-      });
+      setIsProcessing(true);
       
-      if (!response.ok) {
-        throw new Error('Failed to process message');
-      }
+      const response = await apiRequest('POST', '/api/equipment/submit-configuration', {
+        items,
+        projectId
+      });
       
       const data = await response.json();
       
-      // Update scratchpad based on AI response
-      if (data.updatedItems) {
-        setScratchpadItems(data.updatedItems);
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: data.message || 'Equipment configuration submitted successfully',
+        });
+        
+        // Navigate back to project page
+        navigate(`/projects/${projectId}`);
+      } else {
+        throw new Error(data.message || 'Error submitting configuration');
       }
-      
-      // Add AI response to chat
-      setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-    } catch (error) {
-      console.error('Error processing message:', error);
-      // Add error message to chat
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error processing your request. Please try again.' 
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSendMessage = () => {
-    if (currentMessage.trim()) {
-      processMessage(currentMessage.trim());
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  // Edit field value in scratchpad
-  const handleFieldEdit = (itemId: string, fieldName: string, value: string) => {
-    setScratchpadItems(prev => 
-      prev.map(item => 
-        item.id === itemId 
-          ? {
-              ...item,
-              fields: item.fields.map(field => 
-                field.name === fieldName 
-                  ? { ...field, value: value || null } 
-                  : field
-              )
-            }
-          : item
-      )
-    );
-    
-    setEditingField(null);
-  };
-
-  // Delete item from scratchpad
-  const handleDeleteItem = (itemId: string) => {
-    setScratchpadItems(prev => prev.filter(item => item.id !== itemId));
-  };
-
-  // Submit final configuration
-  const handleSubmitConfiguration = async () => {
-    setIsLoading(true);
-    
-    try {
-      const response = await fetch('/api/equipment/submit-configuration', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: scratchpadItems,
-          projectId: projectId || undefined
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit configuration');
-      }
-      
-      const data = await response.json();
-      
-      // Clear scratchpad after successful submission
-      setScratchpadItems([]);
-      localStorage.removeItem('equipment-scratchpad');
-      
-      // Add success message to chat
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Configuration successfully submitted! All equipment has been added to your project.' 
-      }]);
-      
     } catch (error) {
       console.error('Error submitting configuration:', error);
-      // Add error message to chat
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error submitting your configuration. Please try again.' 
-      }]);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
+      });
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  // Get icon for equipment type
-  const getEquipmentTypeIcon = (type: string) => {
-    switch(type) {
-      case 'camera': return '📷';
-      case 'access_point': return '🔑';
-      case 'elevator': return '🛗';
-      case 'intercom': return '📞';
-      default: return '📦';
-    }
-  };
-
-  // Calculate completion percentage for a single item
-  const calculateItemCompletion = (item: EquipmentItem) => {
-    const requiredFields = item.fields.filter(f => f.required);
-    if (requiredFields.length === 0) return 100;
-    
-    const completedFields = requiredFields.filter(f => f.value);
-    return (completedFields.length / requiredFields.length) * 100;
-  };
+  const selectedItem = items.find(item => item.id === selectedItemId);
 
   return (
-    <div className="flex flex-col h-full md:flex-row">
-      {/* Chat panel */}
-      <div className="w-full md:w-1/2 h-1/2 md:h-full flex flex-col border-r">
-        <div className="p-4 border-b bg-muted/20 flex justify-between items-center">
-          <h2 className="text-lg font-medium">Equipment Configuration Assistant</h2>
-          {projectData && (
-            <Badge variant="outline" className="ml-2">
-              Project: {projectData.name}
-            </Badge>
-          )}
-        </div>
-        
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {chatMessages.map((msg, idx) => (
-              <div 
-                key={idx} 
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`rounded-lg px-4 py-2 max-w-[85%] ${
-                    msg.role === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted'
-                  }`}
-                >
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-            
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="rounded-lg px-4 py-2 bg-muted">
-                  <div className="flex space-x-2">
-                    <div className="h-2 w-2 rounded-full bg-current animate-bounce" />
-                    <div className="h-2 w-2 rounded-full bg-current animate-bounce [animation-delay:0.2s]" />
-                    <div className="h-2 w-2 rounded-full bg-current animate-bounce [animation-delay:0.4s]" />
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div ref={chatEndRef} />
-          </div>
-        </ScrollArea>
-        
-        <div className="p-4 border-t flex gap-2">
-          <Input
-            value={currentMessage}
-            onChange={(e) => setCurrentMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your equipment configuration request..."
-            className="flex-1"
-            disabled={isLoading}
-          />
-          
-          <Button 
-            onClick={handleSendMessage}
-            disabled={!currentMessage.trim() || isLoading}
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Send
-          </Button>
-        </div>
-      </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Equipment Configuration Workspace</h1>
       
-      {/* Scratchpad panel */}
-      <div className="w-full md:w-1/2 h-1/2 md:h-full flex flex-col">
-        <div className="p-4 border-b bg-muted/20">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-medium">Equipment Scratchpad</h2>
-            <div className="flex items-center gap-2">
-              {scratchpadItems.length > 0 && overallProgress === 100 && (
-                <Button 
-                  variant="default" 
-                  className="bg-green-600 hover:bg-green-700"
-                  onClick={handleSubmitConfiguration}
-                  disabled={isLoading}
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Configure Now
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Progress value={overallProgress} className="h-2 flex-1" />
-            <span className="text-sm text-muted-foreground">
-              {Math.round(overallProgress)}% Complete
-            </span>
-          </div>
-        </div>
-        
-        <ScrollArea className="flex-1 p-4">
-          {scratchpadItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-              <div className="mb-4">
-                <PlusCircle className="h-12 w-12 opacity-20" />
-              </div>
-              <p className="max-w-xs">
-                Your equipment configuration scratchpad is empty. 
-                Ask the assistant to add equipment items.
-              </p>
-              <p className="mt-2 text-sm">
-                Try: "Add 2 cameras to the parking lot" or "I need an access point at the main entrance"
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {scratchpadItems.map((item) => (
-                <Card key={item.id} className="overflow-hidden">
-                  <CardHeader className="p-4 bg-muted/30 flex flex-row justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{getEquipmentTypeIcon(item.type)}</span>
-                      <div>
-                        <h3 className="font-medium">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground capitalize">
-                          {item.type.replace('_', ' ')}
-                          {item.quantity > 1 ? ` (${item.quantity})` : ''}
-                        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left Column: Chat Interface */}
+        <div className="space-y-4">
+          <Card className="h-[calc(70vh-2rem)]">
+            <CardHeader>
+              <CardTitle>Equipment Configuration Assistant</CardTitle>
+              <CardDescription>
+                Chat with the assistant to configure your security equipment
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="h-[calc(70vh-12rem)] overflow-y-auto pb-2">
+              <div className="space-y-4">
+                {conversation.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>Start a conversation with the assistant to add or configure equipment.</p>
+                    <p className="mt-2 text-sm">Try saying "Add 3 cameras for the lobby" or "Configure access points for the main entrance"</p>
+                  </div>
+                ) : (
+                  conversation.map((message, index) => (
+                    <div 
+                      key={index}
+                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div 
+                        className={`max-w-[80%] rounded-lg p-3 ${
+                          message.role === 'user' 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-muted'
+                        }`}
+                      >
+                        {message.content}
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge 
-                              variant={item.isComplete ? "default" : "outline"}
-                              className={item.isComplete ? "bg-green-600" : "border-amber-500 text-amber-500"}
-                            >
-                              {item.isComplete ? (
-                                <span className="flex items-center gap-1">
-                                  <Check className="h-3 w-3" /> Complete
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1">
-                                  <AlertCircle className="h-3 w-3" /> Incomplete
-                                </span>
-                              )}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {item.isComplete 
-                              ? "All required fields are complete" 
-                              : "Some required fields need information"}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-8 w-8"
-                        onClick={() => handleDeleteItem(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                  ))
+                )}
+                <div ref={conversationEndRef} />
+              </div>
+            </CardContent>
+            
+            <CardFooter>
+              <form onSubmit={handleMessageSubmit} className="w-full flex space-x-2">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Type your message..."
+                  disabled={isProcessing}
+                  className="flex-1"
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="icon"
+                  onClick={toggleListening}
+                  className={isListening ? 'bg-red-100' : ''}
+                >
+                  {isListening ? <MicOff /> : <Mic />}
+                </Button>
+                <Button type="submit" disabled={isProcessing || !inputMessage.trim()}>
+                  <Send className="h-4 w-4 mr-2" />
+                  Send
+                </Button>
+              </form>
+            </CardFooter>
+          </Card>
+        </div>
+        
+        {/* Right Column: Equipment Scratchpad */}
+        <div className="space-y-4">
+          <Card className="h-[calc(70vh-2rem)]">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Equipment Scratchpad</CardTitle>
+                  <CardDescription>
+                    {items.length === 0 
+                      ? 'No equipment added yet'
+                      : `${items.length} item(s) - ${items.filter(i => i.isComplete).length} complete`}
+                  </CardDescription>
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={items.length === 0 || !projectId} 
+                    onClick={handleSubmitConfiguration}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Submit All
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="h-[calc(70vh-10rem)]">
+              <Tabs defaultValue="list" className="h-full">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="list">List View</TabsTrigger>
+                  <TabsTrigger value="detail">Detail View</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="list" className="h-[calc(100%-3rem)] overflow-y-auto">
+                  {items.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No equipment items yet</p>
+                      <p className="mt-2 text-sm">Chat with the assistant to add equipment</p>
                     </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-4">
+                  ) : (
                     <div className="space-y-2">
-                      {item.fields.map((field) => (
-                        <div key={`${item.id}-${field.name}`} className="grid grid-cols-5 gap-2 items-center">
-                          <div className="col-span-2 flex items-center gap-2">
-                            <span className="font-medium text-sm">
-                              {field.name.split('_').map(word => 
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                              ).join(' ')}
-                              {field.required && <span className="text-red-500">*</span>}
-                            </span>
+                      {items.map(item => (
+                        <div 
+                          key={item.id}
+                          className={`p-3 rounded-md cursor-pointer ${
+                            selectedItemId === item.id ? 'bg-primary/10 border border-primary' : 'bg-muted/50 hover:bg-muted'
+                          }`}
+                          onClick={() => setSelectedItemId(item.id)}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="font-medium">{item.name}</div>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant={getVariantForType(item.type)}>
+                                {formatItemType(item.type)}
+                              </Badge>
+                              {item.isComplete ? (
+                                <Badge variant="outline" className="bg-green-100">
+                                  <Check className="h-3 w-3 mr-1" /> Complete
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-yellow-100">
+                                  <AlertTriangle className="h-3 w-3 mr-1" /> Incomplete
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                          
-                          <div className="col-span-2">
-                            {editingField?.itemId === item.id && editingField?.fieldName === field.name ? (
-                              <Input
-                                value={editingValue}
-                                onChange={(e) => setEditingValue(e.target.value)}
-                                autoFocus
-                                onBlur={() => handleFieldEdit(item.id, field.name, editingValue)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    handleFieldEdit(item.id, field.name, editingValue);
-                                  }
-                                }}
-                              />
-                            ) : (
-                              <div 
-                                className={`px-2 py-1 rounded border ${
-                                  field.value ? 'border-transparent bg-muted/50' : 'border-dashed border-muted-foreground/50'
-                                }`}
-                                onClick={() => {
-                                  setEditingField({ itemId: item.id, fieldName: field.name });
-                                  setEditingValue(field.value || '');
-                                }}
-                              >
-                                {field.value || (
-                                  <span className="text-muted-foreground text-sm italic">Click to add...</span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex justify-center">
-                            {field.required && (
-                              <div className={`p-1 rounded-full ${
-                                field.value ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-                              }`}>
-                                {field.value ? (
-                                  <Check className="h-4 w-4" />
-                                ) : (
-                                  <X className="h-4 w-4" />
-                                )}
-                              </div>
-                            )}
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {getCompletionStatus(item)}
                           </div>
                         </div>
                       ))}
                     </div>
-                  </CardContent>
-                  
-                  <div className="px-4 pb-4">
-                    <Progress 
-                      value={calculateItemCompletion(item)} 
-                      className="h-1"
-                      style={{
-                        background: "#f1f5f9",
-                        "--progress-value": `${calculateItemCompletion(item)}%`
-                      } as React.CSSProperties}
-                    />
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="detail" className="h-[calc(100%-3rem)] overflow-y-auto">
+                  {!selectedItem ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No equipment selected</p>
+                      <p className="mt-2 text-sm">Select an item from the list view or chat with the assistant to add equipment</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <Label htmlFor="item-name">Equipment Name</Label>
+                          <Input 
+                            id="item-name"
+                            value={selectedItem.name} 
+                            onChange={(e) => handleNameChange(selectedItem.id, e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div className="flex space-x-2 items-end">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => handleDeleteItem(selectedItem.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedItem.fields.map(field => (
+                          <div key={field.name} className="space-y-1">
+                            <Label htmlFor={`field-${field.name}`}>
+                              {formatFieldName(field.name)}
+                              {field.required && <span className="text-red-500 ml-1">*</span>}
+                            </Label>
+                            {renderFieldInput(field, selectedItem.id)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
+
+  // Helper functions
+  function formatItemType(type: string): string {
+    switch (type) {
+      case 'camera': return 'Camera';
+      case 'access_point': return 'Access Point';
+      case 'elevator': return 'Elevator';
+      case 'intercom': return 'Intercom';
+      default: return type;
+    }
+  }
+
+  function getVariantForType(type: string): "default" | "outline" | "secondary" | "destructive" {
+    switch (type) {
+      case 'camera': return 'default';
+      case 'access_point': return 'secondary';
+      case 'elevator': return 'outline';
+      case 'intercom': return 'destructive';
+      default: return 'default';
+    }
+  }
+
+  function getCompletionStatus(item: EquipmentItem): string {
+    const requiredFields = item.fields.filter(field => field.required);
+    const completedRequiredFields = requiredFields.filter(field => field.value !== null && field.value !== '');
+    return `${completedRequiredFields.length}/${requiredFields.length} required fields completed`;
+  }
+
+  function formatFieldName(name: string): string {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  function renderFieldInput(field: EquipmentField, itemId: string) {
+    switch (field.type) {
+      case 'select':
+        return (
+          <Select
+            value={field.value || ''}
+            onValueChange={(value) => handleFieldChange(itemId, field.name, value)}
+          >
+            <SelectTrigger id={`field-${field.name}`}>
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options?.map(option => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      
+      case 'boolean':
+        return (
+          <div className="flex items-center space-x-2">
+            <Switch
+              id={`field-${field.name}`}
+              checked={field.value === 'true'}
+              onCheckedChange={(checked) => 
+                handleFieldChange(itemId, field.name, checked ? 'true' : 'false')
+              }
+            />
+            <Label htmlFor={`field-${field.name}`}>
+              {field.value === 'true' ? 'Yes' : 'No'}
+            </Label>
+          </div>
+        );
+      
+      case 'number':
+        return (
+          <Input
+            id={`field-${field.name}`}
+            type="number"
+            value={field.value || ''}
+            onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
+          />
+        );
+      
+      case 'text':
+      default:
+        if (field.name === 'notes') {
+          return (
+            <Textarea
+              id={`field-${field.name}`}
+              value={field.value || ''}
+              onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
+              placeholder={field.required ? 'Required' : 'Optional'}
+            />
+          );
+        }
+        return (
+          <Input
+            id={`field-${field.name}`}
+            value={field.value || ''}
+            onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
+            placeholder={field.required ? 'Required' : 'Optional'}
+          />
+        );
+    }
+  }
 }
