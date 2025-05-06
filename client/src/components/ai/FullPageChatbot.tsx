@@ -22,7 +22,9 @@ export function FullPageChatbot() {
     toggleFullScreen,
     isListening,
     toggleListening,
-    isLoading
+    isLoading,
+    equipmentCreation,
+    projectId
   } = useChatbot();
   
   const [inputText, setInputText] = useState('');
