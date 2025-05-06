@@ -72,34 +72,35 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
+    <div className="w-full space-y-4">
+      <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-3 border border-gray-100">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder={searchPlaceholder}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            className="pl-8 h-9"
+            className="pl-10 py-2 border-gray-200 rounded-md text-sm font-medium focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
           />
           {searchValue && (
             <button
               type="button"
               onClick={() => setSearchValue("")}
-              className="absolute right-2 top-2.5"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-500 transition-colors"
             >
-              <XCircle className="h-4 w-4 text-muted-foreground" />
+              <XCircle className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
-      <div className="rounded-md border">
+      
+      <div className="rounded-lg border border-gray-100 overflow-hidden shadow-sm bg-white">
         <Table>
-          <TableHeader className="bg-red-600">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-red-600">
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="text-white">
+                  <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -132,17 +133,28 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center py-8 text-gray-500"
                 >
-                  No results.
+                  <div className="flex flex-col items-center">
+                    <div className="mb-2 rounded-full bg-gray-100 p-2">
+                      <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <p>No results found.</p>
+                    {searchValue && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        Try adjusting your search criteria.
+                      </p>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+      
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-500">
           Showing {table.getFilteredRowModel().rows.length} of {data.length} items
         </div>
         <div className="flex items-center space-x-2">
@@ -151,7 +163,9 @@ export function DataTable<TData, TValue>({
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
+            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
             Previous
           </Button>
           <Button
@@ -159,8 +173,10 @@ export function DataTable<TData, TValue>({
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
             Next
+            <ChevronDown className="h-4 w-4 -rotate-90 ml-1" />
           </Button>
         </div>
       </div>
