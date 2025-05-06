@@ -28,7 +28,9 @@ const defaultConfig: AuthBypassConfig = {
     '/api/login', 
     '/api/register', 
     '/api/auth/microsoft/status',
-    '/assets/'
+    '/assets/',
+    '/api/session-status', // For auth status checks
+    '/auth' // Allow access to auth page
   ]
 };
 
@@ -50,17 +52,16 @@ export function createAuthBypassMiddleware(config: AuthBypassConfig = defaultCon
     // Check for the bypass header from the client
     const bypassHeaderPresent = req.headers['x-bypass-auth'] === 'true';
     
-    // In development, always bypass authentication
+    // Check development environment
     const isDevelopment = process.env.NODE_ENV !== 'production';
     
     // Check if we should bypass in production (for initial setup)
     const allowProductionBypass = finalConfig.allowBypassInProduction || 
                                  process.env.ALLOW_INITIAL_SETUP === 'true';
     
-    // Determine if we should bypass auth
-    const shouldBypassAuth = isDevelopment || 
-                           (allowProductionBypass && bypassHeaderPresent) ||
-                           (bypassHeaderPresent && !req.isAuthenticated());
+    // Determine if we should bypass auth - only when explicitly requested via header
+    const shouldBypassAuth = (isDevelopment && bypassHeaderPresent) || 
+                           (allowProductionBypass && bypassHeaderPresent);
     
     // Bypass auth if conditions are met
     if (shouldBypassAuth) {
