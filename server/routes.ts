@@ -2100,8 +2100,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(404).json({ message: "Project not found" });
     }
 
+    console.log("Attempting to fetch KVG form data for project", projectId);
     const formData = await storage.getKvgFormData(projectId);
-    res.json(formData || null);
+    console.log("KVG Form Data query executed");
+    
+    if (!formData) {
+      console.log("No KVG Form Data found for project", projectId);
+      // Return a skeleton response that will pass the validation checks
+      return res.json({
+        id: null, // Using null instead of 0 so client knows it needs to be created
+        project_id: projectId,
+        form_type: 'kvg',
+        form_data: {},
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+    }
+    
+    console.log("Found KVG form data with ID:", formData.id);
+    res.json(formData);
   });
 
   app.post("/api/kvg-form-data", isAuthenticated, async (req: Request, res: Response) => {
