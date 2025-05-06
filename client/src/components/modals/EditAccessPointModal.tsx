@@ -69,6 +69,7 @@ export default function EditAccessPointModal({
 }: EditAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const { toast } = useToast();
   
   // Use effect to focus on the selected field when the modal opens
   useEffect(() => {
@@ -150,7 +151,6 @@ export default function EditAccessPointModal({
 
   const onSubmit = async (values: AccessPointFormValues) => {
     setIsSubmitting(true);
-    const { toast } = useToast();
     
     // Log form validation status to help debug issues
     console.log("Form validation state:", form.formState);
