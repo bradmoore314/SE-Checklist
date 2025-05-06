@@ -1425,6 +1425,58 @@ export class DatabaseStorage implements IStorage {
   async getProjects(): Promise<Project[]> {
     return await db.select().from(projects);
   }
+  
+  async getProjectsForUser(userId: number): Promise<Project[]> {
+    // First, check if user is admin
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    
+    // Admin users can access all projects
+    if (user?.role === 'admin') {
+      return this.getProjects();
+    }
+    
+    // Get projects the user created (if created_by field exists)
+    let userProjects: Project[] = [];
+    try {
+      userProjects = await db.select()
+        .from(projects)
+        .where(eq(projects.created_by, userId));
+    } catch (e) {
+      // Field might not exist in older schema, ignore error
+      console.log("Note: created_by field might not exist in projects table");
+    }
+    
+    // Get all projects where this user is a collaborator
+    const collaborations = await db.select({
+      projectId: projectCollaborators.project_id
+    })
+    .from(projectCollaborators)
+    .where(eq(projectCollaborators.user_id, userId));
+    
+    const collaborationProjectIds = collaborations.map(c => c.projectId);
+    
+    // If user has no collaborations and no created projects, return empty array
+    if (collaborationProjectIds.length === 0 && userProjects.length === 0) {
+      return userProjects;
+    }
+    
+    // Get collaboration projects
+    let collaborationProjects: Project[] = [];
+    if (collaborationProjectIds.length > 0) {
+      collaborationProjects = await db.select()
+        .from(projects)
+        .where(inArray(projects.id, collaborationProjectIds));
+    }
+    
+    // Merge created projects and collaboration projects (avoiding duplicates)
+    const projectMap = new Map<number, Project>();
+    
+    [...userProjects, ...collaborationProjects].forEach(project => {
+      projectMap.set(project.id, project);
+    });
+    
+    return Array.from(projectMap.values());
+  }
 
   async getProject(id: number): Promise<Project | undefined> {
     const [project] = await db.select().from(projects).where(eq(projects.id, id));
@@ -1477,31 +1529,6 @@ export class DatabaseStorage implements IStorage {
       ));
     
     return collaborator?.permission as Permission | undefined;
-  }
-  
-  async getProjectsForUser(userId: number): Promise<Project[]> {
-    // For admin users, return all projects
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    if (user?.role === 'admin') {
-      return this.getProjects();
-    }
-    
-    // Get all projects where this user is a collaborator
-    const collaborations = await db.select({
-      projectId: projectCollaborators.project_id
-    })
-    .from(projectCollaborators)
-    .where(eq(projectCollaborators.user_id, userId));
-    
-    const projectIds = collaborations.map(c => c.projectId);
-    
-    if (projectIds.length === 0) {
-      return [];
-    }
-    
-    return await db.select()
-      .from(projects)
-      .where(inArray(projects.id, projectIds));
   }
   
   async addProjectCollaborator(insertCollaborator: InsertProjectCollaborator): Promise<ProjectCollaborator> {
