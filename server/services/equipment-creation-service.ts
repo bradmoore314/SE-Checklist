@@ -1,439 +1,389 @@
-import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db';
-import { equipmentCreationSessions } from '@shared/schema-equipment-creation';
+import { 
+  equipmentCreationSessions,
+  EquipmentCreationSession,
+  InsertEquipmentCreationSession
+} from '@shared/schema-equipment-creation';
+import { storage } from '../storage';
+import { v4 as uuidv4 } from 'uuid';
 import { eq } from 'drizzle-orm';
+import { GenericEquipmentType } from '@shared/schema-equipment';
 
-/**
- * Types for equipment creation
- */
-export interface EquipmentCreationIntent {
-  hasCreationIntent: boolean;
-  equipmentType?: 'access_point' | 'camera' | 'intercom' | 'elevator' | string;
+// Equipment types that can be created by the AI chatbot
+export const EQUIPMENT_TYPES = {
+  ACCESS_POINT: 'access_point',
+  CAMERA: 'camera',
+  ELEVATOR: 'elevator',
+  INTERCOM: 'intercom'
+};
+
+// Steps in the equipment creation process
+export const CREATION_STEPS = {
+  LOCATION: 'location',
+  INSTALLATION_TYPE: 'installation_type',
+  HARDWARE: 'hardware',
+  READER_TYPE: 'reader_type',
+  CAMERA_TYPE: 'camera_type',
+  RESOLUTION: 'resolution',
+  NOTES: 'notes',
+  COMPLETE: 'complete'
+};
+
+// Intent detection response
+interface CreationIntent {
+  isCreationIntent: boolean;
+  equipmentType?: string;
   quantity?: number;
-  details?: Record<string, string>;
 }
 
-export interface EquipmentCreationSession {
+// Session response
+interface SessionResponse {
   sessionId: string;
-  projectId: number;
-  equipmentType: string;
-  quantity: number;
+  nextQuestion: string;
   currentStep: string;
-  responses: Record<string, any>;
-  pendingQuestions: string[];
-  createdEquipment: any[];
   isComplete: boolean;
-}
-
-export interface SessionResponse {
-  isComplete: boolean;
-  message: string;
-  currentStep?: string;
-  equipment?: any[];
+  equipmentCreated?: GenericEquipmentType[];
 }
 
 /**
- * Service for handling equipment creation via chatbot
+ * Service for handling equipment creation via the AI chatbot
  */
-export class EquipmentCreationService {
+class EquipmentCreationService {
   /**
-   * Detect equipment creation intent from a message
+   * Detect if a message contains an intent to create equipment
    */
-  detectCreationIntent(message: string): EquipmentCreationIntent {
+  detectCreationIntent(message: string): CreationIntent {
+    // Convert message to lowercase for case-insensitive matching
     const lowerMessage = message.toLowerCase();
     
-    // Check for add/create intents
-    const hasAddIntent = /\b(add|create|install|place|set up|deploy)\b/i.test(lowerMessage);
+    // Check for common patterns indicating creation intent
+    const addPattern = /\b(add|create|install|put|place|include)\b/i;
     
-    if (!hasAddIntent) {
-      return { hasCreationIntent: false };
-    }
+    // Check for equipment types
+    const accessPointPatterns = /\b(access\s*points?|doors?|card\s*readers?|keypads?|entries?|exits?)\b/i;
+    const cameraPatterns = /\b(cameras?|cctv|video\s*cameras?|surveillance\s*cameras?)\b/i;
+    const elevatorPatterns = /\b(elevators?|lifts?|elevator\s*control)\b/i;
+    const intercomPatterns = /\b(intercoms?|entry\s*phones?|door\s*phones?|buzzers?)\b/i;
     
-    // Equipment type detection
-    let equipmentType: string | undefined;
+    // Check for quantity patterns
+    const quantityPattern = /\b(\d+)\b/;
+    
+    // Determine if this is a creation intent
+    const hasAddVerb = addPattern.test(lowerMessage);
+    const hasAccessPoint = accessPointPatterns.test(lowerMessage);
+    const hasCamera = cameraPatterns.test(lowerMessage);
+    const hasElevator = elevatorPatterns.test(lowerMessage);
+    const hasIntercom = intercomPatterns.test(lowerMessage);
+    
+    // Determine equipment type
+    let equipmentType = null;
+    if (hasAccessPoint) equipmentType = EQUIPMENT_TYPES.ACCESS_POINT;
+    else if (hasCamera) equipmentType = EQUIPMENT_TYPES.CAMERA;
+    else if (hasElevator) equipmentType = EQUIPMENT_TYPES.ELEVATOR;
+    else if (hasIntercom) equipmentType = EQUIPMENT_TYPES.INTERCOM;
+    
+    // Extract quantity if present
     let quantity = 1;
-    
-    // Check for access points
-    const accessPointMatch = lowerMessage.match(/\b(\d+)\s*(access points?|card readers?|doors?|entries?)\b/i);
-    if (accessPointMatch) {
-      equipmentType = 'access_point';
-      quantity = parseInt(accessPointMatch[1]);
+    const quantityMatch = lowerMessage.match(quantityPattern);
+    if (quantityMatch) {
+      quantity = parseInt(quantityMatch[1], 10);
     }
     
-    // Check for cameras
-    const cameraMatch = lowerMessage.match(/\b(\d+)\s*(cameras?|cctv|video cameras?)\b/i);
-    if (cameraMatch) {
-      equipmentType = 'camera';
-      quantity = parseInt(cameraMatch[1]);
-    }
+    // Determine if this is a creation intent
+    const isCreationIntent = hasAddVerb && (
+      hasAccessPoint || hasCamera || hasElevator || hasIntercom
+    );
     
-    // Check for intercoms
-    const intercomMatch = lowerMessage.match(/\b(\d+)\s*(intercoms?|intercom stations?)\b/i);
-    if (intercomMatch) {
-      equipmentType = 'intercom';
-      quantity = parseInt(intercomMatch[1]);
-    }
-    
-    // Check for elevators
-    const elevatorMatch = lowerMessage.match(/\b(\d+)\s*(elevators?|lifts?)\b/i);
-    if (elevatorMatch) {
-      equipmentType = 'elevator';
-      quantity = parseInt(elevatorMatch[1]);
-    }
-    
-    // If we found an equipment type, we have a creation intent
-    if (equipmentType) {
-      return {
-        hasCreationIntent: true,
-        equipmentType,
-        quantity,
-        details: {}
-      };
-    }
-    
-    // No specific equipment found
-    return { hasCreationIntent: false };
+    return {
+      isCreationIntent,
+      equipmentType: isCreationIntent ? equipmentType : undefined,
+      quantity: isCreationIntent ? quantity : undefined
+    };
   }
   
   /**
    * Start a new equipment creation session
    */
-  async startSession(projectId: number, type: string, quantity: number): Promise<EquipmentCreationSession> {
-    const sessionId = uuidv4();
-    const pendingQuestions = this.getQuestionsForEquipmentType(type);
-    
-    const session: EquipmentCreationSession = {
-      sessionId,
-      projectId,
-      equipmentType: type,
-      quantity,
-      currentStep: 'location_type',
-      responses: {},
-      pendingQuestions,
-      createdEquipment: [],
-      isComplete: false
-    };
-    
-    // Store session in database
+  async startSession(
+    projectId: number, 
+    equipmentType: string, 
+    quantity: number
+  ): Promise<SessionResponse> {
     try {
-      await db.insert(equipmentCreationSessions).values({
+      // Generate a unique session ID
+      const sessionId = uuidv4();
+      
+      // Determine the first step based on equipment type
+      let firstStep = CREATION_STEPS.LOCATION;
+      
+      // Create the session in the database
+      const sessionData: InsertEquipmentCreationSession = {
         session_id: sessionId,
         project_id: projectId,
-        equipment_type: type,
-        quantity,
-        current_step: 'location_type',
+        equipment_type: equipmentType,
+        quantity: quantity,
+        current_step: firstStep,
         responses: {},
         completed: false
-      });
+      };
+      
+      await db.insert(equipmentCreationSessions).values(sessionData);
+      
+      // Get the first question to ask
+      const nextQuestion = this.getQuestionForStep(firstStep, equipmentType);
+      
+      return {
+        sessionId,
+        nextQuestion,
+        currentStep: firstStep,
+        isComplete: false
+      };
     } catch (error) {
-      console.error('Error storing equipment creation session:', error);
+      console.error('Error starting equipment creation session:', error);
+      throw error;
     }
-    
-    return session;
   }
   
   /**
-   * Get an existing session by ID
+   * Process a user response for a session
+   */
+  async processResponse(
+    sessionId: string, 
+    response: string
+  ): Promise<SessionResponse> {
+    try {
+      // Get the current session
+      const [session] = await db
+        .select()
+        .from(equipmentCreationSessions)
+        .where(eq(equipmentCreationSessions.session_id, sessionId));
+      
+      if (!session) {
+        throw new Error('Session not found');
+      }
+      
+      // Store the response
+      const currentStep = session.current_step;
+      const responses = { ...session.responses, [currentStep]: response };
+      
+      // Determine the next step
+      const nextStep = this.getNextStep(currentStep, session.equipment_type);
+      
+      // If we're at the final step, create the equipment
+      let equipmentCreated = [];
+      let isComplete = false;
+      
+      if (nextStep === CREATION_STEPS.COMPLETE) {
+        isComplete = true;
+        equipmentCreated = await this.createEquipment(session, responses);
+      }
+      
+      // Update the session
+      await db
+        .update(equipmentCreationSessions)
+        .set({ 
+          current_step: nextStep,
+          responses: responses,
+          completed: isComplete
+        })
+        .where(eq(equipmentCreationSessions.session_id, sessionId));
+      
+      // Get the next question to ask
+      const nextQuestion = this.getQuestionForStep(nextStep, session.equipment_type);
+      
+      return {
+        sessionId,
+        nextQuestion,
+        currentStep: nextStep,
+        isComplete,
+        equipmentCreated: isComplete ? equipmentCreated : undefined
+      };
+    } catch (error) {
+      console.error('Error processing response:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get session details
    */
   async getSession(sessionId: string): Promise<EquipmentCreationSession | null> {
     try {
-      const [session] = await db.select().from(equipmentCreationSessions).where(eq(equipmentCreationSessions.session_id, sessionId));
-      
-      if (!session) {
-        return null;
-      }
-      
-      return {
-        sessionId: session.session_id,
-        projectId: session.project_id,
-        equipmentType: session.equipment_type,
-        quantity: session.quantity,
-        currentStep: session.current_step,
-        responses: session.responses as Record<string, any>,
-        pendingQuestions: this.getQuestionsForEquipmentType(session.equipment_type),
-        createdEquipment: [],
-        isComplete: session.completed || false
-      };
-    } catch (error) {
-      console.error('Error retrieving equipment creation session:', error);
-      return null;
-    }
-  }
-  
-  /**
-   * Process a user response in an equipment creation session
-   */
-  async processResponse(sessionId: string, userResponse: string): Promise<SessionResponse> {
-    // Get current session
-    const session = await this.getSession(sessionId);
-    
-    if (!session) {
-      return {
-        isComplete: false,
-        message: "Sorry, I couldn't find your equipment creation session. Let's start over. What equipment would you like to add?"
-      };
-    }
-    
-    // Update session with user response
-    session.responses[session.currentStep] = userResponse;
-    
-    // Get next step
-    const nextStep = this.getNextStep(session);
-    
-    // Update session in database
-    try {
-      await db.update(equipmentCreationSessions)
-        .set({
-          responses: session.responses,
-          current_step: nextStep,
-          updated_at: new Date()
-        })
+      const [session] = await db
+        .select()
+        .from(equipmentCreationSessions)
         .where(eq(equipmentCreationSessions.session_id, sessionId));
+      
+      return session || null;
     } catch (error) {
-      console.error('Error updating equipment creation session:', error);
+      console.error('Error getting session:', error);
+      throw error;
     }
-    
-    // Check if we're finished with questions
-    if (nextStep === 'complete') {
-      // Create equipment
-      const createdEquipment = await this.createEquipment(session);
-      
-      // Mark session as complete
-      try {
-        await db.update(equipmentCreationSessions)
-          .set({
-            completed: true,
-            updated_at: new Date()
-          })
-          .where(eq(equipmentCreationSessions.session_id, sessionId));
-      } catch (error) {
-        console.error('Error marking session as complete:', error);
-      }
-      
-      return {
-        isComplete: true,
-        message: `Great! I've added ${session.quantity} ${session.equipmentType}(s) to your project.`,
-        equipment: createdEquipment
-      };
-    }
-    
-    // Return next question
-    session.currentStep = nextStep;
-    const questionIndex = this.getStepIndex(nextStep);
-    const nextQuestion = session.pendingQuestions[questionIndex];
-    
-    return {
-      isComplete: false,
-      message: nextQuestion,
-      currentStep: nextStep
-    };
   }
   
   /**
-   * Create equipment based on session data
+   * Determine the next step in the equipment creation process
    */
-  private async createEquipment(session: EquipmentCreationSession): Promise<any[]> {
-    const createdEquipment = [];
-    
-    try {
-      // For each piece of equipment to create
-      for (let i = 0; i < session.quantity; i++) {
-        // Format equipment data based on type
-        const equipmentData = this.formatEquipmentData(session, i);
+  private getNextStep(currentStep: string, equipmentType: string): string {
+    switch (currentStep) {
+      case CREATION_STEPS.LOCATION:
+        return CREATION_STEPS.INSTALLATION_TYPE;
         
-        // Call the appropriate API endpoint based on equipment type
-        let endpoint = `/api/projects/${session.projectId}`;
-        
-        switch (session.equipmentType) {
-          case 'access_point':
-            endpoint += '/access-points';
-            break;
-          case 'camera':
-            endpoint += '/cameras';
-            break;
-          case 'intercom':
-            endpoint += '/intercoms';
-            break;
-          case 'elevator':
-            endpoint += '/elevators';
-            break;
-          default:
-            endpoint += `/${session.equipmentType}s`;
+      case CREATION_STEPS.INSTALLATION_TYPE:
+        if (equipmentType === EQUIPMENT_TYPES.ACCESS_POINT) {
+          return CREATION_STEPS.READER_TYPE;
+        } else if (equipmentType === EQUIPMENT_TYPES.CAMERA) {
+          return CREATION_STEPS.CAMERA_TYPE;
+        } else {
+          return CREATION_STEPS.HARDWARE;
         }
         
-        // Make API request to create equipment
-        // This is a simplified approach - in a real implementation,
-        // we would directly call the appropriate database methods instead
-        const equipment = await this.callCreateEquipmentAPI(endpoint, equipmentData);
-        createdEquipment.push(equipment);
-      }
-    } catch (error) {
-      console.error('Error creating equipment:', error);
+      case CREATION_STEPS.READER_TYPE:
+        return CREATION_STEPS.HARDWARE;
+        
+      case CREATION_STEPS.CAMERA_TYPE:
+        return CREATION_STEPS.RESOLUTION;
+        
+      case CREATION_STEPS.HARDWARE:
+      case CREATION_STEPS.RESOLUTION:
+        return CREATION_STEPS.NOTES;
+        
+      case CREATION_STEPS.NOTES:
+        return CREATION_STEPS.COMPLETE;
+        
+      default:
+        return CREATION_STEPS.LOCATION;
+    }
+  }
+  
+  /**
+   * Get the question to ask for a specific step
+   */
+  private getQuestionForStep(step: string, equipmentType: string): string {
+    switch (step) {
+      case CREATION_STEPS.LOCATION:
+        return `Where will this ${this.getEquipmentTypeLabel(equipmentType)} be located? (e.g., "Main entrance", "Lobby", "East corridor")`;
+        
+      case CREATION_STEPS.INSTALLATION_TYPE:
+        return `What type of installation will this be? (e.g., "New", "Retrofit", "Replacement")`;
+        
+      case CREATION_STEPS.READER_TYPE:
+        return `What type of reader will be used? (e.g., "Mullion", "Standard", "Keypad", "Biometric")`;
+        
+      case CREATION_STEPS.CAMERA_TYPE:
+        return `What type of camera will this be? (e.g., "Dome", "Bullet", "PTZ", "Fisheye")`;
+        
+      case CREATION_STEPS.HARDWARE:
+        return `Do you have any specific hardware requirements? (e.g., "HID RP40", "Von Duprin", or "No preference")`;
+        
+      case CREATION_STEPS.RESOLUTION:
+        return `What resolution is needed for this camera? (e.g., "4K", "1080p", "720p")`;
+        
+      case CREATION_STEPS.NOTES:
+        return `Any additional notes or requirements?`;
+        
+      case CREATION_STEPS.COMPLETE:
+        return `Great! I've added the ${this.getEquipmentTypeLabel(equipmentType)} to your project.`;
+        
+      default:
+        return `What would you like to specify for this ${this.getEquipmentTypeLabel(equipmentType)}?`;
+    }
+  }
+  
+  /**
+   * Get a human-readable label for an equipment type
+   */
+  private getEquipmentTypeLabel(equipmentType: string): string {
+    switch (equipmentType) {
+      case EQUIPMENT_TYPES.ACCESS_POINT:
+        return 'access point';
+      case EQUIPMENT_TYPES.CAMERA:
+        return 'camera';
+      case EQUIPMENT_TYPES.ELEVATOR:
+        return 'elevator';
+      case EQUIPMENT_TYPES.INTERCOM:
+        return 'intercom';
+      default:
+        return 'equipment';
+    }
+  }
+  
+  /**
+   * Create equipment based on session responses
+   */
+  private async createEquipment(
+    session: EquipmentCreationSession,
+    responses: Record<string, string>
+  ): Promise<GenericEquipmentType[]> {
+    const createdEquipment = [];
+    
+    // Handle creation for each equipment type
+    switch (session.equipment_type) {
+      case EQUIPMENT_TYPES.ACCESS_POINT:
+        for (let i = 0; i < session.quantity; i++) {
+          const accessPoint = await storage.createAccessPoint({
+            project_id: session.project_id,
+            location: responses[CREATION_STEPS.LOCATION] || 'Unknown location',
+            installation_type: responses[CREATION_STEPS.INSTALLATION_TYPE] || 'New',
+            door_type: 'Standard', // Default
+            reader_type: responses[CREATION_STEPS.READER_TYPE] || 'Standard',
+            hardware: responses[CREATION_STEPS.HARDWARE] || '',
+            notes: responses[CREATION_STEPS.NOTES] || '',
+            status: 'Active'
+          });
+          createdEquipment.push(accessPoint);
+        }
+        break;
+        
+      case EQUIPMENT_TYPES.CAMERA:
+        for (let i = 0; i < session.quantity; i++) {
+          const camera = await storage.createCamera({
+            project_id: session.project_id,
+            location: responses[CREATION_STEPS.LOCATION] || 'Unknown location',
+            installation_type: responses[CREATION_STEPS.INSTALLATION_TYPE] || 'New',
+            camera_type: responses[CREATION_STEPS.CAMERA_TYPE] || 'Dome',
+            resolution: responses[CREATION_STEPS.RESOLUTION] || '1080p',
+            notes: responses[CREATION_STEPS.NOTES] || '',
+            status: 'Active'
+          });
+          createdEquipment.push(camera);
+        }
+        break;
+        
+      case EQUIPMENT_TYPES.ELEVATOR:
+        for (let i = 0; i < session.quantity; i++) {
+          const elevator = await storage.createElevator({
+            project_id: session.project_id,
+            location: responses[CREATION_STEPS.LOCATION] || 'Unknown location',
+            installation_type: responses[CREATION_STEPS.INSTALLATION_TYPE] || 'New',
+            controller_type: 'Standard', // Default
+            floors_served: 'All', // Default
+            hardware: responses[CREATION_STEPS.HARDWARE] || '',
+            notes: responses[CREATION_STEPS.NOTES] || '',
+            status: 'Active'
+          });
+          createdEquipment.push(elevator);
+        }
+        break;
+        
+      case EQUIPMENT_TYPES.INTERCOM:
+        for (let i = 0; i < session.quantity; i++) {
+          const intercom = await storage.createIntercom({
+            project_id: session.project_id,
+            location: responses[CREATION_STEPS.LOCATION] || 'Unknown location',
+            installation_type: responses[CREATION_STEPS.INSTALLATION_TYPE] || 'New',
+            intercom_type: 'Standard', // Default
+            hardware: responses[CREATION_STEPS.HARDWARE] || '',
+            notes: responses[CREATION_STEPS.NOTES] || '',
+            status: 'Active'
+          });
+          createdEquipment.push(intercom);
+        }
+        break;
     }
     
     return createdEquipment;
   }
-  
-  /**
-   * Format equipment data for creation
-   */
-  private formatEquipmentData(session: EquipmentCreationSession, index: number): any {
-    const { equipmentType, responses, projectId } = session;
-    const locationType = responses.location_type || 'Unknown';
-    const locationName = responses.location || `Location ${index + 1}`;
-    
-    // Basic equipment data common to all types
-    const equipmentData = {
-      project_id: projectId,
-      name: `${locationType} ${equipmentType} ${index + 1}`,
-      location: locationName,
-      notes: `Created via chatbot. Wiring installed by: ${responses.wiring_installer || 'TBD'}`,
-    };
-    
-    // Add type-specific data
-    switch (equipmentType) {
-      case 'access_point':
-        return {
-          ...equipmentData,
-          reader_type: responses.reader_technology || 'Card',
-          is_perimeter: responses.location_type === 'perimeter',
-        };
-      case 'camera':
-        return {
-          ...equipmentData,
-          camera_type: responses.camera_type || 'Fixed',
-          resolution: responses.resolution || '1080p',
-        };
-      case 'intercom':
-        return {
-          ...equipmentData,
-          intercom_type: responses.intercom_type || 'Audio/Video',
-        };
-      case 'elevator':
-        return {
-          ...equipmentData,
-          floor_count: responses.floor_count || 1,
-        };
-      default:
-        return equipmentData;
-    }
-  }
-  
-  /**
-   * Make API request to create equipment
-   * This is a simplified version - in production, we would directly call the database
-   */
-  private async callCreateEquipmentAPI(endpoint: string, data: any): Promise<any> {
-    // Here we would make a direct API call or database call
-    // For now, we'll simulate a successful creation with dummy data
-    return {
-      id: Math.floor(Math.random() * 1000),
-      ...data,
-      created_at: new Date().toISOString(),
-    };
-  }
-  
-  /**
-   * Get questions to ask based on equipment type
-   */
-  private getQuestionsForEquipmentType(type: string): string[] {
-    const commonQuestions = [
-      'Is this an interior or perimeter installation?',
-      'What specific location will these be installed?',
-      'Who will be installing the wiring?'
-    ];
-    
-    // Add type-specific questions
-    switch (type) {
-      case 'access_point':
-        return [
-          ...commonQuestions,
-          'What reader technology will be used? (Card, Keypad, Biometric, etc.)',
-          'Will this control any additional hardware like electric strikes?'
-        ];
-      case 'camera':
-        return [
-          ...commonQuestions,
-          'What type of camera is needed? (Fixed, PTZ, Dome, etc.)',
-          'What resolution is required?',
-          'Is there sufficient lighting in the area?'
-        ];
-      case 'intercom':
-        return [
-          ...commonQuestions,
-          'Is this an audio-only or audio/video intercom?',
-          'Will this be integrated with the access control system?'
-        ];
-      case 'elevator':
-        return [
-          ...commonQuestions,
-          'How many floors need to be controlled?',
-          'Will this use card readers or a keypad?'
-        ];
-      default:
-        return commonQuestions;
-    }
-  }
-  
-  /**
-   * Get the next step in the equipment creation process
-   */
-  private getNextStep(session: EquipmentCreationSession): string {
-    const currentStepIndex = this.getStepIndex(session.currentStep);
-    const steps = this.getStepsForEquipmentType(session.equipmentType);
-    
-    // If we're at the last step, mark as complete
-    if (currentStepIndex >= steps.length - 1) {
-      return 'complete';
-    }
-    
-    // Otherwise, move to the next step
-    return steps[currentStepIndex + 1];
-  }
-  
-  /**
-   * Get all steps for a specific equipment type
-   */
-  private getStepsForEquipmentType(type: string): string[] {
-    const commonSteps = ['location_type', 'location', 'wiring_installer'];
-    
-    switch (type) {
-      case 'access_point':
-        return [...commonSteps, 'reader_technology', 'additional_hardware'];
-      case 'camera':
-        return [...commonSteps, 'camera_type', 'resolution', 'lighting'];
-      case 'intercom':
-        return [...commonSteps, 'intercom_type', 'integration'];
-      case 'elevator':
-        return [...commonSteps, 'floor_count', 'control_type'];
-      default:
-        return commonSteps;
-    }
-  }
-  
-  /**
-   * Get the index of a step in the steps array
-   */
-  private getStepIndex(step: string): number {
-    const allPossibleSteps = [
-      'location_type',
-      'location',
-      'wiring_installer',
-      'reader_technology',
-      'additional_hardware',
-      'camera_type',
-      'resolution',
-      'lighting',
-      'intercom_type',
-      'integration',
-      'floor_count',
-      'control_type'
-    ];
-    
-    return allPossibleSteps.indexOf(step);
-  }
 }
 
-// Create singleton instance
-const equipmentCreationService = new EquipmentCreationService();
-export default equipmentCreationService;
+export default new EquipmentCreationService();

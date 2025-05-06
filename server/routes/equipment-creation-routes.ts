@@ -14,53 +14,44 @@ export function setupEquipmentCreationRoutes(app: Express) {
       const { message } = req.body;
       
       if (!message || typeof message !== 'string') {
-        return res.status(400).json({ error: 'Message is required' });
+        return res.status(400).json({ error: 'Message string is required' });
       }
       
       const intent = equipmentCreationService.detectCreationIntent(message);
-      
       res.json(intent);
     } catch (error) {
       console.error('Error detecting equipment creation intent:', error);
       res.status(500).json({ error: 'Failed to detect intent' });
     }
   });
-  
+
   /**
    * Start equipment creation session
    * POST /api/equipment/sessions
    */
   app.post('/api/equipment/sessions', async (req: Request, res: Response) => {
     try {
-      const { projectId, equipmentType, quantity } = req.body;
+      const { project_id, equipment_type, quantity } = req.body;
       
-      if (!projectId || !equipmentType || !quantity) {
+      if (!project_id || !equipment_type || !quantity) {
         return res.status(400).json({ 
           error: 'Project ID, equipment type, and quantity are required' 
         });
       }
       
       const session = await equipmentCreationService.startSession(
-        projectId,
-        equipmentType,
+        project_id, 
+        equipment_type, 
         quantity
       );
       
-      const questions = session.pendingQuestions;
-      const currentStep = session.currentStep;
-      
-      res.status(201).json({
-        sessionId: session.sessionId,
-        currentStep,
-        currentQuestion: questions[0],
-        remainingSteps: questions.length - 1
-      });
+      res.status(201).json(session);
     } catch (error) {
       console.error('Error starting equipment creation session:', error);
       res.status(500).json({ error: 'Failed to start session' });
     }
   });
-  
+
   /**
    * Process response in equipment creation session
    * POST /api/equipment/sessions/:sessionId/response
@@ -70,19 +61,22 @@ export function setupEquipmentCreationRoutes(app: Express) {
       const { sessionId } = req.params;
       const { response } = req.body;
       
+      if (!sessionId) {
+        return res.status(400).json({ error: 'Session ID is required' });
+      }
+      
       if (!response || typeof response !== 'string') {
-        return res.status(400).json({ error: 'Response is required' });
+        return res.status(400).json({ error: 'Response string is required' });
       }
       
       const result = await equipmentCreationService.processResponse(sessionId, response);
-      
       res.json(result);
     } catch (error) {
       console.error('Error processing equipment creation response:', error);
       res.status(500).json({ error: 'Failed to process response' });
     }
   });
-  
+
   /**
    * Get session details
    * GET /api/equipment/sessions/:sessionId
@@ -90,6 +84,10 @@ export function setupEquipmentCreationRoutes(app: Express) {
   app.get('/api/equipment/sessions/:sessionId', async (req: Request, res: Response) => {
     try {
       const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ error: 'Session ID is required' });
+      }
       
       const session = await equipmentCreationService.getSession(sessionId);
       
