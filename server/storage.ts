@@ -1947,8 +1947,17 @@ export class DatabaseStorage implements IStorage {
 
   // KVG Form Data
   async getKvgFormData(projectId: number): Promise<KvgFormData | undefined> {
-    const [formData] = await db.select().from(kvgFormData).where(eq(kvgFormData.project_id, projectId));
-    return formData;
+    try {
+      console.log(`Attempting to fetch KVG form data for project ${projectId}`);
+      const query = db.select().from(kvgFormData).where(eq(kvgFormData.project_id, projectId));
+      console.log("SQL Query:", query.toSQL());
+      const [formData] = await query;
+      console.log("KVG Form Data fetched successfully:", formData ? "data found" : "no data found");
+      return formData;
+    } catch (error) {
+      console.error("Error fetching KVG form data:", error);
+      throw error;
+    }
   }
 
   async createKvgFormData(insertFormData: InsertKvgFormData): Promise<KvgFormData> {
