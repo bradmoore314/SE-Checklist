@@ -632,3 +632,69 @@ export const crmSettings = pgTable("crm_settings", {
 export type CrmSetting = typeof crmSettings.$inferSelect;
 export const insertCrmSettingSchema = createInsertSchema(crmSettings).omit({ id: true, created_at: true, updated_at: true });
 export type InsertCrmSetting = z.infer<typeof insertCrmSettingSchema>;
+
+// Camera Gateway Schemas
+export const gateways = pgTable("gateways", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull(),
+  name: text("name").notNull(),
+  ip_address: text("ip_address").notNull(),
+  port: integer("port").notNull().default(80),
+  username: text("username").notNull(),
+  password: text("password").notNull(),
+  status: text("status").notNull().default('unknown'),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type Gateway = typeof gateways.$inferSelect;
+export const insertGatewaySchema = createInsertSchema(gateways).omit({ id: true, created_at: true, updated_at: true });
+export type InsertGateway = z.infer<typeof insertGatewaySchema>;
+
+export const streams = pgTable("streams", {
+  id: serial("id").primaryKey(),
+  gateway_id: integer("gateway_id").notNull(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  audio_enabled: boolean("audio_enabled").notNull().default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type Stream = typeof streams.$inferSelect;
+export const insertStreamSchema = createInsertSchema(streams).omit({ id: true, created_at: true, updated_at: true });
+export type InsertStream = z.infer<typeof insertStreamSchema>;
+
+export const streamImages = pgTable("stream_images", {
+  id: serial("id").primaryKey(),
+  stream_id: integer("stream_id").notNull(),
+  image_data: text("image_data").notNull(),
+  timestamp: timestamp("timestamp").notNull(),
+  label: text("label"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export type StreamImage = typeof streamImages.$inferSelect;
+export const insertStreamImageSchema = createInsertSchema(streamImages).omit({ id: true, created_at: true });
+export type InsertStreamImage = z.infer<typeof insertStreamImageSchema>;
+
+// Set up relations
+export const gatewaysRelations = relations(gateways, ({ many }) => ({
+  streams: many(streams),
+}));
+
+export const streamsRelations = relations(streams, ({ one, many }) => ({
+  gateway: one(gateways, {
+    fields: [streams.gateway_id],
+    references: [gateways.id],
+  }),
+  images: many(streamImages),
+}));
+
+export const streamImagesRelations = relations(streamImages, ({ one }) => ({
+  stream: one(streams, {
+    fields: [streamImages.stream_id],
+    references: [streams.id],
+  }),
+}));
