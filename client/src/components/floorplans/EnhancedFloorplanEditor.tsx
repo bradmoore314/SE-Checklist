@@ -15,7 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { UnplacedEquipmentPanel, UnplacedEquipment } from './UnplacedEquipmentPanel';
 
 // Configure pdfjs worker source - using specific version to avoid mismatches
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
 interface PdfEditorProps {
   floorplanId?: number;
@@ -490,6 +490,19 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                       <StampIcon className="h-4 w-4 mr-1" />
                       Stamp
                     </Button>
+                    
+                    {/* Equipment panel toggle button */}
+                    {floorplanId && projectId && (
+                      <Button
+                        size="sm"
+                        variant={showEquipmentPanel ? "secondary" : "outline"}
+                        onClick={() => setShowEquipmentPanel(!showEquipmentPanel)}
+                        className="ml-2"
+                      >
+                        <ListChecks className="h-4 w-4 mr-1" />
+                        {showEquipmentPanel ? "Hide Equipment" : "Show Equipment"}
+                      </Button>
+                    )}
                   </div>
                   
                   {/* Page navigation */}
@@ -526,19 +539,7 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                     </Button>
                   </div>
                   
-                  {/* Equipment panel toggle */}
-                  {floorplanId && projectId && (
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        size="sm" 
-                        variant={showEquipmentPanel ? "default" : "outline"}
-                        onClick={() => setShowEquipmentPanel(!showEquipmentPanel)}
-                      >
-                        <ListChecks className="h-4 w-4 mr-2" />
-                        Unplaced Equipment
-                      </Button>
-                    </div>
-                  )}
+
                   
                   {/* Annotation-specific controls */}
                   {selectedTool === 'text' && (
