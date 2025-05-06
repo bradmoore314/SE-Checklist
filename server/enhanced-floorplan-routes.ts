@@ -9,7 +9,7 @@ import { eq, and, inArray } from 'drizzle-orm';
  */
 export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (req: Request, res: Response, next: NextFunction) => void) {
   // Get all markers for a floorplan page
-  app.get('/api/enhanced-floorplan/:floorplanId/markers', async (req: Request, res: Response) => {
+  app.get('/api/enhanced-floorplan/:floorplanId/markers', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId } = req.params;
       const { page } = req.query;
@@ -36,7 +36,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Create a new marker
-  app.post('/api/enhanced-floorplan/:floorplanId/markers', async (req: Request, res: Response) => {
+  app.post('/api/enhanced-floorplan/:floorplanId/markers', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId } = req.params;
       
@@ -97,7 +97,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Update a marker
-  app.put('/api/enhanced-floorplan/markers/:markerId', async (req: Request, res: Response) => {
+  app.put('/api/enhanced-floorplan/markers/:markerId', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { markerId } = req.params;
       
@@ -129,7 +129,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Update just a marker's position (for dragging operations)
-  app.patch('/api/enhanced-floorplan/markers/:markerId/position', async (req: Request, res: Response) => {
+  app.patch('/api/enhanced-floorplan/markers/:markerId/position', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { markerId } = req.params;
       const { position_x, position_y } = req.body;
@@ -172,7 +172,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Delete a marker
-  app.delete('/api/enhanced-floorplan/markers/:markerId', async (req: Request, res: Response) => {
+  app.delete('/api/enhanced-floorplan/markers/:markerId', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { markerId } = req.params;
       
@@ -188,7 +188,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Get all markers for a project with counts by type and placement categories
-  app.get('/api/projects/:projectId/marker-stats', async (req: Request, res: Response) => {
+  app.get('/api/projects/:projectId/marker-stats', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { projectId } = req.params;
       const numericProjectId = parseInt(projectId);
@@ -300,7 +300,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Get all layers for a floorplan
-  app.get('/api/enhanced-floorplan/:floorplanId/layers', async (req: Request, res: Response) => {
+  app.get('/api/enhanced-floorplan/:floorplanId/layers', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId } = req.params;
       
@@ -317,7 +317,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Create a new layer
-  app.post('/api/enhanced-floorplan/:floorplanId/layers', async (req: Request, res: Response) => {
+  app.post('/api/enhanced-floorplan/:floorplanId/layers', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { floorplanId } = req.params;
       const layerData = {
@@ -342,7 +342,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Update a layer
-  app.put('/api/enhanced-floorplan/layers/:layerId', async (req: Request, res: Response) => {
+  app.put('/api/enhanced-floorplan/layers/:layerId', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { layerId } = req.params;
       
@@ -360,7 +360,7 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
   });
   
   // Delete a layer
-  app.delete('/api/enhanced-floorplan/layers/:layerId', async (req: Request, res: Response) => {
+  app.delete('/api/enhanced-floorplan/layers/:layerId', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { layerId } = req.params;
       
