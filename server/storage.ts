@@ -2026,94 +2026,90 @@ export class DatabaseStorage implements IStorage {
 
   async createKvgFormData(insertFormData: InsertKvgFormData): Promise<KvgFormData> {
     try {
-      // Map our schema property names to database column names
-      const dbFormData: any = {
+      console.log("Creating new KVG form data:", JSON.stringify(insertFormData, null, 2));
+      
+      // Use Drizzle ORM to insert the data
+      const [result] = await db.insert(kvgFormData).values({
         project_id: insertFormData.project_id,
-        bdm_owner: insertFormData.bdmOwner,
-        sales_engineer: insertFormData.salesEngineer,
-        kvg_sme: insertFormData.kvgSme,
-        customer_name: insertFormData.customerName,
-        site_address: insertFormData.siteAddress,
-        city: insertFormData.city,
-        state: insertFormData.state,
-        zip_code: insertFormData.zipCode,
-        crm_opportunity: insertFormData.crmOpportunity,
-        quote_date: insertFormData.quoteDate,
-        time_zone: insertFormData.timeZone,
-        opportunity_stage: insertFormData.opportunityStage,
-        opportunity_type: insertFormData.opportunityType,
-        site_environment: insertFormData.siteEnvironment,
-        region: insertFormData.region,
-        customer_vertical: insertFormData.customerVertical,
-        property_category: insertFormData.propertyCategory,
-        maintenance: insertFormData.maintenance,
-        services_recommended: insertFormData.servicesRecommended,
-        incident_types: insertFormData.incidentTypes,
-        am_name: insertFormData.amName,
-        pm_name: insertFormData.pmName,
-        voc_escalations: insertFormData.vocEscalations,
-        dispatch_responses: insertFormData.dispatchResponses,
-        gdods_patrols: insertFormData.gdodsPatrols,
-        sgpp_patrols: insertFormData.sgppPatrols,
-        forensic_investigations: insertFormData.forensicInvestigations,
-        app_users: insertFormData.appUsers,
-        audio_devices: insertFormData.audioDevices
-      };
+        bdm_owner: insertFormData.bdmOwner || '',
+        sales_engineer: insertFormData.salesEngineer || '',
+        kvg_sme: insertFormData.kvgSme || '',
+        customer_name: insertFormData.customerName || '',
+        site_address: insertFormData.siteAddress || '',
+        city: insertFormData.city || '',
+        state: insertFormData.state || '',
+        zip_code: insertFormData.zipCode || '',
+        crm_opportunity: insertFormData.crmOpportunity || '',
+        quote_date: insertFormData.quoteDate || '',
+        num_sites: insertFormData.numSites || 1,
+        technology: insertFormData.technology || '',
+        install_type: insertFormData.installType || '',
+        time_zone: insertFormData.timeZone || '',
+        opportunity_stage: insertFormData.opportunityStage || '',
+        opportunity_type: insertFormData.opportunityType || '',
+        site_environment: insertFormData.siteEnvironment || '',
+        region: insertFormData.region || '',
+        customer_vertical: insertFormData.customerVertical || '',
+        property_category: insertFormData.propertyCategory || '',
+        maintenance: insertFormData.maintenance || '',
+        services_recommended: insertFormData.servicesRecommended || '',
+        incident_types: insertFormData.incidentTypes || {},
+        am_name: insertFormData.amName || '',
+        pm_name: insertFormData.pmName || '',
+        voc_escalations: insertFormData.vocEscalations || 0,
+        dispatch_responses: insertFormData.dispatchResponses || 0,
+        gdods_patrols: insertFormData.gdodsPatrols || 0,
+        sgpp_patrols: insertFormData.sgppPatrols || 0,
+        forensic_investigations: insertFormData.forensicInvestigations || 0,
+        app_users: insertFormData.appUsers || 0,
+        audio_devices: insertFormData.audioDevices || 0
+      }).returning();
       
-      // Create placeholders for all columns and values for the SQL statement
-      const columns = Object.keys(dbFormData).join(', ');
-      const placeholders = Object.keys(dbFormData).map((_, i) => `$${i + 1}`).join(', ');
-      const values = Object.values(dbFormData);
-      
-      // Execute raw SQL insert
-      const result = await db.execute(
-        `INSERT INTO kvg_form_data (${columns}) 
-         VALUES (${placeholders})
-         RETURNING *`,
-        values
-      );
-      
-      if (result.rows.length === 0) {
+      if (!result) {
         throw new Error("Failed to insert KVG form data");
       }
       
-      const formData = result.rows[0];
+      console.log("KVG form data created successfully:", result.id);
       
-      // Map the database column names back to our schema property names
+      // Map database columns to our schema
       return {
-        id: formData.id,
-        project_id: formData.project_id,
-        bdmOwner: formData.bdm_owner,
-        salesEngineer: formData.sales_engineer,
-        kvgSme: formData.kvg_sme,
-        customerName: formData.customer_name,
-        siteAddress: formData.site_address,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zip_code,
-        crmOpportunity: formData.crm_opportunity,
-        quoteDate: formData.quote_date,
-        timeZone: formData.time_zone,
-        opportunityStage: formData.opportunity_stage,
-        opportunityType: formData.opportunity_type,
-        siteEnvironment: formData.site_environment,
-        region: formData.region,
-        customerVertical: formData.customer_vertical,
-        propertyCategory: formData.property_category,
-        maintenance: formData.maintenance,
-        servicesRecommended: formData.services_recommended,
-        incidentTypes: formData.incident_types,
-        amName: formData.am_name,
-        pmName: formData.pm_name,
-        vocEscalations: formData.voc_escalations,
-        dispatchResponses: formData.dispatch_responses,
-        gdodsPatrols: formData.gdods_patrols,
-        sgppPatrols: formData.sgpp_patrols,
-        forensicInvestigations: formData.forensic_investigations,
-        appUsers: formData.app_users,
-        audioDevices: formData.audio_devices,
-        created_at: formData.created_at,
-        updated_at: formData.updated_at
+        id: result.id,
+        project_id: result.project_id,
+        bdmOwner: result.bdm_owner || '',
+        salesEngineer: result.sales_engineer || '',
+        kvgSme: result.kvg_sme || '',
+        customerName: result.customer_name || '',
+        siteAddress: result.site_address || '',
+        cityStateZip: `${result.city || ''}, ${result.state || ''} ${result.zip_code || ''}`, 
+        city: result.city || '',
+        state: result.state || '',
+        zipCode: result.zip_code || '',
+        crmOpportunity: result.crm_opportunity || '',
+        quoteDate: result.quote_date || '',
+        numSites: result.num_sites || 1,
+        technology: result.technology || '',
+        installType: result.install_type || '',
+        timeZone: result.time_zone || '',
+        opportunityStage: result.opportunity_stage || '',
+        opportunityType: result.opportunity_type || '',
+        siteEnvironment: result.site_environment || '',
+        region: result.region || '',
+        customerVertical: result.customer_vertical || '',
+        propertyCategory: result.property_category || '',
+        maintenance: result.maintenance || '',
+        servicesRecommended: result.services_recommended || '',
+        incidentTypes: result.incident_types || {},
+        amName: result.am_name || '',
+        pmName: result.pm_name || '',
+        vocEscalations: result.voc_escalations || 0,
+        dispatchResponses: result.dispatch_responses || 0,
+        gdodsPatrols: result.gdods_patrols || 0,
+        sgppPatrols: result.sgpp_patrols || 0,
+        forensicInvestigations: result.forensic_investigations || 0,
+        appUsers: result.app_users || 0,
+        audioDevices: result.audio_devices || 0,
+        created_at: result.created_at,
+        updated_at: result.updated_at
       } as KvgFormData;
     } catch (error) {
       console.error("Error creating KVG form data:", error);
@@ -2123,104 +2119,107 @@ export class DatabaseStorage implements IStorage {
 
   async updateKvgFormData(id: number, updateFormData: Partial<InsertKvgFormData>): Promise<KvgFormData | undefined> {
     try {
-      // Map our schema property names to database column names
-      const dbFormData: any = {};
+      console.log("Updating KVG form data for ID:", id);
+      console.log("Update data:", JSON.stringify(updateFormData, null, 2));
       
-      if (updateFormData.bdmOwner !== undefined) dbFormData.bdm_owner = updateFormData.bdmOwner;
-      if (updateFormData.salesEngineer !== undefined) dbFormData.sales_engineer = updateFormData.salesEngineer;
-      if (updateFormData.kvgSme !== undefined) dbFormData.kvg_sme = updateFormData.kvgSme;
-      if (updateFormData.customerName !== undefined) dbFormData.customer_name = updateFormData.customerName;
-      if (updateFormData.siteAddress !== undefined) dbFormData.site_address = updateFormData.siteAddress;
-      if (updateFormData.city !== undefined) dbFormData.city = updateFormData.city;
-      if (updateFormData.state !== undefined) dbFormData.state = updateFormData.state;
-      if (updateFormData.zipCode !== undefined) dbFormData.zip_code = updateFormData.zipCode;
-      if (updateFormData.crmOpportunity !== undefined) dbFormData.crm_opportunity = updateFormData.crmOpportunity;
-      if (updateFormData.quoteDate !== undefined) dbFormData.quote_date = updateFormData.quoteDate;
-      if (updateFormData.timeZone !== undefined) dbFormData.time_zone = updateFormData.timeZone;
-      if (updateFormData.opportunityStage !== undefined) dbFormData.opportunity_stage = updateFormData.opportunityStage;
-      if (updateFormData.opportunityType !== undefined) dbFormData.opportunity_type = updateFormData.opportunityType;
-      if (updateFormData.siteEnvironment !== undefined) dbFormData.site_environment = updateFormData.siteEnvironment;
-      if (updateFormData.region !== undefined) dbFormData.region = updateFormData.region;
-      if (updateFormData.customerVertical !== undefined) dbFormData.customer_vertical = updateFormData.customerVertical;
-      if (updateFormData.propertyCategory !== undefined) dbFormData.property_category = updateFormData.propertyCategory;
-      if (updateFormData.maintenance !== undefined) dbFormData.maintenance = updateFormData.maintenance;
-      if (updateFormData.servicesRecommended !== undefined) dbFormData.services_recommended = updateFormData.servicesRecommended;
-      if (updateFormData.incidentTypes !== undefined) dbFormData.incident_types = updateFormData.incidentTypes;
-      if (updateFormData.amName !== undefined) dbFormData.am_name = updateFormData.amName;
-      if (updateFormData.pmName !== undefined) dbFormData.pm_name = updateFormData.pmName;
-      if (updateFormData.vocEscalations !== undefined) dbFormData.voc_escalations = updateFormData.vocEscalations;
-      if (updateFormData.dispatchResponses !== undefined) dbFormData.dispatch_responses = updateFormData.dispatchResponses;
-      if (updateFormData.gdodsPatrols !== undefined) dbFormData.gdods_patrols = updateFormData.gdodsPatrols;
-      if (updateFormData.sgppPatrols !== undefined) dbFormData.sgpp_patrols = updateFormData.sgppPatrols;
-      if (updateFormData.forensicInvestigations !== undefined) dbFormData.forensic_investigations = updateFormData.forensicInvestigations;
-      if (updateFormData.appUsers !== undefined) dbFormData.app_users = updateFormData.appUsers;
-      if (updateFormData.audioDevices !== undefined) dbFormData.audio_devices = updateFormData.audioDevices;
+      // Prepare update data
+      const updateData: Record<string, any> = {};
+      
+      // Map our schema property names to database column names
+      if (updateFormData.bdmOwner !== undefined) updateData.bdm_owner = updateFormData.bdmOwner;
+      if (updateFormData.salesEngineer !== undefined) updateData.sales_engineer = updateFormData.salesEngineer;
+      if (updateFormData.kvgSme !== undefined) updateData.kvg_sme = updateFormData.kvgSme;
+      if (updateFormData.customerName !== undefined) updateData.customer_name = updateFormData.customerName;
+      if (updateFormData.siteAddress !== undefined) updateData.site_address = updateFormData.siteAddress;
+      if (updateFormData.city !== undefined) updateData.city = updateFormData.city;
+      if (updateFormData.state !== undefined) updateData.state = updateFormData.state;
+      if (updateFormData.zipCode !== undefined) updateData.zip_code = updateFormData.zipCode;
+      if (updateFormData.crmOpportunity !== undefined) updateData.crm_opportunity = updateFormData.crmOpportunity;
+      if (updateFormData.quoteDate !== undefined) updateData.quote_date = updateFormData.quoteDate;
+      if (updateFormData.numSites !== undefined) updateData.num_sites = updateFormData.numSites;
+      if (updateFormData.technology !== undefined) updateData.technology = updateFormData.technology;
+      if (updateFormData.installType !== undefined) updateData.install_type = updateFormData.installType;
+      if (updateFormData.timeZone !== undefined) updateData.time_zone = updateFormData.timeZone;
+      if (updateFormData.opportunityStage !== undefined) updateData.opportunity_stage = updateFormData.opportunityStage;
+      if (updateFormData.opportunityType !== undefined) updateData.opportunity_type = updateFormData.opportunityType;
+      if (updateFormData.siteEnvironment !== undefined) updateData.site_environment = updateFormData.siteEnvironment;
+      if (updateFormData.region !== undefined) updateData.region = updateFormData.region;
+      if (updateFormData.customerVertical !== undefined) updateData.customer_vertical = updateFormData.customerVertical;
+      if (updateFormData.propertyCategory !== undefined) updateData.property_category = updateFormData.propertyCategory;
+      if (updateFormData.maintenance !== undefined) updateData.maintenance = updateFormData.maintenance;
+      if (updateFormData.servicesRecommended !== undefined) updateData.services_recommended = updateFormData.servicesRecommended;
+      if (updateFormData.incidentTypes !== undefined) updateData.incident_types = updateFormData.incidentTypes;
+      if (updateFormData.amName !== undefined) updateData.am_name = updateFormData.amName;
+      if (updateFormData.pmName !== undefined) updateData.pm_name = updateFormData.pmName;
+      if (updateFormData.vocEscalations !== undefined) updateData.voc_escalations = updateFormData.vocEscalations;
+      if (updateFormData.dispatchResponses !== undefined) updateData.dispatch_responses = updateFormData.dispatchResponses;
+      if (updateFormData.gdodsPatrols !== undefined) updateData.gdods_patrols = updateFormData.gdodsPatrols;
+      if (updateFormData.sgppPatrols !== undefined) updateData.sgpp_patrols = updateFormData.sgppPatrols;
+      if (updateFormData.forensicInvestigations !== undefined) updateData.forensic_investigations = updateFormData.forensicInvestigations;
+      if (updateFormData.appUsers !== undefined) updateData.app_users = updateFormData.appUsers;
+      if (updateFormData.audioDevices !== undefined) updateData.audio_devices = updateFormData.audioDevices;
       
       // Add updated_at timestamp
-      dbFormData.updated_at = new Date();
+      updateData.updated_at = new Date();
       
       // If there's nothing to update, return
-      if (Object.keys(dbFormData).length === 0) {
+      if (Object.keys(updateData).length === 0) {
         return await this.getKvgFormData(id);
       }
       
-      // Create SET clause for SQL update
-      const setClause = Object.keys(dbFormData)
-        .map((key, i) => `${key} = $${i + 2}`)
-        .join(', ');
+      // Use Drizzle ORM to update
+      const [result] = await db
+        .update(kvgFormData)
+        .set(updateData)
+        .where(eq(kvgFormData.id, id))
+        .returning();
       
-      const values = [id, ...Object.values(dbFormData)];
-      
-      // Execute raw SQL update
-      const result = await db.execute(
-        `UPDATE kvg_form_data
-         SET ${setClause}
-         WHERE id = $1
-         RETURNING *`,
-        values
-      );
-      
-      if (result.rows.length === 0) {
+      if (!result) {
+        console.log("No KVG form data found with ID:", id);
         return undefined;
       }
       
-      const formData = result.rows[0];
+      console.log("KVG form data updated successfully:", result.id);
       
-      // Map the database column names back to our schema property names
+      // Map database columns to our schema
       return {
-        id: formData.id,
-        project_id: formData.project_id,
-        bdmOwner: formData.bdm_owner,
-        salesEngineer: formData.sales_engineer,
-        kvgSme: formData.kvg_sme,
-        customerName: formData.customer_name,
-        siteAddress: formData.site_address,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zip_code,
-        crmOpportunity: formData.crm_opportunity,
-        quoteDate: formData.quote_date,
-        timeZone: formData.time_zone,
-        opportunityStage: formData.opportunity_stage,
-        opportunityType: formData.opportunity_type,
-        siteEnvironment: formData.site_environment,
-        region: formData.region,
-        customerVertical: formData.customer_vertical,
-        propertyCategory: formData.property_category,
-        maintenance: formData.maintenance,
-        servicesRecommended: formData.services_recommended,
-        incidentTypes: formData.incident_types,
-        amName: formData.am_name,
-        pmName: formData.pm_name,
-        vocEscalations: formData.voc_escalations,
-        dispatchResponses: formData.dispatch_responses,
-        gdodsPatrols: formData.gdods_patrols,
-        sgppPatrols: formData.sgpp_patrols,
-        forensicInvestigations: formData.forensic_investigations,
-        appUsers: formData.app_users,
-        audioDevices: formData.audio_devices,
-        created_at: formData.created_at,
-        updated_at: formData.updated_at
+        id: result.id,
+        project_id: result.project_id,
+        bdmOwner: result.bdm_owner || '',
+        salesEngineer: result.sales_engineer || '',
+        kvgSme: result.kvg_sme || '',
+        customerName: result.customer_name || '',
+        siteAddress: result.site_address || '',
+        cityStateZip: `${result.city || ''}, ${result.state || ''} ${result.zip_code || ''}`,
+        city: result.city || '',
+        state: result.state || '',
+        zipCode: result.zip_code || '',
+        crmOpportunity: result.crm_opportunity || '',
+        quoteDate: result.quote_date || '',
+        numSites: result.num_sites || 1,
+        technology: result.technology || '',
+        installType: result.install_type || '',
+        timeZone: result.time_zone || '',
+        opportunityStage: result.opportunity_stage || '',
+        opportunityType: result.opportunity_type || '',
+        siteEnvironment: result.site_environment || '',
+        region: result.region || '',
+        customerVertical: result.customer_vertical || '',
+        propertyCategory: result.property_category || '',
+        maintenance: result.maintenance || '',
+        servicesRecommended: result.services_recommended || '',
+        incidentTypes: result.incident_types || {},
+        amName: result.am_name || '',
+        pmName: result.pm_name || '',
+        vocEscalations: result.voc_escalations || 0,
+        dispatchResponses: result.dispatch_responses || 0,
+        gdodsPatrols: result.gdods_patrols || 0,
+        sgppPatrols: result.sgpp_patrols || 0,
+        forensicInvestigations: result.forensic_investigations || 0,
+        appUsers: result.app_users || 0,
+        audioDevices: result.audio_devices || 0,
+        created_at: result.created_at,
+        updated_at: result.updated_at
       } as KvgFormData;
     } catch (error) {
       console.error("Error updating KVG form data:", error);
