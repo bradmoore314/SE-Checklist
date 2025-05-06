@@ -20,7 +20,10 @@ export function ChatbotWindow() {
     toggleListening,
     isFullScreen,
     toggleFullScreen,
-    isLoading
+    isLoading,
+    equipmentCreation,
+    projectId,
+    setProjectId
   } = useChatbot();
   
   const [inputText, setInputText] = useState('');
@@ -69,7 +72,14 @@ export function ChatbotWindow() {
       >
         <Card className="border rounded-lg overflow-hidden">
           <CardHeader className="p-3 border-b bg-primary/5 flex flex-row items-center justify-between">
-            <div className="text-sm font-medium">Security Assistant</div>
+            <div className="text-sm font-medium flex items-center">
+              Security Assistant
+              {equipmentCreation && (
+                <span className="ml-2 text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-full">
+                  Adding Equipment
+                </span>
+              )}
+            </div>
             <div className="flex gap-1">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleFullScreen}>
                 <Maximize className="h-4 w-4" />
