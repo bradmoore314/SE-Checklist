@@ -102,6 +102,8 @@ function EnhancedFloorplansPage() {
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
   const [showAllLabels, setShowAllLabels] = useState(false);
   const [activeViewMode, setActiveViewMode] = useState<'standard' | 'editor' | 'annotate'>('standard');
+  const [selectedFloorplans, setSelectedFloorplans] = useState<Set<number>>(new Set());
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
   
   // Mobile detection added above at lines 64-81
   
@@ -200,6 +202,32 @@ function EnhancedFloorplansPage() {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to delete marker",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  // Add mutation for deleting floorplans
+  const deleteFloorplanMutation = useMutation({
+    mutationFn: async (floorplanId: number) => {
+      const response = await apiRequest('DELETE', `/api/floorplans/${floorplanId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to delete floorplan: ${response.status}`);
+      }
+      return floorplanId;
+    },
+    onSuccess: (floorplanId) => {
+      toast({
+        title: "Success",
+        description: `Floorplan deleted successfully`
+      });
+      // Invalidate floorplans query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'floorplans'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete floorplan",
         variant: "destructive"
       });
     }
@@ -361,11 +389,78 @@ function EnhancedFloorplansPage() {
             <h1 className="text-2xl font-bold">Enhanced Floorplans</h1>
             <p className="text-gray-500">Select a floorplan to view and annotate with professional tools</p>
           </div>
-          <Button onClick={() => setShowUploadDialog(true)}>
-            <FileUp className="mr-2 h-4 w-4" />
-            Upload Floorplan
-          </Button>
+          <div className="flex gap-2">
+            {selectedFloorplans.size > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to delete ${selectedFloorplans.size} selected floorplan(s)? This cannot be undone.`)) {
+                    // Delete all selected floorplans
+                    const promises = Array.from(selectedFloorplans).map(id => 
+                      deleteFloorplanMutation.mutateAsync(id)
+                    );
+                    
+                    Promise.all(promises)
+                      .then(() => {
+                        toast({
+                          title: "Success",
+                          description: `${selectedFloorplans.size} floorplan(s) deleted successfully`
+                        });
+                        setSelectedFloorplans(new Set());
+                        setSelectAllChecked(false);
+                      })
+                      .catch(error => {
+                        toast({
+                          title: "Error",
+                          description: error instanceof Error ? error.message : "Failed to delete floorplans",
+                          variant: "destructive"
+                        });
+                      });
+                  }
+                }}
+              >
+                Delete Selected ({selectedFloorplans.size})
+              </Button>
+            )}
+            <Button onClick={() => setShowUploadDialog(true)}>
+              <FileUp className="mr-2 h-4 w-4" />
+              Upload Floorplan
+            </Button>
+          </div>
         </div>
+        
+        {/* Selection controls */}
+        {projectFloorplans && projectFloorplans.length > 0 && (
+          <div className="flex items-center mb-4 p-2 bg-gray-50 rounded-md">
+            <div className="flex items-center">
+              <input 
+                type="checkbox" 
+                id="select-all" 
+                className="h-4 w-4 mr-2" 
+                checked={selectAllChecked}
+                onChange={(e) => {
+                  setSelectAllChecked(e.target.checked);
+                  
+                  if (e.target.checked) {
+                    // Select all floorplans
+                    const allIds = new Set(projectFloorplans.map(fp => fp.id));
+                    setSelectedFloorplans(allIds);
+                  } else {
+                    // Deselect all floorplans
+                    setSelectedFloorplans(new Set());
+                  }
+                }}
+              />
+              <label htmlFor="select-all" className="text-sm font-medium">
+                {selectAllChecked ? 'Deselect All' : 'Select All'}
+              </label>
+            </div>
+            
+            <div className="ml-auto text-sm text-gray-500">
+              {projectFloorplans.length} floorplan{projectFloorplans.length !== 1 ? 's' : ''}
+            </div>
+          </div>
+        )}
         
         {/* Upload Dialog */}
         <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -417,30 +512,66 @@ function EnhancedFloorplansPage() {
         {projectFloorplans && projectFloorplans.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projectFloorplans.map((floorplan) => (
-              <Link key={floorplan.id} href={`/projects/${projectId}/enhanced-floorplans/${floorplan.id}`}>
+              <div key={floorplan.id} className="relative group">
                 <Card className="cursor-pointer hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
-                    <div className="aspect-video bg-gray-100 mb-4 flex items-center justify-center rounded-md overflow-hidden relative">
-                      {/* Generate thumbnail from the floorplan PDF or image data */}
-                      {floorplan.pdf_data ? (
-                        <div className="absolute inset-0 w-full h-full">
-                          <FloorplanThumbnail floorplanData={floorplan.pdf_data} alt={floorplan.name} />
-                        </div>
-                      ) : (
-                        <span className="material-icons text-4xl text-gray-400">map</span>
-                      )}
-                      {/* Display marker count as an overlay badge */}
-                      <div className="absolute bottom-2 right-2 bg-primary/80 text-white text-xs rounded px-2 py-1 shadow-sm">
-                        Page 1
+                    {/* Top controls - Shown on hover */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-2">
+                      <div className="bg-white/90 rounded-md p-1 shadow-sm">
+                        <input 
+                          type="checkbox" 
+                          className="h-4 w-4" 
+                          title="Select floorplan"
+                          onClick={(e) => e.stopPropagation()}
+                        />
                       </div>
+                      <Button 
+                        size="icon" 
+                        variant="destructive" 
+                        className="h-6 w-6" 
+                        title="Delete floorplan"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (window.confirm(`Are you sure you want to delete "${floorplan.name}"? This cannot be undone.`)) {
+                            deleteFloorplanMutation.mutate(floorplan.id);
+                          }
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2">
+                          <path d="M3 6h18"></path>
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </Button>
                     </div>
-                    <h3 className="font-semibold text-lg truncate">{floorplan.name}</h3>
-                    <p className="text-sm text-gray-500">
-                      {floorplan.page_count} page{floorplan.page_count !== 1 ? 's' : ''}
-                    </p>
+                    
+                    {/* Floorplan thumbnail area is wrapped in a Link for navigation */}
+                    <Link href={`/projects/${projectId}/enhanced-floorplans/${floorplan.id}`}>
+                      <div className="aspect-video bg-gray-100 mb-4 flex items-center justify-center rounded-md overflow-hidden relative">
+                        {/* Generate thumbnail from the floorplan PDF or image data */}
+                        {floorplan.pdf_data ? (
+                          <div className="absolute inset-0 w-full h-full">
+                            <FloorplanThumbnail floorplanData={floorplan.pdf_data} alt={floorplan.name} />
+                          </div>
+                        ) : (
+                          <span className="material-icons text-4xl text-gray-400">map</span>
+                        )}
+                        {/* Display marker count as an overlay badge */}
+                        <div className="absolute bottom-2 right-2 bg-primary/80 text-white text-xs rounded px-2 py-1 shadow-sm">
+                          Page 1
+                        </div>
+                      </div>
+                      <h3 className="font-semibold text-lg truncate">{floorplan.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        {floorplan.page_count} page{floorplan.page_count !== 1 ? 's' : ''}
+                      </p>
+                    </Link>
                   </CardContent>
                 </Card>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (
