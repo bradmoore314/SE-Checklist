@@ -232,11 +232,50 @@ export const EnhancedFloorplanViewer = ({
     }
   };
 
+  // Show autosave feedback
+  const showAutoSaveFeedback = () => {
+    toast({
+      title: "Changes saved",
+      description: "All changes automatically saved to floorplan",
+      duration: 2000
+    });
+  };
+
   // Handle marker clicks
   const handleMarkerClick = (marker: MarkerData) => {
-    setSelectedMarker(prevMarker => 
-      prevMarker?.id === marker.id ? null : marker
-    );
+    if (toolMode === 'select') {
+      setSelectedMarker(prevMarker => 
+        prevMarker?.id === marker.id ? null : marker
+      );
+    }
+  };
+  
+  // Start dragging a marker
+  const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
+    if (toolMode !== 'select') return;
+    
+    e.stopPropagation();
+    
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    // Calculate the offset between mouse position and marker position
+    const offsetX = (e.clientX - rect.left - translateX) - (marker.position_x * pdfToViewportScale);
+    const offsetY = (e.clientY - rect.top - translateY) - (marker.position_y * pdfToViewportScale);
+    
+    setMarkerDragOffset({ x: offsetX, y: offsetY });
+    setSelectedMarker(marker);
+    setIsDraggingMarker(true);
+  };
+  
+  // Start resizing a marker
+  const startMarkerResize = (e: React.MouseEvent, marker: MarkerData) => {
+    if (toolMode !== 'select') return;
+    
+    e.stopPropagation();
+    
+    setSelectedMarker(marker);
+    setIsResizingMarker(true);
   };
 
   // Query Hooks
@@ -320,6 +359,9 @@ export const EnhancedFloorplanViewer = ({
       if (onMarkersUpdated) {
         onMarkersUpdated();
       }
+      
+      // Show autosave feedback
+      showAutoSaveFeedback();
     },
     onError: (error) => {
       console.error("Error updating marker:", error);
@@ -604,6 +646,50 @@ export const EnhancedFloorplanViewer = ({
       setTranslateX(prev => prev + deltaX);
       setTranslateY(prev => prev + deltaY);
       setDragStart({ x: e.clientX, y: e.clientY });
+    } else if (isDraggingMarker && selectedMarker) {
+      // Moving a selected marker
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Calculate where the marker should be, accounting for the offset
+      const newX = (e.clientX - rect.left - translateX - markerDragOffset.x) / pdfToViewportScale;
+      const newY = (e.clientY - rect.top - translateY - markerDragOffset.y) / pdfToViewportScale;
+      
+      // Update local state for smooth visual feedback
+      setSelectedMarker(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          position_x: newX,
+          position_y: newY
+        };
+      });
+    } else if (isResizingMarker && selectedMarker) {
+      // Resizing a selected marker
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      
+      // Calculate new dimensions based on marker type
+      setSelectedMarker(prev => {
+        if (!prev) return null;
+        
+        const newProperties: Partial<MarkerData> = {};
+        
+        // For markers with width/height properties
+        if (['rectangle', 'ellipse', 'image'].includes(prev.marker_type)) {
+          newProperties.width = Math.abs(pdfCoords.x - prev.position_x);
+          newProperties.height = Math.abs(pdfCoords.y - prev.position_y);
+        }
+        
+        // For line markers
+        if (prev.marker_type === 'line') {
+          newProperties.end_x = pdfCoords.x;
+          newProperties.end_y = pdfCoords.y;
+        }
+        
+        return {
+          ...prev,
+          ...newProperties
+        };
+      });
     } else if (isAddingMarker && tempMarker) {
       // Sizing a shape marker
       const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
@@ -670,6 +756,16 @@ export const EnhancedFloorplanViewer = ({
       
       setIsAddingMarker(false);
       setTempMarker(null);
+    } else if (isDraggingMarker && selectedMarker) {
+      // Save the new marker position
+      updateMarkerMutation.mutate(selectedMarker);
+      setIsDraggingMarker(false);
+      showAutoSaveFeedback();
+    } else if (isResizingMarker && selectedMarker) {
+      // Save the resized marker
+      updateMarkerMutation.mutate(selectedMarker);
+      setIsResizingMarker(false);
+      showAutoSaveFeedback();
     } else if (toolMode === 'polyline' || toolMode === 'polygon') {
       // Continue collecting points - don't finalize yet
       // Double-click will finalize (handled in handleDoubleClick)
@@ -786,7 +882,14 @@ export const EnhancedFloorplanViewer = ({
               onClick: (e: React.MouseEvent) => {
                 e.stopPropagation();
                 handleMarkerClick(marker);
-              }
+              },
+              onMouseDown: toolMode === 'select' ? 
+                (e: React.MouseEvent) => {
+                  if (e.button === 0) { // Left click
+                    e.stopPropagation();
+                    startMarkerDrag(e, marker);
+                  }
+                } : undefined
             };
             
             // Render different marker types
@@ -865,8 +968,184 @@ export const EnhancedFloorplanViewer = ({
                   </g>
                 );
               
-              // Other marker types follow similar pattern...
-              
+              case 'rectangle':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    {...baseProps}
+                  >
+                    <rect 
+                      x="0" 
+                      y="0" 
+                      width={marker.width! * pdfToViewportScale} 
+                      height={marker.height! * pdfToViewportScale}
+                      fill={fillColor}
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                    />
+                    {isSelected && toolMode === 'select' && (
+                      <>
+                        {/* Resize handle - bottom right corner */}
+                        <circle 
+                          cx={marker.width! * pdfToViewportScale} 
+                          cy={marker.height! * pdfToViewportScale} 
+                          r="6" 
+                          fill="#ffffff" 
+                          stroke="#000000" 
+                          strokeWidth="1"
+                          className="cursor-nwse-resize"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            startMarkerResize(e, marker);
+                          }}
+                        />
+                      </>
+                    )}
+                  </g>
+                );
+                
+              case 'ellipse':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    {...baseProps}
+                  >
+                    <ellipse 
+                      cx={(marker.width! * pdfToViewportScale) / 2} 
+                      cy={(marker.height! * pdfToViewportScale) / 2}
+                      rx={(marker.width! * pdfToViewportScale) / 2} 
+                      ry={(marker.height! * pdfToViewportScale) / 2}
+                      fill={fillColor}
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                    />
+                    {isSelected && toolMode === 'select' && (
+                      <>
+                        {/* Resize handle - bottom right corner */}
+                        <circle 
+                          cx={marker.width! * pdfToViewportScale} 
+                          cy={marker.height! * pdfToViewportScale} 
+                          r="6" 
+                          fill="#ffffff" 
+                          stroke="#000000" 
+                          strokeWidth="1"
+                          className="cursor-nwse-resize"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            startMarkerResize(e, marker);
+                          }}
+                        />
+                      </>
+                    )}
+                  </g>
+                );
+                
+              case 'line':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    {...baseProps}
+                  >
+                    <line 
+                      x1={marker.position_x * pdfToViewportScale} 
+                      y1={marker.position_y * pdfToViewportScale}
+                      x2={marker.end_x! * pdfToViewportScale} 
+                      y2={marker.end_y! * pdfToViewportScale}
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                    />
+                    {isSelected && toolMode === 'select' && (
+                      <>
+                        {/* Start point handle */}
+                        <circle 
+                          cx={marker.position_x * pdfToViewportScale} 
+                          cy={marker.position_y * pdfToViewportScale} 
+                          r="6" 
+                          fill="#ffffff" 
+                          stroke="#000000" 
+                          strokeWidth="1"
+                          className="cursor-move"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            startMarkerDrag(e, marker);
+                          }}
+                        />
+                        {/* End point handle (resize) */}
+                        <circle 
+                          cx={marker.end_x! * pdfToViewportScale} 
+                          cy={marker.end_y! * pdfToViewportScale} 
+                          r="6" 
+                          fill="#ffffff" 
+                          stroke="#000000" 
+                          strokeWidth="1"
+                          className="cursor-move"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            startMarkerResize(e, marker);
+                          }}
+                        />
+                      </>
+                    )}
+                  </g>
+                );
+
+              case 'note':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    {...baseProps}
+                  >
+                    {/* Note icon */}
+                    <rect 
+                      x="-10" 
+                      y="-10" 
+                      width="20" 
+                      height="20"
+                      fill="#ffff80"
+                      stroke={markerColor}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      rx="4"
+                    />
+                    <text 
+                      fontSize="12" 
+                      textAnchor="middle" 
+                      dominantBaseline="middle" 
+                      fill="#000000"
+                    >N</text>
+                    {(isSelected || showAllLabels) && marker.text_content && (
+                      <foreignObject 
+                        x="10" 
+                        y="-10" 
+                        width="150" 
+                        height="60"
+                      >
+                        <div 
+                          className="bg-yellow-100 p-1 rounded shadow-sm border border-yellow-400 text-xs overflow-hidden"
+                          style={{
+                            maxWidth: '150px',
+                            maxHeight: '60px',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          {marker.text_content.substring(0, 100)}
+                          {marker.text_content.length > 100 && '...'}
+                        </div>
+                      </foreignObject>
+                    )}
+                  </g>
+                );
+
               default:
                 return null;
             }
