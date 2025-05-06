@@ -6,8 +6,7 @@ const isProduction = import.meta.env.PROD;
 // Log the auth state
 console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
 
-// Only allow auth bypass with explicit flag in local storage
-const allowAuthBypass = localStorage.getItem('allow_auth_bypass') === 'true';
+// Authentication bypass removed for production readiness
 
 // Custom error handler to make error messages more user-friendly
 async function handleApiError(res: Response): Promise<void> {
@@ -39,8 +38,6 @@ export async function apiRequest(
   // Base headers
   const headers: Record<string, string> = {
     ...(data ? { "Content-Type": "application/json" } : {}),
-    // Include the auth bypass header if allowed
-    ...(allowAuthBypass ? { 'x-bypass-auth': 'true' } : {}),
     // Include any custom headers
     ...(customHeaders || {})
   };
@@ -77,11 +74,7 @@ export const getQueryFn: <T>(options: {
     
     try {
       const res = await fetch(url, {
-        credentials: "include",
-        headers: {
-          // Include the auth bypass header if allowed
-          ...(allowAuthBypass ? { 'x-bypass-auth': 'true' } : {})
-        }
+        credentials: "include"
       });
       
       // Special handling for 401 Unauthorized
