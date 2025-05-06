@@ -2872,10 +2872,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up AI routes
   setupAIRoutes(app);
   
-  // Set up equipment creation routes for chatbot integration
+  // Set up equipment creation and configuration routes for chatbot integration
   setupEquipmentCreationRoutes(app);
-  
-  // Set up equipment configuration routes
   setupEquipmentConfigurationRoutes(app);
   
   // Initialize Dataverse integration

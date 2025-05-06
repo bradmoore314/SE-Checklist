@@ -1,20 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Check, AlertTriangle, Send, Mic, MicOff, Plus, Trash2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { toast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
-import { useParams, useLocation } from 'wouter';
-import { SpeechRecognitionService } from '@/services/speech-service';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { Mic, Send, Play, Square, Volume2, VolumeX, Save, PlusCircle, Trash2, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Define the equipment field interface
 interface EquipmentField {
   name: string;
   value: string | null;
@@ -23,6 +19,7 @@ interface EquipmentField {
   options?: string[];
 }
 
+// Define the equipment item interface
 interface EquipmentItem {
   id: string;
   type: 'camera' | 'access_point' | 'elevator' | 'intercom';
@@ -32,174 +29,279 @@ interface EquipmentItem {
   quantity: number;
 }
 
+// Define message interface for chat
+interface Message {
+  content: string;
+  role: 'user' | 'assistant';
+}
+
 export function ConfigurationWorkspace() {
+  // State for the chat interface
+  const [message, setMessage] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([{
+    content: "Hello! I'm your equipment configuration assistant. How can I help you set up your security equipment today?",
+    role: 'assistant'
+  }]);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const [isContinuousMode, setIsContinuousMode] = useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  
+  // State for the equipment configuration
   const [items, setItems] = useState<EquipmentItem[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [inputMessage, setInputMessage] = useState('');
-  const [conversation, setConversation] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const conversationEndRef = useRef<HTMLDivElement>(null);
-  const [speechService] = useState(() => new SpeechRecognitionService());
-  const [projectId, setProjectId] = useState<number | undefined>(undefined);
-  const [, navigate] = useLocation();
-  const params = useParams();
-
-  // Get project ID from URL if available
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+  const [projectId, setProjectId] = useState<number | null>(null);
+  const [projects, setProjects] = useState<{id: number, name: string}[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  
+  // Toast
+  const { toast } = useToast();
+  
+  // Refs
+  const messageEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Load projects on mount
   useEffect(() => {
-    if (params && params.projectId) {
-      setProjectId(parseInt(params.projectId, 10));
-    }
-  }, [params]);
-
-  // Scroll to bottom of conversation
-  useEffect(() => {
-    if (conversationEndRef.current) {
-      conversationEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [conversation]);
-
-  // Set up speech recognition
-  useEffect(() => {
-    speechService.onResult((transcript) => {
-      setInputMessage(prev => prev + ' ' + transcript);
-    });
-
-    speechService.onEnd(() => {
-      setIsListening(false);
-    });
-
-    speechService.onError((error) => {
-      console.error('Speech recognition error:', error);
-      setIsListening(false);
-      toast({
-        title: 'Speech Recognition Error',
-        description: 'There was an error with speech recognition. Please try again.',
-        variant: 'destructive',
+    fetch('/api/projects')
+      .then(response => response.json())
+      .then(data => {
+        setProjects(data);
+        if (data.length > 0) {
+          setProjectId(data[0].id);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading projects:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load projects. Please try again.',
+          variant: 'destructive',
+        });
       });
-    });
-
-    return () => {
-      if (isListening) {
-        speechService.stop();
-      }
-    };
-  }, [speechService]);
-
-  const toggleListening = () => {
-    if (isListening) {
-      speechService.stop();
-      setIsListening(false);
-    } else {
-      speechService.start();
-      setIsListening(true);
+  }, []);
+  
+  // Scroll to bottom of messages
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, [messages]);
 
-  const calculateItemCompletion = (item: EquipmentItem) => {
-    const requiredFields = item.fields.filter(field => field.required);
-    const completedRequiredFields = requiredFields.filter(field => field.value !== null && field.value !== '');
-    const isComplete = requiredFields.length === completedRequiredFields.length;
-    
-    return {
-      ...item,
-      isComplete
-    };
-  };
-
-  const handleMessageSubmit = async (e: React.FormEvent) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inputMessage.trim()) return;
+    if (!message.trim()) return;
     
-    // Add user message to conversation
-    const userMessage = inputMessage.trim();
-    setConversation(prev => [...prev, { role: 'user', content: userMessage }]);
-    setInputMessage('');
+    // Add user message
+    const userMessage = { content: message, role: 'user' as const };
+    setMessages(prev => [...prev, userMessage]);
+    setMessage('');
+    
+    // Focus back on textarea after sending
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+    
     setIsProcessing(true);
     
     try {
-      // Call the API to process the message
-      const response = await apiRequest('POST', '/api/equipment/process-configuration', {
-        message: userMessage,
-        projectId,
-        currentItems: items
+      // Make API request to process the message
+      const response = await fetch('/api/equipment/process-configuration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          projectId,
+          currentItems: items,
+        }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to process request');
+      }
       
       const data = await response.json();
       
-      if (response.ok) {
-        // Add assistant response to conversation
-        setConversation(prev => [...prev, { role: 'assistant', content: data.response }]);
-        
-        // Update items with processed items
-        const updatedItems = data.updatedItems.map(calculateItemCompletion);
-        setItems(updatedItems);
-        
-        // If there's only one item, select it
-        if (updatedItems.length === 1 && !selectedItemId) {
-          setSelectedItemId(updatedItems[0].id);
-        }
-      } else {
-        throw new Error(data.message || 'Error processing request');
+      // Add assistant message
+      const assistantMessage = { content: data.response, role: 'assistant' as const };
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Update items
+      setItems(data.updatedItems);
+      
+      // If there are items and none selected, select the first one
+      if (data.updatedItems.length > 0 && selectedItemIndex === null) {
+        setSelectedItemIndex(0);
+      }
+      
+      // Speak the response if speech synthesis is available
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(data.response);
+        setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
       }
     } catch (error) {
-      console.error('Error processing configuration message:', error);
-      setConversation(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, there was an error processing your request. Please try again.' 
-      }]);
-      
+      console.error('Error processing message:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'An error occurred',
+        description: 'Failed to process your message. Please try again.',
         variant: 'destructive',
       });
+      
+      // Add error message
+      setMessages(prev => [...prev, {
+        content: "I'm sorry, I encountered an error processing your request. Please try again.",
+        role: 'assistant'
+      }]);
     } finally {
       setIsProcessing(false);
     }
   };
-
-  const handleFieldChange = (itemId: string, fieldName: string, value: string | null) => {
-    setItems(prevItems => 
-      prevItems.map(item => {
-        if (item.id === itemId) {
-          const updatedItem = {
-            ...item,
-            fields: item.fields.map(field => 
-              field.name === fieldName ? { ...field, value } : field
-            )
-          };
-          return calculateItemCompletion(updatedItem);
-        }
-        return item;
-      })
-    );
-  };
-
-  const handleDeleteItem = (itemId: string) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== itemId));
-    if (selectedItemId === itemId) {
-      setSelectedItemId(null);
+  
+  // Handle speech recognition
+  const toggleListening = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast({
+        title: 'Not Supported',
+        description: 'Speech recognition is not supported in your browser.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
     }
   };
-
-  const handleNameChange = (itemId: string, name: string) => {
-    setItems(prevItems => 
-      prevItems.map(item => {
-        if (item.id === itemId) {
-          return { ...item, name };
+  
+  // Start listening for speech
+  const startListening = () => {
+    setIsListening(true);
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = isContinuousMode;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('');
+      
+      setMessage(transcript);
+    };
+    
+    recognition.onend = () => {
+      setIsListening(false);
+      if (!isContinuousMode) {
+        // Submit the form automatically after speech recognition ends
+        if (message.trim()) {
+          handleSubmit(new Event('submit') as any);
         }
-        return item;
-      })
-    );
+      }
+    };
+    
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      toast({
+        title: 'Error',
+        description: `Speech recognition error: ${event.error}`,
+        variant: 'destructive',
+      });
+    };
+    
+    recognition.start();
   };
-
-  const handleSubmitConfiguration = async () => {
+  
+  // Stop listening for speech
+  const stopListening = () => {
+    setIsListening(false);
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.stop();
+    
+    if (isContinuousMode && message.trim()) {
+      handleSubmit(new Event('submit') as any);
+    }
+  };
+  
+  // Toggle continuous mode
+  const toggleContinuousMode = () => {
+    setIsContinuousMode(!isContinuousMode);
+    // If currently listening, stop and restart with new mode
+    if (isListening) {
+      stopListening();
+      setTimeout(() => startListening(), 100);
+    }
+  };
+  
+  // Stop speaking
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  };
+  
+  // Handle field change for an equipment item
+  const handleFieldChange = (itemIndex: number, fieldName: string, value: string | null) => {
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      const item = {...newItems[itemIndex]};
+      const fieldIndex = item.fields.findIndex(f => f.name === fieldName);
+      
+      if (fieldIndex !== -1) {
+        const fields = [...item.fields];
+        fields[fieldIndex] = {...fields[fieldIndex], value};
+        
+        // Update the item
+        item.fields = fields;
+        
+        // Check if all required fields are filled
+        item.isComplete = fields.every(field => !field.required || (field.value !== null && field.value !== ''));
+        
+        // Update the name field based on type and location
+        const typeField = fields.find(f => f.name === `${item.type}_type`);
+        const locationField = fields.find(f => f.name === 'location');
+        
+        if (typeField && locationField && locationField.value) {
+          item.name = `${typeField.value || item.type} at ${locationField.value}`;
+        }
+        
+        newItems[itemIndex] = item;
+      }
+      
+      return newItems;
+    });
+  };
+  
+  // Submit the equipment configuration
+  const submitConfiguration = async () => {
+    if (!projectId) {
+      toast({
+        title: 'Project Required',
+        description: 'Please select a project to save your equipment configuration.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (items.length === 0) {
       toast({
         title: 'No Equipment',
-        description: 'There is no equipment to submit. Please add some equipment first.',
+        description: 'Please add at least one equipment item before submitting.',
         variant: 'destructive',
       });
       return;
@@ -208,249 +310,455 @@ export function ConfigurationWorkspace() {
     const incompleteItems = items.filter(item => !item.isComplete);
     if (incompleteItems.length > 0) {
       toast({
-        title: 'Incomplete Equipment',
-        description: `${incompleteItems.length} equipment item(s) are incomplete. Please fill in all required fields.`,
+        title: 'Incomplete Items',
+        description: `You have ${incompleteItems.length} items with missing required fields. Please complete them before submitting.`,
         variant: 'destructive',
       });
       return;
     }
     
-    if (!projectId) {
-      toast({
-        title: 'No Project Selected',
-        description: 'Please select a project before submitting.',
-        variant: 'destructive',
-      });
-      return;
-    }
+    setIsSubmitting(true);
     
     try {
-      setIsProcessing(true);
-      
-      const response = await apiRequest('POST', '/api/equipment/submit-configuration', {
-        items,
-        projectId
+      const response = await fetch('/api/equipment/submit-configuration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items,
+          projectId,
+        }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit configuration');
+      }
       
       const data = await response.json();
       
-      if (response.ok) {
-        toast({
-          title: 'Success',
-          description: data.message || 'Equipment configuration submitted successfully',
-        });
-        
-        // Navigate back to project page
-        navigate(`/projects/${projectId}`);
-      } else {
-        throw new Error(data.message || 'Error submitting configuration');
-      }
+      toast({
+        title: 'Success',
+        description: data.message,
+      });
+      
+      // Clear items and add a success message
+      setItems([]);
+      setSelectedItemIndex(null);
+      
+      // Add assistant message
+      setMessages(prev => [...prev, {
+        content: `I've successfully saved your equipment configuration! ${data.message}`,
+        role: 'assistant'
+      }]);
+      
     } catch (error) {
       console.error('Error submitting configuration:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'An error occurred',
+        description: 'Failed to submit your equipment configuration. Please try again.',
         variant: 'destructive',
       });
     } finally {
-      setIsProcessing(false);
+      setIsSubmitting(false);
     }
   };
-
-  const selectedItem = items.find(item => item.id === selectedItemId);
+  
+  // Add a new equipment item
+  const addNewItem = (type: 'camera' | 'access_point' | 'elevator' | 'intercom') => {
+    // Generate default fields based on type
+    let fields: EquipmentField[] = [];
+    let name = '';
+    
+    switch (type) {
+      case 'camera':
+        fields = [
+          { name: 'location', value: null, required: true, type: 'text' },
+          { name: 'camera_type', value: null, required: true, type: 'select', options: ['Dome', 'Bullet', 'PTZ', 'Turret', 'Fisheye'] },
+          { name: 'resolution', value: null, required: false, type: 'select', options: ['1080p', '4K', '5MP', '8MP'] },
+          { name: 'mounting_type', value: null, required: false, type: 'select', options: ['Wall', 'Ceiling', 'Pole', 'Corner'] },
+          { name: 'field_of_view', value: null, required: false, type: 'text' },
+          { name: 'is_indoor', value: 'true', required: false, type: 'boolean' },
+          { name: 'import_to_gateway', value: 'false', required: false, type: 'boolean' },
+          { name: 'notes', value: null, required: false, type: 'text' },
+        ];
+        name = 'New Camera';
+        break;
+      
+      case 'access_point':
+        fields = [
+          { name: 'location', value: null, required: true, type: 'text' },
+          { name: 'reader_type', value: null, required: true, type: 'select', options: ['RFID', 'Biometric', 'Keypad', 'Mobile', 'Multi-factor'] },
+          { name: 'lock_type', value: null, required: true, type: 'select', options: ['Magnetic', 'Electric Strike', 'Mortise', 'Deadbolt', 'Keyless'] },
+          { name: 'monitoring_type', value: null, required: true, type: 'select', options: ['Door Contact', 'Motion', 'Alarm', 'None'] },
+          { name: 'quick_config', value: 'Standard', required: true, type: 'select', options: ['Standard', 'High Security', 'Takeover', 'ADA Compliant'] },
+          { name: 'takeover', value: null, required: false, type: 'text' },
+          { name: 'lock_provider', value: null, required: false, type: 'text' },
+          { name: 'notes', value: null, required: false, type: 'text' },
+        ];
+        name = 'New Access Point';
+        break;
+        
+      case 'elevator':
+        fields = [
+          { name: 'location', value: null, required: false, type: 'text' },
+          { name: 'elevator_type', value: null, required: true, type: 'select', options: ['Passenger', 'Freight', 'Service', 'Residential'] },
+          { name: 'reader_type', value: null, required: false, type: 'select', options: ['RFID', 'Biometric', 'Keypad', 'Mobile', 'Multi-factor'] },
+          { name: 'floor_count', value: null, required: false, type: 'number' },
+          { name: 'notes', value: null, required: false, type: 'text' },
+        ];
+        name = 'New Elevator';
+        break;
+        
+      case 'intercom':
+        fields = [
+          { name: 'location', value: null, required: true, type: 'text' },
+          { name: 'intercom_type', value: null, required: true, type: 'select', options: ['Video', 'Audio', 'IP Based', 'Wireless', 'Mobile App'] },
+          { name: 'notes', value: null, required: false, type: 'text' },
+        ];
+        name = 'New Intercom';
+        break;
+    }
+    
+    // Create the new item with a unique ID
+    const newItem: EquipmentItem = {
+      id: crypto.randomUUID(),
+      type,
+      name,
+      fields,
+      isComplete: false,
+      quantity: 1,
+    };
+    
+    // Add to items
+    setItems(prev => [...prev, newItem]);
+    
+    // Select the new item
+    setSelectedItemIndex(items.length);
+    
+    // Add message
+    setMessages(prev => [...prev, {
+      content: `I've added a new ${type.replace('_', ' ')} to your configuration. Please fill in the required fields.`,
+      role: 'assistant'
+    }]);
+  };
+  
+  // Remove an equipment item
+  const removeItem = (index: number) => {
+    const item = items[index];
+    
+    setItems(prev => {
+      const newItems = [...prev];
+      newItems.splice(index, 1);
+      return newItems;
+    });
+    
+    // Update selected index
+    if (selectedItemIndex === index) {
+      if (items.length > 1) {
+        setSelectedItemIndex(0);
+      } else {
+        setSelectedItemIndex(null);
+      }
+    } else if (selectedItemIndex !== null && selectedItemIndex > index) {
+      setSelectedItemIndex(selectedItemIndex - 1);
+    }
+    
+    // Add message
+    setMessages(prev => [...prev, {
+      content: `I've removed the ${item.name} from your configuration.`,
+      role: 'assistant'
+    }]);
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Equipment Configuration Workspace</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left Column: Chat Interface */}
-        <div className="space-y-4">
-          <Card className="h-[calc(70vh-2rem)]">
+    <div className="container mx-auto py-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left panel: Chat interface */}
+        <div className="w-full lg:w-1/2">
+          <Card className="h-[calc(100vh-6rem)]">
             <CardHeader>
-              <CardTitle>Equipment Configuration Assistant</CardTitle>
+              <CardTitle className="flex justify-between items-center">
+                <span>Equipment Configuration Assistant</span>
+                <div className="flex items-center gap-2">
+                  {isSpeaking ? (
+                    <Button variant="ghost" size="icon" onClick={stopSpeaking} title="Stop Speaking">
+                      <VolumeX className="h-4 w-4" />
+                    </Button>
+                  ) : null}
+                  <Button 
+                    variant={isContinuousMode ? "default" : "outline"} 
+                    size="sm" 
+                    onClick={toggleContinuousMode}
+                    title={isContinuousMode ? "Disable Voice Mode" : "Enable Voice Mode"}
+                  >
+                    {isContinuousMode ? "Voice Mode On" : "Voice Mode Off"}
+                  </Button>
+                </div>
+              </CardTitle>
               <CardDescription>
-                Chat with the assistant to configure your security equipment
+                Ask me to add or configure security equipment for your project
               </CardDescription>
             </CardHeader>
-            
-            <CardContent className="h-[calc(70vh-12rem)] overflow-y-auto pb-2">
-              <div className="space-y-4">
-                {conversation.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>Start a conversation with the assistant to add or configure equipment.</p>
-                    <p className="mt-2 text-sm">Try saying "Add 3 cameras for the lobby" or "Configure access points for the main entrance"</p>
-                  </div>
-                ) : (
-                  conversation.map((message, index) => (
+            <CardContent className="flex-grow overflow-hidden flex flex-col h-[calc(100%-13rem)]">
+              <ScrollArea className="flex-grow pr-4">
+                <div className="space-y-4">
+                  {messages.map((msg, i) => (
                     <div 
-                      key={index}
-                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      key={i} 
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div 
-                        className={`max-w-[80%] rounded-lg p-3 ${
-                          message.role === 'user' 
+                        className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                          msg.role === 'user' 
                             ? 'bg-primary text-primary-foreground' 
                             : 'bg-muted'
                         }`}
                       >
-                        {message.content}
+                        {msg.content}
                       </div>
                     </div>
-                  ))
-                )}
-                <div ref={conversationEndRef} />
-              </div>
+                  ))}
+                  <div ref={messageEndRef} />
+                </div>
+              </ScrollArea>
             </CardContent>
-            
             <CardFooter>
-              <form onSubmit={handleMessageSubmit} className="w-full flex space-x-2">
-                <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  disabled={isProcessing}
-                  className="flex-1"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="icon"
-                  onClick={toggleListening}
-                  className={isListening ? 'bg-red-100' : ''}
-                >
-                  {isListening ? <MicOff /> : <Mic />}
-                </Button>
-                <Button type="submit" disabled={isProcessing || !inputMessage.trim()}>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send
-                </Button>
+              <form onSubmit={handleSubmit} className="w-full space-y-2">
+                <div className="flex gap-2">
+                  <Textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Ask me to add cameras, access points, or other equipment..."
+                    className="flex-grow min-h-[60px]"
+                    ref={textareaRef}
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <Button 
+                    type="button" 
+                    variant={isListening ? "destructive" : "outline"}
+                    onClick={toggleListening}
+                    disabled={isProcessing}
+                    className="gap-2"
+                  >
+                    {isListening ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                    {isListening ? "Stop" : "Record"}
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={isProcessing || !message.trim()}
+                    className="gap-2"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        Send
+                      </>
+                    )}
+                  </Button>
+                </div>
               </form>
             </CardFooter>
           </Card>
         </div>
-        
-        {/* Right Column: Equipment Scratchpad */}
-        <div className="space-y-4">
-          <Card className="h-[calc(70vh-2rem)]">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Equipment Scratchpad</CardTitle>
-                  <CardDescription>
-                    {items.length === 0 
-                      ? 'No equipment added yet'
-                      : `${items.length} item(s) - ${items.filter(i => i.isComplete).length} complete`}
-                  </CardDescription>
-                </div>
-                <div className="flex space-x-2">
+
+        {/* Right panel: Equipment configuration */}
+        <div className="w-full lg:w-1/2">
+          <Card className="h-[calc(100vh-6rem)]">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Equipment Configuration</span>
+                <Select 
+                  value={projectId?.toString() || ''} 
+                  onValueChange={(value) => setProjectId(parseInt(value))}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select Project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map(project => (
+                      <SelectItem key={project.id} value={project.id.toString()}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardTitle>
+              <CardDescription>
+                Configure and manage your security equipment
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-[calc(100%-13rem)] flex flex-col">
+              <div className="mb-4 flex justify-between items-center">
+                <div className="flex gap-2">
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    disabled={items.length === 0 || !projectId} 
-                    onClick={handleSubmitConfiguration}
+                    onClick={() => addNewItem('camera')}
+                    className="gap-1"
                   >
-                    <Check className="h-4 w-4 mr-2" />
-                    Submit All
+                    <PlusCircle className="h-4 w-4" /> Camera
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => addNewItem('access_point')}
+                    className="gap-1"
+                  >
+                    <PlusCircle className="h-4 w-4" /> Access Point
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => addNewItem('elevator')}
+                    className="gap-1"
+                  >
+                    <PlusCircle className="h-4 w-4" /> Elevator
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => addNewItem('intercom')}
+                    className="gap-1"
+                  >
+                    <PlusCircle className="h-4 w-4" /> Intercom
                   </Button>
                 </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="h-[calc(70vh-10rem)]">
-              <Tabs defaultValue="list" className="h-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="list">List View</TabsTrigger>
-                  <TabsTrigger value="detail">Detail View</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="list" className="h-[calc(100%-3rem)] overflow-y-auto">
-                  {items.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>No equipment items yet</p>
-                      <p className="mt-2 text-sm">Chat with the assistant to add equipment</p>
-                    </div>
+                <Button 
+                  onClick={submitConfiguration} 
+                  disabled={isSubmitting || items.length === 0 || !projectId}
+                  className="gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
                   ) : (
-                    <div className="space-y-2">
-                      {items.map(item => (
-                        <div 
-                          key={item.id}
-                          className={`p-3 rounded-md cursor-pointer ${
-                            selectedItemId === item.id ? 'bg-primary/10 border border-primary' : 'bg-muted/50 hover:bg-muted'
-                          }`}
-                          onClick={() => setSelectedItemId(item.id)}
-                        >
-                          <div className="flex justify-between items-center">
-                            <div className="font-medium">{item.name}</div>
-                            <div className="flex items-center space-x-2">
-                              <Badge variant={getVariantForType(item.type)}>
-                                {formatItemType(item.type)}
-                              </Badge>
-                              {item.isComplete ? (
-                                <Badge variant="outline" className="bg-green-100">
-                                  <Check className="h-3 w-3 mr-1" /> Complete
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="bg-yellow-100">
-                                  <AlertTriangle className="h-3 w-3 mr-1" /> Incomplete
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {getCompletionStatus(item)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <>
+                      <Save className="h-4 w-4" />
+                      Save Configuration
+                    </>
                   )}
-                </TabsContent>
-                
-                <TabsContent value="detail" className="h-[calc(100%-3rem)] overflow-y-auto">
-                  {!selectedItem ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>No equipment selected</p>
-                      <p className="mt-2 text-sm">Select an item from the list view or chat with the assistant to add equipment</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <Label htmlFor="item-name">Equipment Name</Label>
-                          <Input 
-                            id="item-name"
-                            value={selectedItem.name} 
-                            onChange={(e) => handleNameChange(selectedItem.id, e.target.value)}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div className="flex space-x-2 items-end">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={() => handleDeleteItem(selectedItem.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
-                          </Button>
-                        </div>
+                </Button>
+              </div>
+
+              {/* Equipment list */}
+              <Tabs defaultValue="list" className="flex flex-col flex-grow">
+                <TabsList className="mb-2">
+                  <TabsTrigger value="list">List View</TabsTrigger>
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="list" className="flex-grow overflow-hidden data-[state=active]:flex data-[state=active]:flex-col">
+                  <ScrollArea className="flex-grow">
+                    {items.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No equipment items added yet. Use the chat or buttons above to add items.
                       </div>
-                      
-                      <Separator />
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {selectedItem.fields.map(field => (
-                          <div key={field.name} className="space-y-1">
-                            <Label htmlFor={`field-${field.name}`}>
-                              {formatFieldName(field.name)}
-                              {field.required && <span className="text-red-500 ml-1">*</span>}
-                            </Label>
-                            {renderFieldInput(field, selectedItem.id)}
+                    ) : (
+                      <div className="space-y-2">
+                        {items.map((item, i) => (
+                          <div 
+                            key={item.id} 
+                            className={`p-3 rounded-md border cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              selectedItemIndex === i ? 'bg-accent text-accent-foreground' : ''
+                            }`}
+                            onClick={() => setSelectedItemIndex(i)}
+                          >
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{item.name}</span>
+                                <Badge variant={item.isComplete ? "default" : "outline"}>
+                                  {item.isComplete ? "Complete" : "Incomplete"}
+                                </Badge>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeItem(i);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              Type: {item.type.replace('_', ' ')}
+                            </div>
                           </div>
                         ))}
                       </div>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="details" className="flex-grow overflow-hidden data-[state=active]:flex data-[state=active]:flex-col">
+                  {selectedItemIndex === null ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Select an item from the list to view and edit details
                     </div>
+                  ) : (
+                    <ScrollArea className="flex-grow">
+                      <div className="space-y-4 p-2">
+                        <h3 className="text-lg font-medium">{items[selectedItemIndex]?.name}</h3>
+                        <div className="space-y-4">
+                          {items[selectedItemIndex]?.fields.map((field) => (
+                            <div key={field.name} className="space-y-2">
+                              <div className="flex items-center">
+                                <label className="text-sm font-medium capitalize">
+                                  {field.name.replace(/_/g, ' ')}:
+                                  {field.required && <span className="text-destructive">*</span>}
+                                </label>
+                              </div>
+                              {field.type === 'select' ? (
+                                <Select 
+                                  value={field.value || ''} 
+                                  onValueChange={(value) => handleFieldChange(selectedItemIndex, field.name, value)}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={`Select ${field.name.replace(/_/g, ' ')}`} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {field.options?.map(option => (
+                                      <SelectItem key={option} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : field.type === 'boolean' ? (
+                                <Select 
+                                  value={field.value || ''} 
+                                  onValueChange={(value) => handleFieldChange(selectedItemIndex, field.name, value)}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={`Select ${field.name.replace(/_/g, ' ')}`} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="true">Yes</SelectItem>
+                                    <SelectItem value="false">No</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Textarea 
+                                  value={field.value || ''} 
+                                  onChange={(e) => handleFieldChange(selectedItemIndex, field.name, e.target.value)}
+                                  placeholder={`Enter ${field.name.replace(/_/g, ' ')}`}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </ScrollArea>
                   )}
                 </TabsContent>
               </Tabs>
@@ -460,108 +768,4 @@ export function ConfigurationWorkspace() {
       </div>
     </div>
   );
-
-  // Helper functions
-  function formatItemType(type: string): string {
-    switch (type) {
-      case 'camera': return 'Camera';
-      case 'access_point': return 'Access Point';
-      case 'elevator': return 'Elevator';
-      case 'intercom': return 'Intercom';
-      default: return type;
-    }
-  }
-
-  function getVariantForType(type: string): "default" | "outline" | "secondary" | "destructive" {
-    switch (type) {
-      case 'camera': return 'default';
-      case 'access_point': return 'secondary';
-      case 'elevator': return 'outline';
-      case 'intercom': return 'destructive';
-      default: return 'default';
-    }
-  }
-
-  function getCompletionStatus(item: EquipmentItem): string {
-    const requiredFields = item.fields.filter(field => field.required);
-    const completedRequiredFields = requiredFields.filter(field => field.value !== null && field.value !== '');
-    return `${completedRequiredFields.length}/${requiredFields.length} required fields completed`;
-  }
-
-  function formatFieldName(name: string): string {
-    return name
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  function renderFieldInput(field: EquipmentField, itemId: string) {
-    switch (field.type) {
-      case 'select':
-        return (
-          <Select
-            value={field.value || ''}
-            onValueChange={(value) => handleFieldChange(itemId, field.name, value)}
-          >
-            <SelectTrigger id={`field-${field.name}`}>
-              <SelectValue placeholder="Select an option" />
-            </SelectTrigger>
-            <SelectContent>
-              {field.options?.map(option => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-      
-      case 'boolean':
-        return (
-          <div className="flex items-center space-x-2">
-            <Switch
-              id={`field-${field.name}`}
-              checked={field.value === 'true'}
-              onCheckedChange={(checked) => 
-                handleFieldChange(itemId, field.name, checked ? 'true' : 'false')
-              }
-            />
-            <Label htmlFor={`field-${field.name}`}>
-              {field.value === 'true' ? 'Yes' : 'No'}
-            </Label>
-          </div>
-        );
-      
-      case 'number':
-        return (
-          <Input
-            id={`field-${field.name}`}
-            type="number"
-            value={field.value || ''}
-            onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
-          />
-        );
-      
-      case 'text':
-      default:
-        if (field.name === 'notes') {
-          return (
-            <Textarea
-              id={`field-${field.name}`}
-              value={field.value || ''}
-              onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
-              placeholder={field.required ? 'Required' : 'Optional'}
-            />
-          );
-        }
-        return (
-          <Input
-            id={`field-${field.name}`}
-            value={field.value || ''}
-            onChange={(e) => handleFieldChange(itemId, field.name, e.target.value)}
-            placeholder={field.required ? 'Required' : 'Optional'}
-          />
-        );
-    }
-  }
 }
