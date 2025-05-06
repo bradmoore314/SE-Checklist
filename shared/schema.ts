@@ -583,9 +583,10 @@ export const kvgFormData = pgTable('kvg_form_data', {
   
   // Project Deployment tab fields
   pmName: text('pm_name'),
-  gatewayCredentials: text('gateway_credentials'),
-  streamNames: text('stream_names'),
-  speakersWork: text('speakers_work'),
+  // These columns don't exist in the actual database
+  // gatewayCredentials: text('gateway_credentials'),
+  // streamNames: text('stream_names'),
+  // speakersWork: text('speakers_work'),
   
   // Additional Services section
   vocEscalations: integer('voc_escalations'),
