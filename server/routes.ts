@@ -82,25 +82,6 @@ import { setupAIRoutes } from "./routes/ai-routes";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  // IMPORTANT: Always bypass authentication for development purposes
-  // This ensures the app works without needing proper authentication setup
-  console.log('⚠️ Authentication bypassed for development');
-  
-  // Create a mock admin user for the request
-  req.user = {
-    id: 999,
-    username: 'dev-admin',
-    email: 'dev@example.com',
-    fullName: 'Development Admin',
-    role: 'admin',
-    created_at: new Date(),
-    updated_at: new Date()
-  } as Express.User;
-  
-  return next();
-  
-  // The code below is disabled for development
-  /*
   // If the user is authenticated, allow access
   if (req.isAuthenticated()) {
     return next();
@@ -111,8 +92,8 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   const bypassQueryAuth = req.query.bypass_auth === 'true';
   
   // For development purposes only, allow bypassing authentication with a special header or query param
-  if (bypassHeaderAuth || bypassQueryAuth || process.env.NODE_ENV !== 'production') {
-    console.log('⚠️ Authentication bypassed for development');
+  if (bypassHeaderAuth || bypassQueryAuth) {
+    console.log('⚠️ Authentication bypassed via explicit request');
     
     // Create a mock admin user for the request
     req.user = {
@@ -129,11 +110,11 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   }
   
   // Otherwise require authentication
+  console.log('Auth required for', req.path);
   res.status(401).json({ 
     success: false,
     message: "Authentication required" 
   });
-  */
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -150,6 +131,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication is already set up in index.ts
+  
+  // Session status endpoint
+  app.get('/api/session-status', (req, res) => {
+    res.json({
+      isAuthenticated: req.isAuthenticated(),
+      user: req.isAuthenticated() ? req.user : null
+    });
+  });
   
   // Special dev endpoint to force login for development
   app.post("/api/dev-login", async (req: Request, res: Response) => {
