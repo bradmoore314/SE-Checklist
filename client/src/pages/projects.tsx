@@ -435,7 +435,32 @@ export default function Projects() {
                         SE Name
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter SE name" {...field} />
+                        <select
+                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          {...field}
+                        >
+                          <option value="">Select SE Name</option>
+                          <option value="Akon Ambe">Akon Ambe</option>
+                          <option value="Alvin Thompson">Alvin Thompson</option>
+                          <option value="Brad Moore">Brad Moore</option>
+                          <option value="Brad To">Brad To</option>
+                          <option value="Bryan Lane">Bryan Lane</option>
+                          <option value="Eric Muhlitner">Eric Muhlitner</option>
+                          <option value="Ilya Dobrydnev">Ilya Dobrydnev</option>
+                          <option value="Jacob Wilder">Jacob Wilder</option>
+                          <option value="Jeremy Thomas">Jeremy Thomas</option>
+                          <option value="Joe Stine">Joe Stine</option>
+                          <option value="John Proutsos">John Proutsos</option>
+                          <option value="John Young">John Young</option>
+                          <option value="Kevin Myers">Kevin Myers</option>
+                          <option value="Kevin Purcell">Kevin Purcell</option>
+                          <option value="Max Globin">Max Globin</option>
+                          <option value="Osiel Martinez">Osiel Martinez</option>
+                          <option value="Patrick Rose">Patrick Rose</option>
+                          <option value="Rebeca Strasburger">Rebeca Strasburger</option>
+                          <option value="Stanley Bromberek">Stanley Bromberek</option>
+                          <option value="Tony Cook">Tony Cook</option>
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
