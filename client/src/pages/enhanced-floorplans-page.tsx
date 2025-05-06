@@ -670,7 +670,26 @@ function EnhancedFloorplansPage() {
           
           {activeViewMode === 'editor' && (
             <div className="h-full">
-              <EnhancedFloorplanEditor />
+              <EnhancedFloorplanEditor 
+                floorplanId={floorplanId}
+                projectId={projectId}
+                onMarkersUpdated={() => {
+                  // Refresh marker stats and equipment data when markers are updated
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
+                  
+                  // Also refresh related equipment tables
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
+                  
+                  // Show toast notification
+                  toast({
+                    title: "Equipment list updated",
+                    description: "The equipment list has been updated with the changes from the floorplan."
+                  });
+                }}
+              />
             </div>
           )}
           

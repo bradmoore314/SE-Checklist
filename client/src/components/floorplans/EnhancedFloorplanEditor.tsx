@@ -203,6 +203,91 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
       description: "Annotation has been removed."
     });
   };
+  
+  // Handle adding equipment to the list
+  const handleAddToEquipmentList = () => {
+    if (selectedAnnotation === null) return;
+    
+    const annotation = annotations.find(a => a.id === selectedAnnotation);
+    if (!annotation || annotation.type !== 'stamp') return;
+    
+    // Only equipment stamps can be added to the list
+    if (!['camera', 'door_access', 'intercom', 'motion_sensor'].includes(annotation.stampId || '')) {
+      toast({
+        title: "Invalid selection",
+        description: "Only security equipment stamps can be added to the list.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Open dialog to collect equipment details
+    setEquipmentDetails({
+      location: '',
+      notes: ''
+    });
+    setAddToListDialogOpen(true);
+  };
+  
+  // Save equipment to the database
+  const saveEquipmentToList = async () => {
+    if (!projectId || !floorplanId || selectedAnnotation === null) return;
+    
+    const annotation = annotations.find(a => a.id === selectedAnnotation);
+    if (!annotation || annotation.type !== 'stamp') return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Map stamp types to equipment types in the database
+      const equipmentTypeMap: Record<string, string> = {
+        'camera': 'camera',
+        'door_access': 'access_point',
+        'intercom': 'intercom',
+        'motion_sensor': 'motion_sensor'
+      };
+      
+      const equipmentType = equipmentTypeMap[annotation.stampId || ''];
+      if (!equipmentType) throw new Error("Invalid equipment type");
+      
+      // Create the marker in the database
+      const response = await apiRequest('POST', `/api/enhanced-floorplan/${floorplanId}/markers`, {
+        project_id: projectId,
+        floorplan_id: floorplanId,
+        page: annotation.page,
+        marker_type: equipmentType,
+        position_x: annotation.x,
+        position_y: annotation.y,
+        label: equipmentDetails.location,
+        notes: equipmentDetails.notes
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save marker');
+      }
+      
+      toast({
+        title: "Equipment added",
+        description: `${annotation.stampLabel} added to the equipment list.`
+      });
+      
+      // Notify parent component that markers have been updated
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
+      
+      setAddToListDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving equipment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add equipment to the list.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   // Select a stamp
   const selectStamp = (category: string, stampIndex: number) => {
@@ -386,16 +471,32 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
                     </div>
                   )}
                   
-                  {/* Delete button for selected annotations */}
+                  {/* Action buttons for selected annotations */}
                   {selectedAnnotation !== null && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={deleteSelectedAnnotation}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={deleteSelectedAnnotation}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </Button>
+                      
+                      {/* Add to List button - only for security equipment stamps */}
+                      {annotations.find(a => a.id === selectedAnnotation)?.type === 'stamp' && 
+                       ['camera', 'door_access', 'intercom', 'motion_sensor'].includes(
+                         annotations.find(a => a.id === selectedAnnotation)?.stampId || '') && (
+                        <Button 
+                          size="sm" 
+                          variant="default"
+                          onClick={handleAddToEquipmentList}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add to List
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
                 
@@ -469,6 +570,52 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
           </div>
         </CardContent>
       </Card>
+      
+      {/* Dialog for adding equipment to list */}
+      <Dialog open={addToListDialogOpen} onOpenChange={setAddToListDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add to Equipment List</DialogTitle>
+            <DialogDescription>
+              Enter location and notes for this equipment.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="e.g., Main Entrance, North Corridor"
+                value={equipmentDetails.location}
+                onChange={(e) => setEquipmentDetails({...equipmentDetails, location: e.target.value})}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Input
+                id="notes"
+                placeholder="Any additional information"
+                value={equipmentDetails.notes}
+                onChange={(e) => setEquipmentDetails({...equipmentDetails, notes: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddToListDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={saveEquipmentToList} 
+              disabled={isProcessing || !equipmentDetails.location.trim()}
+            >
+              {isProcessing ? 'Saving...' : 'Add to List'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
