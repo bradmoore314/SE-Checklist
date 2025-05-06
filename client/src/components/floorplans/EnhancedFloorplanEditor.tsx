@@ -3,18 +3,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2 } from 'lucide-react';
+import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2, Save, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { apiRequest } from '@/lib/queryClient';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
-// Configure pdfjs worker source
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Configure pdfjs worker source - using specific version to avoid mismatches
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
 
 interface PdfEditorProps {
   floorplanId?: number;
   projectId?: number;
+  onMarkersUpdated?: () => void;
 }
 
 type StampConfig = {
@@ -37,7 +40,7 @@ type Annotation = {
   page: number;
 };
 
-export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorProps) {
+export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdated }: PdfEditorProps) {
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
@@ -48,6 +51,12 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId }: PdfEditorPro
   const [selectedStamp, setSelectedStamp] = useState<StampConfig | null>(null);
   const [textInput, setTextInput] = useState<string>('');
   const [selectedAnnotation, setSelectedAnnotation] = useState<number | null>(null);
+  const [addToListDialogOpen, setAddToListDialogOpen] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [equipmentDetails, setEquipmentDetails] = useState({
+    location: '',
+    notes: ''
+  });
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
