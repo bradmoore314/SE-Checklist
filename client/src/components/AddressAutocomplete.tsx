@@ -116,6 +116,7 @@ export default function AddressAutocomplete({
         placeholder={placeholder}
         className={className}
         disabled={disabled}
+        autoComplete="off"
       />
       
       {isOpen && (
