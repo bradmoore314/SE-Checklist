@@ -683,8 +683,9 @@ const KastleVideoGuardingPage: React.FC = () => {
       
       console.log("Sending form payload:", formPayload);
       
-      // Check if form data already exists
-      if (formDataFromDb?.id) {
+      // Check if form data already exists with valid ID
+      if (formDataFromDb?.id && formDataFromDb.id !== null && formDataFromDb.id !== 0) {
+        console.log("Updating existing KVG form data with ID:", formDataFromDb.id);
         const res = await apiRequest(
           'PUT', 
           `/api/kvg-form-data/${formDataFromDb.id}`, 
@@ -692,6 +693,7 @@ const KastleVideoGuardingPage: React.FC = () => {
         );
         return res.json();
       } else {
+        console.log("Creating new KVG form data");
         const res = await apiRequest(
           'POST', 
           '/api/kvg-form-data', 
