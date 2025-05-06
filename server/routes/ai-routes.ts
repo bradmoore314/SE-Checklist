@@ -38,12 +38,12 @@ export function setupAIRoutes(app: Express) {
           );
           
           return res.json({
-            message: sessionResponse.message,
+            message: sessionResponse.nextQuestion,
             equipmentCreation: {
               sessionId: context.equipmentCreationSessionId,
               isComplete: sessionResponse.isComplete,
               currentStep: sessionResponse.currentStep,
-              createdEquipment: sessionResponse.equipment || []
+              createdEquipment: sessionResponse.equipmentCreated || []
             }
           });
         } catch (sessionError) {
@@ -52,7 +52,7 @@ export function setupAIRoutes(app: Express) {
         }
       } 
       // If this is a new equipment creation request
-      else if (creationIntent.hasCreationIntent) {
+      else if (creationIntent.isCreationIntent) {
         console.log('Detected equipment creation intent:', creationIntent);
         
         // Get current project ID from context
@@ -66,11 +66,8 @@ export function setupAIRoutes(app: Express) {
             creationIntent.quantity!
           );
           
-          // Get the first question to ask the user
-          const firstQuestion = session.pendingQuestions[0];
-          
           return res.json({
-            message: `I'll help you add ${creationIntent.quantity} ${creationIntent.equipmentType}(s). ${firstQuestion}`,
+            message: `I'll help you add ${creationIntent.quantity} ${creationIntent.equipmentType}(s). ${session.nextQuestion}`,
             equipmentCreation: {
               sessionId: session.sessionId,
               isComplete: false,
