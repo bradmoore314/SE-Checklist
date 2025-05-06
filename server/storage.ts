@@ -1837,7 +1837,8 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFloorplan(id: number): Promise<boolean> {
     const result = await db.delete(floorplans).where(eq(floorplans.id, id));
-    return result.count > 0;
+    // Handle both possible property names returned by the database driver
+    return result.rowCount ? result.rowCount > 0 : result.count > 0;
   }
 
   // Floorplan Markers
@@ -1867,7 +1868,8 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFloorplanMarker(id: number): Promise<boolean> {
     const result = await db.delete(floorplanMarkers).where(eq(floorplanMarkers.id, id));
-    return result.count > 0;
+    // Handle both possible property names returned by the database driver
+    return result.rowCount ? result.rowCount > 0 : result.count > 0;
   }
 
   // CRM Settings
