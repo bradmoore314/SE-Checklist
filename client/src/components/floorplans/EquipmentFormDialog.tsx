@@ -41,9 +41,22 @@ const EquipmentFormDialog = ({
       id: 0,
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
-      reader_type: '',
-      mounting_type: '',
-      connection_type: '',
+      quick_config: 'Standard', // Required legacy field
+      reader_type: 'Standard Reader',
+      lock_type: 'Magnetic Lock',
+      monitoring_type: 'DPS',
+      lock_provider: null,
+      takeover: null,
+      interior_perimeter: null,
+      exst_panel_location: null,
+      exst_panel_type: null,
+      exst_reader_type: null,
+      new_panel_location: null,
+      new_panel_type: null,
+      new_reader_type: null,
+      noisy_prop: null,
+      crashbars: null,
+      real_lock_type: null,
       notes: `Placed at coordinates x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}`
     };
 
