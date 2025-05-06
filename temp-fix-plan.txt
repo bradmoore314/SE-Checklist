@@ -1,0 +1,1 @@
+Need to move exportAsPng function up before the useEffect call at line 1542

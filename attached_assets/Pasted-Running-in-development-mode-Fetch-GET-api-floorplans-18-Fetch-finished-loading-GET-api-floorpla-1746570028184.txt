@@ -1,0 +1,33 @@
+Running in development mode
+Fetch GET /api/floorplans/18
+Fetch finished loading: GET /api/floorplans/18
+Cannot access 'exportAsPng' before initialization
+Cannot access 'exportAsPng' before initialization
+The above error occurred in the <EnhancedFloorplanViewer> component:
+
+    at EnhancedFloorplanViewer (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/components/floorplans/EnhancedFloorplanViewer.tsx:30:3)
+    at div
+    at div
+    at div
+    at div
+    at EnhancedFloorplansPage (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/enhanced-floorplans-page.tsx:68:18)
+    at ChatbotProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/hooks/use-chatbot.tsx:57:35)
+    at EnhancedFloorplansPageWithChatbot (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/enhanced-floorplans-page.tsx:1506:18)
+    at Route (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d0af73ec:191:16)
+    at ProtectedRoute (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/lib/protected-route.tsx:21:34)
+    at Switch (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d0af73ec:247:17)
+    at Router
+    at main
+    at div
+    at div
+    at MainLayout (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/layouts/MainLayout.tsx:25:38)
+    at ChatbotProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/hooks/use-chatbot.tsx:57:35)
+    at SiteWalkProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/SiteWalkContext.tsx:20:36)
+    at ProjectProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/context/ProjectContext.tsx:25:35)
+    at AuthProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d0af73ec:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Cannot access 'exportAsPng' before initialization
