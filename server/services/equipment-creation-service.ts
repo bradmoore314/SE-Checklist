@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db';
-import { equipmentCreationSessions } from '@shared/schema';
+import { equipmentCreationSessions } from '@shared/schema-equipment-creation';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -149,10 +149,10 @@ export class EquipmentCreationService {
         equipmentType: session.equipment_type,
         quantity: session.quantity,
         currentStep: session.current_step,
-        responses: session.responses,
+        responses: session.responses as Record<string, any>,
         pendingQuestions: this.getQuestionsForEquipmentType(session.equipment_type),
         createdEquipment: [],
-        isComplete: session.completed
+        isComplete: session.completed || false
       };
     } catch (error) {
       console.error('Error retrieving equipment creation session:', error);

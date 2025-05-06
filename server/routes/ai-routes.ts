@@ -1,5 +1,6 @@
 import { Express, Request, Response } from 'express';
 import chatbotGeminiService, { ChatMessage, ChatContext } from '../services/chatbot-gemini-direct';
+import equipmentCreationService from '../services/equipment-creation-service';
 
 /**
  * Register AI chatbot API routes
@@ -17,13 +18,77 @@ export function setupAIRoutes(app: Express) {
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: 'Messages array is required' });
       }
+
+      // Get the last user message
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role !== 'user') {
+        return res.status(400).json({ error: 'Last message must be from the user' });
+      }
+
+      // Check if this is an equipment creation request
+      const creationIntent = equipmentCreationService.detectCreationIntent(lastMessage.content);
       
-      // Process the messages
+      // If this is a session response, handle it differently
+      if (context?.equipmentCreationSessionId) {
+        try {
+          // Process the user's response in the existing equipment creation session
+          const sessionResponse = await equipmentCreationService.processResponse(
+            context.equipmentCreationSessionId,
+            lastMessage.content
+          );
+          
+          return res.json({
+            message: sessionResponse.message,
+            equipmentCreation: {
+              sessionId: context.equipmentCreationSessionId,
+              isComplete: sessionResponse.isComplete,
+              currentStep: sessionResponse.currentStep,
+              createdEquipment: sessionResponse.equipment || []
+            }
+          });
+        } catch (sessionError) {
+          console.error('Error processing equipment creation session:', sessionError);
+          // Fall through to normal chat processing if session handling fails
+        }
+      } 
+      // If this is a new equipment creation request
+      else if (creationIntent.hasCreationIntent) {
+        console.log('Detected equipment creation intent:', creationIntent);
+        
+        // Get current project ID from context
+        const projectId = context?.projectId || 9; // Default to project 9 if none specified
+        
+        try {
+          // Start a new equipment creation session
+          const session = await equipmentCreationService.startSession(
+            projectId,
+            creationIntent.equipmentType!,
+            creationIntent.quantity!
+          );
+          
+          // Get the first question to ask the user
+          const firstQuestion = session.pendingQuestions[0];
+          
+          return res.json({
+            message: `I'll help you add ${creationIntent.quantity} ${creationIntent.equipmentType}(s). ${firstQuestion}`,
+            equipmentCreation: {
+              sessionId: session.sessionId,
+              isComplete: false,
+              currentStep: session.currentStep
+            }
+          });
+        } catch (sessionError) {
+          console.error('Error starting equipment creation session:', sessionError);
+          // Fall through to normal chat processing if session creation fails
+        }
+      }
+      
+      // Process normally if no equipment creation intent or if handling failed
       const response = await chatbotGeminiService.processMessage(messages, context);
       
-      // Extract equipment recommendations if the message is from the assistant
+      // Extract equipment recommendations
       let recommendations: any[] = [];
-      if (messages[messages.length - 1].role === 'user') {
+      if (lastMessage.role === 'user') {
         const extractedRecommendations = await chatbotGeminiService.extractEquipmentRecommendations(response);
         recommendations = extractedRecommendations || [];
       }
