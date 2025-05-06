@@ -3,13 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2, Save, Plus } from 'lucide-react';
+import { FileUp, Download, ZoomIn, ZoomOut, Stamp as StampIcon, Type, Trash2, Save, Plus, ListChecks } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { apiRequest } from '@/lib/queryClient';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { UnplacedEquipmentPanel, UnplacedEquipment } from './UnplacedEquipmentPanel';
 
 // Configure pdfjs worker source - using specific version to avoid mismatches
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
@@ -57,6 +60,9 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
     location: '',
     notes: ''
   });
+  const [showEquipmentPanel, setShowEquipmentPanel] = useState<boolean>(false);
+  const [selectedExistingEquipment, setSelectedExistingEquipment] = useState<UnplacedEquipment | null>(null);
+  const [placingExistingEquipment, setPlacingExistingEquipment] = useState<boolean>(false);
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -124,6 +130,12 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
     
+    // Special handling for placing existing equipment
+    if (placingExistingEquipment && selectedExistingEquipment) {
+      handlePlaceExistingEquipment(x, y);
+      return;
+    }
+    
     if (selectedTool === 'stamp' && selectedStamp) {
       // Add a stamp annotation
       const newAnnotation: Annotation = {
@@ -189,6 +201,92 @@ export function EnhancedFloorplanEditor({ floorplanId, projectId, onMarkersUpdat
         setSelectedAnnotation(null);
       }
     }
+  };
+  
+  // Handle placing an existing equipment item on the floorplan
+  const handlePlaceExistingEquipment = async (x: number, y: number) => {
+    if (!projectId || !floorplanId || !selectedExistingEquipment) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Create a marker for the existing equipment
+      const response = await apiRequest('POST', `/api/enhanced-floorplan/${floorplanId}/markers`, {
+        project_id: projectId,
+        floorplan_id: floorplanId,
+        page: pageNumber,
+        marker_type: selectedExistingEquipment.type,
+        equipment_id: selectedExistingEquipment.id,
+        position_x: x,
+        position_y: y,
+        label: selectedExistingEquipment.label || selectedExistingEquipment.location || '',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to place equipment on floorplan');
+      }
+      
+      // Create a visual annotation for the equipment
+      const equipmentTypeToStampMap: Record<string, string> = {
+        'camera': 'camera',
+        'access_point': 'door_access',
+        'intercom': 'intercom',
+        'elevator': 'door_access'
+      };
+      
+      const stampType = equipmentTypeToStampMap[selectedExistingEquipment.type] || 'door_access';
+      const stampConfig = Object.values(STAMPS).flat().find(s => s.id === stampType);
+      
+      if (stampConfig) {
+        const newAnnotation: Annotation = {
+          id: Date.now(),
+          type: 'stamp',
+          x,
+          y,
+          color: stampConfig.color,
+          stampId: stampConfig.id,
+          stampLabel: selectedExistingEquipment.label || selectedExistingEquipment.location || stampConfig.label,
+          stampIcon: stampConfig.icon,
+          page: pageNumber
+        };
+        
+        setAnnotations([...annotations, newAnnotation]);
+      }
+      
+      toast({
+        title: "Equipment placed",
+        description: `${selectedExistingEquipment.label || selectedExistingEquipment.type} placed on floorplan.`
+      });
+      
+      // Reset after placing
+      setPlacingExistingEquipment(false);
+      setSelectedExistingEquipment(null);
+      
+      // Notify parent component that markers have been updated
+      if (onMarkersUpdated) {
+        onMarkersUpdated();
+      }
+    } catch (error) {
+      console.error("Error placing equipment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to place equipment on floorplan.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  
+  // Handle selecting equipment from the unplaced equipment panel
+  const handleSelectExistingEquipment = (equipment: UnplacedEquipment) => {
+    setSelectedExistingEquipment(equipment);
+    setPlacingExistingEquipment(true);
+    
+    toast({
+      title: "Place equipment",
+      description: `Click on the floorplan to place the ${equipment.label || equipment.type}.`,
+    });
   };
 
   // Delete selected annotation
