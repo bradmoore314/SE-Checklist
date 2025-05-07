@@ -106,6 +106,24 @@ export function MarkerStatsLegend({
                   <span>{stats.types.access_point.unspecified}</span>
                 </div>
               )}
+              {onToggleLabelVisibility && (
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center space-x-1">
+                    {visibleLabelTypes['access_point'] ? (
+                      <Eye className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    )}
+                    <span className="text-xs">Show labels</span>
+                  </div>
+                  <Switch
+                    id="access-point-labels"
+                    checked={visibleLabelTypes['access_point'] || false}
+                    onCheckedChange={() => onToggleLabelVisibility('access_point')}
+                    className="data-[state=checked]:bg-red-500 h-4 w-7"
+                  />
+                </div>
+              )}
             </div>
           )}
           
@@ -134,6 +152,24 @@ export function MarkerStatsLegend({
                   <span>{stats.types.camera.unspecified}</span>
                 </div>
               )}
+              {onToggleLabelVisibility && (
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center space-x-1">
+                    {visibleLabelTypes['camera'] ? (
+                      <Eye className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    )}
+                    <span className="text-xs">Show labels</span>
+                  </div>
+                  <Switch
+                    id="camera-labels"
+                    checked={visibleLabelTypes['camera'] || false}
+                    onCheckedChange={() => onToggleLabelVisibility('camera')}
+                    className="data-[state=checked]:bg-blue-500 h-4 w-7"
+                  />
+                </div>
+              )}
             </div>
           )}
           
@@ -146,6 +182,27 @@ export function MarkerStatsLegend({
             <Badge variant="outline" className="ml-2 text-xs">{stats.types.elevator.total}</Badge>
           </div>
           
+          {stats.types.elevator.total > 0 && onToggleLabelVisibility && (
+            <div className="pl-5 space-y-1">
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center space-x-1">
+                  {visibleLabelTypes['elevator'] ? (
+                    <Eye className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <EyeOff className="h-3 w-3 text-muted-foreground" />
+                  )}
+                  <span className="text-xs">Show labels</span>
+                </div>
+                <Switch
+                  id="elevator-labels"
+                  checked={visibleLabelTypes['elevator'] || false}
+                  onCheckedChange={() => onToggleLabelVisibility('elevator')}
+                  className="data-[state=checked]:bg-green-500 h-4 w-7"
+                />
+              </div>
+            </div>
+          )}
+          
           {/* Intercoms */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -154,6 +211,58 @@ export function MarkerStatsLegend({
             </div>
             <Badge variant="outline" className="ml-2 text-xs">{stats.types.intercom.total}</Badge>
           </div>
+          
+          {stats.types.intercom.total > 0 && onToggleLabelVisibility && (
+            <div className="pl-5 space-y-1">
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center space-x-1">
+                  {visibleLabelTypes['intercom'] ? (
+                    <Eye className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <EyeOff className="h-3 w-3 text-muted-foreground" />
+                  )}
+                  <span className="text-xs">Show labels</span>
+                </div>
+                <Switch
+                  id="intercom-labels"
+                  checked={visibleLabelTypes['intercom'] || false}
+                  onCheckedChange={() => onToggleLabelVisibility('intercom')}
+                  className="data-[state=checked]:bg-yellow-500 h-4 w-7"
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* Notes visibility */}
+          {onToggleLabelVisibility && (
+            <div className="flex items-center justify-between pt-2 pb-2 mt-1 border-t border-b border-gray-200">
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-amber-300 mr-1"></div>
+                <span className="text-xs">Notes Labels</span>
+              </div>
+              <Switch
+                id="note-labels"
+                checked={visibleLabelTypes['note'] || false}
+                onCheckedChange={() => onToggleLabelVisibility('note')}
+                className="data-[state=checked]:bg-amber-400 h-4 w-7"
+              />
+            </div>
+          )}
+          
+          {/* Show All Labels Toggle */}
+          {onToggleLabelVisibility && (
+            <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center space-x-1">
+                <span className="text-xs font-medium">Show All Labels</span>
+              </div>
+              <Switch
+                id="all-labels"
+                checked={visibleLabelTypes['all'] || false}
+                onCheckedChange={() => onToggleLabelVisibility('all')}
+                className="h-4 w-7"
+              />
+            </div>
+          )}
           
           {/* Total */}
           <div className="flex items-center justify-between pt-1 mt-1 border-t border-gray-200">
