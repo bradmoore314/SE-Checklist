@@ -247,6 +247,15 @@ export const EnhancedFloorplanViewer = ({
       setSelectedMarker(prevMarker => 
         prevMarker?.id === marker.id ? null : marker
       );
+    } else if (toolMode === 'delete') {
+      // Delete the marker immediately when in delete mode
+      deleteMarkerMutation.mutate(marker.id);
+      setSelectedMarker(null);
+      toast({
+        title: 'Marker Deleted',
+        description: 'Marker has been removed from the floorplan',
+        duration: 2000,
+      });
     }
   };
   
