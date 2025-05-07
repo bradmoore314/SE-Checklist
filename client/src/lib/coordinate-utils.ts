@@ -33,9 +33,10 @@ export function screenToPdfCoordinates(
   const containerY = screenY - containerRect.top;
   
   // Then convert container coordinates to PDF coordinates, accounting for pan and zoom
-  // For SVG coordinates with transforms, we need to un-transform the coordinates to get PDF coordinates
   const pdfX = (containerX - translateX) / scale;
   const pdfY = (containerY - translateY) / scale;
+  
+  console.log(`Converting Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(2)}, ${pdfY.toFixed(2)}) @ scale ${scale}`);
   
   return { x: pdfX, y: pdfY };
 }
@@ -58,13 +59,9 @@ export function pdfToScreenCoordinates(
   translateX: number = 0,
   translateY: number = 0
 ): Point {
-  // In the SVG, we're applying transforms with the transform attribute,
-  // so we only need to scale the coordinates here and not add the translateX/Y
-  // Those are handled by the SVG's transform attribute on the parent g element
-  return { 
-    x: pdfX * scale, 
-    y: pdfY * scale 
-  };
+  // For SVG markers, we'll let the SVG transform handle the scaling and translation
+  // We just need to return the base PDF coordinates
+  return { x: pdfX, y: pdfY };
 }
 
 /**
