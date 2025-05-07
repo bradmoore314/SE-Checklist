@@ -134,14 +134,20 @@ export const EnhancedFloorplanViewer = ({
     if (!containerRef.current) return { x: 0, y: 0 };
     
     const rect = containerRef.current.getBoundingClientRect();
-    // Adjust for container position and current translation
-    const containerX = screenX - rect.left - translateX;
-    const containerY = screenY - rect.top - translateY;
     
-    // Convert to PDF coordinates by dividing by the scale factor
+    // Calculate the effective center of view
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Adjust for container position, current translation, and scale
+    // We need to account for both the translation and scaling
+    const containerX = (screenX - rect.left - translateX) / scale;
+    const containerY = (screenY - rect.top - translateY) / scale;
+    
+    // Convert to PDF coordinates considering the scale factor
     return {
-      x: containerX / pdfToViewportScale,
-      y: containerY / pdfToViewportScale
+      x: containerX * (1 / pdfToViewportScale) * scale,
+      y: containerY * (1 / pdfToViewportScale) * scale
     };
   };
 
