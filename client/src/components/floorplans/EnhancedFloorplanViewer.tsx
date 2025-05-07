@@ -135,18 +135,25 @@ export const EnhancedFloorplanViewer = ({
     
     const rect = containerRef.current.getBoundingClientRect();
     
-    // First, get position relative to the container
-    const relativeX = screenX - rect.left;
-    const relativeY = screenY - rect.top;
+    // Get mouse position relative to the container
+    const containerX = screenX - rect.left;
+    const containerY = screenY - rect.top;
     
-    // Account for translation (pan)
-    const panAdjustedX = relativeX - translateX;
-    const panAdjustedY = relativeY - translateY;
+    // Adjust for the translation (pan)
+    const adjustedX = (containerX - translateX) / scale;
+    const adjustedY = (containerY - translateY) / scale;
     
-    // Now convert to PDF coordinates by dividing by the viewport scale factor
+    // Log each step for debugging
+    console.log(`Screen coords: ${screenX}, ${screenY}`);
+    console.log(`Container coords: ${containerX}, ${containerY}`);
+    console.log(`Translate: ${translateX}, ${translateY}`);
+    console.log(`Scale: ${scale}`);
+    console.log(`Adjusted coords: ${adjustedX}, ${adjustedY}`);
+    console.log(`PDF to viewport scale: ${pdfToViewportScale}`);
+    
     return {
-      x: panAdjustedX / pdfToViewportScale,
-      y: panAdjustedY / pdfToViewportScale
+      x: adjustedX,
+      y: adjustedY
     };
   };
 
@@ -658,11 +665,29 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
-        // Use our consistent coordinate transformation function
-        const pdfCoords = screenToPdfCoordinates(x, y);
+        const rect = containerRef.current.getBoundingClientRect();
         
-        // Log coordinates for debugging
-        console.log(`Adding marker at PDF coordinates: x=${pdfCoords.x.toFixed(2)}, y=${pdfCoords.y.toFixed(2)}`);
+        // Get mouse position relative to the container
+        const containerX = x - rect.left;
+        const containerY = y - rect.top;
+        
+        // Adjust for the translation (pan)
+        const scaledX = containerX - translateX;
+        const scaledY = containerY - translateY;
+        
+        // Convert to PDF space using the current scale
+        const pdfX = scaledX / scale;
+        const pdfY = scaledY / scale;
+        
+        // Log detailed coordinates for debugging
+        console.log("==== CLICK COORDINATES DEBUG ====");
+        console.log(`Screen coordinates: x=${x}, y=${y}`);
+        console.log(`Container rect: left=${rect.left}, top=${rect.top}`);
+        console.log(`Container coordinates: x=${containerX}, y=${containerY}`);
+        console.log(`Translate: x=${translateX}, y=${translateY}`);
+        console.log(`After translation: x=${scaledX}, y=${scaledY}`);
+        console.log(`Scale: ${scale}`);
+        console.log(`PDF coordinates: x=${pdfX}, y=${pdfY}`);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -670,8 +695,8 @@ export const EnhancedFloorplanViewer = ({
           unique_id: uuidv4(),
           page: currentPage,
           marker_type: toolMode,
-          position_x: pdfCoords.x,
-          position_y: pdfCoords.y,
+          position_x: pdfX,
+          position_y: pdfY,
           version: 1,
           layer_id: activeLayer?.id
         };
@@ -682,8 +707,9 @@ export const EnhancedFloorplanViewer = ({
           setTempMarker(newMarker);
         } else if (toolMode === 'polyline' || toolMode === 'polygon') {
           // Start collecting points
+          console.log(`Starting polyline at: x=${pdfX}, y=${pdfY}`);
           setIsDrawing(true);
-          setDrawingPoints([{ x: pdfCoords.x, y: pdfCoords.y }]);
+          setDrawingPoints([{ x: pdfX, y: pdfY }]);
         } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
           // For equipment markers that need configuration
           setTempMarker(newMarker);
@@ -779,18 +805,31 @@ export const EnhancedFloorplanViewer = ({
         };
       });
     } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
-      // Update preview for polyline/polygon
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      // Get the container rect
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Get mouse position relative to the container
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
+      
+      // Adjust for the translation (pan)
+      const scaledX = containerX - translateX;
+      const scaledY = containerY - translateY;
+      
+      // Convert to PDF space
+      const pdfX = scaledX / scale;
+      const pdfY = scaledY / scale;
+      
       const lastPoint = drawingPoints[drawingPoints.length - 1];
       
       // Only update if mouse moved significantly (avoid excessive updates)
       const distance = Math.sqrt(
-        Math.pow(pdfCoords.x - lastPoint.x, 2) + 
-        Math.pow(pdfCoords.y - lastPoint.y, 2)
+        Math.pow(pdfX - lastPoint.x, 2) + 
+        Math.pow(pdfY - lastPoint.y, 2)
       );
       
       if (distance > 5 / pdfToViewportScale) { // 5px in screen space
-        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfCoords.x, y: pdfCoords.y }]);
+        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfX, y: pdfY }]);
       }
     }
   };
@@ -949,6 +988,30 @@ export const EnhancedFloorplanViewer = ({
             height: viewportDimensions.height
           }}
         >
+          {/* Render debug grid for coordinate system visualization */}
+          <g className="debug-grid">
+            {/* Draw crosshairs at 0,0 origin */}
+            <line x1="0" y1="-50" x2="0" y2="50" stroke="#00FF00" strokeWidth="1" />
+            <line x1="-50" y1="0" x2="50" y2="0" stroke="#00FF00" strokeWidth="1" />
+            <text x="5" y="-5" fill="#00FF00" fontSize="10">Origin (0,0)</text>
+            
+            {/* Draw X and Y axes with labels at 100-point intervals */}
+            {Array.from({length: 10}).map((_, i) => {
+              const pos = (i + 1) * 100 * scale;
+              return (
+                <g key={`grid-${i}`}>
+                  {/* X axis markers */}
+                  <line x1={pos} y1="-10" x2={pos} y2="10" stroke="#00FF00" strokeWidth="1" />
+                  <text x={pos} y="20" fill="#00FF00" fontSize="10" textAnchor="middle">{(i + 1) * 100}</text>
+                  
+                  {/* Y axis markers */}
+                  <line x1="-10" y1={pos} x2="10" y2={pos} stroke="#00FF00" strokeWidth="1" />
+                  <text x="-20" y={pos} fill="#00FF00" fontSize="10" textAnchor="end">{(i + 1) * 100}</text>
+                </g>
+              );
+            })}
+          </g>
+          
           {/* Render markers here based on their type */}
           {markers.map((marker: MarkerData) => {
             // Skip markers on hidden layers
@@ -961,6 +1024,13 @@ export const EnhancedFloorplanViewer = ({
             const isSelected = selectedMarker?.id === marker.id;
             const strokeWidth = marker.line_width || 2;
             const selectedStrokeWidth = strokeWidth * 1.5;
+            
+            // Calculate scaled position
+            const scaledX = marker.position_x * scale;
+            const scaledY = marker.position_y * scale;
+            
+            // Debug message for marker position
+            console.log(`Rendering marker ${marker.id} at DB position (${marker.position_x}, ${marker.position_y}), scaled to (${scaledX}, ${scaledY})`);
             
             // Base classnames and props
             const baseClassName = `marker-group ${isSelected ? 'selected-marker' : ''}`;
