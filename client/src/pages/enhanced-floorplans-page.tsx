@@ -113,6 +113,39 @@ function EnhancedFloorplansPage() {
     'note': false,
     'all': false
   });
+  
+  // Function to toggle label visibility for specific marker types
+  const toggleLabelVisibility = (markerType: string) => {
+    setVisibleLabelTypes(prev => {
+      // If toggling 'all', set all types to the new value (opposite of current 'all' value)
+      if (markerType === 'all') {
+        const newAllValue = !prev.all;
+        return {
+          'access_point': newAllValue,
+          'camera': newAllValue,
+          'elevator': newAllValue,
+          'intercom': newAllValue,
+          'note': newAllValue,
+          'all': newAllValue
+        };
+      }
+      
+      // Otherwise just toggle the specific type
+      const newTypeValue = !prev[markerType];
+      
+      // Check if after this change all types will be visible or invisible
+      // to correctly set the 'all' state
+      const updatedState = { ...prev, [markerType]: newTypeValue };
+      const allVisible = 
+        updatedState.access_point && 
+        updatedState.camera && 
+        updatedState.elevator && 
+        updatedState.intercom && 
+        updatedState.note;
+        
+      return { ...updatedState, all: allVisible };
+    });
+  };
   // Single consolidated view mode - no longer need multiple view modes
   const [selectedFloorplans, setSelectedFloorplans] = useState<Set<number>>(new Set());
   const [selectAllChecked, setSelectAllChecked] = useState(false);
