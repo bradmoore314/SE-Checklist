@@ -74,6 +74,9 @@ export const projects = pgTable("projects", {
   equipment_notes: text("equipment_notes"),
   scope_notes: text("scope_notes"),
   
+  // User association
+  created_by: integer("created_by"),
+  
   // CRM integration fields
   crm_opportunity_id: text("crm_opportunity_id"),
   crm_opportunity_name: text("crm_opportunity_name"),
