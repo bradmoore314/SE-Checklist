@@ -377,6 +377,7 @@ export const EnhancedFloorplanViewer = ({
     
     // Compact logging for drag start
     console.log(`Drag marker #${marker.id}: offset (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}), scale=${scale.toFixed(2)}`);
+    console.log(`Selected marker #${marker.id} (${marker.marker_type}): PDF pos (${marker.position_x}, ${marker.position_y}), scale=${scale.toFixed(2)}`);
     
     setMarkerDragOffset(offset);
     setSelectedMarker(marker);
@@ -791,6 +792,7 @@ export const EnhancedFloorplanViewer = ({
       const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Apply the offset calculated during drag start
+      // The offset already accounts for the scale factor when it was calculated
       const newX = mousePdf.x - markerDragOffset.x;
       const newY = mousePdf.y - markerDragOffset.y;
       
