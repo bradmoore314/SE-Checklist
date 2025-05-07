@@ -159,18 +159,6 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
-  // Synchronize viewportDimensions with scale changes
-  // This critical fix ensures the SVG layer and PDF canvas maintain proper alignment during zooming
-  useEffect(() => {
-    if (pdfDimensions.width && pdfDimensions.height) {
-      setViewportDimensions({
-        width: pdfDimensions.width * scale,
-        height: pdfDimensions.height * scale
-      });
-      console.log(`Viewport dimensions updated: ${pdfDimensions.width * scale}x${pdfDimensions.height * scale}`);
-    }
-  }, [scale, pdfDimensions, setViewportDimensions]);
-
   // Update coordinate system when view state changes
   // This is a critical part of our approach to fixing marker position issues during zoom
   useEffect(() => {
@@ -244,25 +232,18 @@ export const EnhancedFloorplanViewer = ({
       // Update canvas and SVG dimensions
       canvas.width = viewport.width;
       canvas.height = viewport.height;
+      setViewportDimensions({ width: viewport.width, height: viewport.height });
       
-      // Get and store actual PDF dimensions at scale 1
+      // Get and store actual PDF dimensions
       const defaultViewport = page.getViewport({ scale: 1 });
       setPdfDimensions({ 
         width: defaultViewport.width,
         height: defaultViewport.height
       });
       
-      // Set viewport dimensions based on the PDF dimensions and current scale
-      // This is crucial for maintaining proper alignment between SVG and canvas layers
-      setViewportDimensions({ 
-        width: defaultViewport.width * scale, 
-        height: defaultViewport.height * scale 
-      });
-      
-      // Log the viewport dimensions for debugging
-      console.log(`Viewport dimensions updated: ${defaultViewport.width * scale}x${defaultViewport.height * scale}`);
-      
-      // We no longer need to calculate a separate scale factor as we're using scale directly
+      // Calculate scale from PDF points to viewport pixels
+      const scaleFactor = viewport.width / defaultViewport.width;
+      // We no longer need to set pdfToViewportScale as we're using scale directly
       
       // Clear the canvas 
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -1109,7 +1090,7 @@ export const EnhancedFloorplanViewer = ({
       <div
         className="relative"
       >
-        {/* The PDF Canvas - we'll transform this with the pan and zoom but avoid double scaling */}
+        {/* The PDF Canvas - we'll transform this with the pan and zoom */}
         <canvas 
           ref={canvasRef} 
           className="block pointer-events-none"
@@ -1117,12 +1098,12 @@ export const EnhancedFloorplanViewer = ({
             width: `${viewportDimensions.width}px`,
             height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transform: `translate(${translateX}px, ${translateY}px)`,
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
             transition: 'transform 75ms'
           }}
         />
         
-        {/* The SVG overlay layer must use identical transform - removing scale */}
+        {/* The SVG overlay layer must use identical transform */}
         <svg
           ref={svgLayerRef}
           className="absolute top-0 left-0 pointer-events-auto"
@@ -1130,7 +1111,7 @@ export const EnhancedFloorplanViewer = ({
             width: `${viewportDimensions.width}px`,
             height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transform: `translate(${translateX}px, ${translateY}px)`,
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
             transition: 'transform 75ms'
           }}
         >
@@ -1204,9 +1185,8 @@ export const EnhancedFloorplanViewer = ({
             // Render different marker types
             switch (marker.marker_type) {
               case 'access_point':
-                // Use PDF coordinates directly since container has scale applied
-                const markerSize = 12 / scale;  // Adjust size to be consistent regardless of zoom
-                
+                // Apply transform to the parent group for position
+                // And use a nested group with inverse scale to keep marker size constant
                 return (
                   <g 
                     key={marker.id} 
@@ -1215,48 +1195,50 @@ export const EnhancedFloorplanViewer = ({
                     transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
-                    <circle 
-                      r={markerSize} 
-                      fill={fillColor} /* Red circle */
-                      stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
-                    />
-                    <text 
-                      fontSize={14 / scale} 
-                      textAnchor="middle" 
-                      dominantBaseline="middle" 
-                      fill="#FFFFFF" /* White text */
-                      fontWeight="bold"
-                      style={{ pointerEvents: 'none' }}
-                    >AP</text>
-                    {(isSelected || showAllLabels) && marker.label && (
-                      <g style={{ pointerEvents: 'none' }}>
-                        <rect
-                          x={-40 / scale}
-                          y={17 / scale}
-                          width={80 / scale}
-                          height={16 / scale}
-                          rx={4 / scale}
-                          fill="#ffff00" /* Yellow background */
-                          stroke="#ff0000"
-                          strokeWidth={0.5 / scale}
-                        />
-                        <text 
-                          fontSize={11 / scale} 
-                          y={24 / scale} 
-                          textAnchor="middle" 
-                          fill="#ff0000" /* Red text */
-                          fontWeight="bold"
-                        >{marker.label}</text>
-                      </g>
-                    )}
+                    {/* Add inner group with inverse scale to maintain consistent visual size */}
+                    <g transform={`scale(${1/scale})`}>
+                      <circle 
+                        r={12} // Constant size regardless of zoom level
+                        fill={fillColor} /* Red circle */
+                        stroke={markerColor}
+                        strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      />
+                      <text 
+                        fontSize={14} 
+                        textAnchor="middle" 
+                        dominantBaseline="middle" 
+                        fill="#FFFFFF" /* White text */
+                        fontWeight="bold"
+                        style={{ pointerEvents: 'none' }}
+                      >AP</text>
+                      {(isSelected || showAllLabels) && marker.label && (
+                        <g style={{ pointerEvents: 'none' }}>
+                          <rect
+                            x={-40}
+                            y={17}
+                            width={80}
+                            height={16}
+                            rx={4}
+                            fill="#ffff00" /* Yellow background */
+                            stroke="#ff0000"
+                            strokeWidth={0.5}
+                          />
+                          <text 
+                            fontSize={11} 
+                            y={24} 
+                            textAnchor="middle" 
+                            fill="#ff0000" /* Red text */
+                            fontWeight="bold"
+                          >{marker.label}</text>
+                        </g>
+                      )}
+                    </g>
                   </g>
                 );
               
               case 'camera':
-                // Use PDF coordinates directly since container has scale applied
-                const cameraSize = 10 / scale;  // Adjust size to be consistent regardless of zoom
-                
+                // Apply transform to the parent group for position
+                // And use a nested group with inverse scale to keep marker size constant
                 return (
                   <g 
                     key={marker.id} 
@@ -1265,45 +1247,48 @@ export const EnhancedFloorplanViewer = ({
                     transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
-                    <rect 
-                      x={-cameraSize} 
-                      y={-cameraSize} 
-                      width={cameraSize * 2} 
-                      height={cameraSize * 2}
-                      fill={fillColor} /* Red background for consistency */
-                      stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
-                      rx={2 / scale}
-                    />
-                    <text 
-                      fontSize={12 / scale} 
-                      textAnchor="middle" 
-                      dominantBaseline="middle" 
-                      fill="#ff0000" /* Red text */
-                      fontWeight="bold"
-                      style={{ pointerEvents: 'none' }}
-                    >C</text>
-                    {(isSelected || showAllLabels) && marker.label && (
-                      <g style={{ pointerEvents: 'none' }}>
-                        <rect
-                          x={-40 / scale}
-                          y={17 / scale}
-                          width={80 / scale}
-                          height={16 / scale}
-                          rx={4 / scale}
-                          fill="#ffff00" /* Yellow background */
-                          stroke="#ff0000"
-                          strokeWidth={0.5 / scale}
-                        />
-                        <text 
-                          fontSize={11 / scale} 
-                          y={24 / scale} 
-                          textAnchor="middle" 
-                          fill="#ff0000" /* Red text */
-                          fontWeight="bold"
-                        >{marker.label}</text>
-                      </g>
-                    )}
+                    {/* Add inner group with inverse scale to maintain consistent visual size */}
+                    <g transform={`scale(${1/scale})`}>
+                      <rect 
+                        x={-10} 
+                        y={-10} 
+                        width={20} 
+                        height={20}
+                        fill={fillColor} /* Red background for consistency */
+                        stroke={markerColor}
+                        strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                        rx={2}
+                      />
+                      <text 
+                        fontSize={12} 
+                        textAnchor="middle" 
+                        dominantBaseline="middle" 
+                        fill="#ff0000" /* Red text */
+                        fontWeight="bold"
+                        style={{ pointerEvents: 'none' }}
+                      >C</text>
+                      {(isSelected || showAllLabels) && marker.label && (
+                        <g style={{ pointerEvents: 'none' }}>
+                          <rect
+                            x={-40}
+                            y={17}
+                            width={80}
+                            height={16}
+                            rx={4}
+                            fill="#ffff00" /* Yellow background */
+                            stroke="#ff0000"
+                            strokeWidth={0.5}
+                          />
+                          <text 
+                            fontSize={11} 
+                            y={24} 
+                            textAnchor="middle" 
+                            fill="#ff0000" /* Red text */
+                            fontWeight="bold"
+                          >{marker.label}</text>
+                        </g>
+                      )}
+                    </g>
                   </g>
                 );
               
@@ -1315,17 +1300,17 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width! * scale} 
-                      height={marker.height! * scale}
+                      width={marker.width!} 
+                      height={marker.height!}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
@@ -1356,17 +1341,17 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={(marker.width! * scale) / 2} 
-                      cy={(marker.height! * scale) / 2}
-                      rx={(marker.width! * scale) / 2} 
-                      ry={(marker.height! * scale) / 2}
+                      cx={marker.width! / 2} 
+                      cy={marker.height! / 2}
+                      rx={marker.width! / 2} 
+                      ry={marker.height! / 2}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
@@ -1401,19 +1386,19 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x * scale} 
-                      y1={marker.position_y * scale}
-                      x2={marker.end_x! * scale} 
-                      y2={marker.end_y! * scale}
+                      x1={marker.position_x} 
+                      y1={marker.position_y}
+                      x2={marker.end_x!} 
+                      y2={marker.end_y!}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={marker.position_x * scale} 
-                          cy={marker.position_y * scale} 
+                          cx={marker.position_x} 
+                          cy={marker.position_y} 
                           r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1426,8 +1411,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={marker.end_x! * scale} 
-                          cy={marker.end_y! * scale} 
+                          cx={marker.end_x!} 
+                          cy={marker.end_y!} 
                           r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1452,7 +1437,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
