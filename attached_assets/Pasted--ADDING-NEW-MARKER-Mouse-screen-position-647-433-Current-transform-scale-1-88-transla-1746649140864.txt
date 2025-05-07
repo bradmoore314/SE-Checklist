@@ -1,0 +1,60 @@
+=== ADDING NEW MARKER ===
+Mouse screen position: (647, 433)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (362.00, 201.30)
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+=== ADDING NEW MARKER ===
+Mouse screen position: (762, 416)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (423.07, 192.27)
+=== ADDING NEW MARKER ===
+Mouse screen position: (757, 478)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (420.41, 225.20)
+=== ADDING NEW MARKER ===
+Mouse screen position: (912, 491)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (502.72, 232.10)
+Fetch GET /api/projects/32/marker-stats
+=== ADDING NEW MARKER ===
+Mouse screen position: (940, 556)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (517.59, 266.62)
+Fetch finished loading: GET /api/projects/32/marker-stats
+=== ADDING NEW MARKER ===
+Mouse screen position: (1095, 810)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (599.90, 401.50)
+Fetch POST /api/projects/32/cameras with data
+Fetch finished loading: POST /api/projects/32/cameras
+Error saving camera: 
+SyntaxError {}
+
+=== ADDING NEW MARKER ===
+Mouse screen position: (1048, 800)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (574.94, 396.19)
+Fetch POST /api/projects/32/cameras with data
+Fetch finished loading: POST /api/projects/32/cameras
+Error saving camera: 
+SyntaxError {}
+
+=== ADDING NEW MARKER ===
+Mouse screen position: (1140, 183)
+Current transform: scale=1.88, translate=(-332, -191)
+Calculated PDF position: (623.79, 68.54)
+[SCALING-AWARE] Starting drag of marker #78:
+ - Mouse screen pos: (570, 568)
+ - Marker screen pos: (290.33, 327.86)
+ - Marker PDF pos: (172.60, 145.47)
+ - Screen offset: (279.67, 240.14)
+ - Current scale: 1.88
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.88
+[SCALING-AWARE] Marker drag move calculation:
+ - Original mouse pos: (570, 568)
+ - Current mouse pos: (617, 481)
+ - Mouse delta screen: (47.00, -87.00)
+ - Mouse delta PDF: (24.96, -46.20)
+ - Original marker pos: (172.60, 145.47)
+ - New marker pos: (197.56, 99.27)
+ - Current scale: 1.88
