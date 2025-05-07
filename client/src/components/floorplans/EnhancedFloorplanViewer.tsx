@@ -219,14 +219,17 @@ export const EnhancedFloorplanViewer = ({
   const renderTaskRef = useRef<any>(null);
   
   // DEFINE RENDER PAGE FUNCTION FIRST
-  // Function to calculate ideal scale to fit width
+  // Function to calculate ideal scale to fit width of the page container
   const calculateFitToWidthScale = (pageWidth: number): number => {
-    if (!containerRef.current) return 1;
+    if (!pageContainerRef.current) return 1;
     
-    // Calculate the scale needed to fit the page width to the container width
+    // Calculate the scale needed to fit the page width to the page container width
+    // This is the specific div with className="relative" at line 1155
     // Add a small margin (0.95) to avoid it being exactly at the edge
-    const containerWidth = containerRef.current.clientWidth;
-    const scaleFactor = (containerWidth * 0.95) / pageWidth;
+    const pageContainerWidth = pageContainerRef.current.clientWidth;
+    const scaleFactor = (pageContainerWidth * 0.95) / pageWidth;
+    
+    console.log(`Calculating fit scale: PDF width=${pageWidth}px, Container width=${pageContainerWidth}px, Scale=${scaleFactor.toFixed(2)}`);
     
     // Cap the scale between reasonable limits
     return Math.min(Math.max(scaleFactor, 0.1), 5.0);
@@ -1153,6 +1156,7 @@ export const EnhancedFloorplanViewer = ({
       )}
       
       <div
+        ref={pageContainerRef}
         className="relative"
       >
         {/* The PDF Canvas - we'll transform this with the pan and zoom */}
