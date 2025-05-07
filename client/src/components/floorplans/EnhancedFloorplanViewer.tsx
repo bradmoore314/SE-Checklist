@@ -768,8 +768,14 @@ export const EnhancedFloorplanViewer = ({
       const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Account for the initial offset when the drag started
-      const newX = pdfCoords.x - (markerDragOffset.x / scale);
-      const newY = pdfCoords.y - (markerDragOffset.y / scale);
+      // Our offset is now in PDF coordinates, so we can apply it directly
+      const newX = pdfCoords.x - markerDragOffset.x;
+      const newY = pdfCoords.y - markerDragOffset.y;
+      
+      // Log for debugging
+      console.log(`Dragging - Mouse PDF position: (${pdfCoords.x.toFixed(2)}, ${pdfCoords.y.toFixed(2)})`);
+      console.log(`Dragging - Offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+      console.log(`Dragging - New marker position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
       
       // Update local state for smooth visual feedback
       setSelectedMarker(prev => {
@@ -876,7 +882,18 @@ export const EnhancedFloorplanViewer = ({
       setTempMarker(null);
     } else if (isDraggingMarker && selectedMarker) {
       // Save the new marker position
-      updateMarkerMutation.mutate(selectedMarker);
+      // Log for debugging
+      console.log(`Finished dragging marker ${selectedMarker.id}`);
+      console.log(`Final position: (${selectedMarker.position_x}, ${selectedMarker.position_y})`);
+      
+      // Save to database
+      updateMarkerMutation.mutate({
+        ...selectedMarker,
+        // Ensure precision is maintained with numeric values
+        position_x: Number(selectedMarker.position_x),
+        position_y: Number(selectedMarker.position_y)
+      });
+      
       setIsDraggingMarker(false);
       
       // Reset cursor style
@@ -1028,12 +1045,21 @@ export const EnhancedFloorplanViewer = ({
             const strokeWidth = marker.line_width || 2;
             const selectedStrokeWidth = strokeWidth * 1.5;
             
-            // Calculate scaled position
-            const scaledX = marker.position_x * scale;
-            const scaledY = marker.position_y * scale;
-            
-            // Debug message for marker position
-            console.log(`Rendering marker ${marker.id} at DB position (${marker.position_x}, ${marker.position_y}), scaled to (${scaledX}, ${scaledY})`);
+            // Calculate screen coordinates from PDF coordinates using our utility function
+            // Only logs this once to avoid excessive output
+            if (isSelected) {
+              console.log(`========== MARKER RENDERING DEBUG ==========`);
+              console.log(`Marker ID: ${marker.id}, Type: ${marker.marker_type}`);
+              console.log(`Marker PDF position: (${marker.position_x}, ${marker.position_y})`);
+              console.log(`Current scale: ${scale}, translateX: ${translateX}, translateY: ${translateY}`);
+              
+              if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const screenCoords = pdfToScreenCoordinates(marker.position_x, marker.position_y);
+                console.log(`Calculated screen position: (${screenCoords.x}, ${screenCoords.y})`);
+                console.log(`Container position: (${rect.left}, ${rect.top}), size: ${rect.width}x${rect.height}`);
+              }
+            }
             
             // Base classnames and props
             const baseClassName = `marker-group ${isSelected ? 'selected-marker' : ''}`;
@@ -1082,12 +1108,18 @@ export const EnhancedFloorplanViewer = ({
             // Render different marker types
             switch (marker.marker_type) {
               case 'access_point':
+                // For access points, get screen coordinates from PDF coordinates
+                const { x: screenX, y: screenY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
+                    transform={`translate(${screenX},${screenY})`}
                     {...baseProps}
                   >
                     <circle 
@@ -1128,12 +1160,18 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'camera':
+                // For cameras, get screen coordinates from PDF coordinates
+                const { x: cameraX, y: cameraY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
+                    transform={`translate(${cameraX},${cameraY})`}
                     {...baseProps}
                   >
                     <rect 
