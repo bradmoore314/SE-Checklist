@@ -1293,90 +1293,89 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'rectangle':
-                // Use PDF coordinates directly since container has scale applied
-                
+                // Apply transform to the parent group for position
+                // But don't apply inverse scale to rectangle dimensions
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width!} 
-                      height={marker.height!}
+                      width={marker.width! * scale} 
+                      height={marker.height! * scale}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
                     {isSelected && toolMode === 'select' && (
-                      <>
+                      <g transform={`scale(${1/scale})`}>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width!} 
-                          cy={marker.height!} 
-                          r={6 / scale} 
+                          cx={marker.width! * scale} 
+                          cy={marker.height! * scale} 
+                          r={6} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth={1 / scale}
+                          strokeWidth={1}
                           className="cursor-nwse-resize"
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             startMarkerResize(e, marker);
                           }}
                         />
-                      </>
+                      </g>
                     )}
                   </g>
                 );
                 
               case 'ellipse':
-                // Use PDF coordinates directly since container has scale applied
-                
+                // Apply transform to the parent group for position
+                // But don't apply inverse scale to ellipse dimensions
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={marker.width! / 2} 
-                      cy={marker.height! / 2}
-                      rx={marker.width! / 2} 
-                      ry={marker.height! / 2}
+                      cx={(marker.width! * scale) / 2} 
+                      cy={(marker.height! * scale) / 2}
+                      rx={(marker.width! * scale) / 2} 
+                      ry={(marker.height! * scale) / 2}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
                     {isSelected && toolMode === 'select' && (
-                      <>
+                      <g transform={`scale(${1/scale})`}>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width!} 
-                          cy={marker.height!} 
-                          r={6 / scale} 
+                          cx={marker.width! * scale} 
+                          cy={marker.height! * scale} 
+                          r={6} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth={1 / scale}
+                          strokeWidth={1}
                           className="cursor-nwse-resize"
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             startMarkerResize(e, marker);
                           }}
                         />
-                      </>
+                      </g>
                     )}
                   </g>
                 );
                 
               case 'line':
-                // Use PDF coordinates directly since container has scale applied
-                
+                // For lines we need both the position and end points to be scaled
                 return (
                   <g 
                     key={marker.id} 
@@ -1386,101 +1385,105 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x} 
-                      y1={marker.position_y}
-                      x2={marker.end_x!} 
-                      y2={marker.end_y!}
+                      x1={marker.position_x * scale} 
+                      y1={marker.position_y * scale}
+                      x2={marker.end_x! * scale} 
+                      y2={marker.end_y! * scale}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
                     {isSelected && toolMode === 'select' && (
-                      <>
+                      <g transform={`scale(${1})`}>
                         {/* Start point handle */}
-                        <circle 
-                          cx={marker.position_x} 
-                          cy={marker.position_y} 
-                          r={6 / scale} 
-                          fill="#ffffff" 
-                          stroke="#000000" 
-                          strokeWidth={1 / scale}
-                          className="cursor-move"
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            startMarkerDrag(e, marker);
-                          }}
-                        />
+                        <g transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale}) scale(${1/scale})`}>
+                          <circle 
+                            cx={0} 
+                            cy={0} 
+                            r={6} 
+                            fill="#ffffff" 
+                            stroke="#000000" 
+                            strokeWidth={1}
+                            className="cursor-move"
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              startMarkerDrag(e, marker);
+                            }}
+                          />
+                        </g>
                         {/* End point handle (resize) */}
-                        <circle 
-                          cx={marker.end_x!} 
-                          cy={marker.end_y!} 
-                          r={6 / scale} 
-                          fill="#ffffff" 
-                          stroke="#000000" 
-                          strokeWidth={1 / scale}
-                          className="cursor-move"
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            startMarkerResize(e, marker);
-                          }}
-                        />
-                      </>
+                        <g transform={`translate(${marker.end_x! * scale}, ${marker.end_y! * scale}) scale(${1/scale})`}>
+                          <circle 
+                            cx={0} 
+                            cy={0} 
+                            r={6} 
+                            fill="#ffffff" 
+                            stroke="#000000" 
+                            strokeWidth={1}
+                            className="cursor-move"
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              startMarkerResize(e, marker);
+                            }}
+                          />
+                        </g>
+                      </g>
                     )}
                   </g>
                 );
 
               case 'note':
-                // Use PDF coordinates directly since container has scale applied
-                const noteSize = 10 / scale;  // Adjust size to be consistent regardless of zoom
-                
+                // Apply transform to the parent group for position
+                // And use a nested group with inverse scale to keep marker size constant
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
-                    {/* Note icon with yellow background and clear border */}
-                    <rect 
-                      x={-noteSize} 
-                      y={-noteSize} 
-                      width={noteSize * 2} 
-                      height={noteSize * 2}
-                      fill="#ffff00" /* Bright yellow background */
-                      stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
-                      rx={4 / scale}
-                    />
-                    <text 
-                      fontSize={12 / scale} 
-                      textAnchor="middle" 
-                      dominantBaseline="middle" 
-                      fill="#ff0000" /* Red text */
-                      fontWeight="bold"
-                      style={{ pointerEvents: 'none' }}
-                    >N</text>
-                    {(isSelected || showAllLabels) && marker.text_content && (
-                      <foreignObject 
-                        x={10 / scale} 
-                        y={-10 / scale} 
-                        width={150 / scale} 
-                        height={60 / scale}
-                      >
-                        <div 
-                          className="bg-yellow-200 p-1 rounded shadow-sm border border-yellow-500 text-red-600 text-xs overflow-hidden"
-                          style={{
-                            maxWidth: `${150 / scale}px`,
-                            maxHeight: `${60 / scale}px`,
-                            textOverflow: 'ellipsis',
-                            transform: `scale(${1/scale})`,
-                            transformOrigin: 'top left'
-                          }}
+                    {/* Add inner group with inverse scale to maintain consistent visual size */}
+                    <g transform={`scale(${1/scale})`}>
+                      {/* Note icon with yellow background and clear border */}
+                      <rect 
+                        x={-10} 
+                        y={-10} 
+                        width={20} 
+                        height={20}
+                        fill="#ffff00" /* Bright yellow background */
+                        stroke={markerColor}
+                        strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                        rx={4}
+                      />
+                      <text 
+                        fontSize={12} 
+                        textAnchor="middle" 
+                        dominantBaseline="middle" 
+                        fill="#ff0000" /* Red text */
+                        fontWeight="bold"
+                        style={{ pointerEvents: 'none' }}
+                      >N</text>
+                      {(isSelected || showAllLabels) && marker.text_content && (
+                        <foreignObject 
+                          x={10} 
+                          y={-10} 
+                          width={150} 
+                          height={60}
                         >
-                          {marker.text_content?.substring(0, 100)}
-                          {marker.text_content?.length > 100 && '...'}
-                        </div>
-                      </foreignObject>
-                    )}
+                          <div 
+                            className="bg-yellow-200 p-1 rounded shadow-sm border border-yellow-500 text-red-600 text-xs overflow-hidden"
+                            style={{
+                              maxWidth: '150px',
+                              maxHeight: '60px',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            {marker.text_content?.substring(0, 100)}
+                            {marker.text_content?.length > 100 && '...'}
+                          </div>
+                        </foreignObject>
+                      )}
+                    </g>
                   </g>
                 );
 
