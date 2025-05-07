@@ -1534,55 +1534,7 @@ export const EnhancedFloorplanViewer = ({
         </svg>
       </div>
       
-      {/* Drag Test Panel (DEBUG) */}
-      <div className="absolute bottom-20 left-4 max-w-md z-10">
-        <DeltaDragTest />
-      </div>
-
-      {/* Controls Panel */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2 bg-white bg-opacity-80 p-2 rounded shadow">
-        <button 
-          onClick={() => {
-            const newScale = Math.min(10, scale * 1.2);
-            setScale(newScale);
-            renderPage(currentPage);
-          }}
-          className="p-2 rounded hover:bg-gray-200"
-          title="Zoom In"
-        >
-          <ZoomIn size={20} />
-        </button>
-        <button 
-          onClick={() => {
-            const newScale = Math.max(0.1, scale * 0.8);
-            setScale(newScale);
-            renderPage(currentPage);
-          }}
-          className="p-2 rounded hover:bg-gray-200"
-          title="Zoom Out"
-        >
-          <ZoomOut size={20} />
-        </button>
-        <button 
-          onClick={() => {
-            setScale(1);
-            setTranslateX(0);
-            setTranslateY(0);
-            renderPage(currentPage);
-          }}
-          className="p-2 rounded hover:bg-gray-200"
-          title="Reset View"
-        >
-          <CheckSquare size={20} />
-        </button>
-        <button
-          onClick={() => setIsLayerManagerOpen(true)}
-          className="p-2 rounded hover:bg-gray-200"
-          title="Manage Layers"
-        >
-          <Layers size={20} />
-        </button>
-      </div>
+      {/* We removed the zoom buttons and test panel as they were causing issues */}
       
       {/* Page Controls */}
       {floorplan.page_count > 1 && (
@@ -1664,11 +1616,8 @@ export const EnhancedFloorplanViewer = ({
               };
               addMarkerMutation.mutate(updatedMarker);
               
-              toast({
-                title: 'Equipment Added',
-                description: `Added ${tempMarker.marker_type} marker with equipment configuration`,
-                duration: 2000
-              });
+              // Removed toast notification per user request
+              console.log(`Added ${tempMarker.marker_type} marker with equipment configuration`);
             }
             setIsEquipmentFormOpen(false);
             setTempMarker(null);
@@ -1723,11 +1672,8 @@ export const EnhancedFloorplanViewer = ({
                     position_y: selectedMarker.position_y + 20,
                   });
                   setContextMenuOpen(false);
-                  toast({
-                    title: 'Marker Duplicated',
-                    description: 'Created a copy of the selected marker',
-                    duration: 2000,
-                  });
+                  // Removed toast notification per user request
+                  console.log('Marker duplicated');
                 }}
               >
                 <Copy className="mr-2 h-4 w-4" />
@@ -1740,11 +1686,8 @@ export const EnhancedFloorplanViewer = ({
                   deleteMarkerMutation.mutate(selectedMarker.id);
                   setSelectedMarker(null);
                   setContextMenuOpen(false);
-                  toast({
-                    title: 'Marker Deleted',
-                    description: 'Marker has been removed from the floorplan',
-                    duration: 2000,
-                  });
+                  // Removed toast notification per user request
+                  console.log('Marker deleted');
                 }}
               >
                 <Trash className="mr-2 h-4 w-4" />
