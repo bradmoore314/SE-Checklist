@@ -189,10 +189,10 @@ export default function Projects() {
         description: `Site Walk "${newSiteWalk.name}" has been created successfully.`,
       });
       
-      // Set as current site walk and navigate to dashboard
+      // Set as current site walk and navigate to the dashboard
       setCurrentSiteWalk(newSiteWalk);
       setCurrentProject(newSiteWalk);
-      setLocation(`/projects/${newSiteWalk.id}/dashboard`);
+      setLocation(`/dashboard?projectId=${newSiteWalk.id}`);
     } catch (error) {
       toast({
         title: "Site Walk Creation Failed",
@@ -207,10 +207,11 @@ export default function Projects() {
     // First prefetch floorplans for this project to ensure they're in the cache
     prefetchFloorplans(siteWalk.id);
     
-    // Then set it as current project and navigate to the project's dashboard
+    // Then set it as current project and navigate to the project details page
+    // We don't have a specific dashboard route, so use the main dashboard instead
     setCurrentSiteWalk(siteWalk);
     setCurrentProject(siteWalk);
-    setLocation(`/projects/${siteWalk.id}/dashboard`);
+    setLocation(`/dashboard?projectId=${siteWalk.id}`);
   };
   
   // Toggle pinning/unpinning a project

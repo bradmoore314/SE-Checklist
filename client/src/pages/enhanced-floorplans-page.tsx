@@ -568,7 +568,13 @@ function EnhancedFloorplansPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projectFloorplans.map((floorplan) => (
               <div key={floorplan.id} className="relative group">
-                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <Card 
+                  className={`cursor-pointer transition-shadow ${
+                    floorplanId === floorplan.id 
+                      ? 'shadow-lg ring-2 ring-primary' 
+                      : 'hover:shadow-md'
+                  }`}
+                >
                   <CardContent className="p-6">
                     {/* Top controls - Checkbox always visible, delete button on hover */}
                     <div className="absolute top-2 right-2 z-10 flex gap-2">
@@ -624,7 +630,9 @@ function EnhancedFloorplansPage() {
                     
                     {/* Floorplan thumbnail area is wrapped in a Link for navigation */}
                     <Link href={`/projects/${projectId}/enhanced-floorplans/${floorplan.id}`}>
-                      <div className="aspect-video bg-gray-100 mb-4 flex items-center justify-center rounded-md overflow-hidden relative">
+                      <div className={`aspect-video mb-4 flex items-center justify-center rounded-md overflow-hidden relative ${
+                        floorplanId === floorplan.id ? 'bg-primary/5' : 'bg-gray-100'
+                      }`}>
                         {/* Generate thumbnail from the floorplan PDF or image data */}
                         {floorplan.pdf_data ? (
                           <div className="absolute inset-0 w-full h-full">
@@ -634,11 +642,15 @@ function EnhancedFloorplansPage() {
                           <span className="material-icons text-4xl text-gray-400">map</span>
                         )}
                         {/* Display marker count as an overlay badge */}
-                        <div className="absolute bottom-2 right-2 bg-primary/80 text-white text-xs rounded px-2 py-1 shadow-sm">
+                        <div className={`absolute bottom-2 right-2 text-white text-xs rounded px-2 py-1 shadow-sm ${
+                          floorplanId === floorplan.id ? 'bg-primary' : 'bg-primary/80'
+                        }`}>
                           Page 1
                         </div>
                       </div>
-                      <h3 className="font-semibold text-lg truncate">{floorplan.name}</h3>
+                      <h3 className={`font-semibold text-lg truncate ${
+                        floorplanId === floorplan.id ? 'text-primary' : ''
+                      }`}>{floorplan.name}</h3>
                       <p className="text-sm text-gray-500">
                         {floorplan.page_count} page{floorplan.page_count !== 1 ? 's' : ''}
                       </p>
