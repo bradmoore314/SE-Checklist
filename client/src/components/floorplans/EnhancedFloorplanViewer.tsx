@@ -288,8 +288,7 @@ export const EnhancedFloorplanViewer = ({
   
   // Start dragging a marker
   const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
-    if (toolMode !== 'select') return;
-    
+    // Allow dragging regardless of tool mode (this check is now handled in baseProps)
     e.stopPropagation();
     
     const rect = containerRef.current?.getBoundingClientRect();
@@ -302,6 +301,11 @@ export const EnhancedFloorplanViewer = ({
     setMarkerDragOffset({ x: offsetX, y: offsetY });
     setSelectedMarker(marker);
     setIsDraggingMarker(true);
+    
+    // Show feedback cursor
+    if (containerRef.current) {
+      containerRef.current.style.cursor = 'grabbing';
+    }
   };
   
   // Start resizing a marker
@@ -934,13 +938,18 @@ export const EnhancedFloorplanViewer = ({
                 e.stopPropagation();
                 handleMarkerClick(marker);
               },
-              onMouseDown: toolMode === 'select' ? 
-                (e: React.MouseEvent) => {
-                  if (e.button === 0) { // Left click
-                    e.stopPropagation();
-                    startMarkerDrag(e, marker);
-                  }
-                } : undefined
+              onMouseDown: (e: React.MouseEvent) => {
+                // Allow dragging with left click regardless of current tool mode
+                // Only exclude drawing modes or when actually adding a marker
+                if (e.button === 0 && 
+                    !isAddingMarker && 
+                    !isDrawing && 
+                    !['polyline', 'polygon'].includes(toolMode) && 
+                    toolMode !== 'delete') {
+                  e.stopPropagation();
+                  startMarkerDrag(e, marker);
+                }
+              }
             };
             
             // Render different marker types
