@@ -1562,7 +1562,11 @@ export const EnhancedFloorplanViewer = ({
                             style={{
                               maxWidth: '150px',
                               maxHeight: '60px',
-                              textOverflow: 'ellipsis'
+                              textOverflow: 'ellipsis',
+                              userSelect: 'none',
+                              WebkitUserSelect: 'none',
+                              msUserSelect: 'none',
+                              pointerEvents: 'none'
                             }}
                           >
                             {marker.text_content?.substring(0, 100)}
