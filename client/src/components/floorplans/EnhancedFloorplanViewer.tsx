@@ -219,6 +219,19 @@ export const EnhancedFloorplanViewer = ({
   const renderTaskRef = useRef<any>(null);
   
   // DEFINE RENDER PAGE FUNCTION FIRST
+  // Function to calculate ideal scale to fit width
+  const calculateFitToWidthScale = (pageWidth: number): number => {
+    if (!containerRef.current) return 1;
+    
+    // Calculate the scale needed to fit the page width to the container width
+    // Add a small margin (0.95) to avoid it being exactly at the edge
+    const containerWidth = containerRef.current.clientWidth;
+    const scaleFactor = (containerWidth * 0.95) / pageWidth;
+    
+    // Cap the scale between reasonable limits
+    return Math.min(Math.max(scaleFactor, 0.1), 5.0);
+  };
+
   const renderPage = async (pageNum: number) => {
     if (!pdfDocument || !canvasRef.current || !svgLayerRef.current || pageNum < 1 || pageNum > pdfDocument.numPages) {
       return;
@@ -235,7 +248,20 @@ export const EnhancedFloorplanViewer = ({
     try {
       const page = await pdfDocument.getPage(pageNum);
       
-      const viewport = page.getViewport({ scale: scale });
+      // Get default viewport at scale 1.0 to determine original PDF dimensions
+      const defaultViewport = page.getViewport({ scale: 1 });
+      
+      // Auto-scale to fit width on initial load or reset
+      let currentScale = scale;
+      if (scale === 1 && translateX === 0 && translateY === 0) {
+        // This is either initial load or a reset - auto-scale to fit width
+        currentScale = calculateFitToWidthScale(defaultViewport.width);
+        console.log(`Auto-scaling PDF to fit width: scale = ${currentScale.toFixed(2)}`);
+        setScale(currentScale);
+      }
+      
+      // Apply the scale (either auto-calculated or user-defined)
+      const viewport = page.getViewport({ scale: currentScale });
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
@@ -249,8 +275,7 @@ export const EnhancedFloorplanViewer = ({
       canvas.height = viewport.height;
       setViewportDimensions({ width: viewport.width, height: viewport.height });
       
-      // Get and store actual PDF dimensions
-      const defaultViewport = page.getViewport({ scale: 1 });
+      // Store actual PDF dimensions for coordinate calculations
       setPdfDimensions({ 
         width: defaultViewport.width,
         height: defaultViewport.height
