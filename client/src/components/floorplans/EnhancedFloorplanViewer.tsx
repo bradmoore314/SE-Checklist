@@ -353,18 +353,29 @@ export const EnhancedFloorplanViewer = ({
     
     if (!containerRef.current) return;
     
-    // Get the mouse position in PDF coordinates
-    const mousePdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+    const rect = containerRef.current.getBoundingClientRect();
     
-    // Calculate the offset between mouse PDF position and marker PDF position
-    // This is a key improvement - we store the offset in PDF coordinates (not screen)
-    const offsetX = mousePdfCoords.x - marker.position_x;
-    const offsetY = mousePdfCoords.y - marker.position_y;
+    // Convert mouse coordinates to container-relative coordinates
+    const containerX = e.clientX - rect.left;
+    const containerY = e.clientY - rect.top;
     
-    // Log for debugging
-    console.log(`Drag start - Marker position: (${marker.position_x}, ${marker.position_y})`);
-    console.log(`Drag start - Mouse PDF position: (${mousePdfCoords.x}, ${mousePdfCoords.y})`);
-    console.log(`Drag start - Offset: (${offsetX}, ${offsetY})`);
+    // Convert to PDF coordinates by undoing the transforms
+    const pdfX = (containerX - translateX) / scale;
+    const pdfY = (containerY - translateY) / scale;
+    
+    // Calculate the offset in PDF coordinates - crucial for stable dragging
+    const offsetX = pdfX - marker.position_x;
+    const offsetY = pdfY - marker.position_y;
+    
+    // Enhanced logging for debugging
+    console.log(`=== DRAG START DIAGNOSTICS ===`);
+    console.log(`Container bounds: (${rect.left}, ${rect.top}) ${rect.width}x${rect.height}`);
+    console.log(`Mouse screen position: (${e.clientX}, ${e.clientY})`);
+    console.log(`Mouse container position: (${containerX}, ${containerY})`);
+    console.log(`Current transform: translate(${translateX}px, ${translateY}px) scale(${scale})`);
+    console.log(`Calculated PDF coords: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+    console.log(`Marker PDF position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
+    console.log(`Computed offset: (${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
     
     setMarkerDragOffset({ x: offsetX, y: offsetY });
     setSelectedMarker(marker);
@@ -766,18 +777,28 @@ export const EnhancedFloorplanViewer = ({
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
       // Moving a selected marker
-      // Use our consistent coordinate transformation function
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      const rect = containerRef.current.getBoundingClientRect();
       
-      // Account for the initial offset when the drag started
-      // Our offset is now in PDF coordinates, so we can apply it directly
-      const newX = pdfCoords.x - markerDragOffset.x;
-      const newY = pdfCoords.y - markerDragOffset.y;
+      // Convert mouse coordinates to container-relative coordinates
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
       
-      // Log for debugging
-      console.log(`Dragging - Mouse PDF position: (${pdfCoords.x.toFixed(2)}, ${pdfCoords.y.toFixed(2)})`);
-      console.log(`Dragging - Offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
-      console.log(`Dragging - New marker position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
+      // Convert to PDF coordinates using consistent approach
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
+      
+      // Apply the offset calculated during drag start
+      const newX = pdfX - markerDragOffset.x;
+      const newY = pdfY - markerDragOffset.y;
+      
+      // Limited logging to avoid console spam
+      if (Math.random() < 0.05) { // Only log ~5% of moves
+        console.log(`=== DRAG MOVE ===`);
+        console.log(`Raw PDF coords: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+        console.log(`Offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+        console.log(`New position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
+        console.log(`Scale: ${scale}`);
+      }
       
       // Update local state for smooth visual feedback
       setSelectedMarker(prev => {
@@ -885,15 +906,18 @@ export const EnhancedFloorplanViewer = ({
     } else if (isDraggingMarker && selectedMarker) {
       // Save the new marker position
       // Log for debugging
-      console.log(`Finished dragging marker ${selectedMarker.id}`);
-      console.log(`Final position: (${selectedMarker.position_x}, ${selectedMarker.position_y})`);
+      console.log(`=== DRAG END ===`);
+      console.log(`Marker ID: ${selectedMarker.id}`);
+      console.log(`Final position: (${selectedMarker.position_x.toFixed(2)}, ${selectedMarker.position_y.toFixed(2)})`);
+      console.log(`Current scale: ${scale}`);
       
-      // Save to database
+      // Save to database with precise positioning
       updateMarkerMutation.mutate({
         ...selectedMarker,
         // Ensure precision is maintained with numeric values
-        position_x: Number(selectedMarker.position_x),
-        position_y: Number(selectedMarker.position_y)
+        // This is critical to maintain stability during zoom operations
+        position_x: parseFloat(selectedMarker.position_x.toFixed(2)),
+        position_y: parseFloat(selectedMarker.position_y.toFixed(2))
       });
       
       setIsDraggingMarker(false);
@@ -1001,28 +1025,32 @@ export const EnhancedFloorplanViewer = ({
       )}
       
       <div
-        className="relative transform-gpu"
+        className="relative"
+        ref={containerRef}
       >
+        {/* The PDF Canvas - we'll transform this with the pan and zoom */}
         <canvas 
           ref={canvasRef} 
-          className="block transform-gpu"
+          className="block pointer-events-none"
           style={{
-            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            width: `${viewportDimensions.width}px`,
+            height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transitionProperty: 'transform',
-            transitionDuration: '75ms'
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transition: 'transform 75ms'
           }}
         />
+        
+        {/* The SVG overlay layer must use identical transform */}
         <svg
           ref={svgLayerRef}
-          className="absolute top-0 left-0 pointer-events-auto transform-gpu"
+          className="absolute top-0 left-0 pointer-events-auto"
           style={{
-            width: viewportDimensions.width,
-            height: viewportDimensions.height,
-            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            width: `${viewportDimensions.width}px`,
+            height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transitionProperty: 'transform',
-            transitionDuration: '75ms'
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transition: 'transform 75ms'
           }}
         >
           {/* Debug grid removed */}
