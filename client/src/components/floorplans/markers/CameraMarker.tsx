@@ -12,6 +12,7 @@ interface CameraMarkerProps {
   onClick?: (e: React.MouseEvent) => void;
   onRightClick?: (e: React.MouseEvent) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
+  onHandleMouseDown?: (e: React.MouseEvent, handleType: string) => void;
 }
 
 export const CameraMarker: React.FC<CameraMarkerProps> = ({
@@ -25,6 +26,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
   onClick,
   onRightClick,
   onMouseDown,
+  onHandleMouseDown,
 }) => {
   // Camera marker dimensions
   const CAMERA_WIDTH = 16;
@@ -206,7 +208,69 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
       )}
       
       {/* Resize and rotate handles (only visible when selected) */}
-      {renderResizeHandles()}
+      {selected && onHandleMouseDown && (
+        <>
+          {/* FOV handles */}
+          <circle 
+            cx={position.x + range * Math.cos((rotation - fov/2) * Math.PI / 180)} 
+            cy={position.y + range * Math.sin((rotation - fov/2) * Math.PI / 180)} 
+            r={6} 
+            fill="white" 
+            stroke="#2196F3" 
+            strokeWidth={2}
+            className="resize-handle fov-handle-left"
+            data-handle="fov-left"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              onHandleMouseDown(e, 'fov-left');
+            }}
+            style={{ cursor: 'move' }}
+          />
+          <circle 
+            cx={position.x + range * Math.cos((rotation + fov/2) * Math.PI / 180)} 
+            cy={position.y + range * Math.sin((rotation + fov/2) * Math.PI / 180)} 
+            r={6} 
+            fill="white" 
+            stroke="#2196F3" 
+            strokeWidth={2}
+            className="resize-handle fov-handle-right"
+            data-handle="fov-right"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              onHandleMouseDown(e, 'fov-right');
+            }}
+            style={{ cursor: 'move' }}
+          />
+          
+          {/* Range handle */}
+          <circle 
+            cx={position.x + range * Math.cos(rotation * Math.PI / 180)} 
+            cy={position.y + range * Math.sin(rotation * Math.PI / 180)} 
+            r={6} 
+            fill="white" 
+            stroke="#2196F3" 
+            strokeWidth={2}
+            className="resize-handle range-handle"
+            data-handle="range"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              onHandleMouseDown(e, 'range');
+            }}
+            style={{ cursor: 'move' }}
+          />
+          
+          {/* Rotation handle */}
+          <line 
+            x1={position.x} 
+            y1={position.y} 
+            x2={position.x + range * Math.cos(rotation * Math.PI / 180)} 
+            y2={position.y + range * Math.sin(rotation * Math.PI / 180)}
+            stroke="#2196F3"
+            strokeWidth={1}
+            strokeDasharray="4,2"
+          />
+        </>
+      )}
     </g>
   );
 };
