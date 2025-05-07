@@ -20,6 +20,7 @@ import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
+import { screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen, Point } from '@/lib/coordinate-utils';
 
 import {
   ContextMenu,
@@ -149,60 +150,43 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
-  // NEW APPROACH: Convert screen (browser window) coordinates to PDF space coordinates
-  const screenToPdfCoordinates = (screenX: number, screenY: number) => {
-    if (!containerRef.current || !pageContainerRef.current) return { x: 0, y: 0 };
+  // Use our utility functions with a wrapper for better debugging
+  const screenToPdfCoordinates = (screenX: number, screenY: number): Point => {
+    if (!containerRef.current) return { x: 0, y: 0 };
     
-    // Step 1: Get position relative to the container (floorplan viewer)
     const rect = containerRef.current.getBoundingClientRect();
-    const viewerX = screenX - rect.left;
-    const viewerY = screenY - rect.top;
     
-    // Step 2: Account for any panning (translation) of the content inside the viewer
-    const panAdjustedX = viewerX - translateX;
-    const panAdjustedY = viewerY - translateY;
+    // Convert using our utility
+    const result = utilScreenToPdf(
+      screenX,
+      screenY,
+      rect,
+      scale,
+      translateX,
+      translateY,
+      pdfDimensions
+    );
     
-    // Step 3: Get the visible PDF area dimensions
-    const pageRect = pageContainerRef.current.getBoundingClientRect();
+    // Log for debugging (reduced to make it less verbose)
+    console.log(`Converting Screen(${screenX}, ${screenY}) → PDF(${result.x.toFixed(2)}, ${result.y.toFixed(2)}) @ scale ${scale}`);
     
-    // Step 4: Convert screen coordinates to relative position within the visible PDF
-    // This ensures markers are correctly placed on the actual floorplan image
-    // Calculate positions relative to the center of the PDF content
-    const pdfCenterX = translateX + (pageRect.width / 2);
-    const pdfCenterY = translateY + (pageRect.height / 2);
-    
-    // Calculate relative position 
-    const relativeX = (viewerX - pdfCenterX) / scale;
-    const relativeY = (viewerY - pdfCenterY) / scale;
-    
-    // Adjust to actual PDF coordinates (assuming 0,0 is center of document)
-    const pdfWidth = pdfDimensions.width || 612; // Standard PDF width if not available
-    const pdfHeight = pdfDimensions.height || 792; // Standard PDF height if not available
-    
-    const pdfX = (pdfWidth / 2) + relativeX;
-    const pdfY = (pdfHeight / 2) + relativeY;
-    
-    // Log details for debugging
-    console.log("====== COORDINATE CONVERSION ======");
-    console.log(`Input screen coords (window): (${screenX}, ${screenY})`);
-    console.log(`Container offset: (${rect.left}, ${rect.top})`);
-    console.log(`Relative to container: (${viewerX}, ${viewerY})`);
-    console.log(`PDF center point: (${pdfCenterX}, ${pdfCenterY})`);
-    console.log(`After pan adjustment: (${panAdjustedX}, ${panAdjustedY})`);
-    console.log(`Current scale: ${scale}`);
-    console.log(`PDF dimensions: ${pdfWidth} x ${pdfHeight}`);
-    console.log(`Final PDF coords: (${pdfX}, ${pdfY})`);
-    
-    return { x: pdfX, y: pdfY };
+    return result;
   };
   
-  // NEW HELPER: Convert PDF coordinates to screen (SVG) coordinates
-  const pdfToScreenCoordinates = (pdfX: number, pdfY: number) => {
-    // Apply the same transformation but in reverse
-    const screenX = pdfX * scale;
-    const screenY = pdfY * scale;
+  // Use our utility function for PDF to screen conversion
+  const pdfToScreenCoordinates = (pdfX: number, pdfY: number): Point => {
+    if (!containerRef.current) return { x: 0, y: 0 };
     
-    return { x: screenX, y: screenY };
+    const rect = containerRef.current.getBoundingClientRect();
+    
+    return utilPdfToScreen(
+      pdfX,
+      pdfY,
+      rect,
+      scale,
+      translateX,
+      translateY
+    );
   };
 
   // Store the current render task so we can cancel it if needed
@@ -373,8 +357,14 @@ export const EnhancedFloorplanViewer = ({
     const mousePdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
     
     // Calculate the offset between mouse PDF position and marker PDF position
-    const offsetX = (mousePdfCoords.x - marker.position_x) * scale;
-    const offsetY = (mousePdfCoords.y - marker.position_y) * scale;
+    // This is a key improvement - we store the offset in PDF coordinates (not screen)
+    const offsetX = mousePdfCoords.x - marker.position_x;
+    const offsetY = mousePdfCoords.y - marker.position_y;
+    
+    // Log for debugging
+    console.log(`Drag start - Marker position: (${marker.position_x}, ${marker.position_y})`);
+    console.log(`Drag start - Mouse PDF position: (${mousePdfCoords.x}, ${mousePdfCoords.y})`);
+    console.log(`Drag start - Offset: (${offsetX}, ${offsetY})`);
     
     setMarkerDragOffset({ x: offsetX, y: offsetY });
     setSelectedMarker(marker);
@@ -611,6 +601,11 @@ export const EnhancedFloorplanViewer = ({
     // Create a custom wheel handler that doesn't use preventDefault
     // Instead, we'll manage zoom in our own handler
     const handleMouseWheel = (e: WheelEvent) => {
+      // Disable zooming if equipment form or any modal dialog is open
+      if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen) {
+        return; // Do not handle zoom when modals are open
+      }
+      
       if (containerRef.current && containerRef.current.contains(e.target as Node)) {
         const delta = e.deltaY;
         
@@ -624,6 +619,9 @@ export const EnhancedFloorplanViewer = ({
           
           // Update scale
           setScale(newScale);
+          
+          // Log for debugging
+          console.log(`Zooming: scale changed to ${newScale.toFixed(2)}`);
         }
       }
     };
@@ -634,7 +632,7 @@ export const EnhancedFloorplanViewer = ({
     return () => {
       containerRef.current?.removeEventListener('wheel', handleMouseWheel);
     };
-  }, [scale]);
+  }, [scale, isEquipmentFormOpen, isCalibrationDialogOpen, isLayerManagerOpen]);
 
   // Keyboard handler for marker operations
   useEffect(() => {
