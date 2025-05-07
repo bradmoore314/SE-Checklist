@@ -10,7 +10,8 @@ export type Point = { x: number; y: number };
 
 /**
  * Convert screen (browser) coordinates to PDF document coordinates
- * This function works with our new approach where the transform is applied to the SVG container
+ * This function converts cursor/event coordinates to the original PDF document space
+ * accounting for all transformations (scale and translate) applied to the SVG container.
  * 
  * @param screenX X coordinate in screen space (from mouse event)
  * @param screenY Y coordinate in screen space (from mouse event)
@@ -18,7 +19,6 @@ export type Point = { x: number; y: number };
  * @param scale Current zoom scale factor
  * @param translateX Current X translation (pan)
  * @param translateY Current Y translation (pan)
- * @param pdfViewport The dimensions of the PDF viewport
  * @returns Coordinates in PDF space
  */
 export function screenToPdfCoordinates(
@@ -30,13 +30,14 @@ export function screenToPdfCoordinates(
   translateY: number,
   pdfViewport: { width: number; height: number } = { width: 0, height: 0 }
 ): Point {
-  // First convert screen coordinates to container-relative coordinates
+  // 1. Convert client coordinates to relative coordinates within the container
   const containerX = screenX - containerRect.left;
   const containerY = screenY - containerRect.top;
   
-  // Then convert container coordinates to PDF coordinates, accounting for pan and zoom
-  // Since the whole container has the transform applied, we need to "undo" that transform
-  // to get back to the original PDF coordinates
+  // 2. Since we apply transform to both canvas and SVG elements, we need to 
+  // inverse the transformation to get back to PDF coordinates
+  // - First remove the translation
+  // - Then remove the scaling
   const pdfX = (containerX - translateX) / scale;
   const pdfY = (containerY - translateY) / scale;
   
