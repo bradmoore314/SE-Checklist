@@ -602,8 +602,10 @@ export const EnhancedFloorplanViewer = ({
     // Instead, we'll manage zoom in our own handler
     const handleMouseWheel = (e: WheelEvent) => {
       // Disable zooming if equipment form or any modal dialog is open
-      if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen) {
-        return; // Do not handle zoom when modals are open
+      // or if contextMenuOpen is true (context menu is showing)
+      if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
+        e.stopPropagation(); // Stop event propagation to prevent any zooming
+        return; // Do not handle zoom when modals or context menus are open
       }
       
       if (containerRef.current && containerRef.current.contains(e.target as Node)) {
@@ -632,7 +634,7 @@ export const EnhancedFloorplanViewer = ({
     return () => {
       containerRef.current?.removeEventListener('wheel', handleMouseWheel);
     };
-  }, [scale, isEquipmentFormOpen, isCalibrationDialogOpen, isLayerManagerOpen]);
+  }, [scale, isEquipmentFormOpen, isCalibrationDialogOpen, isLayerManagerOpen, contextMenuOpen]);
 
   // Keyboard handler for marker operations
   useEffect(() => {
@@ -948,6 +950,11 @@ export const EnhancedFloorplanViewer = ({
   const handleWheel = (e: React.WheelEvent) => {
     // Don't use preventDefault since we're in passive mode
     // Instead let the custom wheel handler manage zoom behavior
+    
+    // Don't process wheel events if any modal or context menu is open
+    if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
+      return; // Exit early - no zooming when dialogs are open
+    }
     
     // Get mouse position relative to container
     const rect = containerRef.current?.getBoundingClientRect();
