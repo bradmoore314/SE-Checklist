@@ -22,6 +22,7 @@ import { CalibrationDialog } from './CalibrationDialog';
 import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
 import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/lib/coordinate-utils';
+import CameraMarker from './markers/CameraMarker';
 
 import {
   ContextMenu,
@@ -1345,63 +1346,42 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'camera':
-                // Apply transform to the parent group for position
-                // And use a nested group with inverse scale to keep marker size constant
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
-                    {/* Add inner group with inverse scale to maintain consistent visual size */}
-                    <g transform={`scale(${1/scale})`}>
-                      <rect 
-                        x={-10} 
-                        y={-10} 
-                        width={20} 
-                        height={20}
-                        fill={fillColor} /* Red background for consistency */
-                        stroke={markerColor}
-                        strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
-                        rx={2}
-                      />
-                      <text 
-                        fontSize={12} 
-                        textAnchor="middle" 
-                        dominantBaseline="middle" 
-                        fill="#ff0000" /* Red text */
-                        fontWeight="bold"
-                        style={{ 
-                          pointerEvents: 'none',
-                          userSelect: 'none',
-                          WebkitUserSelect: 'none',
-                          msUserSelect: 'none'
-                        }}
-                      >C</text>
-                      {shouldShowMarkerLabel(marker, isSelected) && marker.label && (
-                        <g style={{ pointerEvents: 'none' }}>
-                          <rect
-                            x={-40}
-                            y={17}
-                            width={80}
-                            height={16}
-                            rx={4}
-                            fill="#ffff00" /* Yellow background */
-                            stroke="#ff0000"
-                            strokeWidth={0.5}
-                          />
-                          <text 
-                            fontSize={11} 
-                            y={24} 
-                            textAnchor="middle" 
-                            fill="#ff0000" /* Red text */
-                            fontWeight="bold"
-                          >{marker.label}</text>
-                        </g>
-                      )}
-                    </g>
+                    <CameraMarker
+                      id={marker.id}
+                      position={{ 
+                        x: marker.position_x * scale, 
+                        y: marker.position_y * scale 
+                      }}
+                      selected={isSelected}
+                      label={shouldShowMarkerLabel(marker, isSelected) ? marker.label || undefined : undefined}
+                      fov={(marker as any).fov || 90}
+                      range={(marker as any).range || 60}
+                      rotation={marker.rotation || 0}
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleMarkerClick(marker);
+                      }}
+                      onRightClick={(e: React.MouseEvent) => {
+                        handleMarkerRightClick(e, marker);
+                      }}
+                      onMouseDown={(e: React.MouseEvent) => {
+                        if (e.button === 0 && 
+                            !isAddingMarker && 
+                            !isDrawing && 
+                            !['polyline', 'polygon'].includes(toolMode) && 
+                            toolMode !== 'delete') {
+                          e.stopPropagation();
+                          startMarkerDrag(e, marker);
+                        }
+                      }}
+                    />
                   </g>
                 );
               
