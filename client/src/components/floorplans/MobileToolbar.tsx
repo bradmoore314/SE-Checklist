@@ -43,63 +43,10 @@ export const MobileToolbar = ({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-10">
       <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg py-2">
-        {/* Main toolbar - always visible */}
-        <div className="px-3 flex items-center justify-between">
-          {/* Left side tools */}
-          <div className="flex space-x-1 overflow-x-auto no-scrollbar">
-            <ToolButton 
-              icon={<MousePointer />} 
-              label="Select"
-              active={currentTool === 'select'} 
-              onClick={() => onToolSelect('select')} 
-            />
-            <ToolButton 
-              icon={<DoorClosed />} 
-              label="Door"
-              active={currentTool === 'access_point'} 
-              onClick={() => onToolSelect('access_point')} 
-            />
-            <ToolButton 
-              icon={<Camera />} 
-              label="Camera"
-              active={currentTool === 'camera'} 
-              onClick={() => onToolSelect('camera')} 
-            />
-            <ToolButton 
-              icon={<Phone />} 
-              label="Intercom"
-              active={currentTool === 'intercom'} 
-              onClick={() => onToolSelect('intercom')} 
-            />
-            <ToolButton 
-              icon={<ArrowUpDown />} 
-              label="Elevator"
-              active={currentTool === 'elevator'} 
-              onClick={() => onToolSelect('elevator')} 
-            />
-          </div>
-          
-          {/* Right side tools */}
-          <div className="flex items-center space-x-1">
-            <ToolButton 
-              icon={<Move />}
-              label="Move"
-              active={currentTool === 'move'}
-              onClick={() => onToolSelect('select')}
-              tooltip="Select & drag marker"
-            />
-            <ToolButton 
-              icon={<X />}
-              label="Delete"
-              active={currentTool === 'delete'}
-              onClick={() => onToolSelect('delete')}
-            />
-            <ToolButton 
-              icon={<Ruler />}
-              label="Measure"
-              active={currentTool === 'measure'}
-              onClick={() => onToolSelect('measure')}
-            />
+        {/* Simplified toolbar - main tools moved to top toolbar */}
+        <div className="px-3 flex items-center justify-center">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>Tool buttons moved to top toolbar</p>
           </div>
         </div>
         

@@ -29,6 +29,7 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AnnotationToolbar, AnnotationTool } from '@/components/floorplans/AnnotationToolbar';
 import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
+import { TopToolbar } from '@/components/floorplans/TopToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
 import { FullScreenButton } from '@/components/ui/fullscreen-button';
@@ -782,6 +783,14 @@ function EnhancedFloorplansPage() {
                 <RefreshCcw className="h-4 w-4 mr-2" />
                 Reload
               </Button>
+              
+              {/* Integrated toolbar between Reload and Add Equipment buttons */}
+              <TooltipProvider>
+                <TopToolbar 
+                  currentTool={toolMode}
+                  onToolSelect={handleToolSelect}
+                />
+              </TooltipProvider>
             </div>
             
             <div className="flex space-x-2">
