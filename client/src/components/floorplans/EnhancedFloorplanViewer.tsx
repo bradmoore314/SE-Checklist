@@ -130,7 +130,13 @@ export const EnhancedFloorplanViewer = ({
   const [pdfDimensions, setPdfDimensions] = useState({width: 0, height: 0});
   
   // Create a coordinate system instance
-  const [coordSystem] = useState(() => new CoordinateSystem());
+  const [coordSystem] = useState(() => new CoordinateSystem(
+    containerRef.current,
+    scale,
+    translateX,
+    translateY,
+    { width: viewportDimensions.width, height: viewportDimensions.height }
+  ));
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
@@ -153,11 +159,29 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
+  // Update coordinate system when view state changes
+  useEffect(() => {
+    // Update the coordinate system with the latest state values
+    coordSystem.updateSystem({
+      containerElement: containerRef.current,
+      scale: scale,
+      translateX: translateX,
+      translateY: translateY,
+      viewportDimensions: viewportDimensions
+    });
+    
+    // Log the update for debugging
+    console.log(`=== COORDINATE SYSTEM UPDATED ===`);
+    console.log(`Scale: ${scale.toFixed(2)}`);
+    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
+    console.log(`Viewport: ${viewportDimensions.width}x${viewportDimensions.height}`);
+  }, [scale, translateX, translateY, viewportDimensions, containerRef]);
+  
   // Use our new coordinate system for all transformations
   const screenToPdfCoordinates = (screenX: number, screenY: number): Point => {
     if (!containerRef.current) return { x: 0, y: 0 };
     
-    // The coordSystem is automatically updated whenever scale, translateX, or translateY changes
+    // The coordSystem is updated via useEffect when scale, translateX, or translateY changes
     const result = coordSystem.screenToPdf(screenX, screenY);
     
     // Log for debugging (reduced to make it less verbose)
