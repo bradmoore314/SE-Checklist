@@ -109,21 +109,37 @@ export default function Projects() {
 
   // Preload floorplans for all projects when the page loads
   useEffect(() => {
-    if (allProjects && allProjects.length > 0) {
-      // If we have a current project, prefetch its floorplans first
-      if (currentProject) {
-        prefetchFloorplans(currentProject.id);
+    // Explicitly trigger a refetch of projects to ensure we have the latest data
+    refreshProjects();
+    
+    // Also prefetch the projects data again using the query client
+    queryClient.prefetchQuery({
+      queryKey: ['/api/projects'],
+      queryFn: async () => {
+        const res = await apiRequest('GET', '/api/projects');
+        return await res.json();
       }
-      
-      // Then prefetch the first few projects (limit to avoid too many requests)
-      const projectsToPreload = allProjects.slice(0, 3);
-      projectsToPreload.forEach(project => {
-        if (!currentProject || project.id !== currentProject.id) {
-          prefetchFloorplans(project.id);
+    });
+    
+    // Set a short timeout to ensure we have projects data before proceeding
+    const timer = setTimeout(() => {
+      if (allProjects && allProjects.length > 0) {
+        // If we have a current project, prefetch its floorplans first
+        if (currentProject) {
+          prefetchFloorplans(currentProject.id);
         }
-      });
-    }
-  }, [allProjects, currentProject, queryClient]);
+        
+        // Then prefetch all projects to ensure they're loaded (we'll optimize later if needed)
+        allProjects.forEach(project => {
+          if (!currentProject || project.id !== currentProject.id) {
+            prefetchFloorplans(project.id);
+          }
+        });
+      }
+    }, 100); // Short delay to ensure projects are loaded
+    
+    return () => clearTimeout(timer);
+  }, [allProjects, currentProject, queryClient, refreshProjects]);
   
   // Listen for custom event to open create project dialog
   useEffect(() => {

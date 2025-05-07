@@ -15,6 +15,10 @@ export default function Sidebar({ collapsed }: SidebarProps) {
     if (path === "/projects") {
       return location === "/" || location === "/projects";
     }
+    // Dashboard should only be active when explicitly on /dashboard
+    if (path === "/") {
+      return false; // Never highlight Dashboard when on root path
+    }
     return location === path;
   };
 
