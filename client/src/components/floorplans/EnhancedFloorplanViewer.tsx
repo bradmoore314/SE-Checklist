@@ -144,10 +144,19 @@ export const EnhancedFloorplanViewer = ({
     };
   };
 
+  // Store the current render task so we can cancel it if needed
+  const renderTaskRef = useRef<any>(null);
+  
   // DEFINE RENDER PAGE FUNCTION FIRST
   const renderPage = async (pageNum: number) => {
     if (!pdfDocument || !canvasRef.current || !svgLayerRef.current || pageNum < 1 || pageNum > pdfDocument.numPages) {
       return;
+    }
+
+    // Cancel any pending render task
+    if (renderTaskRef.current) {
+      renderTaskRef.current.cancel();
+      renderTaskRef.current = null;
     }
 
     setIsLoading(true);
@@ -173,14 +182,32 @@ export const EnhancedFloorplanViewer = ({
       const scaleFactor = viewport.width / page.getViewport({ scale: 1 }).width;
       setPdfToViewportScale(scaleFactor);
       
-      // Render PDF page
-      await page.render({
+      // Clear the canvas 
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Create a new render task
+      const renderTask = page.render({
         canvasContext: context,
         viewport: viewport,
-      }).promise;
+      });
+      
+      // Store the render task so we can cancel it if needed
+      renderTaskRef.current = renderTask;
+      
+      // Wait for rendering to complete
+      await renderTask.promise;
+      
+      // Clear the reference since rendering is complete
+      renderTaskRef.current = null;
       
       setIsLoading(false);
     } catch (error) {
+      // Check if this was a cancelled task
+      if (error?.name === 'RenderingCancelledException') {
+        console.log('Rendering cancelled as expected');
+        return; // Don't show an error for cancellation
+      }
+      
       console.error('Error rendering PDF page:', error);
       setIsLoading(false);
       toast({
@@ -506,19 +533,33 @@ export const EnhancedFloorplanViewer = ({
 
   // Pan and zoom event handlers
   useEffect(() => {
+    // Create a custom wheel handler that doesn't use preventDefault
+    // Instead, we'll manage zoom in our own handler
     const handleMouseWheel = (e: WheelEvent) => {
       if (containerRef.current && containerRef.current.contains(e.target as Node)) {
-        e.preventDefault();
+        const delta = e.deltaY;
+        
+        // Implement zoom functionality directly in our handler
+        if (delta !== 0) {
+          // Determine zoom direction (in or out)
+          const zoomFactor = delta > 0 ? 0.9 : 1.1; // Zoom out if positive delta, in if negative
+          
+          // Calculate new scale
+          const newScale = Math.max(0.1, Math.min(10, scale * zoomFactor));
+          
+          // Update scale
+          setScale(newScale);
+        }
       }
     };
     
-    // Prevent default browser zoom on trackpad/wheel to avoid competing behaviors
-    window.addEventListener('wheel', handleMouseWheel, { passive: false });
+    // Use passive event listener which is more performant and avoids warnings
+    containerRef.current?.addEventListener('wheel', handleMouseWheel, { passive: true });
     
     return () => {
-      window.removeEventListener('wheel', handleMouseWheel);
+      containerRef.current?.removeEventListener('wheel', handleMouseWheel);
     };
-  }, [scale, translateX, translateY]);
+  }, [scale]);
 
   // Keyboard handler for marker operations
   useEffect(() => {
@@ -817,7 +858,8 @@ export const EnhancedFloorplanViewer = ({
   };
   
   const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
+    // Don't use preventDefault since we're in passive mode
+    // Instead let the custom wheel handler manage zoom behavior
     
     // Get mouse position relative to container
     const rect = containerRef.current?.getBoundingClientRect();
