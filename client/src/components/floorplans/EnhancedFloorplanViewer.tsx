@@ -3,12 +3,31 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Layers, ZoomIn, ZoomOut, CheckSquare } from 'lucide-react';
+import { 
+  Loader2, 
+  Layers, 
+  ZoomIn, 
+  ZoomOut, 
+  CheckSquare, 
+  Copy, 
+  Trash, 
+  Edit, 
+  Eye,
+  EyeOff
+} from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
+
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 // Ensure PDF.js worker is configured
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -1510,6 +1529,72 @@ export const EnhancedFloorplanViewer = ({
           }}
           onClose={() => setIsEquipmentFormOpen(false)}
         />
+      )}
+      
+      {/* Context Menu */}
+      {contextMenuOpen && selectedMarker && (
+        <div 
+          className="fixed z-50" 
+          style={{ 
+            left: `${contextMenuPosition.x}px`, 
+            top: `${contextMenuPosition.y}px` 
+          }}
+        >
+          <ContextMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+            <ContextMenuContent className="w-64">
+              <ContextMenuItem
+                onClick={() => {
+                  // Duplicate the selected marker with a slight offset
+                  duplicateMarkerMutation.mutate({
+                    ...selectedMarker,
+                    id: undefined, // Remove ID so a new one is generated
+                    position_x: selectedMarker.position_x + 20,
+                    position_y: selectedMarker.position_y + 20,
+                  });
+                  setContextMenuOpen(false);
+                  toast({
+                    title: 'Marker Duplicated',
+                    description: 'Created a copy of the selected marker',
+                    duration: 2000,
+                  });
+                }}
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                Duplicate
+              </ContextMenuItem>
+              
+              <ContextMenuItem
+                onClick={() => {
+                  // Delete the selected marker
+                  deleteMarkerMutation.mutate(selectedMarker.id);
+                  setSelectedMarker(null);
+                  setContextMenuOpen(false);
+                  toast({
+                    title: 'Marker Deleted',
+                    description: 'Marker has been removed from the floorplan',
+                    duration: 2000,
+                  });
+                }}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </ContextMenuItem>
+              
+              <ContextMenuSeparator />
+              
+              <ContextMenuItem
+                onClick={() => {
+                  // Open the marker properties dialog
+                  setIsEquipmentFormOpen(true);
+                  setContextMenuOpen(false);
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Properties
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </div>
       )}
     </div>
   );
