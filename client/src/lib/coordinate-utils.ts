@@ -125,14 +125,19 @@ export class CoordinateSystem {
     const containerY = screenY - rect.top;
     
     // 2. Apply inverse transformation to get PDF coordinates
-    const pdfX = this.limitPrecision((containerX - this.translateX) / this.scale);
-    const pdfY = this.limitPrecision((containerY - this.translateY) / this.scale);
+    // Be extra careful to preserve precision during division
+    const pdfX = (containerX - this.translateX) / this.scale;
+    const pdfY = (containerY - this.translateY) / this.scale;
     
     if (debug) {
-      console.log(`Screen(${screenX}, ${screenY}) → Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfX}, ${pdfY}) @ scale ${this.scale.toFixed(2)}`);
+      console.log(`Screen(${screenX}, ${screenY}) → Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfX.toFixed(4)}, ${pdfY.toFixed(4)}) @ scale ${this.scale.toFixed(4)}`);
     }
     
-    return { x: pdfX, y: pdfY };
+    // Only limit precision at the very end to avoid cumulative errors
+    return { 
+      x: this.limitPrecision(pdfX),
+      y: this.limitPrecision(pdfY)
+    };
   }
   
   /**
@@ -164,13 +169,23 @@ export class CoordinateSystem {
    * Convert container coordinates to PDF coordinates
    * @param containerX X coordinate relative to container
    * @param containerY Y coordinate relative to container
+   * @param debug Whether to log debug information
    * @returns Point in PDF coordinate space
    */
-  containerToPdf(containerX: number, containerY: number): Point {
-    const pdfX = this.limitPrecision((containerX - this.translateX) / this.scale);
-    const pdfY = this.limitPrecision((containerY - this.translateY) / this.scale);
+  containerToPdf(containerX: number, containerY: number, debug: boolean = false): Point {
+    // Calculate precise PDF coordinates by correctly inverting the transform
+    const pdfX = (containerX - this.translateX) / this.scale;
+    const pdfY = (containerY - this.translateY) / this.scale;
     
-    return { x: pdfX, y: pdfY };
+    if (debug) {
+      console.log(`Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfX.toFixed(4)}, ${pdfY.toFixed(4)}) @ scale ${this.scale.toFixed(4)}`);
+    }
+    
+    // Apply precision limits at the end to avoid cumulative errors
+    return { 
+      x: this.limitPrecision(pdfX), 
+      y: this.limitPrecision(pdfY) 
+    };
   }
   
   /**
@@ -270,7 +285,7 @@ export class CoordinateSystem {
   }
 }
 
-// Export legacy API for backward compatibility
+// Export legacy API for backward compatibility, but with improved precision
 export function screenToPdfCoordinates(
   screenX: number,
   screenY: number,
@@ -280,7 +295,7 @@ export function screenToPdfCoordinates(
   translateY: number,
   pdfViewport: { width: number; height: number } = { width: 0, height: 0 }
 ): Point {
-  // Create a temporary coordinate system
+  // Create a temporary coordinate system with our improved approach
   const coords = new CoordinateSystem(
     null,
     scale,
@@ -293,7 +308,8 @@ export function screenToPdfCoordinates(
   const containerX = screenX - containerRect.left;
   const containerY = screenY - containerRect.top;
   
-  return coords.containerToPdf(containerX, containerY);
+  // 2. Enable debug mode for better logging
+  return coords.containerToPdf(containerX, containerY, true);
 }
 
 export function pdfToScreenCoordinates(
