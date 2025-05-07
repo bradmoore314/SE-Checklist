@@ -1008,29 +1008,7 @@ export const EnhancedFloorplanViewer = ({
             height: viewportDimensions.height
           }}
         >
-          {/* Render debug grid for coordinate system visualization */}
-          <g className="debug-grid">
-            {/* Draw crosshairs at 0,0 origin */}
-            <line x1="0" y1="-50" x2="0" y2="50" stroke="#00FF00" strokeWidth="1" />
-            <line x1="-50" y1="0" x2="50" y2="0" stroke="#00FF00" strokeWidth="1" />
-            <text x="5" y="-5" fill="#00FF00" fontSize="10">Origin (0,0)</text>
-            
-            {/* Draw X and Y axes with labels at 100-point intervals */}
-            {Array.from({length: 10}).map((_, i) => {
-              const pos = (i + 1) * 100 * scale;
-              return (
-                <g key={`grid-${i}`}>
-                  {/* X axis markers */}
-                  <line x1={pos} y1="-10" x2={pos} y2="10" stroke="#00FF00" strokeWidth="1" />
-                  <text x={pos} y="20" fill="#00FF00" fontSize="10" textAnchor="middle">{(i + 1) * 100}</text>
-                  
-                  {/* Y axis markers */}
-                  <line x1="-10" y1={pos} x2="10" y2={pos} stroke="#00FF00" strokeWidth="1" />
-                  <text x="-20" y={pos} fill="#00FF00" fontSize="10" textAnchor="end">{(i + 1) * 100}</text>
-                </g>
-              );
-            })}
-          </g>
+          {/* Debug grid removed */}
           
           {/* Render markers here based on their type */}
           {markers.map((marker: MarkerData) => {
@@ -1111,7 +1089,11 @@ export const EnhancedFloorplanViewer = ({
                 // For access points, get screen coordinates from PDF coordinates
                 const { x: screenX, y: screenY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
@@ -1163,7 +1145,11 @@ export const EnhancedFloorplanViewer = ({
                 // For cameras, get screen coordinates from PDF coordinates
                 const { x: cameraX, y: cameraY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
@@ -1219,7 +1205,11 @@ export const EnhancedFloorplanViewer = ({
                 // For rectangles, get screen coordinates from PDF coordinates
                 const { x: rectX, y: rectY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
@@ -1264,7 +1254,11 @@ export const EnhancedFloorplanViewer = ({
                 // For ellipses, get screen coordinates from PDF coordinates
                 const { x: ellipseX, y: ellipseY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
@@ -1309,12 +1303,20 @@ export const EnhancedFloorplanViewer = ({
                 // For lines, get screen coordinates for both start and end points
                 const { x: lineStartX, y: lineStartY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 const { x: lineEndX, y: lineEndY } = pdfToScreenCoordinates(
                   marker.end_x!, 
-                  marker.end_y!
+                  marker.end_y!,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
@@ -1371,7 +1373,11 @@ export const EnhancedFloorplanViewer = ({
                 // For notes, get screen coordinates from PDF coordinates
                 const { x: noteX, y: noteY } = pdfToScreenCoordinates(
                   marker.position_x, 
-                  marker.position_y
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect(),
+                  scale,
+                  translateX,
+                  translateY
                 );
                 
                 return (
