@@ -1,0 +1,55 @@
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Submitting access point data: 
+Object {project_id: 32, location: "sadfsdfsdf", quick_config: "Standard", reader_type: "KR-100", lock_type: "Standard", …}
+Fetch POST /api/access-points with data
+Fetch finished loading: POST /api/access-points
+Created access point with ID: 57
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Submitting access point data: 
+Object {project_id: 32, location: "asdfasdfasdf", quick_config: "Standard", reader_type: "KR-100", lock_type: "Standard", …}
+Fetch POST /api/access-points with data
+Fetch finished loading: POST /api/access-points
+Created access point with ID: 58
+Fetch GET /api/equipment-images/access_point/57
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Fetch finished loading: GET /api/equipment-images/access_point/57
+Fetch GET /api/equipment-images/access_point/57
+Fetch finished loading: GET /api/equipment-images/access_point/57
+Form validation state: 
+Object {defaultValues: {…}}
+Updating access point with ID: 57
+Fetch PUT /api/access-points/57 with data
+Fetch finished loading: PUT /api/access-points/57
+Fetch GET /api/floorplans/30/calibration?page=1
+Calculating fit scale: PDF width=449.9994330708662px, Container width=1102px, Scale=2.33
+Auto-scaling PDF to fit width: scale = 2.33
+Rendering cancelled as expected
+Fetch finished loading: GET /api/floorplans/30/calibration?page=1
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Fetch GET /api/floorplans/30/calibration?page=1
+Fetch finished loading: GET /api/floorplans/30/calibration?page=1
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Zooming: scale changed to 2.09
+Zooming: scale changed to 1.88
+Zooming: scale changed to 1.70
+Zooming: scale changed to 1.53
+ZOOM: Scale 1.70 → 1.53, Mouse PDF (126, 172)
+Zooming: scale changed to 1.37
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}
+
+Query error for /api/projects/32/unassigned-equipment: 
+Error {}

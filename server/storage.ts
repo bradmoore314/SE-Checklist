@@ -104,6 +104,7 @@ export interface IStorage {
   
   // Floorplan Markers
   getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]>;
+  getFloorplanMarkersByProjectId(projectId: number): Promise<FloorplanMarker[]>;
   getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined>;
   createFloorplanMarker(marker: InsertFloorplanMarker): Promise<FloorplanMarker>;
   updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
@@ -889,6 +890,21 @@ export class MemStorage implements IStorage {
   async getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]> {
     return Array.from(this.floorplanMarkers.values()).filter(
       (marker) => marker.floorplan_id === floorplanId
+    );
+  }
+
+  async getFloorplanMarkersByProjectId(projectId: number): Promise<FloorplanMarker[]> {
+    // First, get all floorplans for this project
+    const projectFloorplans = Array.from(this.floorplans.values()).filter(
+      (floorplan) => floorplan.project_id === projectId
+    );
+    
+    // Get all floorplan IDs
+    const floorplanIds = projectFloorplans.map(floorplan => floorplan.id);
+    
+    // Return all markers that belong to these floorplans
+    return Array.from(this.floorplanMarkers.values()).filter(
+      (marker) => floorplanIds.includes(marker.floorplan_id)
     );
   }
 
@@ -1880,6 +1896,22 @@ export class DatabaseStorage implements IStorage {
   // Floorplan Markers
   async getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]> {
     return await db.select().from(floorplanMarkers).where(eq(floorplanMarkers.floorplan_id, floorplanId));
+  }
+
+  async getFloorplanMarkersByProjectId(projectId: number): Promise<FloorplanMarker[]> {
+    // First, get all floorplans for this project
+    const projectFloorplans = await db.select().from(floorplans).where(eq(floorplans.project_id, projectId));
+    
+    // If no floorplans found, return empty array
+    if (projectFloorplans.length === 0) {
+      return [];
+    }
+    
+    // Get all floorplan IDs
+    const floorplanIds = projectFloorplans.map(floorplan => floorplan.id);
+    
+    // Return all markers that belong to these floorplans
+    return await db.select().from(floorplanMarkers).where(inArray(floorplanMarkers.floorplan_id, floorplanIds));
   }
 
   async getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined> {
