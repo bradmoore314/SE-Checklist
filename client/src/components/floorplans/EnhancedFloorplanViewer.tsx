@@ -1939,13 +1939,15 @@ export const EnhancedFloorplanViewer = ({
           marker={selectedMarker}
           onUpdate={(updatedData) => {
             // Update the camera marker with new settings
-            updateMarkerMutation.mutate({
+            const updatedMarker = {
               ...selectedMarker,
-              fov: updatedData.fov,
-              range: updatedData.range,
-              rotation: updatedData.rotation,
-              label: updatedData.label
-            });
+              label: updatedData.label,
+              // Use spread for additional attributes that might not be in MarkerData type
+              ...(updatedData.fov !== undefined ? { fov: updatedData.fov } : {}),
+              ...(updatedData.range !== undefined ? { range: updatedData.range } : {}),
+              ...(updatedData.rotation !== undefined ? { rotation: updatedData.rotation } : {})
+            };
+            updateMarkerMutation.mutate(updatedMarker);
             
             // Close the dialog
             setIsCameraEditDialogOpen(false);
