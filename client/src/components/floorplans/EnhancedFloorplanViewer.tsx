@@ -108,7 +108,6 @@ export const EnhancedFloorplanViewer = ({
   const [viewportDimensions, setViewportDimensions] = useState({width: 0, height: 0});
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
-  const [pdfToViewportScale, setPdfToViewportScale] = useState<number>(1);
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
   const [tempMarker, setTempMarker] = useState<Partial<MarkerData> | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
@@ -203,7 +202,7 @@ export const EnhancedFloorplanViewer = ({
       
       // Calculate scale from PDF points to viewport pixels
       const scaleFactor = viewport.width / page.getViewport({ scale: 1 }).width;
-      setPdfToViewportScale(scaleFactor);
+      // We no longer need to set pdfToViewportScale as we're using scale directly
       
       // Clear the canvas 
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -736,8 +735,8 @@ export const EnhancedFloorplanViewer = ({
       const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Account for the initial offset when the drag started
-      const newX = pdfCoords.x - (markerDragOffset.x / pdfToViewportScale);
-      const newY = pdfCoords.y - (markerDragOffset.y / pdfToViewportScale);
+      const newX = pdfCoords.x - (markerDragOffset.x / scale);
+      const newY = pdfCoords.y - (markerDragOffset.y / scale);
       
       // Update local state for smooth visual feedback
       setSelectedMarker(prev => {
@@ -805,7 +804,7 @@ export const EnhancedFloorplanViewer = ({
         Math.pow(pdfCoords.y - lastPoint.y, 2)
       );
       
-      if (distance > 5 / pdfToViewportScale) { // 5px in screen space
+      if (distance > 5 / scale) { // 5px in screen space
         setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfCoords.x, y: pdfCoords.y }]);
       }
     }
@@ -821,7 +820,7 @@ export const EnhancedFloorplanViewer = ({
       const height = Math.abs(pdfCoords.y - (tempMarker.position_y || 0));
       
       // Only add if the shape has some size
-      if (width > 5 / pdfToViewportScale || height > 5 / pdfToViewportScale) {
+      if (width > 5 / scale || height > 5 / scale) {
         const finalMarker = {
           ...tempMarker,
           end_x: pdfCoords.x,
