@@ -46,9 +46,9 @@ function Router() {
       <Route path="/debug-login" component={DebugLoginPage} />
       <Route path="/debug-floorplan" component={DebugFloorplanTest} />
       
-      {/* Protected routes */}
-      <ProtectedRoute path="/" component={Dashboard} />
-      <ProtectedRoute path="/projects" component={Projects} />
+      {/* Protected routes - Redirect root to My Site Walks page */}
+      <ProtectedRoute path="/" component={Projects} />
+      <ProtectedRoute path="/dashboard" component={Dashboard} />
       
       {/* Equipment routes */}
       <ProtectedRoute path="/card-access" component={CardAccess} />

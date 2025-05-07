@@ -85,7 +85,8 @@ export default function Projects() {
     pinnedProjects,
     pinProject,
     unpinProject,
-    refreshProjects
+    refreshProjects,
+    currentProject
   } = useProject();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -94,6 +95,35 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState("mine");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedSeFilter, setSelectedSeFilter] = useState<string>("");
+  
+  // Function to prefetch floorplans for a project
+  const prefetchFloorplans = (projectId: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['/api/projects', projectId, 'floorplans'],
+      queryFn: async () => {
+        const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
+        return await res.json();
+      }
+    });
+  };
+
+  // Preload floorplans for all projects when the page loads
+  useEffect(() => {
+    if (allProjects && allProjects.length > 0) {
+      // If we have a current project, prefetch its floorplans first
+      if (currentProject) {
+        prefetchFloorplans(currentProject.id);
+      }
+      
+      // Then prefetch the first few projects (limit to avoid too many requests)
+      const projectsToPreload = allProjects.slice(0, 3);
+      projectsToPreload.forEach(project => {
+        if (!currentProject || project.id !== currentProject.id) {
+          prefetchFloorplans(project.id);
+        }
+      });
+    }
+  }, [allProjects, currentProject, queryClient]);
   
   // Listen for custom event to open create project dialog
   useEffect(() => {
@@ -158,6 +188,10 @@ export default function Projects() {
 
   // Handle selecting a site walk
   const selectSiteWalk = (siteWalk: Project) => {
+    // First prefetch floorplans for this project to ensure they're in the cache
+    prefetchFloorplans(siteWalk.id);
+    
+    // Then set it as current project and navigate
     setCurrentSiteWalk(siteWalk);
     setCurrentProject(siteWalk);
     setLocation("/");
