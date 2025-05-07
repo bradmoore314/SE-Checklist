@@ -1160,8 +1160,8 @@ export const EnhancedFloorplanViewer = ({
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width! * pdfToViewportScale} 
-                      height={marker.height! * pdfToViewportScale}
+                      width={marker.width! * scale} 
+                      height={marker.height! * scale}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
@@ -1197,10 +1197,10 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={(marker.width! * pdfToViewportScale) / 2} 
-                      cy={(marker.height! * pdfToViewportScale) / 2}
-                      rx={(marker.width! * pdfToViewportScale) / 2} 
-                      ry={(marker.height! * pdfToViewportScale) / 2}
+                      cx={(marker.width! * scale) / 2} 
+                      cy={(marker.height! * scale) / 2}
+                      rx={(marker.width! * scale) / 2} 
+                      ry={(marker.height! * scale) / 2}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
