@@ -101,7 +101,7 @@ interface EnhancedFloorplanViewerProps {
   toolMode: AnnotationTool; 
   layers: LayerData[];
   onPageChange: (page: number) => void;
-  showAllLabels?: boolean;
+  visibleLabelTypes?: Record<string, boolean>;
   onMarkersUpdated?: () => void;
 }
 
@@ -111,7 +111,7 @@ export const EnhancedFloorplanViewer = ({
   toolMode,
   layers,
   onPageChange,
-  showAllLabels = false,
+  visibleLabelTypes,
   onMarkersUpdated
 }: EnhancedFloorplanViewerProps) => {
   // Hooks and refs
@@ -173,6 +173,21 @@ export const EnhancedFloorplanViewer = ({
     mouseStartX: 0,
     mouseStartY: 0
   });
+
+  // Function to determine if a marker's label should be visible
+  const shouldShowMarkerLabel = (marker: MarkerData, isSelected: boolean): boolean => {
+    // Always show labels for selected markers
+    if (isSelected) return true;
+    
+    // If visibleLabelTypes is not provided, no labels are shown
+    if (!visibleLabelTypes) return false;
+    
+    // If 'all' is true, show all labels
+    if (visibleLabelTypes['all']) return true;
+    
+    // Check if this specific marker type should have visible labels
+    return !!visibleLabelTypes[marker.marker_type];
+  };
 
   // Update coordinate system when view state changes
   // This is a critical part of our approach to fixing marker position issues during zoom
@@ -1288,7 +1303,7 @@ export const EnhancedFloorplanViewer = ({
                           msUserSelect: 'none'
                         }}
                       >AP</text>
-                      {(isSelected || showAllLabels) && marker.label && (
+                      {shouldShowMarkerLabel(marker, isSelected) && marker.label && (
                         <g style={{ pointerEvents: 'none' }}>
                           <rect
                             x={-40}
@@ -1349,7 +1364,7 @@ export const EnhancedFloorplanViewer = ({
                           msUserSelect: 'none'
                         }}
                       >C</text>
-                      {(isSelected || showAllLabels) && marker.label && (
+                      {shouldShowMarkerLabel(marker, isSelected) && marker.label && (
                         <g style={{ pointerEvents: 'none' }}>
                           <rect
                             x={-40}
@@ -1550,7 +1565,7 @@ export const EnhancedFloorplanViewer = ({
                           msUserSelect: 'none'
                         }}
                       >N</text>
-                      {(isSelected || showAllLabels) && marker.text_content && (
+                      {shouldShowMarkerLabel(marker, isSelected) && marker.text_content && (
                         <foreignObject 
                           x={10} 
                           y={-10} 
