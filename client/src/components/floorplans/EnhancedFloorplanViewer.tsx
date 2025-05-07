@@ -1058,7 +1058,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <circle 
@@ -1104,7 +1104,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <rect 
@@ -1154,7 +1154,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <rect 
@@ -1193,7 +1193,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <ellipse 
@@ -1235,10 +1235,10 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x * pdfToViewportScale} 
-                      y1={marker.position_y * pdfToViewportScale}
-                      x2={marker.end_x! * pdfToViewportScale} 
-                      y2={marker.end_y! * pdfToViewportScale}
+                      x1={marker.position_x * scale} 
+                      y1={marker.position_y * scale}
+                      x2={marker.end_x! * scale} 
+                      y2={marker.end_y! * scale}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1246,8 +1246,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={marker.position_x * pdfToViewportScale} 
-                          cy={marker.position_y * pdfToViewportScale} 
+                          cx={marker.position_x * scale} 
+                          cy={marker.position_y * scale} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1260,8 +1260,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={marker.end_x! * pdfToViewportScale} 
-                          cy={marker.end_y! * pdfToViewportScale} 
+                          cx={marker.end_x! * scale} 
+                          cy={marker.end_y! * scale} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1283,7 +1283,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
+                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
