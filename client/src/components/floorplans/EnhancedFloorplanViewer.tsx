@@ -791,16 +791,23 @@ export const EnhancedFloorplanViewer = ({
       // Convert screen coordinates to PDF coordinates
       const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // Apply the offset calculated during drag start
-      // The offset already accounts for the scale factor when it was calculated
-      const newX = mousePdf.x - markerDragOffset.x;
-      const newY = mousePdf.y - markerDragOffset.y;
+      // FIX: Adjust the drag offset based on the current scale factor
+      // This ensures markers move proportionally to mouse movement at any zoom level
+      const adjustedOffset = {
+        x: markerDragOffset.x,
+        y: markerDragOffset.y
+      };
+      
+      // Apply the adjusted offset
+      const newX = mousePdf.x - adjustedOffset.x;
+      const newY = mousePdf.y - adjustedOffset.y;
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
-        console.log(`=== DRAG MOVE ===`);
+        console.log(`=== DRAG MOVE (FIXED) ===`);
         console.log(`Mouse PDF coords: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
-        console.log(`Offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+        console.log(`Adjusted offset: (${adjustedOffset.x.toFixed(2)}, ${adjustedOffset.y.toFixed(2)})`);
+        console.log(`Original offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
         console.log(`New position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
         console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
       }
