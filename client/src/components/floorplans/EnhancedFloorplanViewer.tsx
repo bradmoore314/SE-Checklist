@@ -20,7 +20,7 @@ import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
-import { screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen, Point } from '@/lib/coordinate-utils';
+import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/lib/coordinate-utils';
 
 import {
   ContextMenu,
@@ -128,6 +128,9 @@ export const EnhancedFloorplanViewer = ({
   const [translateY, setTranslateY] = useState<number>(0);
   const [viewportDimensions, setViewportDimensions] = useState({width: 0, height: 0});
   const [pdfDimensions, setPdfDimensions] = useState({width: 0, height: 0});
+  
+  // Create a coordinate system instance
+  const [coordSystem] = useState(() => new CoordinateSystem());
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
@@ -1063,18 +1066,27 @@ export const EnhancedFloorplanViewer = ({
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     
-    // Get the mouse position in PDF coordinates before zoom
-    const mousePdfX = (mouseX - translateX) / scale;
-    const mousePdfY = (mouseY - translateY) / scale;
-    
     // Calculate new scale factor
     const delta = e.deltaY > 0 ? 0.9 : 1.1; // Zoom out on positive deltaY (scroll down)
     const newScale = Math.max(0.1, Math.min(10, scale * delta));
     
-    // Calculate the new position in container coordinates after the scale change
-    // These coordinates should focus the zoom on the mouse position
-    const newTranslateX = mouseX - mousePdfX * newScale;
-    const newTranslateY = mouseY - mousePdfY * newScale;
+    // Use our coordinate system to calculate the new transform
+    // This is the key improvement - our coordinate system handles all the math
+    const newTransform = coordSystem.calculateZoomTransform(
+      mouseX,
+      mouseY,
+      newScale
+    );
+    
+    console.log(`=== ZOOM EVENT ===`);
+    console.log(`Mouse container: (${mouseX.toFixed(2)}, ${mouseY.toFixed(2)})`);
+    console.log(`Mouse PDF: (${coordSystem.containerToPdf(mouseX, mouseY).x.toFixed(2)}, ${coordSystem.containerToPdf(mouseX, mouseY).y.toFixed(2)})`);
+    console.log(`Scale: ${scale.toFixed(2)} → ${newScale.toFixed(2)}`);
+    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)}) → (${newTransform.translateX.toFixed(0)}, ${newTransform.translateY.toFixed(0)})`);
+    
+    // Extract the calculated values
+    const newTranslateX = newTransform.translateX;
+    const newTranslateY = newTransform.translateY;
     
     // Debug information
     console.log(`=== ZOOM EVENT ===`);
