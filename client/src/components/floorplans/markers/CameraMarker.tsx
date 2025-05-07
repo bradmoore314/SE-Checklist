@@ -252,7 +252,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-right');
             }}
-            style={{ cursor: 'move' }}
+            style={{ cursor: 'ew-resize' }}
           />
           
           {/* Range handle */}
@@ -269,7 +269,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
               e.stopPropagation();
               onHandleMouseDown(e, 'range');
             }}
-            style={{ cursor: 'move' }}
+            style={{ cursor: 'nesw-resize' }}
           />
           
           {/* Rotation handle */}
@@ -297,7 +297,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
               e.stopPropagation();
               onHandleMouseDown(e, 'rotation');
             }}
-            style={{ cursor: 'move' }}
+            style={{ cursor: 'crosshair' }}
           />
         </>
       )}
