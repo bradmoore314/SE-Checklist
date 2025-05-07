@@ -731,7 +731,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={onToggleLabels}
-                className={`h-8 w-8 rounded-md ${showAllLabels ? 'bg-primary/10 border-primary' : ''}`}
+                className={`h-8 w-8 rounded-md ${visibleLabelTypes?.all ? 'bg-primary/10 border-primary' : ''}`}
                 disabled={!onToggleLabels}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

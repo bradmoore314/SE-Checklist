@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 interface MarkerStats {
   total: number;
@@ -31,9 +33,15 @@ interface MarkerStats {
 
 interface MarkerStatsLegendProps {
   projectId: number;
+  visibleLabelTypes?: Record<string, boolean>;
+  onToggleLabelVisibility?: (markerType: string) => void;
 }
 
-export function MarkerStatsLegend({ projectId }: MarkerStatsLegendProps) {
+export function MarkerStatsLegend({ 
+  projectId, 
+  visibleLabelTypes = {}, 
+  onToggleLabelVisibility 
+}: MarkerStatsLegendProps) {
   const { data: stats, isLoading, error } = useQuery<MarkerStats>({
     queryKey: ['/api/projects', projectId, 'marker-stats'],
     queryFn: async () => {

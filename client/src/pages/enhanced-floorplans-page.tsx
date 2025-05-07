@@ -117,33 +117,35 @@ function EnhancedFloorplansPage() {
   // Function to toggle label visibility for specific marker types
   const toggleLabelVisibility = (markerType: string) => {
     setVisibleLabelTypes(prev => {
+      // Create a copy of the previous state
+      const updatedState: Record<string, boolean> = { ...prev };
+      
       // If toggling 'all', set all types to the new value (opposite of current 'all' value)
       if (markerType === 'all') {
-        const newAllValue = !prev.all;
-        return {
-          'access_point': newAllValue,
-          'camera': newAllValue,
-          'elevator': newAllValue,
-          'intercom': newAllValue,
-          'note': newAllValue,
-          'all': newAllValue
-        };
+        const newAllValue = !(prev.all || false);
+        updatedState['access_point'] = newAllValue;
+        updatedState['camera'] = newAllValue;
+        updatedState['elevator'] = newAllValue;
+        updatedState['intercom'] = newAllValue;
+        updatedState['note'] = newAllValue;
+        updatedState['all'] = newAllValue;
+      } else {
+        // Otherwise just toggle the specific type
+        updatedState[markerType] = !(prev[markerType] || false);
+        
+        // Check if after this change all types will be visible or invisible
+        // to correctly set the 'all' state
+        const allVisible = 
+          !!(updatedState['access_point']) && 
+          !!(updatedState['camera']) && 
+          !!(updatedState['elevator']) && 
+          !!(updatedState['intercom']) && 
+          !!(updatedState['note']);
+        
+        updatedState['all'] = allVisible;
       }
       
-      // Otherwise just toggle the specific type
-      const newTypeValue = !prev[markerType];
-      
-      // Check if after this change all types will be visible or invisible
-      // to correctly set the 'all' state
-      const updatedState = { ...prev, [markerType]: newTypeValue };
-      const allVisible = 
-        updatedState.access_point && 
-        updatedState.camera && 
-        updatedState.elevator && 
-        updatedState.intercom && 
-        updatedState.note;
-        
-      return { ...updatedState, all: allVisible };
+      return updatedState;
     });
   };
   // Single consolidated view mode - no longer need multiple view modes
