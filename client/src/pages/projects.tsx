@@ -214,11 +214,12 @@ export default function Projects() {
     .sort();
   
   // Filter projects based on search term, active tab, and SE filter
-  const filteredProjects = allProjects.filter((project: Project) => {
+  const filteredProjects = allProjects.filter((project: Project & {creator_name?: string}) => {
     const matchesSearch = 
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (project.client && project.client.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (project.site_address && project.site_address.toLowerCase().includes(searchTerm.toLowerCase()));
+      (project.site_address && project.site_address.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (project.creator_name && project.creator_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // Check if project matches SE filter (if one is selected)
     const matchesSeFilter = !selectedSeFilter || 

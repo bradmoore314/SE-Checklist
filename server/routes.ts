@@ -207,9 +207,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    // Get projects based on user permission
-    const projects = await storage.getProjectsForUser(req.user.id);
-    res.json(projects);
+    try {
+      // Get projects based on user permission
+      const projects = await storage.getProjectsForUser(req.user.id);
+      
+      // Add creator information to each project
+      const projectsWithCreatorInfo = await Promise.all(projects.map(async (project) => {
+        if (project.created_by) {
+          const creator = await storage.getUser(project.created_by);
+          return {
+            ...project,
+            creator_name: creator ? creator.fullName || creator.username : "Unknown"
+          };
+        }
+        return {
+          ...project,
+          creator_name: "Unknown" // Default if no creator_by field
+        };
+      }));
+      
+      res.json(projectsWithCreatorInfo);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch projects",
+        error: (error as Error).message
+      });
+    }
   });
 
   app.get("/api/projects/:id", isAuthenticated, async (req: Request, res: Response) => {
