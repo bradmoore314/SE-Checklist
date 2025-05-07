@@ -57,11 +57,14 @@ export function pdfToScreenCoordinates(
   containerRect: DOMRect = new DOMRect(0, 0, 0, 0),
   scale: number = 1,
   translateX: number = 0,
-  translateY: number = 0
+  translateY: number = 0,
+  viewport: { width: number; height: number } = { width: 0, height: 0 }
 ): Point {
-  // For SVG markers, we'll let the SVG transform handle the scaling and translation
-  // We just need to return the base PDF coordinates
-  return { x: pdfX, y: pdfY };
+  // Convert PDF coordinates to screen coordinates
+  const screenX = pdfX * scale + translateX;
+  const screenY = pdfY * scale + translateY;
+  
+  return { x: screenX, y: screenY };
 }
 
 /**
