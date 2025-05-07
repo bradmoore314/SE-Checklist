@@ -8,7 +8,7 @@ import EquipmentTabs from "@/components/equipment/EquipmentTabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 import { AlertTriangle, Plus, Clock, Pin, Star, Search, FileText, ArrowRight } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -29,9 +29,16 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
   
-  // Check for projectId in URL query parameters
+  // Check for projectId in URL path parameters or query parameters
+  // First check if it's in the path parameters
+  const [, params] = useRoute('/projects/:projectId/dashboard');
+  
+  // Then check query parameters as a fallback
   const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-  const projectIdFromUrl = urlParams.get('projectId');
+  const projectIdFromQuery = urlParams.get('projectId');
+  
+  // Use path parameter if available, otherwise use query parameter
+  const projectIdFromUrl = params?.projectId || projectIdFromQuery;
   
   
   // Function to prefetch floorplans for a project
@@ -63,8 +70,11 @@ export default function Dashboard() {
         setCurrentProject(projectFromUrl);
         prefetchFloorplans(projectId);
         
-        // Update the URL to remove the query parameter for cleaner navigation
-        window.history.replaceState(null, '', `/dashboard`);
+        // Don't update the URL if it uses the new path parameter format
+        if (projectIdFromQuery) {
+          // Only update if the old query parameter format is being used
+          window.history.replaceState(null, '', `/projects/${projectId}/dashboard`);
+        }
       }
     }
   }, [projectIdFromUrl, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);

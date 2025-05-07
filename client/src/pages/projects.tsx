@@ -192,7 +192,7 @@ export default function Projects() {
       // Set as current site walk and navigate to the dashboard
       setCurrentSiteWalk(newSiteWalk);
       setCurrentProject(newSiteWalk);
-      setLocation(`/dashboard?projectId=${newSiteWalk.id}`);
+      setLocation(`/projects/${newSiteWalk.id}/dashboard`);
     } catch (error) {
       toast({
         title: "Site Walk Creation Failed",
@@ -208,10 +208,9 @@ export default function Projects() {
     prefetchFloorplans(siteWalk.id);
     
     // Then set it as current project and navigate to the project details page
-    // We don't have a specific dashboard route, so use the main dashboard instead
     setCurrentSiteWalk(siteWalk);
     setCurrentProject(siteWalk);
-    setLocation(`/dashboard?projectId=${siteWalk.id}`);
+    setLocation(`/projects/${siteWalk.id}/dashboard`);
   };
   
   // Toggle pinning/unpinning a project
