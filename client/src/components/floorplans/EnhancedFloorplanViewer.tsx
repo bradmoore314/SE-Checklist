@@ -367,18 +367,19 @@ export const EnhancedFloorplanViewer = ({
     // Get the mouse position in PDF coordinates using our coordinate system
     const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
     
-    // Calculate the offset between mouse and marker in PDF coordinates
-    const offset = coordSystem.calculateDragOffset(
-      mousePdf.x,
-      mousePdf.y,
-      marker.position_x,
-      marker.position_y
-    );
+    // FIXED: Calculate the pure offset between mouse and marker position
+    // directly in PDF coordinates - without using the coordSystem method
+    // which might be applying additional scaling
+    const offset = {
+      x: mousePdf.x - marker.position_x,
+      y: mousePdf.y - marker.position_y
+    };
     
     // Compact logging for drag start
     console.log(`Drag marker #${marker.id}: offset (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}), scale=${scale.toFixed(2)}`);
-    console.log(`Selected marker #${marker.id} (${marker.marker_type}): PDF pos (${marker.position_x}, ${marker.position_y}), scale=${scale.toFixed(2)}`);
+    console.log(`Selected marker #${marker.id} (${marker.marker_type}): PDF pos (${marker.position_x.toFixed(1)}, ${marker.position_y.toFixed(1)}), scale=${scale.toFixed(2)}`);
     
+    // Store pure PDF coordinate offset without any scale adjustments
     setMarkerDragOffset(offset);
     setSelectedMarker(marker);
     setIsDraggingMarker(true);
@@ -791,23 +792,17 @@ export const EnhancedFloorplanViewer = ({
       // Convert screen coordinates to PDF coordinates
       const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // FIX: Adjust the drag offset based on the current scale factor
-      // This ensures markers move proportionally to mouse movement at any zoom level
-      const adjustedOffset = {
-        x: markerDragOffset.x,
-        y: markerDragOffset.y
-      };
-      
-      // Apply the adjusted offset
-      const newX = mousePdf.x - adjustedOffset.x;
-      const newY = mousePdf.y - adjustedOffset.y;
+      // IMPORTANT FIX: Apply the pure PDF offset directly
+      // This is the key fix - we apply the offset in the same coordinate space (PDF)
+      // without any scaling adjustments
+      const newX = mousePdf.x - markerDragOffset.x;
+      const newY = mousePdf.y - markerDragOffset.y;
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
         console.log(`=== DRAG MOVE (FIXED) ===`);
         console.log(`Mouse PDF coords: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
-        console.log(`Adjusted offset: (${adjustedOffset.x.toFixed(2)}, ${adjustedOffset.y.toFixed(2)})`);
-        console.log(`Original offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+        console.log(`Pure PDF offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
         console.log(`New position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
         console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
       }
