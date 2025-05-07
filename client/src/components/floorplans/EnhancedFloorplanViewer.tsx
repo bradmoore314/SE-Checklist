@@ -1987,7 +1987,8 @@ export const EnhancedFloorplanViewer = ({
             top: `${contextMenuPosition.y}px` 
           }}
         >
-          <ContextMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+          <ContextMenu onOpenChange={setContextMenuOpen}>
+            <ContextMenuTrigger />
             <ContextMenuContent className="w-64">
               <ContextMenuItem
                 onClick={() => {
