@@ -212,6 +212,10 @@ export const floorplanMarkers = pgTable("floorplan_markers", {
   height: real("height"),
   rotation: real("rotation").default(0),
   
+  // Camera-specific properties
+  fov: real("fov").default(90), // Field of view in degrees (90° default)
+  range: real("range").default(60), // Range/radius of the field of view (60 PDF units default)
+  
   // Styling properties
   color: text("color"),
   fill_color: text("fill_color"),
