@@ -43,6 +43,7 @@ export type AnnotationTool =
   | 'line'
   | 'freehand'
   | 'polygon'
+  | 'polyline'  // Add polyline type to fix type errors
   | 'image'
   | 'highlight'
   | 'access_point'
