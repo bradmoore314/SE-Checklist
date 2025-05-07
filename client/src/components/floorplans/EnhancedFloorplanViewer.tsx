@@ -15,6 +15,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import { DeltaDragTest } from './fixes/delta-drag-test';
 import { v4 as uuidv4 } from 'uuid';
 import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
@@ -157,7 +158,21 @@ export const EnhancedFloorplanViewer = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDraggingMarker, setIsDraggingMarker] = useState<boolean>(false);
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
-  const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
+  const [markerDragOffset, setMarkerDragOffset] = useState<{
+    screenX: number;
+    screenY: number;
+    markerStartX: number;
+    markerStartY: number;
+    mouseStartX: number;
+    mouseStartY: number;
+  }>({
+    screenX: 0,
+    screenY: 0,
+    markerStartX: 0,
+    markerStartY: 0,
+    mouseStartX: 0,
+    mouseStartY: 0
+  });
 
   // Update coordinate system when view state changes
   // This is a critical part of our approach to fixing marker position issues during zoom
@@ -357,39 +372,42 @@ export const EnhancedFloorplanViewer = ({
     setContextMenuOpen(true);
   };
   
-  // Start dragging a marker - DIRECT FIX IMPLEMENTATION
+  // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
   const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
     e.stopPropagation();
     
     if (!containerRef.current) return;
     
-    // DIRECT FIX: Calculate marker position using direct coordinate conversion
-    // that doesn't rely on the coordSystem which might be inconsistent
+    // Store the initial marker position and mouse position for relative movement
     const rect = containerRef.current.getBoundingClientRect();
-    const containerX = e.clientX - rect.left;
-    const containerY = e.clientY - rect.top;
+    const mouseScreenX = e.clientX;
+    const mouseScreenY = e.clientY;
     
-    // Convert to PDF coordinates directly
-    const pdfX = (containerX - translateX) / scale;
-    const pdfY = (containerY - translateY) / scale;
+    // Store initial marker screen position (where the marker appears on screen)
+    const markerScreenX = marker.position_x * scale + translateX + rect.left;
+    const markerScreenY = marker.position_y * scale + translateY + rect.top;
     
-    // Calculate pure offset
+    // Calculate mouse offset from the marker's visual position
     const offset = {
-      x: pdfX - marker.position_x,
-      y: pdfY - marker.position_y
+      screenX: mouseScreenX - markerScreenX,
+      screenY: mouseScreenY - markerScreenY,
+      // Also store original marker position for relative movement calculation
+      markerStartX: marker.position_x,
+      markerStartY: marker.position_y,
+      // Store initial mouse position for calculating deltas
+      mouseStartX: mouseScreenX,
+      mouseStartY: mouseScreenY
     };
     
-    // Detailed logging for debugging the direct fix
-    console.log(`[DIRECT FIX] Starting drag of marker #${marker.id}:`);
-    console.log(` - Mouse screen pos: (${e.clientX}, ${e.clientY})`);
-    console.log(` - Container rect: (${rect.left}, ${rect.top})`);
-    console.log(` - Container pos: (${containerX}, ${containerY})`);
-    console.log(` - Transform: scale=${scale.toFixed(2)}, translate=(${translateX}, ${translateY})`);
-    console.log(` - PDF pos: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
-    console.log(` - Marker pos: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
-    console.log(` - Offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)})`);
+    // Detailed logging for debugging the scaling-aware implementation
+    console.log(`[SCALING-AWARE] Starting drag of marker #${marker.id}:`);
+    console.log(` - Mouse screen pos: (${mouseScreenX}, ${mouseScreenY})`);
+    console.log(` - Marker screen pos: (${markerScreenX.toFixed(2)}, ${markerScreenY.toFixed(2)})`);
+    console.log(` - Marker PDF pos: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
+    console.log(` - Screen offset: (${offset.screenX.toFixed(2)}, ${offset.screenY.toFixed(2)})`);
+    console.log(` - Current scale: ${scale.toFixed(2)}`);
     
-    // Store pure PDF coordinate offset
+    // Store all relevant data needed for precise drag calculations
     setMarkerDragOffset(offset);
     setSelectedMarker(marker);
     setIsDraggingMarker(true);
@@ -797,31 +815,32 @@ export const EnhancedFloorplanViewer = ({
       // Set cursor for panning
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
-      // Moving a selected marker - DIRECT FIX IMPLEMENTATION
+      // Moving a selected marker - IMPROVED SCALING-AWARE IMPLEMENTATION
       
-      // Get container-relative coordinates directly
-      const rect = containerRef.current.getBoundingClientRect();
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
+      // Calculate mouse delta in screen coordinates (how far the mouse has moved since drag start)
+      const mouseScreenX = e.clientX;
+      const mouseScreenY = e.clientY;
+      const mouseDeltaX = mouseScreenX - markerDragOffset.mouseStartX;
+      const mouseDeltaY = mouseScreenY - markerDragOffset.mouseStartY;
       
-      // Convert to PDF coordinates directly using the same method as in startMarkerDrag
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Convert screen delta to PDF coordinates (divide by scale)
+      const pdfDeltaX = mouseDeltaX / scale;
+      const pdfDeltaY = mouseDeltaY / scale;
       
-      // Apply the pure PDF offset directly
-      const newX = pdfX - markerDragOffset.x;
-      const newY = pdfY - markerDragOffset.y;
+      // Apply PDF delta to the marker's original position
+      const newX = markerDragOffset.markerStartX + pdfDeltaX;
+      const newY = markerDragOffset.markerStartY + pdfDeltaY;
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
-        console.log(`[DIRECT FIX] Marker drag move calculation:`);
-        console.log(` - Mouse screen: (${e.clientX}, ${e.clientY})`);
-        console.log(` - Container rect: (${rect.left}, ${rect.top})`);
-        console.log(` - Container pos: (${containerX}, ${containerY})`);
-        console.log(` - Transform: scale=${scale.toFixed(2)}, translate=(${translateX}, ${translateY})`);
-        console.log(` - PDF pos: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
-        console.log(` - Using offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+        console.log(`[SCALING-AWARE] Marker drag move calculation:`);
+        console.log(` - Original mouse pos: (${markerDragOffset.mouseStartX}, ${markerDragOffset.mouseStartY})`);
+        console.log(` - Current mouse pos: (${mouseScreenX}, ${mouseScreenY})`);
+        console.log(` - Mouse delta screen: (${mouseDeltaX.toFixed(2)}, ${mouseDeltaY.toFixed(2)})`);
+        console.log(` - Mouse delta PDF: (${pdfDeltaX.toFixed(2)}, ${pdfDeltaY.toFixed(2)})`);
+        console.log(` - Original marker pos: (${markerDragOffset.markerStartX.toFixed(2)}, ${markerDragOffset.markerStartY.toFixed(2)})`);
         console.log(` - New marker pos: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
+        console.log(` - Current scale: ${scale.toFixed(2)}`);
       }
       
       // Update local state for smooth visual feedback
@@ -1515,6 +1534,11 @@ export const EnhancedFloorplanViewer = ({
         </svg>
       </div>
       
+      {/* Drag Test Panel (DEBUG) */}
+      <div className="absolute bottom-20 left-4 max-w-md z-10">
+        <DeltaDragTest />
+      </div>
+
       {/* Controls Panel */}
       <div className="absolute top-4 right-4 flex flex-col gap-2 bg-white bg-opacity-80 p-2 rounded shadow">
         <button 
