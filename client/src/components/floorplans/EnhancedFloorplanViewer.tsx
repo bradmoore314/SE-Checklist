@@ -307,6 +307,19 @@ export const EnhancedFloorplanViewer = ({
       });
     }
   };
+
+  // Handle marker right-click for context menu
+  const handleMarkerRightClick = (e: React.MouseEvent, marker: MarkerData) => {
+    e.preventDefault(); // Prevent default browser context menu
+    e.stopPropagation(); // Stop event from bubbling up
+    
+    // Set the selected marker
+    setSelectedMarker(marker);
+    
+    // Position the context menu at the mouse position
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuOpen(true);
+  };
   
   // Start dragging a marker
   const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
@@ -1017,6 +1030,9 @@ export const EnhancedFloorplanViewer = ({
               onClick: (e: React.MouseEvent) => {
                 e.stopPropagation();
                 handleMarkerClick(marker);
+              },
+              onContextMenu: (e: React.MouseEvent) => {
+                handleMarkerRightClick(e, marker);
               },
               onMouseDown: (e: React.MouseEvent) => {
                 // Allow dragging with left click regardless of current tool mode
