@@ -1225,22 +1225,13 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'ellipse':
-                // For ellipses, get screen coordinates from PDF coordinates
-                const { x: ellipseX, y: ellipseY } = pdfToScreenCoordinates(
-                  marker.position_x, 
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect(),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                
+                // Just use PDF coordinates directly - the SVG transform handles scaling
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${ellipseX},${ellipseY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <ellipse 
@@ -1274,37 +1265,20 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'line':
-                // For lines, get screen coordinates for both start and end points
-                const { x: lineStartX, y: lineStartY } = pdfToScreenCoordinates(
-                  marker.position_x, 
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect(),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                
-                const { x: lineEndX, y: lineEndY } = pdfToScreenCoordinates(
-                  marker.end_x!, 
-                  marker.end_y!,
-                  containerRef.current?.getBoundingClientRect(),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                
+                // Just use the PDF coordinates directly - the SVG transform handles scaling
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
+                    transform={`translate(0, 0)`} // No translation for lines
                     {...baseProps}
                   >
                     <line 
-                      x1={lineStartX} 
-                      y1={lineStartY}
-                      x2={lineEndX} 
-                      y2={lineEndY}
+                      x1={marker.position_x} 
+                      y1={marker.position_y}
+                      x2={marker.end_x!} 
+                      y2={marker.end_y!}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1312,8 +1286,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={lineStartX} 
-                          cy={lineStartY} 
+                          cx={marker.position_x} 
+                          cy={marker.position_y} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1326,8 +1300,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={lineEndX} 
-                          cy={lineEndY} 
+                          cx={marker.end_x!} 
+                          cy={marker.end_y!} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1344,22 +1318,13 @@ export const EnhancedFloorplanViewer = ({
                 );
 
               case 'note':
-                // For notes, get screen coordinates from PDF coordinates
-                const { x: noteX, y: noteY } = pdfToScreenCoordinates(
-                  marker.position_x, 
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect(),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                
+                // Just use PDF coordinates directly - the SVG transform handles scaling
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${noteX},${noteY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
