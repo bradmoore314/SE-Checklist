@@ -893,19 +893,29 @@ export const EnhancedFloorplanViewer = ({
         };
       });
     } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
-      // Use our consistent coordinate transform function
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      // Get mouse position in container coordinates
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Convert mouse coordinates to container-relative coordinates
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
+      
+      // Convert to PDF coordinates using our consistent approach
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
       
       const lastPoint = drawingPoints[drawingPoints.length - 1];
       
       // Only update if mouse moved significantly (avoid excessive updates)
       const distance = Math.sqrt(
-        Math.pow(pdfCoords.x - lastPoint.x, 2) + 
-        Math.pow(pdfCoords.y - lastPoint.y, 2)
+        Math.pow(pdfX - lastPoint.x, 2) + 
+        Math.pow(pdfY - lastPoint.y, 2)
       );
       
       if (distance > 5 / scale) { // 5px in screen space
-        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfCoords.x, y: pdfCoords.y }]);
+        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfX, y: pdfY }]);
       }
     }
   };
@@ -931,12 +941,18 @@ export const EnhancedFloorplanViewer = ({
       
       // Only add if the shape has some size
       if (width > 5 / scale || height > 5 / scale) {
+        // Log the coordinates for debugging
+        console.log(`=== FINALIZING MARKER ===`);
+        console.log(`Position: (${tempMarker.position_x}, ${tempMarker.position_y})`);
+        console.log(`End point: (${pdfX}, ${pdfY})`);
+        console.log(`Size: ${width} x ${height}`);
+        
         const finalMarker = {
           ...tempMarker,
           end_x: pdfX,
           end_y: pdfY,
-          width,
-          height,
+          width: parseFloat(width.toFixed(2)),
+          height: parseFloat(height.toFixed(2)),
           color: activeLayer?.color || '#ff0000',
           fill_color: activeLayer?.color ? `${activeLayer.color}80` : '#ff000080', // Add 50% opacity
           opacity: 0.8,
@@ -993,14 +1009,25 @@ export const EnhancedFloorplanViewer = ({
     if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
       // Finalize polyline or polygon with at least 2 points
       if (drawingPoints.length >= 2) {
+        // Calculate precision points array to avoid zoom drift
+        const precisePoints = drawingPoints.map(point => ({
+          x: parseFloat(point.x.toFixed(2)),
+          y: parseFloat(point.y.toFixed(2))
+        }));
+      
+        console.log(`=== FINALIZING ${toolMode.toUpperCase()} ===`);
+        console.log(`Total points: ${precisePoints.length}`);
+        console.log(`Start: (${precisePoints[0].x}, ${precisePoints[0].y})`);
+        console.log(`End: (${precisePoints[precisePoints.length-1].x}, ${precisePoints[precisePoints.length-1].y})`);
+      
         const finalMarker = {
           floorplan_id: floorplan.id,
           unique_id: uuidv4(),
           page: currentPage,
           marker_type: toolMode,
-          position_x: drawingPoints[0].x,
-          position_y: drawingPoints[0].y,
-          points: drawingPoints,
+          position_x: precisePoints[0].x,
+          position_y: precisePoints[0].y,
+          points: precisePoints, // Use precision-limited points
           color: activeLayer?.color || '#ff0000',
           line_width: 2,
           opacity: 0.8,
