@@ -501,6 +501,19 @@ export const EnhancedFloorplanViewer = ({
     const mouseScreenX = e.clientX;
     const mouseScreenY = e.clientY;
     
+    // Get the initial camera properties with default values if not set
+    const initialRotation = marker.rotation || 0;
+    const initialFov = (marker as any).fov || 90;
+    const initialRange = (marker as any).range || 60;
+    
+    // Get mouse position in PDF coordinates
+    const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
+    
+    // Calculate angle from camera to mouse
+    const cameraX = marker.position_x;
+    const cameraY = marker.position_y;
+    const angleToMouse = Math.atan2(mousePdf.y - cameraY, mousePdf.x - cameraX) * 180 / Math.PI;
+    
     // Store the initial camera properties
     setMarkerDragOffset({
       screenX: mouseScreenX,
@@ -509,15 +522,19 @@ export const EnhancedFloorplanViewer = ({
       mouseStartY: mouseScreenY,
       markerStartX: marker.position_x,
       markerStartY: marker.position_y,
-      cameraStartRotation: marker.rotation || 0,
-      cameraStartFov: (marker as any).fov || 90,
-      cameraStartRange: (marker as any).range || 60
+      cameraStartRotation: initialRotation,
+      cameraStartFov: initialFov,
+      cameraStartRange: initialRange
     });
     
-    console.log(`Starting camera handle drag: ${handleType}`);
-    console.log(`Initial FOV: ${(marker as any).fov || 90}°`);
-    console.log(`Initial range: ${(marker as any).range || 60}`);
-    console.log(`Initial rotation: ${marker.rotation || 0}°`);
+    console.log(`=== STARTING CAMERA HANDLE DRAG ===`);
+    console.log(`Handle type: ${handleType}`);
+    console.log(`Camera position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
+    console.log(`Mouse PDF position: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
+    console.log(`Angle to mouse: ${angleToMouse.toFixed(2)}°`);
+    console.log(`Initial FOV: ${initialFov.toFixed(2)}°`);
+    console.log(`Initial range: ${initialRange.toFixed(2)}`);
+    console.log(`Initial rotation: ${initialRotation.toFixed(2)}°`);
   };
   
   // Start resizing a marker
@@ -1047,14 +1064,25 @@ export const EnhancedFloorplanViewer = ({
             } as MarkerData;
           });
         }
-        else {
-          // If no specific handle or an unknown handle is active,
-          // assume we're rotating the entire camera (like the rotation handle)
+        else if (activeHandle === 'rotation') {
+          // If rotating the camera
           setSelectedMarker(prev => {
             if (!prev) return null;
             return {
               ...prev,
               rotation: angleToMouse // Set rotation to the angle to the mouse
+            } as MarkerData;
+          });
+        }
+        // Handle other camera drag operations like when user is just dragging a camera handle
+        // that's not specifically one of the predefined handles
+        else {
+          console.log(`Unhandled camera handle: ${activeHandle}, setting rotation to ${angleToMouse.toFixed(2)}`);
+          setSelectedMarker(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              rotation: angleToMouse // Default to setting rotation
             } as MarkerData;
           });
         }
@@ -1190,7 +1218,32 @@ export const EnhancedFloorplanViewer = ({
       showAutoSaveFeedback();
     } else if (isResizingMarker && selectedMarker) {
       // Save the resized marker
-      updateMarkerMutation.mutate(selectedMarker);
+      console.log("Saving resized marker with properties:", {
+        id: selectedMarker.id,
+        marker_type: selectedMarker.marker_type,
+        fov: selectedMarker.marker_type === 'camera' ? (selectedMarker as any).fov : undefined,
+        range: selectedMarker.marker_type === 'camera' ? (selectedMarker as any).range : undefined,
+        rotation: selectedMarker.rotation
+      });
+      
+      // Make sure we're including all camera-specific properties when updating
+      const markerToUpdate = {
+        ...selectedMarker,
+        // Ensure precision is maintained with numeric values
+        position_x: parseFloat(selectedMarker.position_x.toFixed(2)),
+        position_y: parseFloat(selectedMarker.position_y.toFixed(2))
+      };
+      
+      // For camera markers, ensure we're saving FOV, range and rotation properly
+      if (selectedMarker.marker_type === 'camera') {
+        if (activeHandle) {
+          console.log(`Saving camera after ${activeHandle} adjustment`);
+        }
+        // Reset the active handle
+        setActiveHandle(null);
+      }
+      
+      updateMarkerMutation.mutate(markerToUpdate);
       setIsResizingMarker(false);
       showAutoSaveFeedback();
     } else if (toolMode === 'polyline' || toolMode === 'polygon') {

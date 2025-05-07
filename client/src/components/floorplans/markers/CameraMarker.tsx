@@ -37,8 +37,20 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
     const centerX = position.x;
     const centerY = position.y;
     
-    // Convert FOV from degrees to radians
-    const fovRadians = (fov * Math.PI) / 180;
+    // Handle the special case of 360 degrees
+    if (fov >= 360) {
+      // For 360-degree FOV, draw a complete circle
+      return `M${centerX},${centerY} 
+              m${range},0 
+              a${range},${range} 0 1,0 -${range*2},0 
+              a${range},${range} 0 1,0 ${range*2},0 
+              Z`;
+    }
+    
+    // For other FOV values, calculate the arc
+    // Convert FOV from degrees to radians (clamped between 0 and 360)
+    const clampedFov = Math.max(0, Math.min(360, fov));
+    const fovRadians = (clampedFov * Math.PI) / 180;
     
     // Calculate the starting and ending angles based on rotation
     const rotationRadians = (rotation * Math.PI) / 180;
@@ -47,7 +59,8 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
     
     // Generate points along the arc
     const arcPoints: Point[] = [];
-    const segments = 20; // Number of segments to approximate the arc
+    // More segments for wider FOVs for smoother curves
+    const segments = Math.max(20, Math.ceil(clampedFov / 10)); 
     
     for (let i = 0; i <= segments; i++) {
       const angle = startAngle + (i / segments) * fovRadians;
@@ -268,6 +281,23 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
             stroke="#2196F3"
             strokeWidth={1}
             strokeDasharray="4,2"
+          />
+          
+          {/* Add an extra rotation handle at the center of the line for easier rotation control */}
+          <circle 
+            cx={position.x + (range/2) * Math.cos(rotation * Math.PI / 180)} 
+            cy={position.y + (range/2) * Math.sin(rotation * Math.PI / 180)} 
+            r={6} 
+            fill="white" 
+            stroke="#2196F3" 
+            strokeWidth={2}
+            className="resize-handle rotation-handle"
+            data-handle="rotation"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              onHandleMouseDown(e, 'rotation');
+            }}
+            style={{ cursor: 'move' }}
           />
         </>
       )}
