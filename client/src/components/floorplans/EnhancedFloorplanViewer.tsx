@@ -1003,7 +1003,7 @@ export const EnhancedFloorplanViewer = ({
       <div
         className="relative transform-gpu transition-transform duration-75"
         style={{
-          transform: `translate(${translateX}px, ${translateY}px)`
+          transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`
         }}
       >
         <canvas ref={canvasRef} className="block" />
@@ -1093,33 +1093,25 @@ export const EnhancedFloorplanViewer = ({
             // Render different marker types
             switch (marker.marker_type) {
               case 'access_point':
-                // Convert PDF coordinates to screen coordinates
-                const { x: apScreenX, y: apScreenY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                const markerSize = 12;  // Base marker size
+                // Use PDF coordinates directly since container has scale applied
+                const markerSize = 12 / scale;  // Adjust size to be consistent regardless of zoom
                 
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${apScreenX}, ${apScreenY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <circle 
                       r={markerSize} 
                       fill={fillColor} /* Red circle */
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     <text 
-                      fontSize="14" 
+                      fontSize={14 / scale} 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
                       fill="#FFFFFF" /* White text */
@@ -1129,18 +1121,18 @@ export const EnhancedFloorplanViewer = ({
                     {(isSelected || showAllLabels) && marker.label && (
                       <g style={{ pointerEvents: 'none' }}>
                         <rect
-                          x="-40"
-                          y="17"
-                          width="80"
-                          height="16"
-                          rx="4"
+                          x={-40 / scale}
+                          y={17 / scale}
+                          width={80 / scale}
+                          height={16 / scale}
+                          rx={4 / scale}
                           fill="#ffff00" /* Yellow background */
                           stroke="#ff0000"
-                          strokeWidth="0.5"
+                          strokeWidth={0.5 / scale}
                         />
                         <text 
-                          fontSize="11" 
-                          y="24" 
+                          fontSize={11 / scale} 
+                          y={24 / scale} 
                           textAnchor="middle" 
                           fill="#ff0000" /* Red text */
                           fontWeight="bold"
@@ -1151,36 +1143,29 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'camera':
-                // Convert PDF coordinates to screen coordinates
-                const { x: cameraScreenX, y: cameraScreenY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
+                // Use PDF coordinates directly since container has scale applied
+                const cameraSize = 10 / scale;  // Adjust size to be consistent regardless of zoom
                 
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${cameraScreenX}, ${cameraScreenY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <rect 
-                      x="-10" 
-                      y="-10" 
-                      width="20" 
-                      height="20"
+                      x={-cameraSize} 
+                      y={-cameraSize} 
+                      width={cameraSize * 2} 
+                      height={cameraSize * 2}
                       fill={fillColor} /* Red background for consistency */
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
-                      rx="2"
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      rx={2 / scale}
                     />
                     <text 
-                      fontSize="12" 
+                      fontSize={12 / scale} 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
                       fill="#ff0000" /* Red text */
@@ -1190,18 +1175,18 @@ export const EnhancedFloorplanViewer = ({
                     {(isSelected || showAllLabels) && marker.label && (
                       <g style={{ pointerEvents: 'none' }}>
                         <rect
-                          x="-40"
-                          y="17"
-                          width="80"
-                          height="16"
-                          rx="4"
+                          x={-40 / scale}
+                          y={17 / scale}
+                          width={80 / scale}
+                          height={16 / scale}
+                          rx={4 / scale}
                           fill="#ffff00" /* Yellow background */
                           stroke="#ff0000"
-                          strokeWidth="0.5"
+                          strokeWidth={0.5 / scale}
                         />
                         <text 
-                          fontSize="11" 
-                          y="24" 
+                          fontSize={11 / scale} 
+                          y={24 / scale} 
                           textAnchor="middle" 
                           fill="#ff0000" /* Red text */
                           fontWeight="bold"
@@ -1212,43 +1197,35 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'rectangle':
-                // Convert PDF coordinates to screen coordinates
-                const { x: rectScreenX, y: rectScreenY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
+                // Use PDF coordinates directly since container has scale applied
                 
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${rectScreenX}, ${rectScreenY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width! * scale} 
-                      height={marker.height! * scale}
+                      width={marker.width!} 
+                      height={marker.height!}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width! * scale} 
-                          cy={marker.height! * scale} 
-                          r="6" 
+                          cx={marker.width!} 
+                          cy={marker.height!} 
+                          r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth="1"
+                          strokeWidth={1 / scale}
                           className="cursor-nwse-resize"
                           onMouseDown={(e) => {
                             e.stopPropagation();
@@ -1261,43 +1238,35 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'ellipse':
-                // Convert PDF coordinates to screen coordinates
-                const { x: ellipseScreenX, y: ellipseScreenY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
+                // Use PDF coordinates directly since container has scale applied
                 
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${ellipseScreenX}, ${ellipseScreenY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={(marker.width! / 2) * scale} 
-                      cy={(marker.height! / 2) * scale}
-                      rx={(marker.width! / 2) * scale} 
-                      ry={(marker.height! / 2) * scale}
+                      cx={marker.width! / 2} 
+                      cy={marker.height! / 2}
+                      rx={marker.width! / 2} 
+                      ry={marker.height! / 2}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width! * scale} 
-                          cy={marker.height! * scale} 
-                          r="6" 
+                          cx={marker.width!} 
+                          cy={marker.height!} 
+                          r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth="1"
+                          strokeWidth={1 / scale}
                           className="cursor-nwse-resize"
                           onMouseDown={(e) => {
                             e.stopPropagation();
@@ -1310,24 +1279,7 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'line':
-                // Convert PDF coordinates to screen coordinates for start and end points
-                const { x: lineStartX, y: lineStartY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
-                
-                const { x: lineEndX, y: lineEndY } = pdfToScreenCoordinates(
-                  marker.end_x!,
-                  marker.end_y!,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
+                // Use PDF coordinates directly since container has scale applied
                 
                 return (
                   <g 
@@ -1338,23 +1290,23 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={lineStartX} 
-                      y1={lineStartY}
-                      x2={lineEndX} 
-                      y2={lineEndY}
+                      x1={marker.position_x} 
+                      y1={marker.position_y}
+                      x2={marker.end_x!} 
+                      y2={marker.end_y!}
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={lineStartX} 
-                          cy={lineStartY} 
-                          r="6" 
+                          cx={marker.position_x} 
+                          cy={marker.position_y} 
+                          r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth="1"
+                          strokeWidth={1 / scale}
                           className="cursor-move"
                           onMouseDown={(e) => {
                             e.stopPropagation();
@@ -1363,12 +1315,12 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={lineEndX} 
-                          cy={lineEndY} 
-                          r="6" 
+                          cx={marker.end_x!} 
+                          cy={marker.end_y!} 
+                          r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
-                          strokeWidth="1"
+                          strokeWidth={1 / scale}
                           className="cursor-move"
                           onMouseDown={(e) => {
                             e.stopPropagation();
@@ -1381,37 +1333,30 @@ export const EnhancedFloorplanViewer = ({
                 );
 
               case 'note':
-                // Convert PDF coordinates to screen coordinates
-                const { x: noteScreenX, y: noteScreenY } = pdfToScreenCoordinates(
-                  marker.position_x,
-                  marker.position_y,
-                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
-                  scale,
-                  translateX,
-                  translateY
-                );
+                // Use PDF coordinates directly since container has scale applied
+                const noteSize = 10 / scale;  // Adjust size to be consistent regardless of zoom
                 
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${noteScreenX}, ${noteScreenY})`}
+                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
                     <rect 
-                      x="-10" 
-                      y="-10" 
-                      width="20" 
-                      height="20"
+                      x={-noteSize} 
+                      y={-noteSize} 
+                      width={noteSize * 2} 
+                      height={noteSize * 2}
                       fill="#ffff00" /* Bright yellow background */
                       stroke={markerColor}
-                      strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
-                      rx="4"
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      rx={4 / scale}
                     />
                     <text 
-                      fontSize="12" 
+                      fontSize={12 / scale} 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
                       fill="#ff0000" /* Red text */
@@ -1420,17 +1365,19 @@ export const EnhancedFloorplanViewer = ({
                     >N</text>
                     {(isSelected || showAllLabels) && marker.text_content && (
                       <foreignObject 
-                        x="10" 
-                        y="-10" 
-                        width="150" 
-                        height="60"
+                        x={10 / scale} 
+                        y={-10 / scale} 
+                        width={150 / scale} 
+                        height={60 / scale}
                       >
                         <div 
                           className="bg-yellow-200 p-1 rounded shadow-sm border border-yellow-500 text-red-600 text-xs overflow-hidden"
                           style={{
-                            maxWidth: '150px',
-                            maxHeight: '60px',
-                            textOverflow: 'ellipsis'
+                            maxWidth: `${150 / scale}px`,
+                            maxHeight: `${60 / scale}px`,
+                            textOverflow: 'ellipsis',
+                            transform: `scale(${1/scale})`,
+                            transformOrigin: 'top left'
                           }}
                         >
                           {marker.text_content?.substring(0, 100)}
