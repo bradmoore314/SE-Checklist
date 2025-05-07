@@ -104,7 +104,15 @@ function EnhancedFloorplansPage() {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
-  const [showAllLabels, setShowAllLabels] = useState(false);
+  // Equipment type label visibility states 
+  const [visibleLabelTypes, setVisibleLabelTypes] = useState<Record<string, boolean>>({
+    'access_point': false,
+    'camera': false,
+    'elevator': false,
+    'intercom': false,
+    'note': false,
+    'all': false
+  });
   // Single consolidated view mode - no longer need multiple view modes
   const [selectedFloorplans, setSelectedFloorplans] = useState<Set<number>>(new Set());
   const [selectAllChecked, setSelectAllChecked] = useState(false);
