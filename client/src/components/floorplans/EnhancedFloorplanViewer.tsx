@@ -129,32 +129,42 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
-  // Convert screen coordinates to PDF space coordinates
+  // NEW APPROACH: Convert screen (browser window) coordinates to PDF space coordinates
   const screenToPdfCoordinates = (screenX: number, screenY: number) => {
     if (!containerRef.current) return { x: 0, y: 0 };
     
+    // Step 1: Get position relative to the container (floorplan viewer)
     const rect = containerRef.current.getBoundingClientRect();
+    const viewerX = screenX - rect.left;
+    const viewerY = screenY - rect.top;
     
-    // Get mouse position relative to the container
-    const containerX = screenX - rect.left;
-    const containerY = screenY - rect.top;
+    // Step 2: Account for any panning (translation) of the content inside the viewer
+    const panAdjustedX = viewerX - translateX;
+    const panAdjustedY = viewerY - translateY;
     
-    // Adjust for the translation (pan)
-    const adjustedX = (containerX - translateX) / scale;
-    const adjustedY = (containerY - translateY) / scale;
+    // Step 3: Convert from display pixels to PDF points by dividing by the current scale
+    const pdfX = panAdjustedX / scale;
+    const pdfY = panAdjustedY / scale;
     
-    // Log each step for debugging
-    console.log(`Screen coords: ${screenX}, ${screenY}`);
-    console.log(`Container coords: ${containerX}, ${containerY}`);
-    console.log(`Translate: ${translateX}, ${translateY}`);
-    console.log(`Scale: ${scale}`);
-    console.log(`Adjusted coords: ${adjustedX}, ${adjustedY}`);
-    console.log(`PDF to viewport scale: ${pdfToViewportScale}`);
+    // Log details for debugging
+    console.log("====== COORDINATE CONVERSION ======");
+    console.log(`Input screen coords (window): (${screenX}, ${screenY})`);
+    console.log(`Container offset: (${rect.left}, ${rect.top})`);
+    console.log(`Relative to container: (${viewerX}, ${viewerY})`);
+    console.log(`After pan adjustment: (${panAdjustedX}, ${panAdjustedY})`);
+    console.log(`Current scale: ${scale}`);
+    console.log(`Final PDF coords: (${pdfX}, ${pdfY})`);
     
-    return {
-      x: adjustedX,
-      y: adjustedY
-    };
+    return { x: pdfX, y: pdfY };
+  };
+  
+  // NEW HELPER: Convert PDF coordinates to screen (SVG) coordinates
+  const pdfToScreenCoordinates = (pdfX: number, pdfY: number) => {
+    // Apply the same transformation but in reverse
+    const screenX = pdfX * scale;
+    const screenY = pdfY * scale;
+    
+    return { x: screenX, y: screenY };
   };
 
   // Store the current render task so we can cancel it if needed
@@ -665,29 +675,8 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
-        const rect = containerRef.current.getBoundingClientRect();
-        
-        // Get mouse position relative to the container
-        const containerX = x - rect.left;
-        const containerY = y - rect.top;
-        
-        // Adjust for the translation (pan)
-        const scaledX = containerX - translateX;
-        const scaledY = containerY - translateY;
-        
-        // Convert to PDF space using the current scale
-        const pdfX = scaledX / scale;
-        const pdfY = scaledY / scale;
-        
-        // Log detailed coordinates for debugging
-        console.log("==== CLICK COORDINATES DEBUG ====");
-        console.log(`Screen coordinates: x=${x}, y=${y}`);
-        console.log(`Container rect: left=${rect.left}, top=${rect.top}`);
-        console.log(`Container coordinates: x=${containerX}, y=${containerY}`);
-        console.log(`Translate: x=${translateX}, y=${translateY}`);
-        console.log(`After translation: x=${scaledX}, y=${scaledY}`);
-        console.log(`Scale: ${scale}`);
-        console.log(`PDF coordinates: x=${pdfX}, y=${pdfY}`);
+        // Use our refactored conversion function to get PDF coordinates
+        const { x: pdfX, y: pdfY } = screenToPdfCoordinates(x, y);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -805,31 +794,19 @@ export const EnhancedFloorplanViewer = ({
         };
       });
     } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
-      // Get the container rect
-      const rect = containerRef.current.getBoundingClientRect();
-      
-      // Get mouse position relative to the container
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Adjust for the translation (pan)
-      const scaledX = containerX - translateX;
-      const scaledY = containerY - translateY;
-      
-      // Convert to PDF space
-      const pdfX = scaledX / scale;
-      const pdfY = scaledY / scale;
+      // Use our consistent coordinate transform function
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
       
       const lastPoint = drawingPoints[drawingPoints.length - 1];
       
       // Only update if mouse moved significantly (avoid excessive updates)
       const distance = Math.sqrt(
-        Math.pow(pdfX - lastPoint.x, 2) + 
-        Math.pow(pdfY - lastPoint.y, 2)
+        Math.pow(pdfCoords.x - lastPoint.x, 2) + 
+        Math.pow(pdfCoords.y - lastPoint.y, 2)
       );
       
       if (distance > 5 / pdfToViewportScale) { // 5px in screen space
-        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfX, y: pdfY }]);
+        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfCoords.x, y: pdfCoords.y }]);
       }
     }
   };
