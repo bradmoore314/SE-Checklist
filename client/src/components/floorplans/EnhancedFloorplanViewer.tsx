@@ -1005,9 +1005,9 @@ export const EnhancedFloorplanViewer = ({
           className="absolute top-0 left-0 pointer-events-auto"
           style={{
             width: viewportDimensions.width,
-            height: viewportDimensions.height
+            height: viewportDimensions.height,
+            transform: `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`
           }}
-          transform={`scale(${scale})`}
         >
           {/* Debug grid removed */}
           
@@ -1197,8 +1197,8 @@ export const EnhancedFloorplanViewer = ({
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width! * scale} 
-                      height={marker.height! * scale}
+                      width={marker.width!} 
+                      height={marker.height!}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
@@ -1235,10 +1235,10 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={(marker.width! * scale) / 2} 
-                      cy={(marker.height! * scale) / 2}
-                      rx={(marker.width! * scale) / 2} 
-                      ry={(marker.height! * scale) / 2}
+                      cx={marker.width! / 2} 
+                      cy={marker.height! / 2}
+                      rx={marker.width! / 2} 
+                      ry={marker.height! / 2}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
