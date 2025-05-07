@@ -700,6 +700,9 @@ export const EnhancedFloorplanViewer = ({
       setTranslateX(prev => prev + deltaX);
       setTranslateY(prev => prev + deltaY);
       setDragStart({ x: e.clientX, y: e.clientY });
+      
+      // Set cursor for panning
+      containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
       // Moving a selected marker
       const rect = containerRef.current.getBoundingClientRect();
@@ -717,6 +720,9 @@ export const EnhancedFloorplanViewer = ({
           position_y: newY
         };
       });
+      
+      // Set cursor for dragging marker
+      containerRef.current.style.cursor = 'grabbing';
     } else if (isResizingMarker && selectedMarker) {
       // Resizing a selected marker
       const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
@@ -814,6 +820,12 @@ export const EnhancedFloorplanViewer = ({
       // Save the new marker position
       updateMarkerMutation.mutate(selectedMarker);
       setIsDraggingMarker(false);
+      
+      // Reset cursor style
+      if (containerRef.current) {
+        containerRef.current.style.cursor = 'default';
+      }
+      
       showAutoSaveFeedback();
     } else if (isResizingMarker && selectedMarker) {
       // Save the resized marker
@@ -894,6 +906,12 @@ export const EnhancedFloorplanViewer = ({
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onMouseLeave={() => {
+        // Reset cursor when mouse leaves the container entirely
+        if (containerRef.current && !isDraggingMarker) {
+          containerRef.current.style.cursor = 'default';
+        }
+      }}
       onWheel={handleWheel}
       onDoubleClick={handleDoubleClick}
     >
@@ -932,8 +950,11 @@ export const EnhancedFloorplanViewer = ({
             const selectedStrokeWidth = strokeWidth * 1.5;
             
             // Base classnames and props
-            const baseClassName = `marker-group cursor-pointer ${isSelected ? 'selected-marker' : ''}`;
+            const baseClassName = `marker-group ${isSelected ? 'selected-marker' : ''}`;
             const baseProps = {
+              style: {
+                cursor: toolMode === 'delete' ? 'not-allowed' : 'grab',
+              },
               onClick: (e: React.MouseEvent) => {
                 e.stopPropagation();
                 handleMarkerClick(marker);
@@ -948,6 +969,23 @@ export const EnhancedFloorplanViewer = ({
                     toolMode !== 'delete') {
                   e.stopPropagation();
                   startMarkerDrag(e, marker);
+                }
+              },
+              onMouseEnter: (e: React.MouseEvent) => {
+                // Show grab cursor when hovering over a marker that can be dragged
+                if (!isAddingMarker && 
+                    !isDrawing && 
+                    !['polyline', 'polygon'].includes(toolMode) && 
+                    toolMode !== 'delete') {
+                  if (containerRef.current) {
+                    containerRef.current.style.cursor = 'grab';
+                  }
+                }
+              },
+              onMouseLeave: (e: React.MouseEvent) => {
+                // Reset cursor when no longer hovering over a marker
+                if (!isDraggingMarker && containerRef.current) {
+                  containerRef.current.style.cursor = 'default';
                 }
               }
             };
