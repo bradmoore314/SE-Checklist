@@ -18,6 +18,7 @@ import { ChatbotProvider } from '@/hooks/use-chatbot';
 import { ChatbotButton } from '@/components/ai/ChatbotButton';
 import { ChatbotWindow } from '@/components/ai/ChatbotWindow';
 import { FullPageChatbot } from '@/components/ai/FullPageChatbot';
+import { UnassignedEquipmentSelect } from '@/components/floorplans/UnassignedEquipmentSelect';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -104,6 +105,12 @@ function EnhancedFloorplansPage() {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState<number | null>(null);
   const [showEquipmentMenu, setShowEquipmentMenu] = useState(false);
+  // Store selected unassigned equipment that will be placed on the floorplan
+  const [selectedEquipmentForPlacement, setSelectedEquipmentForPlacement] = useState<{
+    id: number;
+    type: string;
+    label: string;
+  } | null>(null);
   // Equipment type label visibility states 
   const [visibleLabelTypes, setVisibleLabelTypes] = useState<Record<string, boolean>>({
     'access_point': false,
@@ -835,6 +842,29 @@ function EnhancedFloorplansPage() {
                   onToolSelect={handleToolSelect}
                 />
               </TooltipProvider>
+              
+              {/* Unassigned equipment dropdown */}
+              {floorplanId && (
+                <UnassignedEquipmentSelect 
+                  projectId={projectId} 
+                  onSelectEquipment={(equipment) => {
+                    // When an equipment item is selected, set the tool mode to the appropriate type
+                    setToolMode(equipment.type as AnnotationTool);
+                    
+                    // Store the selected equipment for placement
+                    setSelectedEquipmentForPlacement({
+                      id: equipment.id,
+                      type: equipment.type,
+                      label: equipment.label
+                    });
+                    
+                    toast({
+                      title: "Equipment Selected",
+                      description: `Click on the floorplan to place "${equipment.label}"`
+                    });
+                  }}
+                />
+              )}
             </div>
             
             <div className="flex space-x-2">
@@ -889,20 +919,26 @@ function EnhancedFloorplansPage() {
               layers={layers || []}
               onPageChange={setCurrentPage}
               visibleLabelTypes={visibleLabelTypes}
+              selectedEquipment={selectedEquipmentForPlacement}
               onMarkersUpdated={() => {
                 // Refresh marker stats and equipment data when markers are updated
                 queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan', floorplanId, 'markers'] });
+                queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/unassigned-equipment`] });
                 
                 // Also refresh related equipment tables
                 queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'elevators'] });
+                
+                // Clear the selected equipment once it's been placed
+                setSelectedEquipmentForPlacement(null);
                 
                 // Show toast notification
                 toast({
-                  title: "Equipment list updated",
-                  description: "The equipment list has been updated with the changes from the floorplan."
+                  title: "Equipment Added",
+                  description: "The equipment has been placed on the floorplan."
                 });
               }}
             />
