@@ -118,6 +118,7 @@ export const EnhancedFloorplanViewer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgLayerRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pageContainerRef = useRef<HTMLDivElement>(null);
   
   // State management
   const [pdfDocument, setPdfDocument] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
@@ -125,6 +126,7 @@ export const EnhancedFloorplanViewer = ({
   const [translateX, setTranslateX] = useState<number>(0);
   const [translateY, setTranslateY] = useState<number>(0);
   const [viewportDimensions, setViewportDimensions] = useState({width: 0, height: 0});
+  const [pdfDimensions, setPdfDimensions] = useState({width: 0, height: 0});
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
@@ -149,7 +151,7 @@ export const EnhancedFloorplanViewer = ({
 
   // NEW APPROACH: Convert screen (browser window) coordinates to PDF space coordinates
   const screenToPdfCoordinates = (screenX: number, screenY: number) => {
-    if (!containerRef.current) return { x: 0, y: 0 };
+    if (!containerRef.current || !pageContainerRef.current) return { x: 0, y: 0 };
     
     // Step 1: Get position relative to the container (floorplan viewer)
     const rect = containerRef.current.getBoundingClientRect();
@@ -160,17 +162,35 @@ export const EnhancedFloorplanViewer = ({
     const panAdjustedX = viewerX - translateX;
     const panAdjustedY = viewerY - translateY;
     
-    // Step 3: Convert from display pixels to PDF points by dividing by the current scale
-    const pdfX = panAdjustedX / scale;
-    const pdfY = panAdjustedY / scale;
+    // Step 3: Get the visible PDF area dimensions
+    const pageRect = pageContainerRef.current.getBoundingClientRect();
+    
+    // Step 4: Convert screen coordinates to relative position within the visible PDF
+    // This ensures markers are correctly placed on the actual floorplan image
+    // Calculate positions relative to the center of the PDF content
+    const pdfCenterX = translateX + (pageRect.width / 2);
+    const pdfCenterY = translateY + (pageRect.height / 2);
+    
+    // Calculate relative position 
+    const relativeX = (viewerX - pdfCenterX) / scale;
+    const relativeY = (viewerY - pdfCenterY) / scale;
+    
+    // Adjust to actual PDF coordinates (assuming 0,0 is center of document)
+    const pdfWidth = pdfDimensions.width || 612; // Standard PDF width if not available
+    const pdfHeight = pdfDimensions.height || 792; // Standard PDF height if not available
+    
+    const pdfX = (pdfWidth / 2) + relativeX;
+    const pdfY = (pdfHeight / 2) + relativeY;
     
     // Log details for debugging
     console.log("====== COORDINATE CONVERSION ======");
     console.log(`Input screen coords (window): (${screenX}, ${screenY})`);
     console.log(`Container offset: (${rect.left}, ${rect.top})`);
     console.log(`Relative to container: (${viewerX}, ${viewerY})`);
+    console.log(`PDF center point: (${pdfCenterX}, ${pdfCenterY})`);
     console.log(`After pan adjustment: (${panAdjustedX}, ${panAdjustedY})`);
     console.log(`Current scale: ${scale}`);
+    console.log(`PDF dimensions: ${pdfWidth} x ${pdfHeight}`);
     console.log(`Final PDF coords: (${pdfX}, ${pdfY})`);
     
     return { x: pdfX, y: pdfY };
@@ -219,8 +239,15 @@ export const EnhancedFloorplanViewer = ({
       canvas.height = viewport.height;
       setViewportDimensions({ width: viewport.width, height: viewport.height });
       
+      // Get and store actual PDF dimensions
+      const defaultViewport = page.getViewport({ scale: 1 });
+      setPdfDimensions({ 
+        width: defaultViewport.width,
+        height: defaultViewport.height
+      });
+      
       // Calculate scale from PDF points to viewport pixels
-      const scaleFactor = viewport.width / page.getViewport({ scale: 1 }).width;
+      const scaleFactor = viewport.width / defaultViewport.width;
       // We no longer need to set pdfToViewportScale as we're using scale directly
       
       // Clear the canvas 
@@ -242,9 +269,9 @@ export const EnhancedFloorplanViewer = ({
       renderTaskRef.current = null;
       
       setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       // Check if this was a cancelled task
-      if (error?.name === 'RenderingCancelledException') {
+      if (error && error.name === 'RenderingCancelledException') {
         console.log('Rendering cancelled as expected');
         return; // Don't show an error for cancellation
       }
