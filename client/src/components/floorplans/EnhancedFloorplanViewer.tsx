@@ -244,18 +244,25 @@ export const EnhancedFloorplanViewer = ({
       // Update canvas and SVG dimensions
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      setViewportDimensions({ width: viewport.width, height: viewport.height });
       
-      // Get and store actual PDF dimensions
+      // Get and store actual PDF dimensions at scale 1
       const defaultViewport = page.getViewport({ scale: 1 });
       setPdfDimensions({ 
         width: defaultViewport.width,
         height: defaultViewport.height
       });
       
-      // Calculate scale from PDF points to viewport pixels
-      const scaleFactor = viewport.width / defaultViewport.width;
-      // We no longer need to set pdfToViewportScale as we're using scale directly
+      // Set viewport dimensions based on the PDF dimensions and current scale
+      // This is crucial for maintaining proper alignment between SVG and canvas layers
+      setViewportDimensions({ 
+        width: defaultViewport.width * scale, 
+        height: defaultViewport.height * scale 
+      });
+      
+      // Log the viewport dimensions for debugging
+      console.log(`Viewport dimensions updated: ${defaultViewport.width * scale}x${defaultViewport.height * scale}`);
+      
+      // We no longer need to calculate a separate scale factor as we're using scale directly
       
       // Clear the canvas 
       context.clearRect(0, 0, canvas.width, canvas.height);
