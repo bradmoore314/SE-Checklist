@@ -1005,8 +1005,7 @@ export const EnhancedFloorplanViewer = ({
           className="absolute top-0 left-0 pointer-events-auto"
           style={{
             width: viewportDimensions.width,
-            height: viewportDimensions.height,
-            transform: `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`
+            height: viewportDimensions.height
           }}
         >
           {/* Debug grid removed */}
@@ -1087,18 +1086,28 @@ export const EnhancedFloorplanViewer = ({
             // Render different marker types
             switch (marker.marker_type) {
               case 'access_point':
-                // Just use PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates
+                const { x: apScreenX, y: apScreenY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                const markerSize = 12;  // Base marker size
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${apScreenX}, ${apScreenY})`}
                     {...baseProps}
                   >
                     <circle 
-                      r="12" 
-                      fill={fillColor} /* Back to red circle */
+                      r={markerSize} 
+                      fill={fillColor} /* Red circle */
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1108,9 +1117,10 @@ export const EnhancedFloorplanViewer = ({
                       dominantBaseline="middle" 
                       fill="#FFFFFF" /* White text */
                       fontWeight="bold"
+                      style={{ pointerEvents: 'none' }}
                     >AP</text>
                     {(isSelected || showAllLabels) && marker.label && (
-                      <g>
+                      <g style={{ pointerEvents: 'none' }}>
                         <rect
                           x="-40"
                           y="17"
@@ -1134,13 +1144,22 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'camera':
-                // Just use PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates
+                const { x: cameraScreenX, y: cameraScreenY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${cameraScreenX}, ${cameraScreenY})`}
                     {...baseProps}
                   >
                     <rect 
@@ -1159,9 +1178,10 @@ export const EnhancedFloorplanViewer = ({
                       dominantBaseline="middle" 
                       fill="#ff0000" /* Red text */
                       fontWeight="bold"
+                      style={{ pointerEvents: 'none' }}
                     >C</text>
                     {(isSelected || showAllLabels) && marker.label && (
-                      <g>
+                      <g style={{ pointerEvents: 'none' }}>
                         <rect
                           x="-40"
                           y="17"
@@ -1185,20 +1205,29 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'rectangle':
-                // Just use PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates
+                const { x: rectScreenX, y: rectScreenY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${rectScreenX}, ${rectScreenY})`}
                     {...baseProps}
                   >
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width!} 
-                      height={marker.height!}
+                      width={marker.width! * scale} 
+                      height={marker.height! * scale}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
