@@ -1,0 +1,195 @@
+1. Synchronize viewportDimensions with Scale Changes
+The SVG and canvas layers misalign because viewportDimensions isn’t updating correctly with the zoom scale. To fix this, update viewportDimensions whenever scale or pdfDimensions changes, using the PDF’s base dimensions.
+
+Where to Change: Inside the EnhancedFloorplanViewer component, after state declarations (e.g., useState for viewportDimensions).
+
+Code to Add:
+
+typescript
+
+Copy
+useEffect(() => {
+  if (pdfDimensions.width && pdfDimensions.height) {
+    setViewportDimensions({
+      width: pdfDimensions.width * scale,
+      height: pdfDimensions.height * scale
+    });
+  }
+}, [scale, pdfDimensions]);
+Why This Works:
+
+pdfDimensions stores the PDF’s width and height at scale = 1 (set in renderPage).
+This useEffect ensures viewportDimensions reflects the scaled PDF size whenever scale changes, keeping the SVG and canvas aligned.
+2. Fix Marker Rendering for Positioning and Scaling
+Markers need to be rendered in PDF coordinates and scaled correctly:
+
+Point markers (e.g., access_point, camera): Should stay a constant size on the screen, regardless of zoom.
+Area markers (e.g., rectangle, ellipse): Should scale with the PDF.
+Where to Change: In the SVG section of EnhancedFloorplanViewer where markers are mapped and rendered.
+
+For Point Markers (e.g., access_point)
+Code to Replace:
+
+typescript
+
+Copy
+<g transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}>
+  <circle
+    r={12 / scale}
+    fill={marker.fill ?? "rgba(255, 0, 0, 0.5)"}
+    stroke="black"
+    strokeWidth={1 / scale}
+  />
+  {marker.label && (
+    <text
+      x={0}
+      y={0}
+      fontSize={14 / scale}
+      textAnchor="middle"
+      dominantBaseline="middle"
+      fill="black"
+    >
+      {marker.label}
+    </text>
+  )}
+</g>
+Why This Works:
+
+Position: marker.position_x * scale and marker.position_y * scale convert PDF coordinates to the SVG’s scaled system.
+Size: Dividing r, strokeWidth, and fontSize by scale keeps the marker’s screen size constant as the PDF zooms.
+For Area Markers (e.g., rectangle)
+Code to Replace:
+
+typescript
+
+Copy
+<g>
+  <rect
+    x={marker.position_x * scale}
+    y={marker.position_y * scale}
+    width={marker.width * scale}
+    height={marker.height * scale}
+    fill={marker.fill ?? "rgba(0, 0, 255, 0.3)"}
+    stroke="black"
+    strokeWidth={2}
+  />
+</g>
+Why This Works:
+
+Position and Size: Multiplying x, y, width, and height by scale ensures the marker scales with the PDF.
+Stroke: A constant strokeWidth keeps the border thickness visible in screen space.
+3. Update SVG and Canvas Styles to Avoid Double Scaling
+Using CSS transform: scale() on the SVG or canvas can cause scaling issues. Instead, manage scaling within the SVG attributes and set dimensions explicitly.
+
+Where to Change: In the JSX where the canvas and svg elements are rendered.
+
+Code to Replace:
+
+typescript
+
+Copy
+<canvas
+  ref={canvasRef}
+  style={{
+    width: `${viewportDimensions.width}px`,
+    height: `${viewportDimensions.height}px`,
+    transform: `translate(${translateX}px, ${translateY}px)`,
+  }}
+/>
+<svg
+  ref={svgLayerRef}
+  style={{
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: `${viewportDimensions.width}px`,
+    height: `${viewportDimensions.height}px`,
+    transform: `translate(${translateX}px, ${translateY}px)`,
+  }}
+>
+  {/* Markers rendered here with scaled positions and sizes */}
+</svg>
+Why This Works:
+
+Removes scale(${scale}) from the transform style to prevent double scaling.
+Sets width and height to viewportDimensions, which already accounts for scale.
+Uses translate for panning only.
+4. Update renderPage to Render at Scaled Dimensions
+The canvas must render the PDF at the correct scaled size to match the SVG.
+
+Where to Change: In the renderPage function within EnhancedFloorplanViewer.
+
+Code to Replace:
+
+typescript
+
+Copy
+const renderPage = async (pageNum: number) => {
+  if (!pdfDocument || !canvasRef.current) return;
+  const page = await pdfDocument.getPage(pageNum);
+  const viewport = page.getViewport({ scale: scale });
+  const canvas = canvasRef.current;
+  const context = canvas.getContext('2d');
+  if (context) {
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    setViewportDimensions({ width: viewport.width, height: viewport.height });
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const renderTask = page.render({ canvasContext: context, viewport });
+    await renderTask.promise;
+  }
+};
+Why This Works:
+
+page.getViewport({ scale: scale }) provides the scaled dimensions.
+Sets canvas.width and canvas.height to match, ensuring the PDF renders at the correct size.
+Updates viewportDimensions to keep everything in sync.
+5. Correct Coordinate Transformations for Mouse Events
+Mouse events need to convert screen coordinates to PDF coordinates accurately, accounting for translation and scale.
+
+Where to Change: In event handlers like handleMouseDown, handleMouseMove, etc.
+
+Code to Replace:
+
+typescript
+
+Copy
+const handleMouseDown = (e: React.MouseEvent) => {
+  const rect = containerRef.current?.getBoundingClientRect();
+  if (rect) {
+    const containerX = e.clientX - rect.left - translateX;
+    const containerY = e.clientY - rect.top - translateY;
+    const pdfX = containerX / scale;
+    const pdfY = containerY / scale;
+    // Use pdfX, pdfY for marker positions or other logic
+  }
+};
+Why This Works:
+
+Subtracts translateX and translateY to account for panning.
+Divides by scale to convert from scaled container coordinates to PDF coordinates.
+6. Add Debugging to Verify Fixes
+To ensure these changes work, add temporary logs to check key values.
+
+Where to Add: In the marker rendering loop and event handlers.
+
+Code to Add:
+
+typescript
+
+Copy
+console.log(`Scale: ${scale}, Translate: (${translateX}, ${translateY})`);
+console.log(`Marker Position: PDF(${marker.position_x}, ${marker.position_y}), Scaled(${marker.position_x * scale}, ${marker.position_y * scale})`);
+How to Use:
+
+Check the console while zooming and panning.
+Verify that scaled positions align with the visible marker locations on the screen.
+Expected Results
+Marker Positioning: Markers will stay aligned with their intended PDF coordinates during zoom and pan.
+Scaling: Point markers (e.g., circles) will maintain a constant screen size, while area markers (e.g., rectangles) will scale with the PDF.
+User Experience: Zooming and panning will feel smooth and accurate.
+How to Implement
+Apply each change to your EnhancedFloorplanViewer code in the order listed.
+Test after each step (e.g., zoom in/out, add a marker, pan around).
+If issues remain, share the specific behavior (e.g., “markers drift left when zooming”) and any console logs for further help.
+These changes should resolve the positioning and scaling issues. Let me know if you need assistance with testing or additional tweaks!

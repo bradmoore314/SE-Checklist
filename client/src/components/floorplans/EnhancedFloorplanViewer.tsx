@@ -1102,7 +1102,7 @@ export const EnhancedFloorplanViewer = ({
       <div
         className="relative"
       >
-        {/* The PDF Canvas - we'll transform this with the pan and zoom */}
+        {/* The PDF Canvas - we'll transform this with the pan and zoom but avoid double scaling */}
         <canvas 
           ref={canvasRef} 
           className="block pointer-events-none"
@@ -1110,12 +1110,12 @@ export const EnhancedFloorplanViewer = ({
             width: `${viewportDimensions.width}px`,
             height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transform: `translate(${translateX}px, ${translateY}px)`,
             transition: 'transform 75ms'
           }}
         />
         
-        {/* The SVG overlay layer must use identical transform */}
+        {/* The SVG overlay layer must use identical transform - removing scale */}
         <svg
           ref={svgLayerRef}
           className="absolute top-0 left-0 pointer-events-auto"
@@ -1123,7 +1123,7 @@ export const EnhancedFloorplanViewer = ({
             width: `${viewportDimensions.width}px`,
             height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
-            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transform: `translate(${translateX}px, ${translateY}px)`,
             transition: 'transform 75ms'
           }}
         >
@@ -1205,7 +1205,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <circle 
@@ -1255,7 +1255,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <rect 
@@ -1308,17 +1308,17 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <rect 
                       x="0" 
                       y="0" 
-                      width={marker.width!} 
-                      height={marker.height!}
+                      width={marker.width! * scale} 
+                      height={marker.height! * scale}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
@@ -1349,17 +1349,17 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={marker.width! / 2} 
-                      cy={marker.height! / 2}
-                      rx={marker.width! / 2} 
-                      ry={marker.height! / 2}
+                      cx={(marker.width! * scale) / 2} 
+                      cy={(marker.height! * scale) / 2}
+                      rx={(marker.width! * scale) / 2} 
+                      ry={(marker.height! * scale) / 2}
                       fill={fillColor}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
@@ -1394,19 +1394,19 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x} 
-                      y1={marker.position_y}
-                      x2={marker.end_x!} 
-                      y2={marker.end_y!}
+                      x1={marker.position_x * scale} 
+                      y1={marker.position_y * scale}
+                      x2={marker.end_x! * scale} 
+                      y2={marker.end_y! * scale}
                       stroke={markerColor}
-                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth) / scale}
+                      strokeWidth={(isSelected ? selectedStrokeWidth : strokeWidth)}
                     />
                     {isSelected && toolMode === 'select' && (
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={marker.position_x} 
-                          cy={marker.position_y} 
+                          cx={marker.position_x * scale} 
+                          cy={marker.position_y * scale} 
                           r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1419,8 +1419,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={marker.end_x!} 
-                          cy={marker.end_y!} 
+                          cx={marker.end_x! * scale} 
+                          cy={marker.end_y! * scale} 
                           r={6 / scale} 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1445,7 +1445,7 @@ export const EnhancedFloorplanViewer = ({
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${marker.position_x * scale}, ${marker.position_y * scale})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
