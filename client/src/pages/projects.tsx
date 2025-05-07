@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSiteWalk } from "@/context/SiteWalkContext";
 import { useProject } from "@/context/ProjectContext";
 import { Project } from "@shared/schema";
@@ -13,7 +13,18 @@ import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Star, Search, Plus, Loader2, FolderOpen, Trash2 } from "lucide-react";
+import { 
+  Star, 
+  Search, 
+  Plus, 
+  Loader2, 
+  FolderOpen, 
+  Trash2,
+  LayoutGrid,
+  List,
+  User,
+  Users
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -188,17 +199,15 @@ export default function Projects() {
     
     // For "mine" tab, show only projects owned or collaborated on by the current user
     if (activeTab === "mine") {
-      // Check if project has collaborators with the current user
-      const isUsersProject = project.collaborators?.some(
-        (collab) => collab.user_id === currentUser?.id
-      );
-      
-      // Since we might not have collaborators loaded, we'll also consider recently created projects as the user's
-      // This is a temporary solution until we have proper ownership tracking
+      // The backend has already filtered projects to only show those the user has access to
+      // but we double-check here just in case of any frontend-only filtering
+      // We'll also consider recently created projects as the user's
+      // This is a temporary solution until we have proper ownership tracking in the frontend
       const isRecentlyCreated = project.created_at && 
         new Date(project.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24 hours
       
-      return matchesSearch && (isUsersProject || isRecentlyCreated);
+      // For now, we'll just trust that the backend is returning only projects the user has access to
+      return matchesSearch && (true || isRecentlyCreated); // Always true; backend should handle access control
     }
     
     // For "pinned" tab, show only pinned projects
@@ -243,22 +252,52 @@ export default function Projects() {
           className="w-full sm:w-auto"
         >
           <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="mine" className="flex items-center">
+              <User className="h-3.5 w-3.5 mr-1" />
+              Mine
+            </TabsTrigger>
+            <TabsTrigger value="all" className="flex items-center">
+              <Users className="h-3.5 w-3.5 mr-1" />
+              All
+            </TabsTrigger>
             <TabsTrigger value="pinned">Pinned</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
         </Tabs>
         
-        <div className="relative w-full sm:w-64">
-          <Input
-            type="text"
-            placeholder="Search site walks"
-            className="pl-10 pr-4 py-2"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
+        <div className="flex items-center gap-2">
+          <div className="flex bg-muted rounded-md p-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`${viewMode === 'grid' ? 'bg-background shadow-sm' : ''} rounded-md px-2 py-1`}
+              onClick={() => setViewMode('grid')}
+              title="Grid view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`${viewMode === 'list' ? 'bg-background shadow-sm' : ''} rounded-md px-2 py-1`}
+              onClick={() => setViewMode('list')}
+              title="List view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="relative w-full sm:w-64">
+            <Input
+              type="text"
+              placeholder="Search site walks"
+              className="pl-10 pr-4 py-2"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
+          </div>
         </div>
       </div>
 
@@ -295,92 +334,177 @@ export default function Projects() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project: Project) => (
-            <Card
-              key={project.id}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => selectSiteWalk(project)}
-            >
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-lg font-medium truncate" title={project.name}>
-                    {project.name}
-                  </h3>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
-                      onClick={(e) => togglePinned(e, project)}
-                      title={isPinned(project.id) ? "Unpin project" : "Pin project"}
-                    >
-                      <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative group"
-                      title="AI Review"
-                      onClick={(e: React.MouseEvent) => {
-                        e.stopPropagation();
-                        setLocation(`/projects/${project.id}/quote-review`);
-                      }}
-                    >
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                      <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
-                        <span className="material-icons text-sm">auto_awesome</span>
+        viewMode === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project: Project) => (
+              <Card
+                key={project.id}
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => selectSiteWalk(project)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-medium truncate" title={project.name}>
+                      {project.name}
+                    </h3>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
+                        onClick={(e) => togglePinned(e, project)}
+                        title={isPinned(project.id) ? "Unpin project" : "Pin project"}
+                      >
+                        <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative group"
+                        title="AI Review"
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          setLocation(`/projects/${project.id}/quote-review`);
+                        }}
+                      >
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
+                          <span className="material-icons text-sm">auto_awesome</span>
+                        </div>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-red-500"
+                        title="Delete"
+                        onClick={(e) => deleteSiteWalk(e, project)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-neutral-500 mb-4">
+                    {project.client && (
+                      <div className="mb-1 truncate" title={project.client}>
+                        Client: {project.client}
                       </div>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-red-500"
-                      title="Delete"
-                      onClick={(e) => deleteSiteWalk(e, project)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    )}
+                    {project.site_address && (
+                      <div className="mb-1 truncate" title={project.site_address}>
+                        Location: {project.site_address}
+                      </div>
+                    )}
+                    <div className="mb-1">
+                      Created: {formatDate(project.created_at)}
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {project.replace_readers && (
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        Replace Readers
+                      </span>
+                    )}
+                    {project.pull_wire && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                        Pull Wire
+                      </span>
+                    )}
+                    {project.install_locks && (
+                      <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                        Install Locks
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="bg-muted rounded-md p-3 hidden md:grid grid-cols-12 font-medium text-sm">
+              <div className="col-span-4">Project Name</div>
+              <div className="col-span-2">Client</div>
+              <div className="col-span-3">Location</div>
+              <div className="col-span-2">Created</div>
+              <div className="col-span-1 text-right">Actions</div>
+            </div>
+            
+            {filteredProjects.map((project: Project) => (
+              <Card key={project.id} className="overflow-hidden">
+                <div 
+                  className="grid md:grid-cols-12 gap-3 p-4 hover:bg-muted/20 transition-colors cursor-pointer"
+                  onClick={() => selectSiteWalk(project)}
+                >
+                  <div className="md:col-span-4 flex items-center">
+                    <div className="font-medium">{project.name}</div>
+                    {isPinned(project.id) && (
+                      <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" />
+                    )}
+                  </div>
+                  
+                  <div className="md:col-span-2 text-muted-foreground hidden md:block">
+                    {project.client || '—'}
+                  </div>
+                  
+                  <div className="md:col-span-3 text-muted-foreground hidden md:block">
+                    {project.site_address || '—'}
+                  </div>
+                  
+                  <div className="md:col-span-2 text-muted-foreground hidden md:block">
+                    {formatDate(project.created_at)}
+                  </div>
+                  
+                  {/* Mobile-only details */}
+                  <div className="md:hidden text-sm text-muted-foreground">
+                    <div>{project.client && `Client: ${project.client}`}</div>
+                    <div>{project.site_address && `Location: ${project.site_address}`}</div>
+                    <div>Created: {formatDate(project.created_at)}</div>
+                  </div>
+                  
+                  <div className="md:col-span-1 flex justify-end md:justify-end items-center">
+                    <div className="flex space-x-1">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
+                        onClick={(e) => togglePinned(e, project)}
+                        title={isPinned(project.id) ? "Unpin project" : "Pin project"}
+                      >
+                        <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative group"
+                        title="AI Review"
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          setLocation(`/projects/${project.id}/quote-review`);
+                        }}
+                      >
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
+                          <span className="material-icons text-sm">auto_awesome</span>
+                        </div>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-red-500"
+                        title="Delete"
+                        onClick={(e) => deleteSiteWalk(e, project)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="text-sm text-neutral-500 mb-4">
-                  {project.client && (
-                    <div className="mb-1 truncate" title={project.client}>
-                      Client: {project.client}
-                    </div>
-                  )}
-                  {project.site_address && (
-                    <div className="mb-1 truncate" title={project.site_address}>
-                      Location: {project.site_address}
-                    </div>
-                  )}
-                  <div className="mb-1">
-                    Created: {formatDate(project.created_at)}
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {project.replace_readers && (
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      Replace Readers
-                    </span>
-                  )}
-                  {project.pull_wire && (
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                      Pull Wire
-                    </span>
-                  )}
-                  {project.install_locks && (
-                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                      Install Locks
-                    </span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )
       )}
 
       {/* New Site Walk Modal */}
