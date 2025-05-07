@@ -802,10 +802,11 @@ function EnhancedFloorplansPage() {
                     setShowLayersPanel(!showLayersPanel);
                   }}
                   onToggleLabels={() => {
-                    setShowAllLabels(!showAllLabels);
+                    // Toggle all visibility at once
+                    toggleLabelVisibility('all');
                   }}
                   showLayers={showLayersPanel}
-                  showAllLabels={showAllLabels}
+                  visibleLabelTypes={visibleLabelTypes}
                   canDelete={!!selectedMarkerId}
                   canCopy={!!selectedMarkerId}
                   zoomLevel={scale}
@@ -885,7 +886,7 @@ function EnhancedFloorplansPage() {
               toolMode={toolMode}
               layers={layers || []}
               onPageChange={setCurrentPage}
-              showAllLabels={showAllLabels}
+              visibleLabelTypes={visibleLabelTypes}
               onMarkersUpdated={() => {
                 // Refresh marker stats and equipment data when markers are updated
                 queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
