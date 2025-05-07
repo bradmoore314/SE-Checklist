@@ -60,7 +60,8 @@ export default function Projects() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [showNewSiteWalkModal, setShowNewSiteWalkModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("mine");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   
   // Listen for custom event to open create project dialog
   useEffect(() => {
@@ -168,6 +169,11 @@ export default function Projects() {
     }
   };
 
+  // Get the current user from context
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/user"],
+  });
+  
   // Filter projects based on search term and active tab
   const filteredProjects = allProjects.filter((project: Project) => {
     const matchesSearch = 
@@ -175,9 +181,24 @@ export default function Projects() {
       (project.client && project.client.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (project.site_address && project.site_address.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // If tab is "all", return all projects that match search
+    // For "all" tab, return all projects that match search
     if (activeTab === "all") {
       return matchesSearch;
+    }
+    
+    // For "mine" tab, show only projects owned or collaborated on by the current user
+    if (activeTab === "mine") {
+      // Check if project has collaborators with the current user
+      const isUsersProject = project.collaborators?.some(
+        (collab) => collab.user_id === currentUser?.id
+      );
+      
+      // Since we might not have collaborators loaded, we'll also consider recently created projects as the user's
+      // This is a temporary solution until we have proper ownership tracking
+      const isRecentlyCreated = project.created_at && 
+        new Date(project.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24 hours
+      
+      return matchesSearch && (isUsersProject || isRecentlyCreated);
     }
     
     // For "pinned" tab, show only pinned projects
