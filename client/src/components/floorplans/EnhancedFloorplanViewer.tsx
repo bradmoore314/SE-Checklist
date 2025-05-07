@@ -123,6 +123,7 @@ export const EnhancedFloorplanViewer = ({
   const [layerOpacity, setLayerOpacity] = useState<number>(0.5);
   const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const [areLabelsVisible, setAreLabelsVisible] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDraggingMarker, setIsDraggingMarker] = useState<boolean>(false);
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
@@ -1003,7 +1004,7 @@ export const EnhancedFloorplanViewer = ({
                   >
                     <circle 
                       r="12" 
-                      fill={fillColor}
+                      fill={fillColor} /* Back to red circle */
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1011,18 +1012,29 @@ export const EnhancedFloorplanViewer = ({
                       fontSize="14" 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
-                      fill="#FFFFFF"
+                      fill="#FFFFFF" /* White text */
+                      fontWeight="bold"
                     >AP</text>
                     {(isSelected || showAllLabels) && marker.label && (
-                      <text 
-                        fontSize="11" 
-                        y="24" 
-                        textAnchor="middle" 
-                        fill={markerColor}
-                        stroke="#FFFFFF" 
-                        strokeWidth="0.5"
-                        paintOrder="stroke"
-                      >{marker.label}</text>
+                      <g>
+                        <rect
+                          x="-40"
+                          y="17"
+                          width="80"
+                          height="16"
+                          rx="4"
+                          fill="#ffff00" /* Yellow background */
+                          stroke="#ff0000"
+                          strokeWidth="0.5"
+                        />
+                        <text 
+                          fontSize="11" 
+                          y="24" 
+                          textAnchor="middle" 
+                          fill="#ff0000" /* Red text */
+                          fontWeight="bold"
+                        >{marker.label}</text>
+                      </g>
                     )}
                   </g>
                 );
@@ -1041,7 +1053,7 @@ export const EnhancedFloorplanViewer = ({
                       y="-10" 
                       width="20" 
                       height="20"
-                      fill={fillColor}
+                      fill={fillColor} /* Red background for consistency */
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                       rx="2"
@@ -1050,18 +1062,29 @@ export const EnhancedFloorplanViewer = ({
                       fontSize="12" 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
-                      fill="#FFFFFF"
+                      fill="#ff0000" /* Red text */
+                      fontWeight="bold"
                     >C</text>
                     {(isSelected || showAllLabels) && marker.label && (
-                      <text 
-                        fontSize="11" 
-                        y="24" 
-                        textAnchor="middle" 
-                        fill={markerColor}
-                        stroke="#FFFFFF" 
-                        strokeWidth="0.5"
-                        paintOrder="stroke"
-                      >{marker.label}</text>
+                      <g>
+                        <rect
+                          x="-40"
+                          y="17"
+                          width="80"
+                          height="16"
+                          rx="4"
+                          fill="#ffff00" /* Yellow background */
+                          stroke="#ff0000"
+                          strokeWidth="0.5"
+                        />
+                        <text 
+                          fontSize="11" 
+                          y="24" 
+                          textAnchor="middle" 
+                          fill="#ff0000" /* Red text */
+                          fontWeight="bold"
+                        >{marker.label}</text>
+                      </g>
                     )}
                   </g>
                 );
@@ -1204,13 +1227,13 @@ export const EnhancedFloorplanViewer = ({
                     transform={`translate(${marker.position_x * pdfToViewportScale},${marker.position_y * pdfToViewportScale})`}
                     {...baseProps}
                   >
-                    {/* Note icon */}
+                    {/* Note icon with yellow background and clear border */}
                     <rect 
                       x="-10" 
                       y="-10" 
                       width="20" 
                       height="20"
-                      fill="#ffff80"
+                      fill="#ffff00" /* Bright yellow background */
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                       rx="4"
@@ -1219,7 +1242,8 @@ export const EnhancedFloorplanViewer = ({
                       fontSize="12" 
                       textAnchor="middle" 
                       dominantBaseline="middle" 
-                      fill="#000000"
+                      fill="#ff0000" /* Red text */
+                      fontWeight="bold"
                     >N</text>
                     {(isSelected || showAllLabels) && marker.text_content && (
                       <foreignObject 
@@ -1229,15 +1253,15 @@ export const EnhancedFloorplanViewer = ({
                         height="60"
                       >
                         <div 
-                          className="bg-yellow-100 p-1 rounded shadow-sm border border-yellow-400 text-xs overflow-hidden"
+                          className="bg-yellow-200 p-1 rounded shadow-sm border border-yellow-500 text-red-600 text-xs overflow-hidden"
                           style={{
                             maxWidth: '150px',
                             maxHeight: '60px',
                             textOverflow: 'ellipsis'
                           }}
                         >
-                          {marker.text_content.substring(0, 100)}
-                          {marker.text_content.length > 100 && '...'}
+                          {marker.text_content?.substring(0, 100)}
+                          {marker.text_content?.length > 100 && '...'}
                         </div>
                       </foreignObject>
                     )}
