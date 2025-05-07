@@ -103,6 +103,11 @@ interface EnhancedFloorplanViewerProps {
   onPageChange: (page: number) => void;
   visibleLabelTypes?: Record<string, boolean>;
   onMarkersUpdated?: () => void;
+  selectedEquipment?: {
+    id: number;
+    type: string;
+    label: string;
+  } | null;
 }
 
 export const EnhancedFloorplanViewer = ({
@@ -112,7 +117,8 @@ export const EnhancedFloorplanViewer = ({
   layers,
   onPageChange,
   visibleLabelTypes,
-  onMarkersUpdated
+  onMarkersUpdated,
+  selectedEquipment
 }: EnhancedFloorplanViewerProps) => {
   // Hooks and refs
   const { toast } = useToast();
@@ -819,6 +825,13 @@ export const EnhancedFloorplanViewer = ({
           version: 1,
           layer_id: activeLayer?.id
         };
+        
+        // If we have selected equipment of the correct type, use it
+        if (selectedEquipment && selectedEquipment.type === toolMode) {
+          console.log("Using selected equipment for marker:", selectedEquipment);
+          newMarker.equipment_id = selectedEquipment.id;
+          newMarker.label = selectedEquipment.label;
+        }
         
         // For shapes that need dragging to size them
         if (['rectangle', 'ellipse', 'line'].includes(toolMode)) {
