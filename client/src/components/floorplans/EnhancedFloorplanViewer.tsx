@@ -153,43 +153,24 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
-  // Use our utility functions with a wrapper for better debugging
+  // Use our new coordinate system for all transformations
   const screenToPdfCoordinates = (screenX: number, screenY: number): Point => {
     if (!containerRef.current) return { x: 0, y: 0 };
     
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    // Convert using our utility
-    const result = utilScreenToPdf(
-      screenX,
-      screenY,
-      rect,
-      scale,
-      translateX,
-      translateY,
-      pdfDimensions
-    );
+    // The coordSystem is automatically updated whenever scale, translateX, or translateY changes
+    const result = coordSystem.screenToPdf(screenX, screenY);
     
     // Log for debugging (reduced to make it less verbose)
-    console.log(`Converting Screen(${screenX}, ${screenY}) → PDF(${result.x.toFixed(2)}, ${result.y.toFixed(2)}) @ scale ${scale}`);
+    // console.log(`Converting Screen(${screenX}, ${screenY}) → PDF(${result.x.toFixed(2)}, ${result.y.toFixed(2)}) @ scale ${scale}`);
     
     return result;
   };
   
-  // Use our utility function for PDF to screen conversion
+  // Use our coordinate system for PDF to screen conversion
   const pdfToScreenCoordinates = (pdfX: number, pdfY: number): Point => {
     if (!containerRef.current) return { x: 0, y: 0 };
     
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    return utilPdfToScreen(
-      pdfX,
-      pdfY,
-      rect,
-      scale,
-      translateX,
-      translateY
-    );
+    return coordSystem.pdfToScreen(pdfX, pdfY);
   };
 
   // Store the current render task so we can cancel it if needed
@@ -356,32 +337,26 @@ export const EnhancedFloorplanViewer = ({
     
     if (!containerRef.current) return;
     
-    // We checked containerRef.current above, it's guaranteed to be non-null here
-    const rect = containerRef.current.getBoundingClientRect();
+    // Get the mouse position in PDF coordinates using our coordinate system
+    const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
     
-    // Convert mouse coordinates to container-relative coordinates
-    const containerX = e.clientX - rect.left;
-    const containerY = e.clientY - rect.top;
-    
-    // Convert to PDF coordinates by undoing the transforms
-    const pdfX = (containerX - translateX) / scale;
-    const pdfY = (containerY - translateY) / scale;
-    
-    // Calculate the offset in PDF coordinates - crucial for stable dragging
-    const offsetX = pdfX - marker.position_x;
-    const offsetY = pdfY - marker.position_y;
+    // Calculate the offset between mouse and marker in PDF coordinates
+    const offset = coordSystem.calculateDragOffset(
+      mousePdf.x,
+      mousePdf.y,
+      marker.position_x,
+      marker.position_y
+    );
     
     // Enhanced logging for debugging
     console.log(`=== DRAG START DIAGNOSTICS ===`);
-    console.log(`Container bounds: (${rect.left}, ${rect.top}) ${rect.width}x${rect.height}`);
     console.log(`Mouse screen position: (${e.clientX}, ${e.clientY})`);
-    console.log(`Mouse container position: (${containerX}, ${containerY})`);
-    console.log(`Current transform: translate(${translateX}px, ${translateY}px) scale(${scale})`);
-    console.log(`Calculated PDF coords: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+    console.log(`Mouse PDF position: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
     console.log(`Marker PDF position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
-    console.log(`Computed offset: (${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
+    console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
+    console.log(`Computed offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)})`);
     
-    setMarkerDragOffset({ x: offsetX, y: offsetY });
+    setMarkerDragOffset(offset);
     setSelectedMarker(marker);
     setIsDraggingMarker(true);
     
@@ -793,28 +768,22 @@ export const EnhancedFloorplanViewer = ({
       // Set cursor for panning
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
-      // Moving a selected marker
-      const rect = containerRef.current.getBoundingClientRect();
+      // Moving a selected marker using our coordinate system
       
-      // Convert mouse coordinates to container-relative coordinates
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Convert to PDF coordinates using consistent approach
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Convert screen coordinates to PDF coordinates
+      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Apply the offset calculated during drag start
-      const newX = pdfX - markerDragOffset.x;
-      const newY = pdfY - markerDragOffset.y;
+      const newX = mousePdf.x - markerDragOffset.x;
+      const newY = mousePdf.y - markerDragOffset.y;
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
         console.log(`=== DRAG MOVE ===`);
-        console.log(`Raw PDF coords: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+        console.log(`Mouse PDF coords: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
         console.log(`Offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
         console.log(`New position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
-        console.log(`Scale: ${scale}`);
+        console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
       }
       
       // Update local state for smooth visual feedback
@@ -830,24 +799,22 @@ export const EnhancedFloorplanViewer = ({
       // Set cursor for dragging marker
       containerRef.current.style.cursor = 'grabbing';
     } else if (isResizingMarker && selectedMarker) {
-      // Resizing a selected marker
-      const rect = containerRef.current.getBoundingClientRect();
+      // Resizing a selected marker using our coordinate system
       
-      // Convert mouse coordinates to container-relative coordinates
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Convert to PDF coordinates using our consistent approach
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Get PDF coordinates directly using our coordinate system
+      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Log occasionally for debugging
       if (Math.random() < 0.1) { // Log ~10% of resize operations
         console.log(`=== RESIZE EVENT ===`);
-        console.log(`Mouse container position: (${containerX}, ${containerY})`);
-        console.log(`PDF coordinates: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
-        console.log(`Scale: ${scale.toFixed(2)}`);
+        console.log(`Mouse screen: (${e.clientX}, ${e.clientY})`);
+        console.log(`Mouse PDF: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
+        console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
       }
+      
+      // Store PDF coordinates for clarity in the remaining code
+      const pdfX = mousePdf.x;
+      const pdfY = mousePdf.y;
       
       // Calculate new dimensions based on marker type
       setSelectedMarker(prev => {
@@ -1088,12 +1055,7 @@ export const EnhancedFloorplanViewer = ({
     const newTranslateX = newTransform.translateX;
     const newTranslateY = newTransform.translateY;
     
-    // Debug information
-    console.log(`=== ZOOM EVENT ===`);
-    console.log(`Mouse container: (${mouseX}, ${mouseY})`);
-    console.log(`Mouse PDF: (${mousePdfX.toFixed(2)}, ${mousePdfY.toFixed(2)})`);
-    console.log(`Scale: ${scale.toFixed(2)} → ${newScale.toFixed(2)}`);
-    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)}) → (${newTranslateX.toFixed(0)}, ${newTranslateY.toFixed(0)})`);
+    // Debug information has already been logged above with the coordinate system
     
     // Update state
     setScale(newScale);
