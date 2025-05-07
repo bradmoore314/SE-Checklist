@@ -23,6 +23,7 @@ import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
 import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/lib/coordinate-utils';
 import CameraMarker from './markers/CameraMarker';
+import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
 
 import {
   ContextMenu,
@@ -180,6 +181,9 @@ export const EnhancedFloorplanViewer = ({
     mouseStartX: 0,
     mouseStartY: 0
   });
+  
+  // Camera edit dialog state
+  const [isCameraEditDialogOpen, setIsCameraEditDialogOpen] = useState<boolean>(false);
 
   // Function to determine if a marker's label should be visible
   const shouldShowMarkerLabel = (marker: MarkerData, isSelected: boolean): boolean => {
@@ -1768,9 +1772,57 @@ export const EnhancedFloorplanViewer = ({
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Properties
               </ContextMenuItem>
+              
+              {/* Only show camera settings option for camera markers */}
+              {selectedMarker && selectedMarker.marker_type === 'camera' && (
+                <ContextMenuItem
+                  onClick={() => {
+                    // Open the camera settings dialog
+                    setIsCameraEditDialogOpen(true);
+                    setContextMenuOpen(false);
+                  }}
+                >
+                  <div className="flex items-center">
+                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                      <circle cx="12" cy="13" r="3" />
+                    </svg>
+                    Camera Settings
+                  </div>
+                </ContextMenuItem>
+              )}
             </ContextMenuContent>
           </ContextMenu>
         </div>
+      )}
+      
+      {/* Camera Settings Edit Dialog */}
+      {selectedMarker && selectedMarker.marker_type === 'camera' && (
+        <CameraMarkerEditDialog
+          open={isCameraEditDialogOpen}
+          onOpenChange={setIsCameraEditDialogOpen}
+          marker={selectedMarker}
+          onUpdate={(updatedData) => {
+            // Update the camera marker with new settings
+            updateMarkerMutation.mutate({
+              ...selectedMarker,
+              fov: updatedData.fov,
+              range: updatedData.range,
+              rotation: updatedData.rotation,
+              label: updatedData.label
+            });
+            
+            // Close the dialog
+            setIsCameraEditDialogOpen(false);
+            
+            // Show feedback
+            toast({
+              title: "Camera Updated",
+              description: "Camera settings have been updated successfully.",
+              duration: 3000
+            });
+          }}
+        />
       )}
     </div>
   );
