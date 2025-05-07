@@ -3,12 +3,22 @@ import { Bot, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useChatbot } from '@/hooks/use-chatbot';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'wouter';
 
 /**
  * ChatbotButton - Floating action button to open/close the chat
+ * Only displays on the dashboard page
  */
 export function ChatbotButton() {
   const { isChatbotOpen, openChatbot, closeChatbot } = useChatbot();
+  const [location] = useLocation();
+  
+  // Only show the button on dashboard (root path)
+  const isDashboard = location === '/' || location === '';
+  
+  if (!isDashboard) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

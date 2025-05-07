@@ -934,7 +934,7 @@ function EnhancedFloorplansPageWithChatbot() {
   return (
     <ChatbotProvider>
       <EnhancedFloorplansPage />
-      <ChatbotButton />
+      {/* ChatbotButton is only shown on dashboard page now */}
       <ChatbotWindow />
       <FullPageChatbot />
     </ChatbotProvider>
