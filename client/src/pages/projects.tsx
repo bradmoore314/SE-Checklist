@@ -206,12 +206,44 @@ export default function Projects() {
     queryKey: ["/api/user"],
   });
   
-  // Create array of Sales Engineer names from all projects
-  const seNames = allProjects
-    .filter(p => p.se_name) // Only projects with SE name
-    .map(p => p.se_name as string)
-    .filter((name, index, self) => name && self.indexOf(name) === index) // Unique values only
-    .sort();
+  // Full list of Sales Engineers
+  const allSalesEngineers = [
+    "Akon Ambe",
+    "Alvin Thompson",
+    "Brad Moore",
+    "Brad To",
+    "Bryan Lane",
+    "Eric Muhlitner",
+    "Ilya Dobrydnev",
+    "Jacob Wilder",
+    "Jeremy Thomas",
+    "Joe Stine",
+    "John Proutsos",
+    "John Young",
+    "Kevin Myers",
+    "Kevin Purcell",
+    "Max Globin",
+    "Osiel Martinez",
+    "Patrick Rose",
+    "Rebeca Strasburger",
+    "Stanley Bromberek",
+    "Tony Cook"
+  ].sort();
+  
+  // For backward compatibility, also include any SEs in existing projects that might not be in the list above
+  const seNames = [...allSalesEngineers];
+  
+  // Add any SEs from projects that might not be in our predefined list
+  allProjects
+    .filter(p => p.se_name && !allSalesEngineers.includes(p.se_name as string))
+    .forEach(p => {
+      if (p.se_name && !seNames.includes(p.se_name as string)) {
+        seNames.push(p.se_name as string);
+      }
+    });
+  
+  // Sort the final list
+  seNames.sort();
   
   // Filter projects based on search term, active tab, and SE filter
   const filteredProjects = allProjects.filter((project: Project & {creator_name?: string}) => {
@@ -683,26 +715,9 @@ export default function Projects() {
                           {...field}
                         >
                           <option value="">Select SE Name</option>
-                          <option value="Akon Ambe">Akon Ambe</option>
-                          <option value="Alvin Thompson">Alvin Thompson</option>
-                          <option value="Brad Moore">Brad Moore</option>
-                          <option value="Brad To">Brad To</option>
-                          <option value="Bryan Lane">Bryan Lane</option>
-                          <option value="Eric Muhlitner">Eric Muhlitner</option>
-                          <option value="Ilya Dobrydnev">Ilya Dobrydnev</option>
-                          <option value="Jacob Wilder">Jacob Wilder</option>
-                          <option value="Jeremy Thomas">Jeremy Thomas</option>
-                          <option value="Joe Stine">Joe Stine</option>
-                          <option value="John Proutsos">John Proutsos</option>
-                          <option value="John Young">John Young</option>
-                          <option value="Kevin Myers">Kevin Myers</option>
-                          <option value="Kevin Purcell">Kevin Purcell</option>
-                          <option value="Max Globin">Max Globin</option>
-                          <option value="Osiel Martinez">Osiel Martinez</option>
-                          <option value="Patrick Rose">Patrick Rose</option>
-                          <option value="Rebeca Strasburger">Rebeca Strasburger</option>
-                          <option value="Stanley Bromberek">Stanley Bromberek</option>
-                          <option value="Tony Cook">Tony Cook</option>
+                          {allSalesEngineers.map((name) => (
+                            <option key={name} value={name}>{name}</option>
+                          ))}
                         </select>
                       </FormControl>
                       <FormMessage />
