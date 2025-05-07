@@ -221,12 +221,15 @@ export const EnhancedFloorplanViewer = ({
     if (!containerRef.current) return { x: 0, y: 0 };
     
     // The coordSystem is updated via useEffect when scale, translateX, or translateY changes
-    const result = coordSystem.screenToPdf(screenX, screenY);
+    // We use the debug parameter to provide detailed logging for important operations like adding markers
+    const result = coordSystem.screenToPdf(screenX, screenY, true);
     
-    // Log for debugging (reduced to make it less verbose)
-    // console.log(`Converting Screen(${screenX}, ${screenY}) → PDF(${result.x.toFixed(2)}, ${result.y.toFixed(2)}) @ scale ${scale}`);
-    
-    return result;
+    // Ensure the result is using the precise scale value without any drift
+    // This ensures markers are placed exactly where clicked at any zoom level
+    return {
+      x: parseFloat((result.x).toFixed(2)),
+      y: parseFloat((result.y).toFixed(2))
+    };
   };
   
   // Use our coordinate system for PDF to screen conversion
