@@ -1,0 +1,51 @@
+Zooming: scale changed to 0.76
+Zooming: scale changed to 0.69
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=0.69
+Zooming: scale changed to 0.76
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=0.76
+Zooming: scale changed to 0.83
+COORDINATE SYSTEM UPDATED: Scale=0.83, Translate=(324, 149), Viewport=340.2331737745506x226.82211584970037
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=0.83
+COORDINATE SYSTEM UPDATED: Scale=0.83, Translate=(324, 149), Viewport=374.25649115200565x249.50432743467042
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=0.83
+Zooming: scale changed to 0.91
+ZOOM: Scale 0.83 → 0.91, Mouse PDF (373, 183)
+Zooming: scale changed to 1.01
+COORDINATE SYSTEM UPDATED: Scale=1.01, Translate=(259, 117), Viewport=411.6821402672063x274.45476017813746
+COORDINATE SYSTEM UPDATED: Scale=1.01, Translate=(259, 117), Viewport=452.85035429392696x301.90023619595127
+Zooming: scale changed to 1.11
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.11
+Zooming: scale changed to 1.22
+ZOOM: Scale 1.11 → 1.22, Mouse PDF (373, 183)
+COORDINATE SYSTEM UPDATED: Scale=1.22, Translate=(180, 79), Viewport=498.1353897233197x332.0902598155464
+COORDINATE SYSTEM UPDATED: Scale=1.22, Translate=(180, 79), Viewport=547.9489286956517x365.2992857971011
+Zooming: scale changed to 1.34
+Zooming: scale changed to 1.47
+Zooming: scale changed to 1.62
+COORDINATE SYSTEM UPDATED: Scale=1.62, Translate=(30, 5), Viewport=663.0182037217387x442.0121358144924
+COORDINATE SYSTEM UPDATED: Scale=1.62, Translate=(30, 5), Viewport=729.3200240939126x486.21334939594163
+Zooming: scale changed to 1.78
+Zooming: scale changed to 1.96
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.96
+Zooming: scale changed to 1.76
+Zooming: scale changed to 1.59
+Zooming: scale changed to 1.43
+COORDINATE SYSTEM UPDATED: Scale=1.43, Translate=(54, 27), Viewport=714.8065556144438x476.5377037429625
+COORDINATE SYSTEM UPDATED: Scale=1.43, Translate=(54, 27), Viewport=643.3259000529995x428.88393336866625
+Zooming: scale changed to 1.29
+Zooming: scale changed to 1.42
+COORDINATE SYSTEM UPDATED: Scale=1.42, Translate=(41, 23), Viewport=578.9933100476995x385.9955400317997
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.42
+COORDINATE SYSTEM UPDATED: Scale=1.42, Translate=(41, 23), Viewport=636.8926410524696x424.59509403497964
+Zooming: scale changed to 1.56
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.56
+Zooming: scale changed to 1.71
+ZOOM: Scale 1.56 → 1.71, Mouse PDF (379, 206)
+Zooming: scale changed to 1.88
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.88
+Zooming: scale changed to 2.07
+Zooming: scale changed to 1.86
+Zooming: scale changed to 1.68
+Zooming: scale changed to 1.51
+Zooming: scale changed to 1.36
+Selected marker #78 (access_point): PDF pos (172.6, 145.5), scale=1.36
