@@ -702,21 +702,16 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
-        // Get the mouse position in container coordinates 
+        // Get the mouse position using our coordinate system
         if (!containerRef.current) return; // Safety check
         
-        const rect = containerRef.current.getBoundingClientRect();
-        const containerX = x - rect.left;
-        const containerY = y - rect.top;
-        
-        // Convert to PDF coordinates using our consistent transform approach
-        const pdfX = (containerX - translateX) / scale;
-        const pdfY = (containerY - translateY) / scale;
+        // Convert screen coordinates to PDF coordinates
+        const mousePdf = screenToPdfCoordinates(x, y);
         
         console.log(`=== ADDING NEW MARKER ===`);
-        console.log(`Mouse container position: (${containerX}, ${containerY})`);
-        console.log(`Current transform: translate(${translateX}px, ${translateY}px) scale(${scale})`);
-        console.log(`Calculated PDF position: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+        console.log(`Mouse screen position: (${x}, ${y})`);
+        console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
+        console.log(`Calculated PDF position: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -724,8 +719,8 @@ export const EnhancedFloorplanViewer = ({
           unique_id: uuidv4(),
           page: currentPage,
           marker_type: toolMode,
-          position_x: pdfX,
-          position_y: pdfY,
+          position_x: mousePdf.x,
+          position_y: mousePdf.y,
           version: 1,
           layer_id: activeLayer?.id
         };
@@ -736,9 +731,9 @@ export const EnhancedFloorplanViewer = ({
           setTempMarker(newMarker);
         } else if (toolMode === 'polyline' || toolMode === 'polygon') {
           // Start collecting points
-          console.log(`Starting polyline at: x=${pdfX}, y=${pdfY}`);
+          console.log(`Starting polyline at: x=${mousePdf.x}, y=${mousePdf.y}`);
           setIsDrawing(true);
-          setDrawingPoints([{ x: pdfX, y: pdfY }]);
+          setDrawingPoints([{ x: mousePdf.x, y: mousePdf.y }]);
         } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
           // For equipment markers that need configuration
           setTempMarker(newMarker);
@@ -840,87 +835,67 @@ export const EnhancedFloorplanViewer = ({
         };
       });
     } else if (isAddingMarker && tempMarker) {
-      // Sizing a shape marker
-      const rect = containerRef.current.getBoundingClientRect();
+      // Sizing a shape marker using our coordinate system
       
-      // Convert mouse coordinates to container-relative coordinates
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Convert to PDF coordinates using our consistent approach
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Get mouse position in PDF coordinates
+      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       setTempMarker(prev => {
         if (!prev) return null;
         
         return {
           ...prev,
-          end_x: pdfX,
-          end_y: pdfY,
-          width: Math.abs(pdfX - (prev.position_x || 0)),
-          height: Math.abs(pdfY - (prev.position_y || 0))
+          end_x: mousePdf.x,
+          end_y: mousePdf.y,
+          width: Math.abs(mousePdf.x - (prev.position_x || 0)),
+          height: Math.abs(mousePdf.y - (prev.position_y || 0))
         };
       });
     } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
-      // Get mouse position in container coordinates
+      // Get mouse position using our coordinate system
       if (!containerRef.current) return;
       
-      const rect = containerRef.current.getBoundingClientRect();
-      
-      // Convert mouse coordinates to container-relative coordinates
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Convert to PDF coordinates using our consistent approach
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Convert screen coordinates to PDF coordinates
+      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       const lastPoint = drawingPoints[drawingPoints.length - 1];
       
       // Only update if mouse moved significantly (avoid excessive updates)
       const distance = Math.sqrt(
-        Math.pow(pdfX - lastPoint.x, 2) + 
-        Math.pow(pdfY - lastPoint.y, 2)
+        Math.pow(mousePdf.x - lastPoint.x, 2) + 
+        Math.pow(mousePdf.y - lastPoint.y, 2)
       );
       
       if (distance > 5 / scale) { // 5px in screen space
-        setDrawingPoints([...drawingPoints.slice(0, -1), { x: pdfX, y: pdfY }]);
+        setDrawingPoints([...drawingPoints.slice(0, -1), { x: mousePdf.x, y: mousePdf.y }]);
       }
     }
   };
   
   const handleMouseUp = (e: React.MouseEvent) => {
     if (isAddingMarker && tempMarker) {
-      // Finalize shape marker
+      // Finalize shape marker using our coordinate system
       if (!containerRef.current) return;
       
-      const rect = containerRef.current.getBoundingClientRect();
-      
-      // Convert mouse coordinates to container-relative coordinates
-      const containerX = e.clientX - rect.left;
-      const containerY = e.clientY - rect.top;
-      
-      // Convert to PDF coordinates using our consistent approach
-      const pdfX = (containerX - translateX) / scale;
-      const pdfY = (containerY - translateY) / scale;
+      // Get mouse position in PDF coordinates
+      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Calculate width/height/end points
-      const width = Math.abs(pdfX - (tempMarker.position_x || 0));
-      const height = Math.abs(pdfY - (tempMarker.position_y || 0));
+      const width = Math.abs(mousePdf.x - (tempMarker.position_x || 0));
+      const height = Math.abs(mousePdf.y - (tempMarker.position_y || 0));
       
       // Only add if the shape has some size
       if (width > 5 / scale || height > 5 / scale) {
         // Log the coordinates for debugging
         console.log(`=== FINALIZING MARKER ===`);
         console.log(`Position: (${tempMarker.position_x}, ${tempMarker.position_y})`);
-        console.log(`End point: (${pdfX}, ${pdfY})`);
+        console.log(`End point: (${mousePdf.x}, ${mousePdf.y})`);
         console.log(`Size: ${width} x ${height}`);
         
         const finalMarker = {
           ...tempMarker,
-          end_x: pdfX,
-          end_y: pdfY,
+          end_x: mousePdf.x,
+          end_y: mousePdf.y,
           width: parseFloat(width.toFixed(2)),
           height: parseFloat(height.toFixed(2)),
           color: activeLayer?.color || '#ff0000',
