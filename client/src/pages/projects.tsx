@@ -23,7 +23,9 @@ import {
   LayoutGrid,
   List,
   User,
-  Users
+  Users,
+  Filter,
+  X
 } from "lucide-react";
 import {
   Dialog,
@@ -42,6 +44,24 @@ import {
 } from "@/components/ui/form";
 import { AutoDisabledForm } from "@/components/ui/auto-disabled-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger 
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Create schema for new site walk form
 const projectSchema = z.object({
@@ -73,6 +93,7 @@ export default function Projects() {
   const [showNewSiteWalkModal, setShowNewSiteWalkModal] = useState(false);
   const [activeTab, setActiveTab] = useState("mine");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedSeFilter, setSelectedSeFilter] = useState<string>("");
   
   // Listen for custom event to open create project dialog
   useEffect(() => {
@@ -185,16 +206,30 @@ export default function Projects() {
     queryKey: ["/api/user"],
   });
   
-  // Filter projects based on search term and active tab
+  // Create array of Sales Engineer names from all projects
+  const seNames = allProjects
+    .filter(p => p.se_name) // Only projects with SE name
+    .map(p => p.se_name as string)
+    .filter((name, index, self) => name && self.indexOf(name) === index) // Unique values only
+    .sort();
+  
+  // Filter projects based on search term, active tab, and SE filter
   const filteredProjects = allProjects.filter((project: Project) => {
     const matchesSearch = 
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (project.client && project.client.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (project.site_address && project.site_address.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // For "all" tab, return all projects that match search
+    // Check if project matches SE filter (if one is selected)
+    const matchesSeFilter = !selectedSeFilter || 
+      (project.se_name && project.se_name === selectedSeFilter);
+    
+    // Combined search and SE filter match
+    const matchesFilters = matchesSearch && matchesSeFilter;
+    
+    // For "all" tab, return all projects that match search and filters
     if (activeTab === "all") {
-      return matchesSearch;
+      return matchesFilters;
     }
     
     // For "mine" tab, show only projects owned or collaborated on by the current user
@@ -207,26 +242,26 @@ export default function Projects() {
         new Date(project.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24 hours
       
       // For now, we'll just trust that the backend is returning only projects the user has access to
-      return matchesSearch && (true || isRecentlyCreated); // Always true; backend should handle access control
+      return matchesFilters && (true || isRecentlyCreated); // Always true; backend should handle access control
     }
     
     // For "pinned" tab, show only pinned projects
     if (activeTab === "pinned") {
-      return matchesSearch && pinnedProjects.some(p => p.id === project.id);
+      return matchesFilters && pinnedProjects.some(p => p.id === project.id);
     }
     
     // For "active" tab, show projects with active status (here we're just simulating)
     // In a real app, this would be based on a real status field
     if (activeTab === "active") {
-      return matchesSearch && !project.name.toLowerCase().includes("completed");
+      return matchesFilters && !project.name.toLowerCase().includes("completed");
     }
     
     // For "completed" tab, show completed projects
     if (activeTab === "completed") {
-      return matchesSearch && project.name.toLowerCase().includes("completed");
+      return matchesFilters && project.name.toLowerCase().includes("completed");
     }
     
-    return matchesSearch;
+    return matchesFilters;
   });
   
   // Check if a project is pinned
@@ -266,7 +301,7 @@ export default function Projects() {
           </TabsList>
         </Tabs>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex bg-muted rounded-md p-0.5">
             <Button
               variant="ghost"
@@ -287,6 +322,53 @@ export default function Projects() {
               <List className="h-4 w-4" />
             </Button>
           </div>
+          
+          {/* SE Name Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className={`flex items-center gap-1 ${selectedSeFilter ? 'border-primary text-primary' : ''}`}
+              >
+                <Filter className="h-3.5 w-3.5" />
+                {selectedSeFilter ? `SE: ${selectedSeFilter}` : "Filter by SE"}
+                {selectedSeFilter && (
+                  <X 
+                    className="h-3.5 w-3.5 ml-1 hover:text-destructive" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSeFilter("");
+                    }}
+                  />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-2">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Sales Engineer</h4>
+                {seNames.length > 0 ? (
+                  <div className="max-h-[200px] overflow-y-auto space-y-1">
+                    {seNames.map((name) => (
+                      <Button
+                        key={name}
+                        variant={selectedSeFilter === name ? "default" : "ghost"}
+                        size="sm"
+                        className="w-full justify-start text-sm"
+                        onClick={() => {
+                          setSelectedSeFilter(name);
+                        }}
+                      >
+                        {name}
+                      </Button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No Sales Engineers assigned to projects</p>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           
           <div className="relative w-full sm:w-64">
             <Input
