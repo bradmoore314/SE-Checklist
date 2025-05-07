@@ -1254,20 +1254,29 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'ellipse':
-                // Just use PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates
+                const { x: ellipseScreenX, y: ellipseScreenY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${ellipseScreenX}, ${ellipseScreenY})`}
                     {...baseProps}
                   >
                     <ellipse 
-                      cx={marker.width! / 2} 
-                      cy={marker.height! / 2}
-                      rx={marker.width! / 2} 
-                      ry={marker.height! / 2}
+                      cx={(marker.width! / 2) * scale} 
+                      cy={(marker.height! / 2) * scale}
+                      rx={(marker.width! / 2) * scale} 
+                      ry={(marker.height! / 2) * scale}
                       fill={fillColor}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
@@ -1294,20 +1303,38 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'line':
-                // Just use the PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates for start and end points
+                const { x: lineStartX, y: lineStartY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
+                const { x: lineEndX, y: lineEndY } = pdfToScreenCoordinates(
+                  marker.end_x!,
+                  marker.end_y!,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(0, 0)`} // No translation for lines
+                    transform={`translate(0, 0)`} // No translation for lines - we use absolute coordinates
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x} 
-                      y1={marker.position_y}
-                      x2={marker.end_x!} 
-                      y2={marker.end_y!}
+                      x1={lineStartX} 
+                      y1={lineStartY}
+                      x2={lineEndX} 
+                      y2={lineEndY}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1315,8 +1342,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={marker.position_x} 
-                          cy={marker.position_y} 
+                          cx={lineStartX} 
+                          cy={lineStartY} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1329,8 +1356,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={marker.end_x!} 
-                          cy={marker.end_y!} 
+                          cx={lineEndX} 
+                          cy={lineEndY} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1347,13 +1374,22 @@ export const EnhancedFloorplanViewer = ({
                 );
 
               case 'note':
-                // Just use PDF coordinates directly - the SVG transform handles scaling
+                // Convert PDF coordinates to screen coordinates
+                const { x: noteScreenX, y: noteScreenY } = pdfToScreenCoordinates(
+                  marker.position_x,
+                  marker.position_y,
+                  containerRef.current?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0),
+                  scale,
+                  translateX,
+                  translateY
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x}, ${marker.position_y})`}
+                    transform={`translate(${noteScreenX}, ${noteScreenY})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
@@ -1373,6 +1409,7 @@ export const EnhancedFloorplanViewer = ({
                       dominantBaseline="middle" 
                       fill="#ff0000" /* Red text */
                       fontWeight="bold"
+                      style={{ pointerEvents: 'none' }}
                     >N</text>
                     {(isSelected || showAllLabels) && marker.text_content && (
                       <foreignObject 
