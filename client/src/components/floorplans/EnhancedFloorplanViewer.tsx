@@ -444,6 +444,14 @@ export const EnhancedFloorplanViewer = ({
     // Position the context menu at the mouse position
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setContextMenuOpen(true);
+    
+    // Log for debugging
+    console.log(`Context menu opened for marker:
+      - ID: ${marker.id}
+      - Type: ${marker.marker_type}
+      - Label: ${marker.label || 'No label'}
+      - Position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})
+    `);
   };
   
   // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
@@ -649,6 +657,9 @@ export const EnhancedFloorplanViewer = ({
 
   const deleteMarkerMutation = useMutation({
     mutationFn: async (markerId: number) => {
+      // TEST: Log deletion attempt
+      console.log(`[TEST] Attempting to delete marker with ID: ${markerId}`);
+      
       // Use the correct API endpoint for deleting markers
       await apiRequest('DELETE', `/api/floorplan-markers/${markerId}`);
     },
@@ -661,7 +672,8 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
-      console.log("Marker deleted successfully, updating UI");
+      console.log("[TEST] ✅ Marker deleted successfully");
+      console.log("[TEST DETAIL] Successfully deleted marker and updated UI");
       
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
@@ -669,22 +681,33 @@ export const EnhancedFloorplanViewer = ({
       }
     },
     onError: (error) => {
-      console.error("Error deleting marker:", error);
+      console.error("[TEST] ❌ Error deleting marker:", error);
     }
   });
 
   const duplicateMarkerMutation = useMutation({
     mutationFn: async (marker: Partial<MarkerData>) => {
+      // TEST: Log duplication attempt with marker details
+      console.log(`[TEST] Attempting to duplicate marker:
+        - Type: ${marker.marker_type}
+        - Original ID: ${marker.id}
+        - Position: (${marker.position_x?.toFixed(2)}, ${marker.position_y?.toFixed(2)})
+        - Label: ${marker.label || 'No label'}
+      `);
+      
       // For duplication, we actually create a new marker with the same properties
       // using the standard create marker endpoint
+      const newUniqueId = uuidv4();
+      console.log(`[TEST] Generated new unique ID for duplicate: ${newUniqueId}`);
+      
       const res = await apiRequest('POST', `/api/floorplan-markers`, {
         ...marker,
         floorplan_id: floorplan.id,  // Ensure floorplan_id is included
-        unique_id: uuidv4()  // Generate a new unique ID for the duplicated marker
+        unique_id: newUniqueId  // Generate a new unique ID for the duplicated marker
       });
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate the queries to refresh the UI
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/markers`, currentPage],
@@ -693,7 +716,8 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
-      console.log("Marker duplicated successfully, updating UI");
+      console.log("[TEST] ✅ Marker duplicated successfully");
+      console.log(`[TEST DETAIL] New marker created with ID: ${data?.id || 'unknown'}`);
       
       // Call onMarkersUpdated callback if provided
       if (onMarkersUpdated) {
@@ -701,7 +725,7 @@ export const EnhancedFloorplanViewer = ({
       }
     },
     onError: (error) => {
-      console.error("Error duplicating marker:", error);
+      console.error("[TEST] ❌ Error duplicating marker:", error);
     }
   });
 
@@ -2001,6 +2025,13 @@ export const EnhancedFloorplanViewer = ({
               
               <ContextMenuItem
                 onClick={() => {
+                  // TEST: Log edit marker attempt
+                  console.log(`[TEST] Opening edit properties dialog for marker:
+                    - ID: ${selectedMarker?.id}
+                    - Type: ${selectedMarker?.marker_type}
+                    - Label: ${selectedMarker?.label || 'No label'}
+                  `);
+                  
                   // Open the marker properties dialog
                   setIsEquipmentFormOpen(true);
                   setContextMenuOpen(false);
