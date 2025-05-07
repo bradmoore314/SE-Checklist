@@ -135,19 +135,18 @@ export const EnhancedFloorplanViewer = ({
     
     const rect = containerRef.current.getBoundingClientRect();
     
-    // Calculate the effective center of view
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    // First, get position relative to the container
+    const relativeX = screenX - rect.left;
+    const relativeY = screenY - rect.top;
     
-    // Adjust for container position, current translation, and scale
-    // We need to account for both the translation and scaling
-    const containerX = (screenX - rect.left - translateX) / scale;
-    const containerY = (screenY - rect.top - translateY) / scale;
+    // Account for translation (pan)
+    const panAdjustedX = relativeX - translateX;
+    const panAdjustedY = relativeY - translateY;
     
-    // Convert to PDF coordinates considering the scale factor
+    // Now convert to PDF coordinates by dividing by the viewport scale factor
     return {
-      x: containerX * (1 / pdfToViewportScale) * scale,
-      y: containerY * (1 / pdfToViewportScale) * scale
+      x: panAdjustedX / pdfToViewportScale,
+      y: panAdjustedY / pdfToViewportScale
     };
   };
 
@@ -298,12 +297,14 @@ export const EnhancedFloorplanViewer = ({
     // Allow dragging regardless of tool mode (this check is now handled in baseProps)
     e.stopPropagation();
     
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!containerRef.current) return;
     
-    // Calculate the offset between mouse position and marker position
-    const offsetX = (e.clientX - rect.left - translateX) - (marker.position_x * pdfToViewportScale);
-    const offsetY = (e.clientY - rect.top - translateY) - (marker.position_y * pdfToViewportScale);
+    // Get the mouse position in PDF coordinates
+    const mousePdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+    
+    // Calculate the offset between mouse PDF position and marker PDF position
+    const offsetX = (mousePdfCoords.x - marker.position_x) * pdfToViewportScale;
+    const offsetY = (mousePdfCoords.y - marker.position_y) * pdfToViewportScale;
     
     setMarkerDragOffset({ x: offsetX, y: offsetY });
     setSelectedMarker(marker);
@@ -657,7 +658,11 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
+        // Use our consistent coordinate transformation function
         const pdfCoords = screenToPdfCoordinates(x, y);
+        
+        // Log coordinates for debugging
+        console.log(`Adding marker at PDF coordinates: x=${pdfCoords.x.toFixed(2)}, y=${pdfCoords.y.toFixed(2)}`);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -712,11 +717,12 @@ export const EnhancedFloorplanViewer = ({
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
       // Moving a selected marker
-      const rect = containerRef.current.getBoundingClientRect();
+      // Use our consistent coordinate transformation function
+      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
       
-      // Calculate where the marker should be, accounting for the offset
-      const newX = (e.clientX - rect.left - translateX - markerDragOffset.x) / pdfToViewportScale;
-      const newY = (e.clientY - rect.top - translateY - markerDragOffset.y) / pdfToViewportScale;
+      // Account for the initial offset when the drag started
+      const newX = pdfCoords.x - (markerDragOffset.x / pdfToViewportScale);
+      const newY = pdfCoords.y - (markerDragOffset.y / pdfToViewportScale);
       
       // Update local state for smooth visual feedback
       setSelectedMarker(prev => {
