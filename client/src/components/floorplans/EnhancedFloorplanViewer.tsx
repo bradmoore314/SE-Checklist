@@ -357,29 +357,39 @@ export const EnhancedFloorplanViewer = ({
     setContextMenuOpen(true);
   };
   
-  // Start dragging a marker
+  // Start dragging a marker - DIRECT FIX IMPLEMENTATION
   const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
-    // Allow dragging regardless of tool mode (this check is now handled in baseProps)
     e.stopPropagation();
     
     if (!containerRef.current) return;
     
-    // Get the mouse position in PDF coordinates using our coordinate system
-    const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
+    // DIRECT FIX: Calculate marker position using direct coordinate conversion
+    // that doesn't rely on the coordSystem which might be inconsistent
+    const rect = containerRef.current.getBoundingClientRect();
+    const containerX = e.clientX - rect.left;
+    const containerY = e.clientY - rect.top;
     
-    // FIXED: Calculate the pure offset between mouse and marker position
-    // directly in PDF coordinates - without using the coordSystem method
-    // which might be applying additional scaling
+    // Convert to PDF coordinates directly
+    const pdfX = (containerX - translateX) / scale;
+    const pdfY = (containerY - translateY) / scale;
+    
+    // Calculate pure offset
     const offset = {
-      x: mousePdf.x - marker.position_x,
-      y: mousePdf.y - marker.position_y
+      x: pdfX - marker.position_x,
+      y: pdfY - marker.position_y
     };
     
-    // Compact logging for drag start
-    console.log(`Drag marker #${marker.id}: offset (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}), scale=${scale.toFixed(2)}`);
-    console.log(`Selected marker #${marker.id} (${marker.marker_type}): PDF pos (${marker.position_x.toFixed(1)}, ${marker.position_y.toFixed(1)}), scale=${scale.toFixed(2)}`);
+    // Detailed logging for debugging the direct fix
+    console.log(`[DIRECT FIX] Starting drag of marker #${marker.id}:`);
+    console.log(` - Mouse screen pos: (${e.clientX}, ${e.clientY})`);
+    console.log(` - Container rect: (${rect.left}, ${rect.top})`);
+    console.log(` - Container pos: (${containerX}, ${containerY})`);
+    console.log(` - Transform: scale=${scale.toFixed(2)}, translate=(${translateX}, ${translateY})`);
+    console.log(` - PDF pos: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+    console.log(` - Marker pos: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
+    console.log(` - Offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)})`);
     
-    // Store pure PDF coordinate offset without any scale adjustments
+    // Store pure PDF coordinate offset
     setMarkerDragOffset(offset);
     setSelectedMarker(marker);
     setIsDraggingMarker(true);
@@ -787,24 +797,31 @@ export const EnhancedFloorplanViewer = ({
       // Set cursor for panning
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
-      // Moving a selected marker using our coordinate system
+      // Moving a selected marker - DIRECT FIX IMPLEMENTATION
       
-      // Convert screen coordinates to PDF coordinates
-      const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
+      // Get container-relative coordinates directly
+      const rect = containerRef.current.getBoundingClientRect();
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
       
-      // IMPORTANT FIX: Apply the pure PDF offset directly
-      // This is the key fix - we apply the offset in the same coordinate space (PDF)
-      // without any scaling adjustments
-      const newX = mousePdf.x - markerDragOffset.x;
-      const newY = mousePdf.y - markerDragOffset.y;
+      // Convert to PDF coordinates directly using the same method as in startMarkerDrag
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
+      
+      // Apply the pure PDF offset directly
+      const newX = pdfX - markerDragOffset.x;
+      const newY = pdfY - markerDragOffset.y;
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
-        console.log(`=== DRAG MOVE (FIXED) ===`);
-        console.log(`Mouse PDF coords: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
-        console.log(`Pure PDF offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
-        console.log(`New position: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
-        console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
+        console.log(`[DIRECT FIX] Marker drag move calculation:`);
+        console.log(` - Mouse screen: (${e.clientX}, ${e.clientY})`);
+        console.log(` - Container rect: (${rect.left}, ${rect.top})`);
+        console.log(` - Container pos: (${containerX}, ${containerY})`);
+        console.log(` - Transform: scale=${scale.toFixed(2)}, translate=(${translateX}, ${translateY})`);
+        console.log(` - PDF pos: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+        console.log(` - Using offset: (${markerDragOffset.x.toFixed(2)}, ${markerDragOffset.y.toFixed(2)})`);
+        console.log(` - New marker pos: (${newX.toFixed(2)}, ${newY.toFixed(2)})`);
       }
       
       // Update local state for smooth visual feedback
