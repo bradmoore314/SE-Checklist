@@ -166,6 +166,7 @@ export const EnhancedFloorplanViewer = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDraggingMarker, setIsDraggingMarker] = useState<boolean>(false);
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
+  const [activeHandle, setActiveHandle] = useState<string | null>(null);
   const [markerDragOffset, setMarkerDragOffset] = useState<{
     screenX: number;
     screenY: number;
@@ -173,13 +174,19 @@ export const EnhancedFloorplanViewer = ({
     markerStartY: number;
     mouseStartX: number;
     mouseStartY: number;
+    cameraStartRotation: number;
+    cameraStartFov: number;
+    cameraStartRange: number;
   }>({
     screenX: 0,
     screenY: 0,
     markerStartX: 0,
     markerStartY: 0,
     mouseStartX: 0,
-    mouseStartY: 0
+    mouseStartY: 0,
+    cameraStartRotation: 0,
+    cameraStartFov: 90,
+    cameraStartRange: 60
   });
   
   // Camera edit dialog state
@@ -1383,6 +1390,16 @@ export const EnhancedFloorplanViewer = ({
                             toolMode !== 'delete') {
                           e.stopPropagation();
                           startMarkerDrag(e, marker);
+                        }
+                      }}
+                      onHandleMouseDown={(e: React.MouseEvent, handleType: string) => {
+                        if (e.button === 0 && 
+                            !isAddingMarker && 
+                            !isDrawing && 
+                            !['polyline', 'polygon'].includes(toolMode) && 
+                            toolMode !== 'delete') {
+                          e.stopPropagation();
+                          startCameraHandleDrag(e, marker, handleType);
                         }
                       }}
                     />
