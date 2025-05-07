@@ -327,13 +327,11 @@ export const EnhancedFloorplanViewer = ({
     }
   };
 
-  // Show autosave feedback
+  // Show autosave feedback - disabled per user request
   const showAutoSaveFeedback = () => {
-    toast({
-      title: "Changes saved",
-      description: "All changes automatically saved to floorplan",
-      duration: 2000
-    });
+    // Toast notifications disabled - changes are still saved silently
+    // No visual feedback to avoid interrupting workflow
+    console.log("Changes auto-saved to floorplan");
   };
 
   // Handle marker clicks
@@ -346,11 +344,8 @@ export const EnhancedFloorplanViewer = ({
       // Delete the marker immediately when in delete mode
       deleteMarkerMutation.mutate(marker.id);
       setSelectedMarker(null);
-      toast({
-        title: 'Marker Deleted',
-        description: 'Marker has been removed from the floorplan',
-        duration: 2000,
-      });
+      // Visual feedback disabled per user request
+      console.log('Marker deleted from floorplan');
     }
   };
 
@@ -558,11 +553,8 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/floorplans/${floorplan.id}/calibration`, currentPage],
       });
-      toast({
-        title: 'Calibration Saved',
-        description: 'The floorplan has been calibrated successfully.',
-        duration: 3000
-      });
+      // Visual feedback disabled per user request
+      console.log('Calibration saved successfully');
     }
   });
 
@@ -588,12 +580,8 @@ export const EnhancedFloorplanViewer = ({
     }).catch(error => {
       console.error('Error loading PDF:', error);
       setIsLoading(false);
-      toast({
-        title: 'Error Loading PDF',
-        description: 'Could not load the floorplan PDF. Please try again.',
-        variant: 'destructive',
-        duration: 5000
-      });
+      // Keep this error message in the console for debugging
+      console.error('Could not load the floorplan PDF. Please try again.');
     });
   }, [floorplan, toast, currentPage]);
 
@@ -657,11 +645,8 @@ export const EnhancedFloorplanViewer = ({
         if (e.key === 'Delete' || e.key === 'Backspace') {
           deleteMarkerMutation.mutate(selectedMarker.id);
           setSelectedMarker(null);
-          toast({
-            title: 'Marker Deleted',
-            description: 'Marker has been removed from the floorplan',
-            duration: 2000,
-          });
+          // Visual feedback disabled per user request
+          console.log('Marker deleted using keyboard shortcut');
         }
         
         // Duplicate marker with Ctrl+D
@@ -674,11 +659,8 @@ export const EnhancedFloorplanViewer = ({
             position_x: selectedMarker.position_x + 20, 
             position_y: selectedMarker.position_y + 20,
           });
-          toast({
-            title: 'Marker Duplicated',
-            description: 'Created a copy of the selected marker',
-            duration: 2000,
-          });
+          // Visual feedback disabled per user request
+          console.log('Marker duplicated using keyboard shortcut');
         }
       }
       
@@ -691,11 +673,8 @@ export const EnhancedFloorplanViewer = ({
         setTranslateX(0);
         setTranslateY(0);
         renderPage(currentPage);
-        toast({
-          title: 'Zoom Reset',
-          description: 'Restored default view',
-          duration: 1000,
-        });
+        // Visual feedback disabled per user request
+        console.log('View reset to default');
       }
     };
     
@@ -764,11 +743,8 @@ export const EnhancedFloorplanViewer = ({
         } else {
           // For other point markers that don't need sizing or configuration
           addMarkerMutation.mutate(newMarker);
-          toast({
-            title: 'Marker Added',
-            description: `Added ${toolMode} marker to floorplan`,
-            duration: 2000
-          });
+          // Visual feedback disabled per user request
+          console.log(`Added ${toolMode} marker to floorplan`);
         }
       }
     }
@@ -894,11 +870,8 @@ export const EnhancedFloorplanViewer = ({
         
         addMarkerMutation.mutate(finalMarker);
         
-        toast({
-          title: 'Shape Added',
-          description: `Added ${toolMode} to floorplan`,
-          duration: 2000
-        });
+        // Visual feedback disabled per user request
+        console.log(`Added ${toolMode} shape to floorplan`);
       }
       
       setIsAddingMarker(false);
@@ -948,11 +921,8 @@ export const EnhancedFloorplanViewer = ({
         
         addMarkerMutation.mutate(finalMarker);
         
-        toast({
-          title: `${toolMode === 'polyline' ? 'Polyline' : 'Polygon'} Added`,
-          description: `Added ${toolMode} to floorplan`,
-          duration: 2000
-        });
+        // Visual feedback disabled per user request
+        console.log(`Added ${toolMode === 'polyline' ? 'polyline' : 'polygon'} to floorplan`);
       }
       
       setIsDrawing(false);
