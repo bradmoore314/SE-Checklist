@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useLocation } from "wouter";
 import { AlertTriangle, Plus, Clock, Pin, Star, Search, FileText, ArrowRight } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Dashboard() {
   const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
@@ -25,6 +27,18 @@ export default function Dashboard() {
   } = useProject();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
+  const queryClient = useQueryClient();
+  
+  // Function to prefetch floorplans for a project
+  const prefetchFloorplans = (projectId: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['/api/projects', projectId, 'floorplans'],
+      queryFn: async () => {
+        const res = await apiRequest('GET', `/api/projects/${projectId}/floorplans`);
+        return await res.json();
+      }
+    });
+  };
   
   // Keep the site walk context in sync with the project context
   useEffect(() => {
@@ -38,13 +52,26 @@ export default function Dashboard() {
     if (!currentSiteWalk && allProjects && allProjects.length > 0) {
       setCurrentSiteWalk(allProjects[0]);
       setCurrentProject(allProjects[0]);
+      
+      // Prefetch floorplans for the first project immediately upon login
+      prefetchFloorplans(allProjects[0].id);
     }
-  }, [currentSiteWalk, allProjects, setCurrentSiteWalk, setCurrentProject]);
+  }, [currentSiteWalk, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
+  
+  // Preload floorplans for the current project when it's set
+  useEffect(() => {
+    if (currentProject) {
+      // Prefetch floorplans for the current project
+      prefetchFloorplans(currentProject.id);
+    }
+  }, [currentProject, prefetchFloorplans]);
 
   // Handle selecting a project
   const selectProject = (project: Project) => {
     setCurrentProject(project);
     setCurrentSiteWalk(project);
+    // Prefetch floorplans for the selected project
+    prefetchFloorplans(project.id);
   };
   
   // Toggle pinning/unpinning a project
