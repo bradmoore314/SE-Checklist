@@ -955,13 +955,21 @@ function EnhancedFloorplansPage() {
         {showSidebar && (
           <div className="hidden md:block border-l w-72 p-3 overflow-y-auto">
             <h3 className="text-lg font-semibold mb-3">Equipment Legend</h3>
-            <MarkerStatsLegend projectId={floorplan.project_id} />
+            <MarkerStatsLegend 
+              projectId={floorplan.project_id} 
+              visibleLabelTypes={visibleLabelTypes}
+              onToggleLabelVisibility={toggleLabelVisibility}
+            />
           </div>
         )}
         
         {/* Mobile-only legend at the bottom */}
         <div className="mt-4 md:hidden">
-          <MarkerStatsLegend projectId={floorplan.project_id} />
+          <MarkerStatsLegend 
+            projectId={floorplan.project_id}
+            visibleLabelTypes={visibleLabelTypes}
+            onToggleLabelVisibility={toggleLabelVisibility}
+          />
         </div>
       </div>
     </div>
