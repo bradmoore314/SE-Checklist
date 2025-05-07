@@ -481,6 +481,12 @@ export default function Projects() {
                     <div className="mb-1">
                       Created: {formatDate(project.created_at)}
                     </div>
+                    {(project as any).creator_name && (
+                      <div className="mb-1 flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        <span>Created by: {(project as any).creator_name}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex flex-wrap gap-2">
@@ -507,10 +513,11 @@ export default function Projects() {
         ) : (
           <div className="space-y-3">
             <div className="bg-muted rounded-md p-3 hidden md:grid grid-cols-12 font-medium text-sm">
-              <div className="col-span-4">Project Name</div>
+              <div className="col-span-3">Project Name</div>
               <div className="col-span-2">Client</div>
-              <div className="col-span-3">Location</div>
+              <div className="col-span-2">Location</div>
               <div className="col-span-2">Created</div>
+              <div className="col-span-2">Creator</div>
               <div className="col-span-1 text-right">Actions</div>
             </div>
             
@@ -520,7 +527,7 @@ export default function Projects() {
                   className="grid md:grid-cols-12 gap-3 p-4 hover:bg-muted/20 transition-colors cursor-pointer"
                   onClick={() => selectSiteWalk(project)}
                 >
-                  <div className="md:col-span-4 flex items-center">
+                  <div className="md:col-span-3 flex items-center">
                     <div className="font-medium">{project.name}</div>
                     {isPinned(project.id) && (
                       <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" />
@@ -531,7 +538,7 @@ export default function Projects() {
                     {project.client || '—'}
                   </div>
                   
-                  <div className="md:col-span-3 text-muted-foreground hidden md:block">
+                  <div className="md:col-span-2 text-muted-foreground hidden md:block">
                     {project.site_address || '—'}
                   </div>
                   
@@ -539,11 +546,19 @@ export default function Projects() {
                     {formatDate(project.created_at)}
                   </div>
                   
+                  <div className="md:col-span-2 text-muted-foreground hidden md:block">
+                    {(project as any).creator_name || '—'}
+                  </div>
+                  
                   {/* Mobile-only details */}
                   <div className="md:hidden text-sm text-muted-foreground">
                     <div>{project.client && `Client: ${project.client}`}</div>
                     <div>{project.site_address && `Location: ${project.site_address}`}</div>
                     <div>Created: {formatDate(project.created_at)}</div>
+                    <div className="flex items-center gap-1">
+                      <User className="h-3 w-3" />
+                      <span>By: {(project as any).creator_name || 'Unknown'}</span>
+                    </div>
                   </div>
                   
                   <div className="md:col-span-1 flex justify-end md:justify-end items-center">
