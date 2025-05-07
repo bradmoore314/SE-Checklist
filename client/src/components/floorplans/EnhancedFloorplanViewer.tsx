@@ -1001,18 +1001,28 @@ export const EnhancedFloorplanViewer = ({
       )}
       
       <div
-        className="relative transform-gpu transition-transform duration-75"
-        style={{
-          transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`
-        }}
+        className="relative transform-gpu"
       >
-        <canvas ref={canvasRef} className="block" />
+        <canvas 
+          ref={canvasRef} 
+          className="block transform-gpu"
+          style={{
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transformOrigin: '0 0',
+            transitionProperty: 'transform',
+            transitionDuration: '75ms'
+          }}
+        />
         <svg
           ref={svgLayerRef}
-          className="absolute top-0 left-0 pointer-events-auto"
+          className="absolute top-0 left-0 pointer-events-auto transform-gpu"
           style={{
             width: viewportDimensions.width,
-            height: viewportDimensions.height
+            height: viewportDimensions.height,
+            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+            transformOrigin: '0 0',
+            transitionProperty: 'transform',
+            transitionDuration: '75ms'
           }}
         >
           {/* Debug grid removed */}
