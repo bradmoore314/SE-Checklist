@@ -237,7 +237,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-left');
             }}
-            style={{ cursor: 'move' }}
+            style={{ cursor: 'ew-resize' }}
           />
           <circle 
             cx={position.x + range * Math.cos((rotation + fov/2) * Math.PI / 180)} 
