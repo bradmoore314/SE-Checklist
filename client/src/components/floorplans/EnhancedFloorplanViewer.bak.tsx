@@ -320,8 +320,8 @@ export const EnhancedFloorplanViewer = ({
     const mousePdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
     
     // Calculate the offset between mouse PDF position and marker PDF position
-    const offsetX = (mousePdfCoords.x - marker.position_x) * scale;
-    const offsetY = (mousePdfCoords.y - marker.position_y) * scale;
+    const offsetX = (mousePdfCoords.x - marker.position_x) * pdfToViewportScale;
+    const offsetY = (mousePdfCoords.y - marker.position_y) * pdfToViewportScale;
     
     setMarkerDragOffset({ x: offsetX, y: offsetY });
     setSelectedMarker(marker);
@@ -1170,8 +1170,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width! * scale} 
-                          cy={marker.height! * scale} 
+                          cx={marker.width! * pdfToViewportScale} 
+                          cy={marker.height! * pdfToViewportScale} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1209,8 +1209,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Resize handle - bottom right corner */}
                         <circle 
-                          cx={marker.width! * scale} 
-                          cy={marker.height! * scale} 
+                          cx={marker.width! * pdfToViewportScale} 
+                          cy={marker.height! * pdfToViewportScale} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
