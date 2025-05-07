@@ -36,6 +36,16 @@ import {
 // Ensure PDF.js worker is configured
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+// Helper function to normalize angles to the range -180 to 180 degrees
+// This is important for smooth camera FOV calculations
+const normalizeAngle = (angle: number): number => {
+  // Normalize angle to range [-180, 180]
+  let normalizedAngle = angle;
+  while (normalizedAngle > 180) normalizedAngle -= 360;
+  while (normalizedAngle < -180) normalizedAngle += 360;
+  return normalizedAngle;
+};
+
 // Define interfaces
 interface FloorplanData {
   id: number;
@@ -1026,31 +1036,70 @@ export const EnhancedFloorplanViewer = ({
           });
         } 
         else if (activeHandle === 'fov-left' || activeHandle === 'fov-right') {
-          // Current camera values
-          const currentRotation = selectedMarker.rotation || 0;
+          // Use the initial FOV from when the drag started
+          // This allows for smoother relative adjustments
+          const startRotation = markerDragOffset.cameraStartRotation || 0;
+          const startFov = markerDragOffset.cameraStartFov || 90;
           const currentFov = (selectedMarker as any).fov || 90;
+
+          // Calculate mouse position relative to camera center
+          const relativeX = pdfX - selectedMarker.position_x;
+          const relativeY = pdfY - selectedMarker.position_y;
           
-          // Calculate the angle relative to camera's direction
-          let angleDiff = angleToMouse - currentRotation;
+          // Calculate angle from camera to mouse in degrees
+          // We already have angleToMouse calculated
           
-          // Normalize angle difference to -180 to 180 range
-          if (angleDiff > 180) angleDiff -= 360;
-          if (angleDiff < -180) angleDiff += 360;
-          
-          // Calculate new FOV based on which handle is dragged
+          // Calculate FOV based on handle type
           let newFov = currentFov;
+
+          // Get the angle between current mouse position and camera center
+          // This already calculated as angleToMouse
+
+          // Calculate the angle of the FOV handle at drag start
+          const startLeftAngle = startRotation - startFov/2;
+          const startRightAngle = startRotation + startFov/2;
           
+          // For debugging
+          console.log(`FOV Calculation:
+            - Handle: ${activeHandle}
+            - Start FOV: ${startFov}°
+            - Mouse angle: ${angleToMouse.toFixed(1)}°
+            - Start left angle: ${startLeftAngle.toFixed(1)}°
+            - Start right angle: ${startRightAngle.toFixed(1)}°
+          `);
+          
+          // Calculate new FOV
           if (activeHandle === 'fov-left') {
-            // Left handle affects the left side of the FOV
-            // Adjust FOV so that the right side stays fixed and the left side changes
-            const rightEdge = currentRotation + currentFov/2;
-            newFov = (rightEdge - angleToMouse) * 2;
+            // For left handle, adjust FOV relative to start angle
+            const angleChange = normalizeAngle(angleToMouse - startLeftAngle);
+            
+            // Adjust FOV based on change to left angle (negative change = wider FOV)
+            newFov = startFov - angleChange * 2;
+            
+            // Log for debugging
+            console.log(`Left FOV handle:
+              - Angle change: ${angleChange.toFixed(1)}°
+              - New FOV: ${newFov.toFixed(1)}°
+            `);
           } else { // fov-right
-            // Right handle affects the right side of the FOV
-            // Adjust FOV so that the left side stays fixed and the right side changes
-            const leftEdge = currentRotation - currentFov/2;
-            newFov = (angleToMouse - leftEdge) * 2;
+            // For right handle, adjust FOV relative to start angle
+            const angleChange = normalizeAngle(angleToMouse - startRightAngle);
+            
+            // Adjust FOV based on change to right angle (positive change = wider FOV)
+            newFov = startFov + angleChange * 2;
+            
+            // Log for debugging
+            console.log(`Right FOV handle:
+              - Angle change: ${angleChange.toFixed(1)}°
+              - New FOV: ${newFov.toFixed(1)}°
+            `);
           }
+          
+          // Make sure we have gradual changes by limiting max change per frame
+          // This will smooth out any jumps
+          const maxChangePerFrame = 15;
+          const clampedDelta = Math.max(-maxChangePerFrame, Math.min(maxChangePerFrame, newFov - currentFov));
+          newFov = currentFov + clampedDelta;
           
           // Constrain FOV between 10 and 360 degrees
           newFov = Math.max(10, Math.min(360, newFov));
