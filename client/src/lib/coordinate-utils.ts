@@ -26,17 +26,16 @@ export function screenToPdfCoordinates(
   scale: number,
   translateX: number,
   translateY: number,
-  pdfViewport: { width: number; height: number }
+  pdfViewport: { width: number; height: number } = { width: 0, height: 0 }
 ): Point {
   // First convert screen coordinates to container-relative coordinates
   const containerX = screenX - containerRect.left;
   const containerY = screenY - containerRect.top;
   
   // Then convert container coordinates to PDF coordinates, accounting for pan and zoom
+  // For SVG coordinates with transforms, we need to un-transform the coordinates to get PDF coordinates
   const pdfX = (containerX - translateX) / scale;
   const pdfY = (containerY - translateY) / scale;
-  
-  console.log(`Conversion: Screen(${screenX}, ${screenY}) → PDF(${pdfX}, ${pdfY}), Scale: ${scale}, Translate: (${translateX}, ${translateY})`);
   
   return { x: pdfX, y: pdfY };
 }
@@ -54,20 +53,18 @@ export function screenToPdfCoordinates(
 export function pdfToScreenCoordinates(
   pdfX: number,
   pdfY: number,
-  containerRect: DOMRect,
-  scale: number,
-  translateX: number,
-  translateY: number
+  containerRect: DOMRect = new DOMRect(0, 0, 0, 0),
+  scale: number = 1,
+  translateX: number = 0,
+  translateY: number = 0
 ): Point {
-  // First convert PDF coordinates to container coordinates, accounting for pan and zoom
-  const containerX = pdfX * scale + translateX;
-  const containerY = pdfY * scale + translateY;
-  
-  // Then convert container coordinates to screen coordinates
-  const screenX = containerX + containerRect.left;
-  const screenY = containerY + containerRect.top;
-  
-  return { x: screenX, y: screenY };
+  // In the SVG, we're applying transforms with the transform attribute,
+  // so we only need to scale the coordinates here and not add the translateX/Y
+  // Those are handled by the SVG's transform attribute on the parent g element
+  return { 
+    x: pdfX * scale, 
+    y: pdfY * scale 
+  };
 }
 
 /**
