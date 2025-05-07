@@ -159,6 +159,18 @@ export const EnhancedFloorplanViewer = ({
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
+  // Synchronize viewportDimensions with scale changes
+  // This critical fix ensures the SVG layer and PDF canvas maintain proper alignment during zooming
+  useEffect(() => {
+    if (pdfDimensions.width && pdfDimensions.height) {
+      setViewportDimensions({
+        width: pdfDimensions.width * scale,
+        height: pdfDimensions.height * scale
+      });
+      console.log(`Viewport dimensions updated: ${pdfDimensions.width * scale}x${pdfDimensions.height * scale}`);
+    }
+  }, [scale, pdfDimensions, setViewportDimensions]);
+
   // Update coordinate system when view state changes
   // This is a critical part of our approach to fixing marker position issues during zoom
   useEffect(() => {
