@@ -25,9 +25,14 @@ export default function Dashboard() {
     pinProject,
     unpinProject
   } = useProject();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
+  
+  // Check for projectId in URL query parameters
+  const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const projectIdFromUrl = urlParams.get('projectId');
+  
   
   // Function to prefetch floorplans for a project
   const prefetchFloorplans = (projectId: number) => {
@@ -47,16 +52,33 @@ export default function Dashboard() {
     }
   }, [currentProject, currentSiteWalk, setCurrentSiteWalk]);
   
+  // Handle project ID from URL if present
+  useEffect(() => {
+    if (projectIdFromUrl && allProjects && allProjects.length > 0) {
+      const projectId = parseInt(projectIdFromUrl);
+      const projectFromUrl = allProjects.find(p => p.id === projectId);
+      
+      if (projectFromUrl) {
+        setCurrentSiteWalk(projectFromUrl);
+        setCurrentProject(projectFromUrl);
+        prefetchFloorplans(projectId);
+        
+        // Update the URL to remove the query parameter for cleaner navigation
+        window.history.replaceState(null, '', `/dashboard`);
+      }
+    }
+  }, [projectIdFromUrl, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
+  
   // If current site walk is not set, use the first one from the list
   useEffect(() => {
-    if (!currentSiteWalk && allProjects && allProjects.length > 0) {
+    if (!currentSiteWalk && !projectIdFromUrl && allProjects && allProjects.length > 0) {
       setCurrentSiteWalk(allProjects[0]);
       setCurrentProject(allProjects[0]);
       
       // Prefetch floorplans for the first project immediately upon login
       prefetchFloorplans(allProjects[0].id);
     }
-  }, [currentSiteWalk, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
+  }, [currentSiteWalk, projectIdFromUrl, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
   
   // Preload floorplans for the current project when it's set
   useEffect(() => {

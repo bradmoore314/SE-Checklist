@@ -49,6 +49,7 @@ function Router() {
       {/* Protected routes - Redirect root to My Site Walks page */}
       <ProtectedRoute path="/" component={Projects} />
       <ProtectedRoute path="/projects" component={Projects} />
+      <ProtectedRoute path="/projects/:projectId/dashboard" component={Dashboard} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
       
       {/* Equipment routes */}
