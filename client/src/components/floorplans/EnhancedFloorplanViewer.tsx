@@ -1216,12 +1216,18 @@ export const EnhancedFloorplanViewer = ({
                 );
               
               case 'rectangle':
+                // For rectangles, get screen coordinates from PDF coordinates
+                const { x: rectX, y: rectY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
+                    transform={`translate(${rectX},${rectY})`}
                     {...baseProps}
                   >
                     <rect 
@@ -1255,12 +1261,18 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'ellipse':
+                // For ellipses, get screen coordinates from PDF coordinates
+                const { x: ellipseX, y: ellipseY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
+                    transform={`translate(${ellipseX},${ellipseY})`}
                     {...baseProps}
                   >
                     <ellipse 
@@ -1294,6 +1306,17 @@ export const EnhancedFloorplanViewer = ({
                 );
                 
               case 'line':
+                // For lines, get screen coordinates for both start and end points
+                const { x: lineStartX, y: lineStartY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
+                const { x: lineEndX, y: lineEndY } = pdfToScreenCoordinates(
+                  marker.end_x!, 
+                  marker.end_y!
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
@@ -1302,10 +1325,10 @@ export const EnhancedFloorplanViewer = ({
                     {...baseProps}
                   >
                     <line 
-                      x1={marker.position_x * scale} 
-                      y1={marker.position_y * scale}
-                      x2={marker.end_x! * scale} 
-                      y2={marker.end_y! * scale}
+                      x1={lineStartX} 
+                      y1={lineStartY}
+                      x2={lineEndX} 
+                      y2={lineEndY}
                       stroke={markerColor}
                       strokeWidth={isSelected ? selectedStrokeWidth : strokeWidth}
                     />
@@ -1313,8 +1336,8 @@ export const EnhancedFloorplanViewer = ({
                       <>
                         {/* Start point handle */}
                         <circle 
-                          cx={marker.position_x * scale} 
-                          cy={marker.position_y * scale} 
+                          cx={lineStartX} 
+                          cy={lineStartY} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1327,8 +1350,8 @@ export const EnhancedFloorplanViewer = ({
                         />
                         {/* End point handle (resize) */}
                         <circle 
-                          cx={marker.end_x! * scale} 
-                          cy={marker.end_y! * scale} 
+                          cx={lineEndX} 
+                          cy={lineEndY} 
                           r="6" 
                           fill="#ffffff" 
                           stroke="#000000" 
@@ -1345,12 +1368,18 @@ export const EnhancedFloorplanViewer = ({
                 );
 
               case 'note':
+                // For notes, get screen coordinates from PDF coordinates
+                const { x: noteX, y: noteY } = pdfToScreenCoordinates(
+                  marker.position_x, 
+                  marker.position_y
+                );
+                
                 return (
                   <g 
                     key={marker.id} 
                     className={baseClassName}
                     data-marker-id={marker.id}
-                    transform={`translate(${marker.position_x * scale},${marker.position_y * scale})`}
+                    transform={`translate(${noteX},${noteY})`}
                     {...baseProps}
                   >
                     {/* Note icon with yellow background and clear border */}
