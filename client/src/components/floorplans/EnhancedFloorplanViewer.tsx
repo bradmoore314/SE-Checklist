@@ -160,8 +160,10 @@ export const EnhancedFloorplanViewer = ({
   const [markerDragOffset, setMarkerDragOffset] = useState<{x: number, y: number}>({x: 0, y: 0});
 
   // Update coordinate system when view state changes
+  // This is a critical part of our approach to fixing marker position issues during zoom
   useEffect(() => {
     // Update the coordinate system with the latest state values
+    // This ensures that all coordinate transformations remain consistent
     coordSystem.updateSystem({
       containerElement: containerRef.current,
       scale: scale,
@@ -170,11 +172,12 @@ export const EnhancedFloorplanViewer = ({
       viewportDimensions: viewportDimensions
     });
     
-    // Log the update for debugging
-    console.log(`=== COORDINATE SYSTEM UPDATED ===`);
-    console.log(`Scale: ${scale.toFixed(2)}`);
-    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
-    console.log(`Viewport: ${viewportDimensions.width}x${viewportDimensions.height}`);
+    // Log the update for debugging (less verbose now that we've confirmed it's working)
+    if (scale % 0.2 < 0.05) { // Only log occasionally to reduce noise
+      console.log(`COORDINATE SYSTEM UPDATED: Scale=${scale.toFixed(2)}, ` +
+        `Translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)}), ` +
+        `Viewport=${viewportDimensions.width}x${viewportDimensions.height}`);
+    }
   }, [scale, translateX, translateY, viewportDimensions, containerRef]);
   
   // Use our new coordinate system for all transformations
@@ -372,13 +375,8 @@ export const EnhancedFloorplanViewer = ({
       marker.position_y
     );
     
-    // Enhanced logging for debugging
-    console.log(`=== DRAG START DIAGNOSTICS ===`);
-    console.log(`Mouse screen position: (${e.clientX}, ${e.clientY})`);
-    console.log(`Mouse PDF position: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
-    console.log(`Marker PDF position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})`);
-    console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
-    console.log(`Computed offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)})`);
+    // Compact logging for drag start
+    console.log(`Drag marker #${marker.id}: offset (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}), scale=${scale.toFixed(2)}`);
     
     setMarkerDragOffset(offset);
     setSelectedMarker(marker);
@@ -1024,6 +1022,10 @@ export const EnhancedFloorplanViewer = ({
       return; // Exit early - no zooming when dialogs are open
     }
     
+    // IMPORTANT: This zoom handler is where our coordinate system fixes make a big difference
+    // We now use the coordinate system's calculation to ensure markers stay in the correct 
+    // position relative to the cursor during zooming operations
+    
     // Get mouse position relative to container
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -1044,11 +1046,11 @@ export const EnhancedFloorplanViewer = ({
       newScale
     );
     
-    console.log(`=== ZOOM EVENT ===`);
-    console.log(`Mouse container: (${mouseX.toFixed(2)}, ${mouseY.toFixed(2)})`);
-    console.log(`Mouse PDF: (${coordSystem.containerToPdf(mouseX, mouseY).x.toFixed(2)}, ${coordSystem.containerToPdf(mouseX, mouseY).y.toFixed(2)})`);
-    console.log(`Scale: ${scale.toFixed(2)} → ${newScale.toFixed(2)}`);
-    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)}) → (${newTransform.translateX.toFixed(0)}, ${newTransform.translateY.toFixed(0)})`);
+    // Reduce logging - only log every 5th zoom event to avoid console spam
+    if (Math.random() < 0.2) {
+      console.log(`ZOOM: Scale ${scale.toFixed(2)} → ${newScale.toFixed(2)}, ` +
+        `Mouse PDF (${coordSystem.containerToPdf(mouseX, mouseY).x.toFixed(0)}, ${coordSystem.containerToPdf(mouseX, mouseY).y.toFixed(0)})`);
+    }
     
     // Extract the calculated values
     const newTranslateX = newTransform.translateX;
@@ -1129,19 +1131,11 @@ export const EnhancedFloorplanViewer = ({
             const selectedStrokeWidth = strokeWidth * 1.5;
             
             // Calculate screen coordinates from PDF coordinates using our utility function
-            // Only logs this once to avoid excessive output
-            if (isSelected) {
-              console.log(`========== MARKER RENDERING DEBUG ==========`);
-              console.log(`Marker ID: ${marker.id}, Type: ${marker.marker_type}`);
-              console.log(`Marker PDF position: (${marker.position_x}, ${marker.position_y})`);
-              console.log(`Current scale: ${scale}, translateX: ${translateX}, translateY: ${translateY}`);
-              
-              if (containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                const screenCoords = pdfToScreenCoordinates(marker.position_x, marker.position_y);
-                console.log(`Calculated screen position: (${screenCoords.x}, ${screenCoords.y})`);
-                console.log(`Container position: (${rect.left}, ${rect.top}), size: ${rect.width}x${rect.height}`);
-              }
+            // Only occasionally log selected marker details to reduce console spam
+            if (isSelected && Math.random() < 0.1) { // Log only 10% of the time
+              console.log(`Selected marker #${marker.id} (${marker.marker_type}): ` +
+                `PDF pos (${marker.position_x.toFixed(1)}, ${marker.position_y.toFixed(1)}), ` +
+                `scale=${scale.toFixed(2)}`);
             }
             
             // Base classnames and props
