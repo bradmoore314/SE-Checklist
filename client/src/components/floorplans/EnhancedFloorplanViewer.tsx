@@ -1181,7 +1181,10 @@ export const EnhancedFloorplanViewer = ({
             height: `${viewportDimensions.height}px`,
             transformOrigin: '0 0',
             transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
-            transition: 'transform 75ms'
+            transition: 'transform 75ms',
+            userSelect: 'none',  /* Disable text selection */
+            WebkitUserSelect: 'none', /* Safari */
+            msUserSelect: 'none' /* IE/Edge */
           }}
         >
           {/* Debug grid removed */}
@@ -1278,7 +1281,12 @@ export const EnhancedFloorplanViewer = ({
                         dominantBaseline="middle" 
                         fill="#FFFFFF" /* White text */
                         fontWeight="bold"
-                        style={{ pointerEvents: 'none' }}
+                        style={{ 
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          msUserSelect: 'none'
+                        }}
                       >AP</text>
                       {(isSelected || showAllLabels) && marker.label && (
                         <g style={{ pointerEvents: 'none' }}>
@@ -1334,7 +1342,12 @@ export const EnhancedFloorplanViewer = ({
                         dominantBaseline="middle" 
                         fill="#ff0000" /* Red text */
                         fontWeight="bold"
-                        style={{ pointerEvents: 'none' }}
+                        style={{ 
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          msUserSelect: 'none'
+                        }}
                       >C</text>
                       {(isSelected || showAllLabels) && marker.label && (
                         <g style={{ pointerEvents: 'none' }}>
@@ -1530,7 +1543,12 @@ export const EnhancedFloorplanViewer = ({
                         dominantBaseline="middle" 
                         fill="#ff0000" /* Red text */
                         fontWeight="bold"
-                        style={{ pointerEvents: 'none' }}
+                        style={{ 
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          msUserSelect: 'none'
+                        }}
                       >N</text>
                       {(isSelected || showAllLabels) && marker.text_content && (
                         <foreignObject 
