@@ -1859,6 +1859,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const floorplans = await storage.getFloorplans(projectId);
     res.json(floorplans);
   });
+  
+  // Get unassigned equipment items (not yet placed on floorplans)
+  app.get("/api/projects/:projectId/unassigned-equipment", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ error: "Invalid project ID" });
+      }
+      
+      // Get project and verify it exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Get all equipment for this project
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+      
+      // Get all markers assigned to equipment
+      const markers = await storage.getFloorplanMarkersByProjectId(projectId);
+      
+      // Create a set of equipment IDs that already have markers
+      const markerEquipmentIds = new Map<string, Set<number>>();
+      markerEquipmentIds.set('access_point', new Set());
+      markerEquipmentIds.set('camera', new Set());
+      markerEquipmentIds.set('elevator', new Set());
+      markerEquipmentIds.set('intercom', new Set());
+      
+      // Populate the sets with equipment IDs that already have markers
+      markers.forEach(marker => {
+        const typeSet = markerEquipmentIds.get(marker.marker_type);
+        if (typeSet && marker.equipment_id) {
+          typeSet.add(marker.equipment_id);
+        }
+      });
+      
+      // Filter out equipment that already has markers
+      const unassignedAccessPoints = accessPoints.filter(ap => 
+        !markerEquipmentIds.get('access_point')?.has(ap.id)
+      ).map(ap => ({
+        id: ap.id,
+        type: 'access_point',
+        label: ap.location || `Access Point ${ap.id}`
+      }));
+      
+      const unassignedCameras = cameras.filter(cam => 
+        !markerEquipmentIds.get('camera')?.has(cam.id)
+      ).map(cam => ({
+        id: cam.id,
+        type: 'camera',
+        label: cam.location || `Camera ${cam.id}`
+      }));
+      
+      const unassignedElevators = elevators.filter(elev => 
+        !markerEquipmentIds.get('elevator')?.has(elev.id)
+      ).map(elev => ({
+        id: elev.id,
+        type: 'elevator',
+        label: elev.location || `Elevator ${elev.id}`
+      }));
+      
+      const unassignedIntercoms = intercoms.filter(intercom => 
+        !markerEquipmentIds.get('intercom')?.has(intercom.id)
+      ).map(intercom => ({
+        id: intercom.id,
+        type: 'intercom',
+        label: intercom.location || `Intercom ${intercom.id}`
+      }));
+      
+      // Combine all unassigned equipment into a single response
+      const unassignedEquipment = {
+        access_points: unassignedAccessPoints,
+        cameras: unassignedCameras,
+        elevators: unassignedElevators,
+        intercoms: unassignedIntercoms
+      };
+      
+      res.json(unassignedEquipment);
+    } catch (error) {
+      console.error("Error in /api/projects/:projectId/unassigned-equipment:", error);
+      res.status(500).json({ error: "Failed to retrieve unassigned equipment" });
+    }
+  });
 
   app.get("/api/floorplans/:id", isAuthenticated, async (req: Request, res: Response) => {
     const floorplanId = parseInt(req.params.id);
