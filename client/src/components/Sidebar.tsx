@@ -10,7 +10,13 @@ export default function Sidebar({ collapsed }: SidebarProps) {
   const { currentSiteWalk } = useSiteWalk();
 
   // Function to determine if a link is active
-  const isActive = (path: string) => location === path;
+  const isActive = (path: string) => {
+    // Special case for My Site Walks - should be active for both "/" and "/projects"
+    if (path === "/projects") {
+      return location === "/" || location === "/projects";
+    }
+    return location === path;
+  };
 
   return (
     <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar bg-white border-r`}>
