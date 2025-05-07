@@ -573,6 +573,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const cameras = await storage.getCameras(projectId);
     res.json(cameras);
   });
+  
+  // Add new camera to project
+  app.post("/api/projects/:projectId/cameras", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      // Extract image data first if present
+      const { image_data, ...cameraData } = req.body;
+      
+      // Add project_id to the camera data
+      const completeData = {
+        ...cameraData,
+        project_id: projectId
+      };
+      
+      const result = insertCameraSchema.safeParse(completeData);
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid camera data", 
+          errors: result.error.errors 
+        });
+      }
+
+      // Get list of projects the user has access to
+      const userProjects = await storage.getProjectsForUser(req.user.id);
+      const userProjectIds = userProjects.map(p => p.id);
+      
+      // Check if user has access to this project
+      if (!userProjectIds.includes(projectId)) {
+        return res.status(403).json({ message: "You don't have permission to add cameras to this project" });
+      }
+
+      // Verify project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Create the camera first
+      const camera = await storage.createCamera(result.data);
+      
+      // If image data was provided, save it as well
+      if (image_data) {
+        try {
+          const imageInsert: InsertImage = {
+            equipment_type: 'camera',
+            equipment_id: camera.id,
+            project_id: projectId,
+            image_data: image_data,
+            filename: `camera_${camera.id}_image.jpg`
+          };
+          
+          await storage.saveImage(imageInsert);
+          console.log(`Saved image for camera ID: ${camera.id}`);
+        } catch (imageError) {
+          console.error('Failed to save camera image:', imageError);
+          // Continue even if image saving fails
+        }
+      }
+      
+      res.status(201).json(camera);
+    } catch (error) {
+      console.error("Error creating camera:", error);
+      res.status(500).json({ 
+        message: "Failed to create camera",
+        error: (error as Error).message
+      });
+    }
+  });
 
   app.get("/api/cameras/:id", isAuthenticated, async (req: Request, res: Response) => {
     if (!req.user) {
