@@ -67,7 +67,7 @@ interface AnnotationToolbarProps {
   onLayersToggle: () => void;
   onToggleLabels?: () => void;
   showLayers: boolean;
-  showAllLabels?: boolean;
+  visibleLabelTypes?: Record<string, boolean>;
   canDelete: boolean;
   canCopy: boolean;
   zoomLevel: number;
@@ -96,7 +96,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   onLayersToggle,
   onToggleLabels,
   showLayers,
-  showAllLabels = false,
+  visibleLabelTypes = {},
   canDelete,
   canCopy,
   zoomLevel
@@ -360,7 +360,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
             <h4 className="text-xs font-medium mb-1 text-muted-foreground">Actions</h4>
             <div className="grid grid-cols-4 gap-1">
               <Button
-                variant={showAllLabels ? 'default' : 'ghost'}
+                variant={visibleLabelTypes?.all ? 'default' : 'ghost'}
                 size="sm"
                 onClick={onToggleLabels}
                 className="h-9 w-full"
