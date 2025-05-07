@@ -460,7 +460,11 @@ export const EnhancedFloorplanViewer = ({
       markerStartY: marker.position_y,
       // Store initial mouse position for calculating deltas
       mouseStartX: mouseScreenX,
-      mouseStartY: mouseScreenY
+      mouseStartY: mouseScreenY,
+      // Add camera properties to prevent TypeScript errors
+      cameraStartRotation: marker.rotation || 0,
+      cameraStartFov: (marker as any).fov || 90,
+      cameraStartRange: (marker as any).range || 60
     };
     
     // Detailed logging for debugging the scaling-aware implementation
@@ -480,6 +484,40 @@ export const EnhancedFloorplanViewer = ({
     if (containerRef.current) {
       containerRef.current.style.cursor = 'grabbing';
     }
+  };
+  
+  // Start dragging a camera handle (FOV, range, rotation)
+  const startCameraHandleDrag = (e: React.MouseEvent, marker: MarkerData, handleType: string) => {
+    e.stopPropagation();
+    
+    if (toolMode !== 'select' || !containerRef.current) return;
+    
+    // Set the active handle type and marker
+    setActiveHandle(handleType);
+    setSelectedMarker(marker);
+    setIsResizingMarker(true);
+    
+    // Store initial values for relative adjustments
+    const mouseScreenX = e.clientX;
+    const mouseScreenY = e.clientY;
+    
+    // Store the initial camera properties
+    setMarkerDragOffset({
+      screenX: mouseScreenX,
+      screenY: mouseScreenY,
+      mouseStartX: mouseScreenX,
+      mouseStartY: mouseScreenY,
+      markerStartX: marker.position_x,
+      markerStartY: marker.position_y,
+      cameraStartRotation: marker.rotation || 0,
+      cameraStartFov: (marker as any).fov || 90,
+      cameraStartRange: (marker as any).range || 60
+    });
+    
+    console.log(`Starting camera handle drag: ${handleType}`);
+    console.log(`Initial FOV: ${(marker as any).fov || 90}°`);
+    console.log(`Initial range: ${(marker as any).range || 60}`);
+    console.log(`Initial rotation: ${marker.rotation || 0}°`);
   };
   
   // Start resizing a marker
@@ -933,7 +971,7 @@ export const EnhancedFloorplanViewer = ({
       const mousePdf = screenToPdfCoordinates(e.clientX, e.clientY);
       
       // Log occasionally for debugging
-      if (Math.random() < 0.1) { // Log ~10% of resize operations
+      if (Math.random() < 0.05) { // Log ~5% of resize operations
         console.log(`=== RESIZE EVENT ===`);
         console.log(`Mouse screen: (${e.clientX}, ${e.clientY})`);
         console.log(`Mouse PDF: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
@@ -944,29 +982,109 @@ export const EnhancedFloorplanViewer = ({
       const pdfX = mousePdf.x;
       const pdfY = mousePdf.y;
       
-      // Calculate new dimensions based on marker type
-      setSelectedMarker(prev => {
-        if (!prev) return null;
+      // Handle camera marker properties (FOV, range, rotation)
+      if (selectedMarker.marker_type === 'camera' && activeHandle) {
+        // For camera markers, we handle special properties
+        const cameraX = selectedMarker.position_x;
+        const cameraY = selectedMarker.position_y;
         
-        const newProperties: Partial<MarkerData> = {};
+        // Calculate angle from camera position to mouse position
+        const angleToMouse = Math.atan2(pdfY - cameraY, pdfX - cameraX) * 180 / Math.PI;
         
-        // For markers with width/height properties
-        if (['rectangle', 'ellipse', 'image'].includes(prev.marker_type)) {
-          newProperties.width = Math.abs(pdfX - prev.position_x);
-          newProperties.height = Math.abs(pdfY - prev.position_y);
+        // Calculate distance from camera position to mouse position
+        const distanceToMouse = Math.sqrt(
+          Math.pow(pdfX - cameraX, 2) + 
+          Math.pow(pdfY - cameraY, 2)
+        );
+        
+        // Update different properties based on which handle is being dragged
+        if (activeHandle === 'range') {
+          // Update the range property (distance from camera)
+          setSelectedMarker(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              range: Math.max(20, distanceToMouse) // Minimum 20 units range
+            } as MarkerData;
+          });
+        } 
+        else if (activeHandle === 'fov-left' || activeHandle === 'fov-right') {
+          // Current camera values
+          const currentRotation = selectedMarker.rotation || 0;
+          const currentFov = (selectedMarker as any).fov || 90;
+          
+          // Calculate the angle relative to camera's direction
+          let angleDiff = angleToMouse - currentRotation;
+          
+          // Normalize angle difference to -180 to 180 range
+          if (angleDiff > 180) angleDiff -= 360;
+          if (angleDiff < -180) angleDiff += 360;
+          
+          // Calculate new FOV based on which handle is dragged
+          let newFov = currentFov;
+          
+          if (activeHandle === 'fov-left') {
+            // Left handle affects the left side of the FOV
+            // Adjust FOV so that the right side stays fixed and the left side changes
+            const rightEdge = currentRotation + currentFov/2;
+            newFov = (rightEdge - angleToMouse) * 2;
+          } else { // fov-right
+            // Right handle affects the right side of the FOV
+            // Adjust FOV so that the left side stays fixed and the right side changes
+            const leftEdge = currentRotation - currentFov/2;
+            newFov = (angleToMouse - leftEdge) * 2;
+          }
+          
+          // Constrain FOV between 10 and 360 degrees
+          newFov = Math.max(10, Math.min(360, newFov));
+          
+          // Update the FOV property
+          setSelectedMarker(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              fov: newFov
+            } as MarkerData;
+          });
         }
-        
-        // For line markers
-        if (prev.marker_type === 'line') {
-          newProperties.end_x = pdfX;
-          newProperties.end_y = pdfY;
+        else {
+          // If no specific handle or an unknown handle is active,
+          // assume we're rotating the entire camera (like the rotation handle)
+          setSelectedMarker(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              rotation: angleToMouse // Set rotation to the angle to the mouse
+            } as MarkerData;
+          });
         }
+      } else {
+        // Handle regular marker resizing for non-camera markers
         
-        return {
-          ...prev,
-          ...newProperties
-        };
-      });
+        // Calculate new dimensions based on marker type
+        setSelectedMarker(prev => {
+          if (!prev) return null;
+          
+          const newProperties: Partial<MarkerData> = {};
+          
+          // For markers with width/height properties
+          if (['rectangle', 'ellipse', 'image'].includes(prev.marker_type)) {
+            newProperties.width = Math.abs(pdfX - prev.position_x);
+            newProperties.height = Math.abs(pdfY - prev.position_y);
+          }
+          
+          // For line markers
+          if (prev.marker_type === 'line') {
+            newProperties.end_x = pdfX;
+            newProperties.end_y = pdfY;
+          }
+          
+          return {
+            ...prev,
+            ...newProperties
+          };
+        });
+      }
     } else if (isAddingMarker && tempMarker) {
       // Sizing a shape marker using our coordinate system
       
