@@ -353,6 +353,7 @@ export const EnhancedFloorplanViewer = ({
     
     if (!containerRef.current) return;
     
+    // We checked containerRef.current above, it's guaranteed to be non-null here
     const rect = containerRef.current.getBoundingClientRect();
     
     // Convert mouse coordinates to container-relative coordinates
@@ -723,8 +724,21 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
-        // Use our refactored conversion function to get PDF coordinates
-        const { x: pdfX, y: pdfY } = screenToPdfCoordinates(x, y);
+        // Get the mouse position in container coordinates 
+        if (!containerRef.current) return; // Safety check
+        
+        const rect = containerRef.current.getBoundingClientRect();
+        const containerX = x - rect.left;
+        const containerY = y - rect.top;
+        
+        // Convert to PDF coordinates using our consistent transform approach
+        const pdfX = (containerX - translateX) / scale;
+        const pdfY = (containerY - translateY) / scale;
+        
+        console.log(`=== ADDING NEW MARKER ===`);
+        console.log(`Mouse container position: (${containerX}, ${containerY})`);
+        console.log(`Current transform: translate(${translateX}px, ${translateY}px) scale(${scale})`);
+        console.log(`Calculated PDF position: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -814,7 +828,23 @@ export const EnhancedFloorplanViewer = ({
       containerRef.current.style.cursor = 'grabbing';
     } else if (isResizingMarker && selectedMarker) {
       // Resizing a selected marker
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Convert mouse coordinates to container-relative coordinates
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
+      
+      // Convert to PDF coordinates using our consistent approach
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
+      
+      // Log occasionally for debugging
+      if (Math.random() < 0.1) { // Log ~10% of resize operations
+        console.log(`=== RESIZE EVENT ===`);
+        console.log(`Mouse container position: (${containerX}, ${containerY})`);
+        console.log(`PDF coordinates: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
+        console.log(`Scale: ${scale.toFixed(2)}`);
+      }
       
       // Calculate new dimensions based on marker type
       setSelectedMarker(prev => {
@@ -824,14 +854,14 @@ export const EnhancedFloorplanViewer = ({
         
         // For markers with width/height properties
         if (['rectangle', 'ellipse', 'image'].includes(prev.marker_type)) {
-          newProperties.width = Math.abs(pdfCoords.x - prev.position_x);
-          newProperties.height = Math.abs(pdfCoords.y - prev.position_y);
+          newProperties.width = Math.abs(pdfX - prev.position_x);
+          newProperties.height = Math.abs(pdfY - prev.position_y);
         }
         
         // For line markers
         if (prev.marker_type === 'line') {
-          newProperties.end_x = pdfCoords.x;
-          newProperties.end_y = pdfCoords.y;
+          newProperties.end_x = pdfX;
+          newProperties.end_y = pdfY;
         }
         
         return {
@@ -841,17 +871,25 @@ export const EnhancedFloorplanViewer = ({
       });
     } else if (isAddingMarker && tempMarker) {
       // Sizing a shape marker
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Convert mouse coordinates to container-relative coordinates
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
+      
+      // Convert to PDF coordinates using our consistent approach
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
       
       setTempMarker(prev => {
         if (!prev) return null;
         
         return {
           ...prev,
-          end_x: pdfCoords.x,
-          end_y: pdfCoords.y,
-          width: Math.abs(pdfCoords.x - (prev.position_x || 0)),
-          height: Math.abs(pdfCoords.y - (prev.position_y || 0))
+          end_x: pdfX,
+          end_y: pdfY,
+          width: Math.abs(pdfX - (prev.position_x || 0)),
+          height: Math.abs(pdfY - (prev.position_y || 0))
         };
       });
     } else if (isDrawing && (toolMode === 'polyline' || toolMode === 'polygon')) {
@@ -875,18 +913,28 @@ export const EnhancedFloorplanViewer = ({
   const handleMouseUp = (e: React.MouseEvent) => {
     if (isAddingMarker && tempMarker) {
       // Finalize shape marker
-      const pdfCoords = screenToPdfCoordinates(e.clientX, e.clientY);
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Convert mouse coordinates to container-relative coordinates
+      const containerX = e.clientX - rect.left;
+      const containerY = e.clientY - rect.top;
+      
+      // Convert to PDF coordinates using our consistent approach
+      const pdfX = (containerX - translateX) / scale;
+      const pdfY = (containerY - translateY) / scale;
       
       // Calculate width/height/end points
-      const width = Math.abs(pdfCoords.x - (tempMarker.position_x || 0));
-      const height = Math.abs(pdfCoords.y - (tempMarker.position_y || 0));
+      const width = Math.abs(pdfX - (tempMarker.position_x || 0));
+      const height = Math.abs(pdfY - (tempMarker.position_y || 0));
       
       // Only add if the shape has some size
       if (width > 5 / scale || height > 5 / scale) {
         const finalMarker = {
           ...tempMarker,
-          end_x: pdfCoords.x,
-          end_y: pdfCoords.y,
+          end_x: pdfX,
+          end_y: pdfY,
           width,
           height,
           color: activeLayer?.color || '#ff0000',
@@ -984,18 +1032,31 @@ export const EnhancedFloorplanViewer = ({
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     
-    const mouseX = e.clientX - rect.left - translateX;
-    const mouseY = e.clientY - rect.top - translateY;
+    // Get the mouse position in container coordinates
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
     
-    // Calculate new scale
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    // Get the mouse position in PDF coordinates before zoom
+    const mousePdfX = (mouseX - translateX) / scale;
+    const mousePdfY = (mouseY - translateY) / scale;
+    
+    // Calculate new scale factor
+    const delta = e.deltaY > 0 ? 0.9 : 1.1; // Zoom out on positive deltaY (scroll down)
     const newScale = Math.max(0.1, Math.min(10, scale * delta));
     
-    // Calculate new translate to zoom toward mouse position
-    const scaleRatio = newScale / scale;
-    const newTranslateX = translateX + mouseX - mouseX * scaleRatio;
-    const newTranslateY = translateY + mouseY - mouseY * scaleRatio;
+    // Calculate the new position in container coordinates after the scale change
+    // These coordinates should focus the zoom on the mouse position
+    const newTranslateX = mouseX - mousePdfX * newScale;
+    const newTranslateY = mouseY - mousePdfY * newScale;
     
+    // Debug information
+    console.log(`=== ZOOM EVENT ===`);
+    console.log(`Mouse container: (${mouseX}, ${mouseY})`);
+    console.log(`Mouse PDF: (${mousePdfX.toFixed(2)}, ${mousePdfY.toFixed(2)})`);
+    console.log(`Scale: ${scale.toFixed(2)} → ${newScale.toFixed(2)}`);
+    console.log(`Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)}) → (${newTranslateX.toFixed(0)}, ${newTranslateY.toFixed(0)})`);
+    
+    // Update state
     setScale(newScale);
     setTranslateX(newTranslateX);
     setTranslateY(newTranslateY);
@@ -1026,7 +1087,6 @@ export const EnhancedFloorplanViewer = ({
       
       <div
         className="relative"
-        ref={containerRef}
       >
         {/* The PDF Canvas - we'll transform this with the pan and zoom */}
         <canvas 
