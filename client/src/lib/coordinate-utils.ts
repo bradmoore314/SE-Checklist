@@ -227,6 +227,8 @@ export class CoordinateSystem {
     markerPdfX: number,
     markerPdfY: number
   ): Point {
+    // Calculate the offset in PDF coordinates
+    // This works at any zoom level because both coordinates are in the same PDF coordinate space
     return {
       x: this.limitPrecision(cursorPdfX - markerPdfX),
       y: this.limitPrecision(cursorPdfY - markerPdfY)
