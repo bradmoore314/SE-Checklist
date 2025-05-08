@@ -6,7 +6,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useProject } from "@/context/ProjectContext";
+import { useProject } from "@/contexts/ProjectContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   AlertTriangle,

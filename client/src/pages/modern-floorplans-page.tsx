@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2 } from 'lucide-react';
 import ModernFloorplanViewer from '@/components/floorplans/ModernFloorplanViewer';
-import { useProject } from '@/context/ProjectContext';
+import { useProject } from '@/contexts/ProjectContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 

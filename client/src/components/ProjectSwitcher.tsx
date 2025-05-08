@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Project } from "@shared/schema";
-import { useProject } from "@/context/ProjectContext";
-import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useProject } from "@/contexts/ProjectContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import {

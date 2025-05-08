@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useProject } from "@/context/ProjectContext";
-import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useProject } from "@/contexts/ProjectContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
 import { Project } from "@shared/schema";
 import ProjectDashboard from "@/components/project/ProjectDashboard";
 import ProjectConfiguration from "@/components/project/ProjectConfiguration";

@@ -1,5 +1,5 @@
-import { useProject } from '@/context/ProjectContext';
-import { useSiteWalk } from '@/context/SiteWalkContext';
+import { useProject } from '@/contexts/ProjectContext';
+import { useSiteWalk } from '@/contexts/SiteWalkContext';
 import { useLocation } from 'wouter';
 
 export function DebugInfo() {
