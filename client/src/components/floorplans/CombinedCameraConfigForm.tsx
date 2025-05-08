@@ -125,6 +125,20 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
     // we probably don't want to set useExistingCamera
     useExistingCamera: isNew && false
   };
+  
+  // If we have camera data from the server, merge it with our initialData
+  if (cameraData && !isNew) {
+    console.log("Using camera data from server:", cameraData);
+    
+    // Add camera-specific fields from the database
+    Object.assign(initialData, {
+      camera_type: cameraData.camera_type || '',
+      mounting_type: cameraData.mounting_type || '',
+      resolution: cameraData.resolution || '',
+      gateway_id: cameraData.gateway_id || null,
+      notes: cameraData.notes || ''
+    });
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
