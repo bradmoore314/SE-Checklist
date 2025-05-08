@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, Camera, X, Loader2 } from 'lucide-react';
+import { Upload, Camera, X, Loader2, RefreshCw } from 'lucide-react';
 
 // Image Upload Section Component
 interface ImageUploadSectionProps {
@@ -22,25 +22,36 @@ function ImageUploadSection({
   const [takingPhoto, setTakingPhoto] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
+  const [refreshTimestamp, setRefreshTimestamp] = useState<number>(Date.now());
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Force refresh images
+  const refreshImages = useCallback(() => {
+    console.log('Forcing image refresh with new timestamp');
+    setRefreshTimestamp(Date.now());
+    queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
+  }, [queryClient, equipmentType, equipmentId]);
+
   // Fetch existing images if equipmentId is provided
   const { data: existingImages = [], isLoading: loadingImages } = useQuery({
-    queryKey: ['/api/images', equipmentType, equipmentId],
+    queryKey: ['/api/images', equipmentType, equipmentId, refreshTimestamp],
     queryFn: async () => {
       if (equipmentId <= 0) return [];
       
-      const response = await apiRequest('GET', `/api/images/${equipmentType}/${equipmentId}`);
+      // Add a cache-busting parameter to avoid browser/CDN caching
+      const response = await apiRequest('GET', `/api/images/${equipmentType}/${equipmentId}?t=${refreshTimestamp}`);
       if (!response.ok) {
         throw new Error('Failed to fetch images');
       }
       return response.json();
     },
     enabled: equipmentId > 0,
+    staleTime: 0, // Disable stale time to force re-fetch
+    gcTime: 0,    // Disable garbage collection time to force re-fetch
   });
 
   // Load existing images when they're fetched
@@ -52,26 +63,23 @@ function ImageUploadSection({
       // Create a deep comparison to prevent infinite rerenders
       const formattedImages = existingImages.map((img: any) => ({
         id: img.id,
-        data: img.image_data || (img.blob_url || ''), // Use blob_url if available
+        // Add cache busting to image URLs to prevent browser caching
+        data: img.image_data ? 
+          `${img.image_data}${img.image_data.includes('?') ? '&' : '?'}t=${refreshTimestamp}` : 
+          (img.blob_url ? `${img.blob_url}${img.blob_url.includes('?') ? '&' : '?'}t=${refreshTimestamp}` : ''),
         filename: img.filename || 'Uploaded Image'
       }));
       
-      console.log('Formatted images:', formattedImages);
+      console.log('Formatted images with cache busting:', formattedImages);
       
-      // Only update state if the images have changed
-      const currentIds = images.map(img => img.id || '').sort().join(',');
-      const newIds = formattedImages.map(img => img.id || '').sort().join(',');
-      
-      if (currentIds !== newIds || images.length !== formattedImages.length) {
-        console.log('Setting new images in state');
-        setImages(formattedImages);
-      }
-    } else if (images.length > 0 && existingImages.length === 0) {
-      // Only clear images when we have existing ones in state but the backend has none
+      // Always update the state with the latest images
+      setImages(formattedImages);
+    } else if (existingImages.length === 0) {
+      // Clear images when the backend has none
       console.log('Clearing images from state - no existing images found');
       setImages([]);
     }
-  }, [existingImages]);
+  }, [existingImages, refreshTimestamp]);
 
   // Image upload mutation
   const uploadImageMutation = useMutation({
@@ -326,6 +334,17 @@ function ImageUploadSection({
         >
           <Camera className="h-4 w-4 mr-1" />
           Take Photo
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="outline" 
+          size="sm"
+          onClick={refreshImages}
+          title="Refresh images if they're not displaying correctly"
+        >
+          <RefreshCw className="h-4 w-4 mr-1" />
+          Refresh
         </Button>
         
         <input

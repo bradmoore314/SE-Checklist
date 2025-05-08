@@ -1881,8 +1881,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteImage(id: number): Promise<boolean> {
-    const result = await db.delete(images).where(eq(images.id, id));
-    return result.count > 0;
+    try {
+      console.log(`DatabaseStorage: Attempting to delete image with ID ${id}`);
+      
+      // First check if the image exists
+      const image = await this.getImageById(id);
+      if (!image) {
+        console.log(`DatabaseStorage: No image found with ID ${id}`);
+        return false;
+      }
+      
+      console.log(`DatabaseStorage: Found image to delete:`, {
+        id: image.id,
+        equipment_type: image.equipment_type,
+        equipment_id: image.equipment_id
+      });
+      
+      // Execute the delete operation
+      const result = await db.delete(images).where(eq(images.id, id));
+      console.log(`DatabaseStorage: Delete operation result:`, result);
+      
+      if (result.count > 0) {
+        console.log(`DatabaseStorage: Successfully deleted image with ID ${id}`);
+        return true;
+      } else {
+        console.log(`DatabaseStorage: Failed to delete image with ID ${id}, no rows affected`);
+        return false;
+      }
+    } catch (error) {
+      console.error(`DatabaseStorage: Error deleting image with ID ${id}:`, error);
+      return false;
+    }
   }
 
   // Floorplans
