@@ -6,48 +6,70 @@ import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/U
 import ImageUploadSection from '@/components/ImageUploadSection';
 
 interface CombinedCameraConfigFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  // Common props for both floorplan and standalone modes
   projectId: number;
-  marker: {
+  cameraData?: any; // Camera equipment data from the database
+  
+  // Dialog control (different props accepted)
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  isOpen?: boolean; // Alternate prop for backward compatibility
+  onClose?: () => void; // Alternate prop for backward compatibility
+  
+  // Marker props (for floorplan view)
+  marker?: {
     id?: number;
-    position_x: number;
-    position_y: number;
+    position_x?: number;
+    position_y?: number;
     equipment_id?: number;
     fov?: number;
     range?: number;
     rotation?: number;
     label?: string;
   } | null;
+  
+  // Other marker data (required for consistency between views)
+  floorplanId?: number | null;
+  markerId?: number | null;
+  
+  // Mode flags
   isNew?: boolean;
-  cameraData?: any; // Camera equipment data from the database
-  onUpdate: (updatedData: {
-    id?: number;
-    position_x: number;
-    position_y: number;
-    equipment_id?: number;
-    fov: number;
-    range: number;
-    rotation: number;
-    label?: string;
-    gateway_id?: number | null;
-  }) => void;
+  
+  // Callback handlers (different naming conventions)
+  onUpdate?: (updatedData: any) => void;
+  onSave?: (updatedData: any) => void;
   onCancel?: () => void;
+  
+  // UI customization
+  title?: string;
 }
 
 const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
   open, 
   onOpenChange,
+  isOpen,
+  onClose,
   projectId,
   marker,
+  floorplanId,
+  markerId,
   isNew = false,
   cameraData,
   onUpdate,
-  onCancel
+  onSave,
+  onCancel,
+  title
 }) => {
+  // For compatibility with both prop styles
+  const dialogOpen = open !== undefined ? open : isOpen;
+  const handleOpenChange = onOpenChange || ((isOpen: boolean) => {
+    if (!isOpen && onClose) onClose();
+  });
+  const submitHandler = onUpdate || onSave;
+  
   // Prevent scrolling in background PDF when dialog is open
   useEffect(() => {
-    if (open) {
+    if (dialogOpen) {
       // Save the original overflow style
       const originalStyle = document.body.style.overflow;
       
@@ -86,50 +108,87 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
         }
       };
     }
-  }, [open]);
+  }, [dialogOpen]);
 
-  if (!marker) {
-    return null;
-  }
-
+  // Different behavior based on the source (floorplan or standalone)
+  const isFloorplanMode = !!marker;
+  
   const handleSave = (data: CameraConfigData) => {
-    onUpdate({
-      id: marker.id,
-      position_x: marker.position_x,
-      position_y: marker.position_y,
-      equipment_id: data.useExistingCamera ? data.existingCameraId : undefined,
-      fov: data.fov,
-      range: data.range,
-      rotation: data.rotation,
-      label: data.location,
-      gateway_id: data.gateway_id
-    });
+    if (!submitHandler) return;
     
-    onOpenChange(false);
+    if (isFloorplanMode && marker) {
+      // In floorplan mode, we update the marker with position and FOV
+      submitHandler({
+        id: marker.id,
+        position_x: marker.position_x,
+        position_y: marker.position_y,
+        equipment_id: data.useExistingCamera ? data.existingCameraId : undefined,
+        fov: data.fov,
+        range: data.range,
+        rotation: data.rotation,
+        label: data.location,
+        gateway_id: data.gateway_id || null
+      });
+    } else {
+      // In standalone mode, we're just updating the camera data
+      submitHandler({
+        id: cameraData?.id,
+        location: data.location,
+        camera_type: data.camera_type,
+        mounting_type: data.mounting_type,
+        resolution: data.resolution,
+        field_of_view: data.fov?.toString(),
+        is_indoor: data.is_indoor === 'indoor',
+        import_to_gateway: data.import_to_gateway,
+        notes: data.notes,
+        gateway_id: data.gateway_id || null
+      });
+    }
+    
+    // Close the dialog
+    if (onOpenChange) onOpenChange(false);
+    if (onClose) onClose();
   };
 
   const handleCancel = () => {
     if (onCancel) {
       onCancel();
     } else {
-      onOpenChange(false);
+      if (onOpenChange) onOpenChange(false);
+      if (onClose) onClose();
     }
   };
 
   // Prepare initialData for UnifiedCameraConfigForm
-  const initialData: Partial<CameraConfigData> = {
-    location: marker.label || '',
-    fov: marker.fov || 90,
-    range: marker.range || 60,
-    rotation: marker.rotation || 0,
-    equipment_id: marker.equipment_id,
-    // If we're editing an existing marker with equipment_id,
-    // we probably don't want to set useExistingCamera
-    useExistingCamera: isNew && false
-  };
+  const initialData: Partial<CameraConfigData> = {};
   
-  // If we have camera data from the server, merge it with our initialData
-  if (cameraData && !isNew) {
+  if (isFloorplanMode && marker) {
+    // Floorplan mode - initialize from marker data
+    Object.assign(initialData, {
+      location: marker.label || '',
+      fov: marker.fov || 90,
+      range: marker.range || 60,
+      rotation: marker.rotation || 0,
+      equipment_id: marker.equipment_id,
+      useExistingCamera: isNew && false
+    });
+  } else {
+    // Standalone mode - initialize directly from camera data
+    Object.assign(initialData, {
+      location: cameraData?.location || '',
+      camera_type: cameraData?.camera_type || '',
+      mounting_type: cameraData?.mounting_type || '',
+      resolution: cameraData?.resolution || '',
+      fov: cameraData?.field_of_view ? parseInt(cameraData.field_of_view) : 90,
+      is_indoor: cameraData?.is_indoor ? 'indoor' : 'outdoor',
+      import_to_gateway: cameraData?.import_to_gateway || false,
+      notes: cameraData?.notes || '',
+      gateway_id: cameraData?.gateway_id || null
+    });
+  }
+  
+  // If we have camera data from the server and we're in floorplan mode, merge camera data
+  if (isFloorplanMode && cameraData && !isNew) {
     console.log("Using camera data from server:", cameraData);
     
     // Add camera-specific fields from the database
@@ -137,16 +196,20 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
       camera_type: cameraData.camera_type || '',
       mounting_type: cameraData.mounting_type || '',
       resolution: cameraData.resolution || '',
+      is_indoor: cameraData.is_indoor ? 'indoor' : 'outdoor',
+      import_to_gateway: cameraData.import_to_gateway || false,
       gateway_id: cameraData.gateway_id || null,
       notes: cameraData.notes || ''
     });
   }
 
+  const dialogTitle = title || (isNew ? 'Add New Camera' : 'Edit Camera');
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-3xl max-h-[calc(100vh-40px)]">
         <DialogHeader>
-          <DialogTitle>{isNew ? 'Add New Camera' : 'Edit Camera'}</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(100vh-180px)] pr-4">
