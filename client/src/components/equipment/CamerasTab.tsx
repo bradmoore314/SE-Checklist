@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddCameraModal from "../modals/AddCameraModal";
 import EditCameraModal from "../modals/EditCameraModal";
+import CombinedCameraConfigForm from "../floorplans/CombinedCameraConfigForm";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -511,14 +512,20 @@ export default function CamerasTab({ project }: CamerasTabProps) {
       
       {/* Edit Camera Modal */}
       {showEditModal && selectedCamera && (
-        <EditCameraModal 
-          isOpen={showEditModal} 
-          camera={selectedCamera} 
-          onSave={handleEditSave} 
+        <CombinedCameraConfigForm
+          isOpen={showEditModal}
+          cameraData={selectedCamera}
+          floorplanId={null}
+          markerId={null}
+          projectId={project.id}
           onClose={() => {
             setShowEditModal(false);
             setSelectedCamera(null);
-          }} 
+          }}
+          onSave={(updatedData) => {
+            handleEditSave(selectedCamera.id, updatedData);
+          }}
+          title={`Edit Camera - ${selectedCamera.location}`}
         />
       )}
     </Card>
