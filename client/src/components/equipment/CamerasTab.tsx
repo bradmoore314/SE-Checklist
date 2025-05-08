@@ -72,7 +72,9 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   };
 
   // Handle save from add modal
-  const handleSave = () => {
+  const handleSave = (id: number, newData: Camera) => {
+    console.log("New Camera added:", id, newData);
+    
     // Close modal
     setShowAddModal(false);
     
@@ -88,7 +90,9 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   };
   
   // Handle save from edit modal
-  const handleEditSave = () => {
+  const handleEditSave = (id: number, updatedData: Camera) => {
+    console.log("Camera updated:", id, updatedData);
+    
     // Close modal
     setShowEditModal(false);
     setSelectedCamera(null);
