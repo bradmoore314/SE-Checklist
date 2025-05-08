@@ -47,9 +47,15 @@ const insertImageSchema = z.object({
   project_id: z.number(),
   equipment_type: z.string(),
   equipment_id: z.number(),
-  image_data: z.string()
+  image_data: z.string(),
+  filename: z.string().optional().nullable(),
 });
-type InsertImage = z.infer<typeof insertImageSchema>;
+type InsertImage = z.infer<typeof insertImageSchema> & {
+  thumbnail_data?: string | null;
+  storage_type?: string;
+  blob_url?: string;
+  blob_name?: string;
+};
 
 const insertKvgFormDataSchema = z.object({
   project_id: z.number(),
