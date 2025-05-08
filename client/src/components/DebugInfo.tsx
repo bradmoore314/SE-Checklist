@@ -1,10 +1,10 @@
 import { useProject } from '@/contexts/ProjectContext';
-import { useSiteWalk } from '@/contexts/SiteWalkContext';
+import { useOpportunity } from '@/contexts/OpportunityContext';
 import { useLocation } from 'wouter';
 
 export function DebugInfo() {
   const { currentProject, allProjects, pinnedProjects, recentProjects } = useProject();
-  const { currentSiteWalk } = useSiteWalk();
+  const { currentOpportunity } = useOpportunity();
   const [location] = useLocation();
 
   return (
@@ -17,7 +17,7 @@ export function DebugInfo() {
         <strong>Current Project:</strong> {currentProject ? `ID: ${currentProject.id}, Name: ${currentProject.name}` : 'None'}
       </div>
       <div className="mb-2">
-        <strong>Current Site Walk:</strong> {currentSiteWalk ? `ID: ${currentSiteWalk.id}, Name: ${currentSiteWalk.name}` : 'None'}
+        <strong>Current Opportunity:</strong> {currentOpportunity ? `ID: ${currentOpportunity.id}, Name: ${currentOpportunity.name}` : 'None'}
       </div>
       <div className="mb-2">
         <strong>Project Count:</strong> {allProjects.length}
