@@ -23,6 +23,8 @@ import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
 import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/utils/coordinates';
 import CameraMarker from './markers/CameraMarker';
+import IntercomMarker from './markers/IntercomMarker';
+import ElevatorMarker from './markers/ElevatorMarker';
 import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
 import CombinedCameraConfigForm from './CombinedCameraConfigForm';
 
@@ -1743,6 +1745,80 @@ export const EnhancedFloorplanViewer = ({
                             toolMode !== 'delete') {
                           e.stopPropagation();
                           startCameraHandleDrag(e, marker, handleType);
+                        }
+                      }}
+                    />
+                  </g>
+                );
+
+              case 'intercom':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    {...baseProps}
+                  >
+                    <IntercomMarker
+                      id={marker.id}
+                      position={{ 
+                        x: marker.position_x * scale, 
+                        y: marker.position_y * scale 
+                      }}
+                      selected={isSelected}
+                      label={shouldShowMarkerLabel(marker, isSelected) ? marker.label || undefined : undefined}
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleMarkerClick(marker);
+                      }}
+                      onRightClick={(e: React.MouseEvent) => {
+                        handleMarkerRightClick(e, marker);
+                      }}
+                      onMouseDown={(e: React.MouseEvent) => {
+                        if (e.button === 0 && 
+                            !isAddingMarker && 
+                            !isDrawing && 
+                            !['polyline', 'polygon'].includes(toolMode) && 
+                            toolMode !== 'delete') {
+                          e.stopPropagation();
+                          startMarkerDrag(e, marker);
+                        }
+                      }}
+                    />
+                  </g>
+                );
+
+              case 'elevator':
+                return (
+                  <g 
+                    key={marker.id} 
+                    className={baseClassName}
+                    data-marker-id={marker.id}
+                    {...baseProps}
+                  >
+                    <ElevatorMarker
+                      id={marker.id}
+                      position={{ 
+                        x: marker.position_x * scale, 
+                        y: marker.position_y * scale 
+                      }}
+                      selected={isSelected}
+                      label={shouldShowMarkerLabel(marker, isSelected) ? marker.label || undefined : undefined}
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleMarkerClick(marker);
+                      }}
+                      onRightClick={(e: React.MouseEvent) => {
+                        handleMarkerRightClick(e, marker);
+                      }}
+                      onMouseDown={(e: React.MouseEvent) => {
+                        if (e.button === 0 && 
+                            !isAddingMarker && 
+                            !isDrawing && 
+                            !['polyline', 'polygon'].includes(toolMode) && 
+                            toolMode !== 'delete') {
+                          e.stopPropagation();
+                          startMarkerDrag(e, marker);
                         }
                       }}
                     />
