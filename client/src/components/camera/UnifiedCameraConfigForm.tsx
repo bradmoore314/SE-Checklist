@@ -121,6 +121,14 @@ export default function UnifiedCameraConfigForm({
     },
   });
 
+  // Add logger to see initial data values
+  useEffect(() => {
+    if (initialData) {
+      console.log("Camera form initialData:", initialData);
+      console.log("Form default values:", form.getValues());
+    }
+  }, [initialData, form]);
+  
   // Watch values for visualization
   const fov = form.watch("fov");
   const range = form.watch("range");
