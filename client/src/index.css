@@ -14,6 +14,16 @@
   --red-accent-hover: #c21a2c;
 }
 
+/* Animation for zoom indicator */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
 @layer base {
   * {
     @apply border-gray-200;
