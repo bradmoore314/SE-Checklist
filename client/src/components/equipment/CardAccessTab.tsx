@@ -196,8 +196,154 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     });
   };
 
+  // Calculate statistics
+  const calculateStats = () => {
+    if (!accessPoints.length) return {
+      total: 0,
+      takeover: { yes: 0, no: 0 },
+      interior: 0,
+      perimeter: 0,
+      lockTypes: {},
+      monitoringTypes: {},
+      lockProviders: {}
+    };
+    
+    const stats = {
+      total: accessPoints.length,
+      takeover: { yes: 0, no: 0 },
+      interior: 0,
+      perimeter: 0,
+      lockTypes: {} as Record<string, number>,
+      monitoringTypes: {} as Record<string, number>,
+      lockProviders: {} as Record<string, number>
+    };
+    
+    accessPoints.forEach(ap => {
+      // Takeover counts
+      if (ap.takeover === 'Yes') stats.takeover.yes++;
+      else stats.takeover.no++;
+      
+      // Interior/Perimeter counts
+      if (ap.interior_perimeter === 'Interior') stats.interior++;
+      else if (ap.interior_perimeter === 'Perimeter') stats.perimeter++;
+      
+      // Lock types
+      if (ap.lock_type) {
+        stats.lockTypes[ap.lock_type] = (stats.lockTypes[ap.lock_type] || 0) + 1;
+      }
+      
+      // Monitoring types
+      if (ap.monitoring_type) {
+        stats.monitoringTypes[ap.monitoring_type] = (stats.monitoringTypes[ap.monitoring_type] || 0) + 1;
+      }
+      
+      // Lock providers
+      if (ap.lock_provider) {
+        stats.lockProviders[ap.lock_provider] = (stats.lockProviders[ap.lock_provider] || 0) + 1;
+      }
+    });
+    
+    return stats;
+  };
+  
+  const stats = calculateStats();
+
   return (
     <div className="p-6">
+      {/* Statistics Dashboard */}
+      <div className="mb-8 bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Project Access Points Summary</h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+          {/* Total Count */}
+          <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+            <div className="text-sm text-blue-600 font-medium">Total Doors</div>
+            <div className="text-2xl font-bold text-blue-700">{stats.total}</div>
+          </div>
+          
+          {/* Takeover vs New */}
+          <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+            <div className="text-sm text-green-600 font-medium">Takeover Doors</div>
+            <div className="text-2xl font-bold text-green-700">{stats.takeover.yes}</div>
+          </div>
+          
+          <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+            <div className="text-sm text-purple-600 font-medium">New Doors</div>
+            <div className="text-2xl font-bold text-purple-700">{stats.takeover.no}</div>
+          </div>
+          
+          {/* Interior vs Perimeter */}
+          <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
+            <div className="text-sm text-amber-600 font-medium">Interior Doors</div>
+            <div className="text-2xl font-bold text-amber-700">{stats.interior}</div>
+          </div>
+          
+          <div className="bg-rose-50 rounded-lg p-3 border border-rose-100">
+            <div className="text-sm text-rose-600 font-medium">Perimeter Doors</div>
+            <div className="text-2xl font-bold text-rose-700">{stats.perimeter}</div>
+          </div>
+          
+          {/* Unassigned (if any) */}
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <div className="text-sm text-gray-600 font-medium">Unassigned Location</div>
+            <div className="text-2xl font-bold text-gray-700">
+              {stats.total - stats.interior - stats.perimeter}
+            </div>
+          </div>
+        </div>
+        
+        {/* Detailed Breakdowns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Lock Types */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Lock Types</h4>
+            <div className="space-y-1">
+              {Object.entries(stats.lockTypes).map(([type, count]) => (
+                <div key={`lock-${type}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{type}</span>
+                  <span className="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.lockTypes).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Monitoring Types */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Monitoring Types</h4>
+            <div className="space-y-1">
+              {Object.entries(stats.monitoringTypes).map(([type, count]) => (
+                <div key={`monitor-${type}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{type}</span>
+                  <span className="text-sm font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.monitoringTypes).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Lock Providers */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Lock Providers</h4>
+            <div className="space-y-1">
+              {Object.entries(stats.lockProviders).map(([provider, count]) => (
+                <div key={`provider-${provider}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{provider || "Unspecified"}</span>
+                  <span className="text-sm font-medium bg-purple-100 text-purple-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.lockProviders).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium text-gray-700">Card Access Points</h3>
         <div className="flex items-center gap-2">
