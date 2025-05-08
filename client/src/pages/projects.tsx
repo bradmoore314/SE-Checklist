@@ -77,7 +77,7 @@ type OpportunityFormValues = z.infer<typeof projectSchema>;
 
 export default function Projects() {
   const [, setLocation] = useLocation();
-  const { setCurrentSiteWalk } = useSiteWalk();
+  const { setCurrentSiteWalk: setCurrentOpportunity } = useSiteWalk();
   const { 
     setCurrentProject, 
     allProjects, 
@@ -190,7 +190,7 @@ export default function Projects() {
       });
       
       // Set as current site walk and navigate to the dashboard
-      setCurrentSiteWalk(newSiteWalk);
+      setCurrentOpportunity(newSiteWalk);
       setCurrentProject(newSiteWalk);
       setLocation(`/projects/${newSiteWalk.id}/dashboard`);
     } catch (error) {
@@ -208,7 +208,7 @@ export default function Projects() {
     prefetchFloorplans(opportunity.id);
     
     // Then set it as current project and navigate to the project details page
-    setCurrentSiteWalk(opportunity);
+    setCurrentOpportunity(opportunity);
     setCurrentProject(opportunity);
     setLocation(`/projects/${opportunity.id}/dashboard`);
   };
@@ -688,7 +688,7 @@ export default function Projects() {
       )}
 
       {/* New Opportunity Modal */}
-      <Dialog open={showNewSiteWalkModal} onOpenChange={setShowNewSiteWalkModal}>
+      <Dialog open={showNewOpportunityModal} onOpenChange={setShowNewOpportunityModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-medium">
@@ -823,7 +823,7 @@ export default function Projects() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setShowNewSiteWalkModal(false)}
+                  onClick={() => setShowNewOpportunityModal(false)}
                   className="mr-2"
                 >
                   Cancel
