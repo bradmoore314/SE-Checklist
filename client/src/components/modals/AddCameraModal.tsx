@@ -67,7 +67,15 @@ export default function AddCameraModal({
       field_of_view: data.fov ? data.fov.toString() : "90", // Convert fov to string for field_of_view
     };
     
-    await addCameraMutation.mutateAsync(payload);
+    // Debug the payload
+    console.log("Camera data being sent:", payload);
+    
+    try {
+      const result = await addCameraMutation.mutateAsync(payload);
+      console.log("Camera creation successful:", result);
+    } catch (error) {
+      console.error("Camera creation error:", error);
+    }
   };
   
   const handleCancel = () => {
