@@ -144,13 +144,13 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
+      <DialogContent className="max-w-3xl max-h-[calc(100vh-40px)]">
         <DialogHeader>
           <DialogTitle>{isNew ? 'Add New Camera' : 'Edit Camera'}</DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="max-h-[calc(100vh-180px)] pr-4">
+          <div className="space-y-6 pb-4">
             <UnifiedCameraConfigForm
               projectId={projectId}
               initialData={initialData}
@@ -162,19 +162,17 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
             />
             
             {!isNew && cameraData && cameraData.id && (
-              <Card className="mt-6">
-                <CardContent className="p-6">
-                  <CardTitle className="text-lg font-medium mb-4">Camera Images</CardTitle>
-                  <div className="text-sm text-muted-foreground mb-4">
-                    Add photos of the camera location to document its installation
-                  </div>
-                  <ImageUploadSection 
-                    projectId={projectId} 
-                    equipmentId={cameraData.id} 
-                    equipmentType="camera"
-                  />
-                </CardContent>
-              </Card>
+              <div className="border border-gray-200 rounded-lg p-6 bg-gray-50 mt-8">
+                <h2 className="text-xl font-semibold mb-2">Camera Images</h2>
+                <div className="text-sm text-muted-foreground mb-4">
+                  Add photos of the camera location to document its installation
+                </div>
+                <ImageUploadSection 
+                  projectId={projectId} 
+                  equipmentId={cameraData.id} 
+                  equipmentType="camera"
+                />
+              </div>
             )}
           </div>
         </ScrollArea>
