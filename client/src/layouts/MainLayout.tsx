@@ -1,8 +1,8 @@
 import { ReactNode, useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
-import { useProject } from "@/context/ProjectContext";
-import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useProject } from "@/contexts/ProjectContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 

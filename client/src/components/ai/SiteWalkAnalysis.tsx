@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { generateAiAnalysis, AiAnalysisResponse } from '@/utils/gemini';
 import { toast } from '@/hooks/use-toast';
-import { useProject } from '@/context/ProjectContext';
+import { useProject } from '@/contexts/ProjectContext';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';

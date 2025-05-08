@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
 
 interface SidebarProps {
   collapsed: boolean;

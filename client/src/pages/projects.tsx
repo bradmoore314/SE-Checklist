@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useSiteWalk } from "@/context/SiteWalkContext";
-import { useProject } from "@/context/ProjectContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useProject } from "@/contexts/ProjectContext";
 import { Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";

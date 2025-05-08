@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSiteWalk } from "@/context/SiteWalkContext";
+import { useSiteWalk } from "@/contexts/SiteWalkContext";
 import { Project } from "@shared/schema";
 import { useLocation } from "wouter";
 import IntercomsTab from "@/components/equipment/IntercomsTab";
