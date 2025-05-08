@@ -101,7 +101,7 @@ export default function Dashboard() {
   // Handle selecting a project
   const selectProject = (project: Project) => {
     setCurrentProject(project);
-    setCurrentSiteWalk(project);
+    setCurrentOpportunity(project);
     // Prefetch floorplans for the selected project
     prefetchFloorplans(project.id);
   };
@@ -156,9 +156,9 @@ export default function Dashboard() {
     );
   }
 
-  // If currentSiteWalk is not set but we have site walks, this should not happen
+  // If currentOpportunity is not set but we have site walks, this should not happen
   // due to the useEffect, but let's handle it anyway
-  if (!currentSiteWalk) {
+  if (!currentOpportunity) {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="max-w-md w-full">
@@ -184,7 +184,7 @@ export default function Dashboard() {
   }
 
   // When a project is selected, show the project dashboard with configuration and overview tabs
-  if (currentSiteWalk) {
+  if (currentOpportunity) {
     return (
       <>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
@@ -205,20 +205,20 @@ export default function Dashboard() {
 
           <TabsContent value="overview" className="m-0">
             <ProjectDashboard 
-              project={currentSiteWalk} 
+              project={currentOpportunity} 
               onProjectUpdate={(updated) => {
-                setCurrentSiteWalk(updated);
+                setCurrentOpportunity(updated);
                 setCurrentProject(updated);
               }} 
             />
             <ProjectConfiguration 
-              project={currentSiteWalk}
+              project={currentOpportunity}
               onProjectUpdate={(updated) => {
-                setCurrentSiteWalk(updated);
+                setCurrentOpportunity(updated);
                 setCurrentProject(updated);
               }}
             />
-            <EquipmentTabs project={currentSiteWalk} />
+            <EquipmentTabs project={currentOpportunity} />
           </TabsContent>
 
           <TabsContent value="projects" className="m-0">
@@ -251,7 +251,7 @@ export default function Dashboard() {
                       <Card 
                         key={`pinned-${project.id}`}
                         className={`hover:shadow-md transition-shadow cursor-pointer ${
-                          currentSiteWalk.id === project.id ? 'border-primary' : ''
+                          currentOpportunity.id === project.id ? 'border-primary' : ''
                         }`}
                         onClick={() => selectProject(project)}
                       >
@@ -335,7 +335,7 @@ export default function Dashboard() {
                       <Card 
                         key={`recent-${project.id}`}
                         className={`hover:shadow-md transition-shadow cursor-pointer ${
-                          currentSiteWalk.id === project.id ? 'border-primary' : ''
+                          currentOpportunity.id === project.id ? 'border-primary' : ''
                         }`}
                         onClick={() => selectProject(project)}
                       >
