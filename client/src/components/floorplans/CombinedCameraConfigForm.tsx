@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
 
@@ -40,6 +40,32 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
   onUpdate,
   onCancel
 }) => {
+  // Prevent scrolling in background PDF when dialog is open
+  useEffect(() => {
+    if (open) {
+      // Save the original overflow style
+      const originalStyle = document.body.style.overflow;
+      
+      // Prevent scroll wheel events from propagating to the PDF in the background
+      const handleWheel = (e: WheelEvent) => {
+        const dialogContent = document.querySelector('.max-w-3xl');
+        if (dialogContent && !dialogContent.contains(e.target as Node)) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+      
+      // Add the event listener with capture phase to catch events before they reach the PDF
+      document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+      
+      // Clean up the event listener when the dialog closes
+      return () => {
+        document.body.style.overflow = originalStyle;
+        document.removeEventListener('wheel', handleWheel, { capture: true });
+      };
+    }
+  }, [open]);
+
   if (!marker) {
     return null;
   }
