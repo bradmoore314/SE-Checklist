@@ -3603,6 +3603,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Get satellite image thumbnail for a project
+  app.get("/api/projects/:projectId/satellite-image", isAuthenticated, async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Valid project ID is required" });
+    }
+    
+    try {
+      // Get project details
+      const project = await storage.getProject(projectId);
+      
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // If project doesn't have an address, return a 404
+      if (!project.site_address) {
+        return res.status(404).json({ message: "Project doesn't have an address" });
+      }
+      
+      // Geocode the address to get coordinates
+      const geocoded = await geocodeAddress(project.site_address);
+      
+      if (!geocoded) {
+        return res.status(404).json({ message: "Couldn't geocode project address" });
+      }
+      
+      // Generate a satellite image URL (smaller size for thumbnails)
+      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 300, 200);
+      
+      // Return the URL
+      res.json({ url: mapUrl });
+    } catch (error) {
+      console.error("Error getting satellite image for project", error);
+      res.status(500).json({ 
+        message: "Failed to generate satellite image URL",
+        error: (error as Error).message
+      });
+    }
+  });
 
   app.get("/api/map-embed-url", isAuthenticated, (req: Request, res: Response) => {
     const lat = parseFloat(req.query.lat as string);
