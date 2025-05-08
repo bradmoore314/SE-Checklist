@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { Project } from "@shared/schema";
 import ProjectDashboard from "@/components/project/ProjectDashboard";
 import ProjectConfiguration from "@/components/project/ProjectConfiguration";
@@ -14,7 +14,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function Dashboard() {
-  const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
+  const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const { 
     currentProject, 
     setCurrentProject, 
@@ -52,12 +52,12 @@ export default function Dashboard() {
     });
   };
   
-  // Keep the site walk context in sync with the project context
+  // Keep the opportunity context in sync with the project context
   useEffect(() => {
-    if (currentProject && (!currentSiteWalk || currentSiteWalk.id !== currentProject.id)) {
-      setCurrentSiteWalk(currentProject);
+    if (currentProject && (!currentOpportunity || currentOpportunity.id !== currentProject.id)) {
+      setCurrentOpportunity(currentProject);
     }
-  }, [currentProject, currentSiteWalk, setCurrentSiteWalk]);
+  }, [currentProject, currentOpportunity, setCurrentOpportunity]);
   
   // Handle project ID from URL if present
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function Dashboard() {
       const projectFromUrl = allProjects.find(p => p.id === projectId);
       
       if (projectFromUrl) {
-        setCurrentSiteWalk(projectFromUrl);
+        setCurrentOpportunity(projectFromUrl);
         setCurrentProject(projectFromUrl);
         prefetchFloorplans(projectId);
         
@@ -77,18 +77,18 @@ export default function Dashboard() {
         }
       }
     }
-  }, [projectIdFromUrl, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
+  }, [projectIdFromUrl, allProjects, setCurrentOpportunity, setCurrentProject, prefetchFloorplans]);
   
-  // If current site walk is not set, use the first one from the list
+  // If current opportunity is not set, use the first one from the list
   useEffect(() => {
-    if (!currentSiteWalk && !projectIdFromUrl && allProjects && allProjects.length > 0) {
-      setCurrentSiteWalk(allProjects[0]);
+    if (!currentOpportunity && !projectIdFromUrl && allProjects && allProjects.length > 0) {
+      setCurrentOpportunity(allProjects[0]);
       setCurrentProject(allProjects[0]);
       
       // Prefetch floorplans for the first project immediately upon login
       prefetchFloorplans(allProjects[0].id);
     }
-  }, [currentSiteWalk, projectIdFromUrl, allProjects, setCurrentSiteWalk, setCurrentProject, prefetchFloorplans]);
+  }, [currentOpportunity, projectIdFromUrl, allProjects, setCurrentOpportunity, setCurrentProject, prefetchFloorplans]);
   
   // Preload floorplans for the current project when it's set
   useEffect(() => {
