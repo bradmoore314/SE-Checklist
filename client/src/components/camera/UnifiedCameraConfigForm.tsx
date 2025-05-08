@@ -373,6 +373,284 @@ export default function UnifiedCameraConfigForm({
             </div>
           </div>
           
+          {/* Middle Column - Camera Equipment */}
+          <div>
+            <h3 className="font-medium mb-4">Camera Equipment</h3>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="camera_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Camera Type
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Camera Type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingLookups ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          getLookupOptions("cameraTypes").map((type: string) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="mounting_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Mounting Type
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Mounting Type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingLookups ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          getLookupOptions("mountingTypes").map((type: string) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                
+              <FormField
+                control={form.control}
+                name="resolution"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Resolution
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Resolution" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingLookups ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          getLookupOptions("resolutions").map((resolution: string) => (
+                            <SelectItem key={resolution} value={resolution}>
+                              {resolution}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="field_of_view"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      Field of View
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., 120° Wide Angle" autoComplete="off" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Gateway Calculator - only show when import_to_gateway is checked */}
+              {form.watch("import_to_gateway") && (
+                <div className="mt-4 border p-3 rounded-md bg-blue-50">
+                  <h4 className="text-sm font-medium mb-2">Gateway Calculator</h4>
+                  <div className="space-y-3">
+                    <FormField
+                      control={form.control}
+                      name="lens_count"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Lens Count
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Lens Count" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="1 (Single Lens)">1 (Single Lens)</SelectItem>
+                              <SelectItem value="2 (Dual Lens)">2 (Dual Lens)</SelectItem>
+                              <SelectItem value="3 (Multi Lens)">3 (Multi Lens)</SelectItem>
+                              <SelectItem value="4 (360° View)">4 (360° View)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="streaming_resolution"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Streaming Resolution (MP)
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Resolution" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="2 MP (1080p)">2 MP (1080p)</SelectItem>
+                              <SelectItem value="4 MP (1440p)">4 MP (1440p)</SelectItem>
+                              <SelectItem value="8 MP (4K)">8 MP (4K)</SelectItem>
+                              <SelectItem value="12 MP (5K)">12 MP (5K)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="frame_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Frame Rate (fps)
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Frame Rate" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="10 fps">10 fps</SelectItem>
+                              <SelectItem value="15 fps">15 fps</SelectItem>
+                              <SelectItem value="20 fps">20 fps</SelectItem>
+                              <SelectItem value="30 fps">30 fps</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="recording_resolution"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Recording Resolution (MP)
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Resolution" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="2 MP (1080p)">2 MP (1080p)</SelectItem>
+                              <SelectItem value="4 MP (1440p)">4 MP (1440p)</SelectItem>
+                              <SelectItem value="8 MP (4K)">8 MP (4K)</SelectItem>
+                              <SelectItem value="12 MP (5K)">12 MP (5K)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="storage_days"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-neutral-700">
+                            Storage Days
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Storage Duration" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="7 days">7 days</SelectItem>
+                              <SelectItem value="14 days">14 days</SelectItem>
+                              <SelectItem value="30 days">30 days</SelectItem>
+                              <SelectItem value="60 days">60 days</SelectItem>
+                              <SelectItem value="90 days">90 days</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
           {/* Right Column - Marker Visualization */}
           <div>
             <h3 className="font-medium mb-4">Marker Visualization</h3>
