@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
 import { useProject } from "@/contexts/ProjectContext";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 
