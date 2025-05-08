@@ -63,9 +63,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Create schema for new site walk form
+// Create schema for new opportunity form
 const projectSchema = z.object({
-  name: z.string().min(1, "Site walk name is required"),
+  name: z.string().min(1, "Project name is required"),
   client: z.string().optional(),
   site_address: z.string().optional(),
   se_name: z.string().optional(),
@@ -73,7 +73,7 @@ const projectSchema = z.object({
   building_count: z.number().optional(),
 });
 
-type SiteWalkFormValues = z.infer<typeof projectSchema>;
+type OpportunityFormValues = z.infer<typeof projectSchema>;
 
 export default function Projects() {
   const [, setLocation] = useLocation();
@@ -91,7 +91,7 @@ export default function Projects() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [showNewSiteWalkModal, setShowNewSiteWalkModal] = useState(false);
+  const [showNewOpportunityModal, setShowNewOpportunityModal] = useState(false);
   const [activeTab, setActiveTab] = useState("mine");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedSeFilter, setSelectedSeFilter] = useState<string>("");
@@ -144,7 +144,7 @@ export default function Projects() {
   // Listen for custom event to open create project dialog
   useEffect(() => {
     const handleCreateProject = () => {
-      setShowNewSiteWalkModal(true);
+      setShowNewOpportunityModal(true);
     };
     
     document.addEventListener("create-project", handleCreateProject);
@@ -155,7 +155,7 @@ export default function Projects() {
   }, []);
 
   // Initialize form with default values
-  const form = useForm<SiteWalkFormValues>({
+  const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       name: "",
@@ -167,14 +167,14 @@ export default function Projects() {
     },
   });
 
-  // Handle creating a new site walk
-  const onSubmit = async (values: SiteWalkFormValues) => {
+  // Handle creating a new opportunity
+  const onSubmit = async (values: OpportunityFormValues) => {
     try {
       const response = await apiRequest("POST", "/api/projects", values);
       const newSiteWalk = await response.json();
       
       // Close modal
-      setShowNewSiteWalkModal(false);
+      setShowNewOpportunityModal(false);
       
       // Reset form
       form.reset();
@@ -356,7 +356,7 @@ export default function Projects() {
         <h2 className="text-2xl font-bold">Opportunities</h2>
         <Button
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
-          onClick={() => setShowNewSiteWalkModal(true)}
+          onClick={() => setShowNewOpportunityModal(true)}
         >
           <Plus className="h-4 w-4 mr-1" />
           New
