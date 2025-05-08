@@ -651,9 +651,103 @@ export default function UnifiedCameraConfigForm({
             </div>
           </div>
           
-          {/* Right Column - Marker Visualization */}
+          {/* Right Column - Camera Image and Marker Visualization */}
           <div>
-            <h3 className="font-medium mb-4">Marker Visualization</h3>
+            <h3 className="font-medium mb-4">Camera View & Visualization</h3>
+            
+            {/* Camera Image Section */}
+            {showImageUpload && (
+              <div className="mb-6 border p-4 rounded-md bg-slate-50">
+                <FormLabel className="text-sm font-medium text-neutral-700">
+                  Camera Image
+                </FormLabel>
+                <FormDescription>
+                  Take a picture or upload an image of the camera location
+                </FormDescription>
+                
+                {isTakingPicture ? (
+                  <div className="space-y-4 mt-3">
+                    <div className="relative border rounded-lg overflow-hidden">
+                      <video 
+                        ref={videoRef} 
+                        autoPlay 
+                        playsInline
+                        className="w-full h-auto"
+                        onLoadedMetadata={() => videoRef.current?.play()}
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={cancelCamera}
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={takePicture}
+                      >
+                        <Camera className="mr-2 h-4 w-4" />
+                        Take Photo
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4 mt-3">
+                    {image ? (
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="border p-1 rounded-md">
+                          <img
+                            src={image}
+                            alt="Camera view"
+                            className="max-w-full h-auto rounded max-h-[200px]"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeImage}
+                        >
+                          Remove Image
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={startCamera}
+                        >
+                          <Camera className="mr-2 h-4 w-4" />
+                          Take Photo
+                        </Button>
+                        <div className="relative">
+                          <Button
+                            type="button"
+                            variant="outline"
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Image
+                          </Button>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleFileSelect}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Marker Visualization */}
+            <h4 className="font-medium mb-3">Marker Visualization</h4>
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between">
