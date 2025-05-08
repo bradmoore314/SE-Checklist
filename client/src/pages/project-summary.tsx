@@ -6,8 +6,7 @@ import {
   AccessPoint, 
   Camera, 
   Elevator, 
-  Intercom,
-  Image as EquipmentImage 
+  Intercom
 } from "@shared/schema";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +17,15 @@ import { SiteWalkAnalysis } from "@/components/ai/SiteWalkAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
 import ProjectExportMenu from "@/components/ProjectExportMenu";
 import ExportMenu from "@/components/ExportMenu";
+import SiteWalkComprehensiveExport from "@/components/SiteWalkComprehensiveExport";
+
+interface EquipmentImage {
+  id: number;
+  equipment_id: number;
+  equipment_type: string;
+  image_data: string;
+  created_at?: string;
+}
 
 interface EquipmentWithImages extends AccessPoint {
   images: EquipmentImage[];
@@ -170,6 +178,10 @@ export default function SiteWalkSummary() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Site Walk Summary</h1>
         <div className="flex gap-2">
+          <SiteWalkComprehensiveExport 
+            projectId={currentSiteWalk.id} 
+            projectName={summary.project.name} 
+          />
           <ProjectExportMenu projectId={currentSiteWalk.id} />
           <Button 
             variant="outline" 
