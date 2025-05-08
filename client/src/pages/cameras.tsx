@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { Project } from "@shared/schema";
 import { useLocation } from "wouter";
 import CamerasTab from "@/components/equipment/CamerasTab";
@@ -10,7 +10,7 @@ import { Link } from "wouter";
 import { AlertTriangle } from "lucide-react";
 
 export default function Cameras() {
-  const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
+  const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const [, setLocation] = useLocation();
   
   // Fetch site walks
