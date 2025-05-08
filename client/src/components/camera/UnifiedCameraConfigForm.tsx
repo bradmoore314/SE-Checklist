@@ -735,25 +735,23 @@ export default function UnifiedCameraConfigForm({
                       <div className="w-4 h-4 rounded-full bg-blue-500 z-10"></div>
                     </div>
                     <svg viewBox="-100 -100 200 200" width="200" height="200" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      {/* Camera FOV visualization */}
+                      {/* Camera FOV visualization - Match floorplan coordinate system */}
                       <path
-                        d={`M 0 0 L ${range * Math.cos((90 - fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 ${fov > 180 ? 1 : 0} 0 ${range * Math.cos((90 + fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 + fov / 2) * Math.PI / 180)} Z`}
+                        d={`M 0 0 L ${range * Math.cos((rotation - fov / 2) * Math.PI / 180)} ${range * Math.sin((rotation - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 ${fov > 180 ? 1 : 0} 1 ${range * Math.cos((rotation + fov / 2) * Math.PI / 180)} ${range * Math.sin((rotation + fov / 2) * Math.PI / 180)} Z`}
                         fill="rgba(59, 130, 246, 0.2)"
                         stroke="rgba(59, 130, 246, 0.7)"
                         strokeWidth="2"
-                        transform={`rotate(${rotation})`}
                       />
                       
                       {/* Line for direction indication */}
                       <line
                         x1="0"
                         y1="0"
-                        x2="0"
-                        y2={-range}
+                        x2={range * Math.cos(rotation * Math.PI / 180)}
+                        y2={range * Math.sin(rotation * Math.PI / 180)}
                         stroke="rgba(59, 130, 246, 0.7)"
                         strokeWidth="2"
                         strokeDasharray="4,4"
-                        transform={`rotate(${rotation})`}
                       />
                     </svg>
                   </div>
