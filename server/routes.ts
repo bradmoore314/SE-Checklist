@@ -621,19 +621,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create the camera first
       const camera = await storage.createCamera(result.data);
       
-      // If image data was provided, save it as well
+      // If image data was provided, compress and save it
       if (image_data) {
         try {
+          // Import the image compression utility
+          const { compressImage, createThumbnail } = require('./utils/image-utils');
+          
+          // Compress the image to save storage space
+          let compressedImageData = image_data;
+          let thumbnailData = '';
+          
+          if (image_data && image_data.startsWith('data:image')) {
+            try {
+              // Compress the main image (80% quality, max 1920px wide)
+              compressedImageData = await compressImage(image_data, 80, 1920);
+              
+              // Create a thumbnail for potential future use
+              thumbnailData = await createThumbnail(image_data, 300);
+              
+              console.log('Camera image compressed successfully');
+            } catch (compressionError) {
+              console.error('Image compression failed, using original image:', compressionError);
+              // Continue with the original image if compression fails
+            }
+          }
+          
           const imageInsert: InsertImage = {
             equipment_type: 'camera',
             equipment_id: camera.id,
             project_id: projectId,
-            image_data: image_data,
-            filename: `camera_${camera.id}_image.jpg`
+            image_data: compressedImageData,
+            filename: `camera_${camera.id}_image.jpg`,
+            thumbnail_data: thumbnailData || null,
+            storage_type: 'database'
           };
           
           await storage.saveImage(imageInsert);
-          console.log(`Saved image for camera ID: ${camera.id}`);
+          console.log(`Saved compressed image for camera ID: ${camera.id}`);
         } catch (imageError) {
           console.error('Failed to save camera image:', imageError);
           // Continue even if image saving fails
@@ -712,19 +736,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create the camera first
       const camera = await storage.createCamera(result.data);
       
-      // If image data was provided, save it as well
+      // If image data was provided, compress and save it
       if (image_data) {
         try {
+          // Import the image compression utility
+          const { compressImage, createThumbnail } = require('./utils/image-utils');
+          
+          // Compress the image to save storage space
+          let compressedImageData = image_data;
+          let thumbnailData = '';
+          
+          if (image_data && image_data.startsWith('data:image')) {
+            try {
+              // Compress the main image (80% quality, max 1920px wide)
+              compressedImageData = await compressImage(image_data, 80, 1920);
+              
+              // Create a thumbnail for potential future use
+              thumbnailData = await createThumbnail(image_data, 300);
+              
+              console.log('Camera image compressed successfully');
+            } catch (compressionError) {
+              console.error('Image compression failed, using original image:', compressionError);
+              // Continue with the original image if compression fails
+            }
+          }
+          
           const imageInsert: InsertImage = {
             equipment_type: 'camera',
             equipment_id: camera.id,
             project_id: result.data.project_id,
-            image_data: image_data,
-            filename: `camera_${camera.id}_image.jpg`
+            image_data: compressedImageData,
+            filename: `camera_${camera.id}_image.jpg`,
+            thumbnail_data: thumbnailData || null,
+            storage_type: 'database'
           };
           
           await storage.saveImage(imageInsert);
-          console.log(`Saved image for camera ID: ${camera.id}`);
+          console.log(`Saved compressed image for camera ID: ${camera.id}`);
         } catch (imageError) {
           console.error('Failed to save camera image:', imageError);
           // Continue even if image saving fails
@@ -1818,18 +1866,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!project) {
         return res.status(404).json({ message: "Project not found" });
       }
+
+      // Import the image compression utility
+      const { compressImage, createThumbnail } = require('./utils/image-utils');
+      
+      // Compress the image to save storage space
+      let compressedImageData = result.data.image_data;
+      let thumbnailData = '';
+      
+      if (result.data.image_data && result.data.image_data.startsWith('data:image')) {
+        try {
+          // Compress the main image (80% quality, max 1920px wide)
+          compressedImageData = await compressImage(result.data.image_data, 80, 1920);
+          
+          // Create a thumbnail for potential future use
+          thumbnailData = await createThumbnail(result.data.image_data, 300);
+          
+          console.log('Image compressed successfully');
+        } catch (compressionError) {
+          console.error('Image compression failed, using original image:', compressionError);
+          // Continue with the original image if compression fails
+        }
+      }
       
       // Check if Azure integration is enabled
       const { isAzureConfigured, uploadImageToAzure } = require('./azure-storage');
       
-      let imageData = result.data;
+      let imageData = {
+        ...result.data,
+        image_data: compressedImageData,
+        thumbnail_data: thumbnailData || null
+      };
       
       // If Azure is configured and we have image data, try to upload to Azure first
-      if (isAzureConfigured && result.data.image_data) {
+      if (isAzureConfigured && compressedImageData) {
         try {
           console.log("Attempting to upload image to Azure Blob Storage");
           const azureResult = await uploadImageToAzure(
-            result.data.image_data,
+            compressedImageData,
             result.data.equipment_type,
             result.data.equipment_id,
             result.data.project_id,
@@ -1839,7 +1913,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (azureResult) {
             // Azure upload succeeded, update the image data for storage
             imageData = {
-              ...result.data,
+              ...imageData,
               blob_url: azureResult.url,
               blob_name: azureResult.blobName,
               storage_type: 'azure'
@@ -1847,7 +1921,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // If Azure is storing the image, we can save space in the DB by removing the base64 data
             if (process.env.AZURE_OPTIMIZE_STORAGE === 'true') {
-              // Only store a thumbnail or remove image_data completely
+              // Only store the thumbnail in the database
               imageData.image_data = null;
             }
             
@@ -1857,14 +1931,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to upload to Azure, falling back to database storage:", azureError);
           // Continue with database storage as fallback
           imageData = {
-            ...result.data,
+            ...imageData,
             storage_type: 'database'
           };
         }
       } else {
         // Azure not configured, use database storage
         imageData = {
-          ...result.data,
+          ...imageData,
           storage_type: 'database'
         };
       }
