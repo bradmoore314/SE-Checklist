@@ -633,9 +633,14 @@ export const images = pgTable("images", {
   equipment_type: text("equipment_type").notNull(),
   equipment_id: integer("equipment_id").notNull(),
   project_id: integer("project_id").notNull(),
-  image_data: text("image_data").notNull(),
+  image_data: text("image_data"), // Now optional when using Azure storage
   filename: text("filename"),
   created_at: timestamp("created_at").defaultNow(),
+  // Azure Blob Storage fields
+  blob_url: text("blob_url"),
+  blob_name: text("blob_name"),
+  // Track storage type to support hybrid storage approach
+  storage_type: text("storage_type").default("database").notNull(),
 });
 
 export type Image = typeof images.$inferSelect;
