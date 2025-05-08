@@ -326,7 +326,7 @@ export default function UnifiedCameraConfigForm({
                   name="resolution"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Resolution</FormLabel>
+                      <FormLabel>Streaming Resolution</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
