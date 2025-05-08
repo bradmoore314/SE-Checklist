@@ -178,6 +178,10 @@ export const EnhancedFloorplanViewer = ({
   const [isElevatorModalOpen, setIsElevatorModalOpen] = useState<boolean>(false);
   const [isCameraConfigOpen, setCameraConfigOpen] = useState<boolean>(false);
   const [layerOpacity, setLayerOpacity] = useState<number>(0.5);
+  
+  // State for zoom percentage indicator
+  const [showZoomIndicator, setShowZoomIndicator] = useState<boolean>(false);
+  const [zoomIndicatorTimeout, setZoomIndicatorTimeout] = useState<NodeJS.Timeout | null>(null);
   const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [areLabelsVisible, setAreLabelsVisible] = useState<boolean>(true);
@@ -1517,6 +1521,21 @@ export const EnhancedFloorplanViewer = ({
     setScale(newScale);
     setTranslateX(newTranslateX);
     setTranslateY(newTranslateY);
+    
+    // Show zoom indicator with percentage
+    setShowZoomIndicator(true);
+    
+    // Clear any existing timeout
+    if (zoomIndicatorTimeout) {
+      clearTimeout(zoomIndicatorTimeout);
+    }
+    
+    // Set a new timeout to hide the indicator after 1.5 seconds
+    const timeout = setTimeout(() => {
+      setShowZoomIndicator(false);
+    }, 1500);
+    
+    setZoomIndicatorTimeout(timeout);
   };
 
   // Main component render
@@ -2041,6 +2060,13 @@ export const EnhancedFloorplanViewer = ({
       </div>
       
       {/* We removed the zoom buttons and test panel as they were causing issues */}
+      
+      {/* Zoom Percentage Indicator */}
+      {showZoomIndicator && (
+        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1.5 rounded-md font-semibold shadow-lg transition-opacity duration-150 fade-in">
+          {scale < 10 ? Math.round(scale * 100) : Math.round(scale * 10) * 10}%
+        </div>
+      )}
       
       {/* Page Controls */}
       {floorplan.page_count > 1 && (
