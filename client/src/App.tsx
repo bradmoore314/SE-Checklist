@@ -11,7 +11,7 @@ import CardAccess from "@/pages/card-access";
 import Cameras from "@/pages/cameras";
 import Elevators from "@/pages/elevators";
 import Intercoms from "@/pages/intercoms";
-import SiteWalkSummary from "@/pages/project-summary";
+import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import DebugLoginPage from "@/pages/debug-login-page";
@@ -46,7 +46,7 @@ function Router() {
       <Route path="/debug-login" component={DebugLoginPage} />
       <Route path="/debug-floorplan" component={DebugFloorplanTest} />
       
-      {/* Protected routes - Redirect root to My Site Walks page */}
+      {/* Protected routes - Redirect root to Opportunities page */}
       <ProtectedRoute path="/" component={Projects} />
       <ProtectedRoute path="/projects" component={Projects} />
       <ProtectedRoute path="/projects/:projectId/dashboard" component={Dashboard} />
@@ -63,7 +63,7 @@ function Router() {
       {/* Report routes */}
       <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
       <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
-      <ProtectedRoute path="/project-summary" component={SiteWalkSummary} />
+      <ProtectedRoute path="/project-summary" component={Summary} />
       
       {/* Floorplans */}
       <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
