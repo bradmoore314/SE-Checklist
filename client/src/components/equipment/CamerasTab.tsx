@@ -108,8 +108,171 @@ export default function CamerasTab({ project }: CamerasTabProps) {
     });
   };
 
+  // Calculate statistics for cameras
+  const calculateStats = () => {
+    if (!cameras.length) return {
+      total: 0,
+      cameraTypes: {},
+      mountingTypes: {},
+      resolutions: {},
+      fieldOfViews: {},
+      indoor: 0,
+      outdoor: 0,
+      importToGateway: 0
+    };
+    
+    const stats = {
+      total: cameras.length,
+      cameraTypes: {} as Record<string, number>,
+      mountingTypes: {} as Record<string, number>,
+      resolutions: {} as Record<string, number>,
+      fieldOfViews: {} as Record<string, number>,
+      indoor: 0,
+      outdoor: 0,
+      importToGateway: 0
+    };
+    
+    cameras.forEach((cam: Camera) => {
+      // Camera Types
+      if (cam.camera_type) {
+        stats.cameraTypes[cam.camera_type] = (stats.cameraTypes[cam.camera_type] || 0) + 1;
+      }
+      
+      // Mounting Types
+      if (cam.mounting_type) {
+        stats.mountingTypes[cam.mounting_type] = (stats.mountingTypes[cam.mounting_type] || 0) + 1;
+      }
+      
+      // Resolutions
+      if (cam.resolution) {
+        stats.resolutions[cam.resolution] = (stats.resolutions[cam.resolution] || 0) + 1;
+      }
+      
+      // Field of Views
+      if (cam.field_of_view) {
+        stats.fieldOfViews[cam.field_of_view] = (stats.fieldOfViews[cam.field_of_view] || 0) + 1;
+      }
+      
+      // Indoor/Outdoor counts
+      if (cam.is_indoor === true) stats.indoor++;
+      else if (cam.is_indoor === false) stats.outdoor++;
+      
+      // Import to Gateway count
+      if (cam.import_to_gateway === true) stats.importToGateway++;
+    });
+    
+    return stats;
+  };
+  
+  const stats = calculateStats();
+
   return (
     <Card className="shadow-sm border-gray-100">
+      {/* Statistics Dashboard */}
+      <div className="p-5 border-b border-gray-100">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Project Cameras Summary</h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+          {/* Total Count */}
+          <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+            <div className="text-sm text-blue-600 font-medium">Total Cameras</div>
+            <div className="text-2xl font-bold text-blue-700">{stats.total}</div>
+          </div>
+          
+          {/* Indoor vs Outdoor */}
+          <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+            <div className="text-sm text-green-600 font-medium">Indoor Cameras</div>
+            <div className="text-2xl font-bold text-green-700">{stats.indoor}</div>
+          </div>
+          
+          <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+            <div className="text-sm text-purple-600 font-medium">Outdoor Cameras</div>
+            <div className="text-2xl font-bold text-purple-700">{stats.outdoor}</div>
+          </div>
+          
+          {/* Unassigned Indoor/Outdoor */}
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <div className="text-sm text-gray-600 font-medium">Unspecified Location</div>
+            <div className="text-2xl font-bold text-gray-700">
+              {stats.total - stats.indoor - stats.outdoor}
+            </div>
+          </div>
+          
+          {/* Gateway Import */}
+          <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
+            <div className="text-sm text-amber-600 font-medium">Import to Gateway</div>
+            <div className="text-2xl font-bold text-amber-700">{stats.importToGateway}</div>
+          </div>
+        </div>
+        
+        {/* Detailed Breakdowns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Camera Types */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Camera Types</h4>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {Object.entries(stats.cameraTypes).map(([type, count]) => (
+                <div key={`camera-type-${type}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{type}</span>
+                  <span className="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.cameraTypes).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Mounting Types */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Mounting Types</h4>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {Object.entries(stats.mountingTypes).map(([type, count]) => (
+                <div key={`mounting-type-${type}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{type}</span>
+                  <span className="text-sm font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.mountingTypes).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Resolutions */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Resolutions</h4>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {Object.entries(stats.resolutions).map(([resolution, count]) => (
+                <div key={`resolution-${resolution}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{resolution}</span>
+                  <span className="text-sm font-medium bg-purple-100 text-purple-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.resolutions).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Field of Views */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Field of Views</h4>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {Object.entries(stats.fieldOfViews).map(([fov, count]) => (
+                <div key={`fov-${fov}`} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">{fov}</span>
+                  <span className="text-sm font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.fieldOfViews).length === 0 && (
+                <div className="text-sm text-gray-500 italic">No data available</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <CardHeader className="flex flex-row items-center justify-between p-5 bg-white border-b border-gray-100">
         <div>
           <CardTitle className="text-xl font-medium text-gray-800">Cameras</CardTitle>
