@@ -500,28 +500,34 @@ export default function CamerasTab({ project }: CamerasTabProps) {
 
       </CardContent>
       
-      {/* Add Camera Modal */}
+      {/* Add Camera Modal - Using Combined Form */}
       {showAddModal && (
-        <AddCameraModal 
-          isOpen={showAddModal} 
-          projectId={project.id} 
-          onSave={handleSave} 
-          onClose={() => setShowAddModal(false)} 
+        <CombinedCameraConfigForm
+          open={showAddModal}
+          onOpenChange={(open) => {
+            if (!open) setShowAddModal(false);
+          }}
+          projectId={project.id}
+          isNew={true}
+          onSave={handleSave}
+          title="Add New Camera"
         />
       )}
       
-      {/* Edit Camera Modal */}
+      {/* Edit Camera Modal - Using Combined Form */}
       {showEditModal && selectedCamera && (
         <CombinedCameraConfigForm
-          isOpen={showEditModal}
+          open={showEditModal}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowEditModal(false);
+              setSelectedCamera(null);
+            }
+          }}
           cameraData={selectedCamera}
           floorplanId={null}
           markerId={null}
           projectId={project.id}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedCamera(null);
-          }}
           onSave={(updatedData) => {
             handleEditSave(selectedCamera.id, updatedData);
           }}

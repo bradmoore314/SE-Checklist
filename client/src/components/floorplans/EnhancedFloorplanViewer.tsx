@@ -2426,8 +2426,11 @@ export const EnhancedFloorplanViewer = ({
           onOpenChange={setCameraConfigOpen}
           projectId={floorplan.project_id}
           marker={selectedMarker || tempMarker}
+          floorplanId={floorplan.id}
+          markerId={selectedMarker?.id || null}
           isNew={!selectedMarker && !!tempMarker}
           cameraData={editingCameraData}
+          title={selectedMarker ? `Edit Camera - ${selectedMarker.label || 'Unknown'}` : 'Add New Camera'}
           onUpdate={(updatedData) => {
             console.log("Camera config updated:", updatedData);
             
