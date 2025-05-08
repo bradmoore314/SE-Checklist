@@ -8,7 +8,7 @@ import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit, Copy } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -194,6 +194,48 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       title: "Access Point Updated",
       description: "The access point has been updated successfully.",
     });
+  };
+  
+  // Handle duplicating an access point
+  const handleDuplicate = async (ap: AccessPoint) => {
+    try {
+      // Create a duplicate with "(Copy)" added to the location name
+      const duplicateData = {
+        ...ap,
+        location: `${ap.location} (Copy)`,
+        id: undefined // Remove the ID so a new one is generated
+      };
+      
+      const response = await apiRequest(
+        "POST", 
+        "/api/access-points", 
+        {
+          ...duplicateData,
+          project_id: project.id
+        }
+      );
+      
+      const result = await response.json();
+      
+      // Invalidate and refetch access points and project summary
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/projects/${project.id}/access-points`]
+      });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/projects/${project.id}/reports/project-summary`]
+      });
+      
+      toast({
+        title: "Access Point Duplicated",
+        description: "The access point has been duplicated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Duplication Failed",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    }
   };
 
   // Calculate statistics
@@ -657,19 +699,19 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
         <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
           <table className="w-full text-sm text-left">
             <thead>
-              <tr className="bg-gray-100">
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCATION</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">READER TYPE</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCK TYPE</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">MONITORING</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">TAKEOVER</th>
+              <tr className="bg-primary">
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCATION</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">READER TYPE</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK TYPE</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">MONITORING</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">TAKEOVER</th>
                 {visibleColumns.lockProvider && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCK PROVIDER</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK PROVIDER</th>
                 )}
                 {visibleColumns.interiorPerimeter && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">INTERIOR/PERIMETER</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">INTERIOR/PERIMETER</th>
                 )}
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">ACTIONS</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -826,6 +868,15 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                         title="Image Gallery"
                       >
                         <ImageIcon size={14} />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleDuplicate(ap)}
+                        className="p-0 h-7 w-7 text-yellow-600"
+                        title="Duplicate Access Point"
+                      >
+                        <Copy size={14} />
                       </Button>
                     </div>
                   </td>
