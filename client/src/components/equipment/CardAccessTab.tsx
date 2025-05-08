@@ -781,6 +781,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             </DialogHeader>
             
             <ImageGallery
+              projectId={project.id}
               equipmentId={selectedAccessPoint.id}
               equipmentType="access_point"
             />
