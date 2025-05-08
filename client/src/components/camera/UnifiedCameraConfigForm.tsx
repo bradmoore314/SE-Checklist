@@ -38,7 +38,6 @@ export const cameraConfigSchema = z.object({
   camera_type: z.string().min(1, "Camera type is required"),
   mounting_type: z.string().optional(),
   resolution: z.string().optional(),
-  field_of_view: z.string().optional(),
   notes: z.string().optional(),
   is_indoor: z.enum(["indoor", "outdoor"]).default("indoor"),
   import_to_gateway: z.boolean().default(true),
@@ -106,7 +105,6 @@ export default function UnifiedCameraConfigForm({
       camera_type: initialData?.camera_type || "",
       mounting_type: initialData?.mounting_type || "",
       resolution: initialData?.resolution || "",
-      field_of_view: initialData?.field_of_view || "",
       notes: initialData?.notes || "",
       is_indoor: typeof initialData?.is_indoor === 'string' ? initialData.is_indoor as "indoor" | "outdoor" : "indoor",
       import_to_gateway: initialData?.import_to_gateway ?? true,
@@ -322,7 +320,7 @@ export default function UnifiedCameraConfigForm({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div>
                 <FormField
                   control={form.control}
                   name="resolution"
@@ -350,20 +348,6 @@ export default function UnifiedCameraConfigForm({
                           )}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="field_of_view"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Field of View</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 120° Wide Angle" autoComplete="off" {...field} />
-                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -615,7 +599,7 @@ export default function UnifiedCameraConfigForm({
                         <Button
                           type="button"
                           variant="outline"
-                          size="icon-sm"
+                          size="sm"
                           onClick={removeImage}
                           title="Remove Image"
                           aria-label="Remove Image"
