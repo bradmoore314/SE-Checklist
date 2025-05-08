@@ -26,9 +26,13 @@ export default function Sidebar({ collapsed }: SidebarProps) {
     <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar bg-white border-r`}>
       {/* App Logo */}
       <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
-        <svg className="w-8 h-8" style={{ color: 'var(--red-accent)' }} fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L14 11.586V6z" clipRule="evenodd"></path>
-        </svg>
+        <div className="w-8 h-8 flex items-center justify-center overflow-hidden">
+          <img 
+            src="/src/assets/castle-logo.png" 
+            alt="Castle Logo" 
+            className="w-full h-full object-contain"
+          />
+        </div>
         {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">Checklist Wizard</span>}
       </div>
       
