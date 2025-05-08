@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ImageUploadSection from "@/components/ImageUploadSection";
 
 // Create a custom FormItem with the form-item class for highlighting
 const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
@@ -86,6 +87,8 @@ export default function AddAccessPointModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const { toast } = useToast();
+  const [newAccessPointId, setNewAccessPointId] = useState<number | null>(null);
+  const [uploadStep, setUploadStep] = useState<'create' | 'upload'>('create');
 
   // Toggle the visibility of advanced fields
   const toggleAdvancedFields = () => {
@@ -122,7 +125,7 @@ export default function AddAccessPointModal({
       notes: "",
     },
   });
-
+  
   const onSubmit = async (values: AccessPointFormValues) => {
     setIsSubmitting(true);
     
@@ -166,6 +169,13 @@ export default function AddAccessPointModal({
         description: "Access point created successfully",
       });
       
+      // Store the new access point ID for image upload
+      setNewAccessPointId(accessPoint.id);
+      
+      // Switch to the upload step
+      setUploadStep('upload');
+      
+      // Call onSave to update the parent component
       onSave(accessPoint);
     } catch (error) {
       console.error("Error saving access point:", error);
@@ -184,446 +194,471 @@ export default function AddAccessPointModal({
     <Dialog open={open || isOpen} onOpenChange={(open) => !open && (onClose || onCancel)()}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Add New Access Point</DialogTitle>
+          <DialogTitle>
+            {uploadStep === 'create' 
+              ? 'Add New Access Point' 
+              : 'Upload Images for Access Point'
+            }
+          </DialogTitle>
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Hidden quick_config field - required legacy field */}
-            <input type="hidden" {...form.register("quick_config")} />
-            
-            {/* Location */}
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter location" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Reader Type */}
-            <FormField
-              control={form.control}
-              name="reader_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reader Type *</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select reader type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.readerTypes?.map((type: string) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Lock Type */}
-            <FormField
-              control={form.control}
-              name="lock_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lock Type *</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select lock type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.lockTypes?.map((type: string) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Monitoring Type */}
-            <FormField
-              control={form.control}
-              name="monitoring_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Monitoring Type *</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select monitoring type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.monitoringTypes?.map((type: string) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Lock Provider */}
-            <FormField
-              control={form.control}
-              name="lock_provider"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lock Provider</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select lock provider" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.lockProviderOptions?.map((option: string) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Takeover */}
-            <FormField
-              control={form.control}
-              name="takeover"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Takeover?</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || "No"}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select takeover option" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.takeoverOptions?.map((option: string) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Interior/Perimeter */}
-            <FormField
-              control={form.control}
-              name="interior_perimeter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Interior/Perimeter</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || "Interior"}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select interior/perimeter" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {lookupData?.interiorPerimeterOptions?.map((option: string) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Button to toggle advanced fields */}
-            <div className="flex justify-end">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={toggleAdvancedFields}
-                size="sm"
-                className="mb-2"
-              >
-                {showAdvancedFields ? "Hide Advanced Fields" : "Show Advanced Fields"}
-              </Button>
-            </div>
+              {/* Hidden quick_config field - required legacy field */}
+              <input type="hidden" {...form.register("quick_config")} />
+              
+              {uploadStep === 'create' ? (
+                <>
+                  {/* Location */}
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter location" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Reader Type */}
+                  <FormField
+                    control={form.control}
+                    name="reader_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reader Type *</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select reader type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.readerTypes?.map((type: string) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Lock Type */}
+                  <FormField
+                    control={form.control}
+                    name="lock_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lock Type *</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select lock type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.lockTypes?.map((type: string) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Monitoring Type */}
+                  <FormField
+                    control={form.control}
+                    name="monitoring_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Monitoring Type *</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select monitoring type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.monitoringTypes?.map((type: string) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Lock Provider */}
+                  <FormField
+                    control={form.control}
+                    name="lock_provider"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lock Provider</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select lock provider" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.lockProviderOptions?.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Takeover */}
+                  <FormField
+                    control={form.control}
+                    name="takeover"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Takeover?</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || "No"}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select takeover option" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.takeoverOptions?.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Interior/Perimeter */}
+                  <FormField
+                    control={form.control}
+                    name="interior_perimeter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Interior/Perimeter</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || "Interior"}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select interior/perimeter" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lookupData?.interiorPerimeterOptions?.map((option: string) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Button to toggle advanced fields */}
+                  <div className="flex justify-end">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={toggleAdvancedFields}
+                      size="sm"
+                      className="mb-2"
+                    >
+                      {showAdvancedFields ? "Hide Advanced Fields" : "Show Advanced Fields"}
+                    </Button>
+                  </div>
 
-            {/* Advanced fields section - hidden by default */}
-            {showAdvancedFields && (
-              <div className="space-y-4 border rounded-md p-4 border-neutral-200 bg-neutral-50">
-                <h3 className="text-sm font-medium">Advanced Configuration</h3>
-                
-                {/* Existing Panel Fields */}
-                <div>
-                  <h4 className="text-xs font-medium mb-2 text-neutral-600">Existing Panel Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="exst_panel_location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Existing Panel Location</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter location" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="exst_panel_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Existing Panel Type</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter type" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="exst_reader_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Existing Reader Type</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter type" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                
-                {/* New Panel Fields */}
-                <div>
-                  <h4 className="text-xs font-medium mb-2 text-neutral-600">New Panel Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="new_panel_location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">New Panel Location</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter location" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="new_panel_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">New Panel Type</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter type" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="new_reader_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">New Reader Type</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter type" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                
-                {/* Additional Fields */}
-                <div>
-                  <h4 className="text-xs font-medium mb-2 text-neutral-600">Additional Options</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="noisy_prop"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Noisy Prop?</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value || "No"}
-                          >
+                  {/* Advanced fields section - hidden by default */}
+                  {showAdvancedFields && (
+                    <div className="space-y-4 border rounded-md p-4 border-neutral-200 bg-neutral-50">
+                      <h3 className="text-sm font-medium">Advanced Configuration</h3>
+                      
+                      {/* Existing Panel Fields */}
+                      <div>
+                        <h4 className="text-xs font-medium mb-2 text-neutral-600">Existing Panel Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="exst_panel_location"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Existing Panel Location</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter location" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="exst_panel_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Existing Panel Type</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter type" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="exst_reader_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Existing Reader Type</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter type" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* New Panel Fields */}
+                      <div>
+                        <h4 className="text-xs font-medium mb-2 text-neutral-600">New Panel Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="new_panel_location"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">New Panel Location</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter location" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="new_panel_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">New Panel Type</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter type" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="new_reader_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">New Reader Type</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter type" {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Additional Properties Fields */}
+                      <div>
+                        <h4 className="text-xs font-medium mb-2 text-neutral-600">Additional Properties</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {/* Noisy Prop */}
+                          <FormField
+                            control={form.control}
+                            name="noisy_prop"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Noisy Prop?</FormLabel>
+                                <Select 
+                                  onValueChange={field.onChange} 
+                                  defaultValue={field.value || "No"}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {lookupData?.noisyPropOptions?.map((option: string) => (
+                                      <SelectItem key={option} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          {/* Crashbars */}
+                          <FormField
+                            control={form.control}
+                            name="crashbars"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Crashbars?</FormLabel>
+                                <Select 
+                                  onValueChange={field.onChange} 
+                                  defaultValue={field.value || "No"}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {lookupData?.crashbarsOptions?.map((option: string) => (
+                                      <SelectItem key={option} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          {/* Real Lock Type */}
+                          <FormField
+                            control={form.control}
+                            name="real_lock_type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs">Real Lock Type</FormLabel>
+                                <Select 
+                                  onValueChange={field.onChange} 
+                                  defaultValue={field.value || "Mortise"}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select lock type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {lookupData?.realLockTypeOptions?.map((option: string) => (
+                                      <SelectItem key={option} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Notes Field */}
+                      <FormField
+                        control={form.control}
+                        name="notes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Notes</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select option" />
-                              </SelectTrigger>
+                              <Textarea placeholder="Enter any additional notes here" {...field} className="h-20" />
                             </FormControl>
-                            <SelectContent>
-                              {lookupData?.noisyPropOptions?.map((option: string) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Access Point Images</h3>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Your access point has been created. You can now add images.
+                  </p>
+                  {newAccessPointId && (
+                    <ImageUploadSection 
+                      projectId={projectId}
+                      equipmentId={newAccessPointId}
+                      equipmentType="access_point"
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="crashbars"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Crashbars?</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value || "No"}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select option" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {lookupData?.crashbarsOptions?.map((option: string) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="real_lock_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Actual Lock Type</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value || "Mortise"}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select lock type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {lookupData?.realLockTypeOptions?.map((option: string) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  )}
                 </div>
-              </div>
-            )}
-            
-            {/* Notes */}
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Additional notes about this access point..."
-                      className="min-h-[100px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
               )}
-            />
-            
-            <div className="flex justify-end gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose || onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Create Access Point"
+              
+              <div className="flex justify-end gap-2 mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose || onCancel}
+                  disabled={isSubmitting}
+                >
+                  {uploadStep === 'create' ? 'Cancel' : 'Close'}
+                </Button>
+                
+                {uploadStep === 'create' && (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Create Access Point"
+                    )}
+                  </Button>
                 )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </ScrollArea>
-    </DialogContent>
-  </Dialog>
+              </div>
+            </form>
+          </Form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 }
