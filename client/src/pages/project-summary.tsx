@@ -23,8 +23,26 @@ interface EquipmentImage {
   id: number;
   equipment_id: number;
   equipment_type: string;
-  image_data: string;
+  image_data?: string;
+  thumbnail_data?: string;
+  blob_url?: string;
+  blob_name?: string;
+  storage_type?: string;
   created_at?: string;
+}
+
+// Helper function to get image source based on available data
+const getImageSrc = (img: EquipmentImage): string => {
+  if (img.blob_url) {
+    return img.blob_url;
+  } else if (img.image_data) {
+    return `data:image/jpeg;base64,${img.image_data}`;
+  } else if (img.thumbnail_data) {
+    return `data:image/jpeg;base64,${img.thumbnail_data}`;
+  } else {
+    // Return a placeholder image if no image data available
+    return '/assets/placeholder-image.png';
+  }
 }
 
 interface EquipmentWithImages extends AccessPoint {
@@ -341,7 +359,7 @@ export default function Summary() {
                           {ap.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={`data:image/jpeg;base64,${img.image_data}`} 
+                                src={getImageSrc(img)} 
                                 alt={`Image for ${ap.location}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -411,7 +429,7 @@ export default function Summary() {
                           {camera.images.map((img) => (
                             <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
                               <img 
-                                src={`data:image/jpeg;base64,${img.image_data}`} 
+                                src={getImageSrc(img)} 
                                 alt={`Image for ${camera.location}`} 
                                 className="w-full h-full object-cover"
                               />
