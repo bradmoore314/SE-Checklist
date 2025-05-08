@@ -583,17 +583,21 @@ export default function UnifiedCameraConfigForm({
                       <Button
                         type="button"
                         variant="outline"
+                        size="icon"
                         onClick={cancelCamera}
+                        title="Cancel"
+                        aria-label="Cancel"
                       >
-                        <X className="mr-2 h-4 w-4" />
-                        Cancel
+                        <X className="h-5 w-5" />
                       </Button>
                       <Button
                         type="button"
+                        size="icon"
                         onClick={takePicture}
+                        title="Take Photo"
+                        aria-label="Take Photo"
                       >
-                        <Camera className="mr-2 h-4 w-4" />
-                        Take Photo
+                        <Camera className="h-5 w-5" />
                       </Button>
                     </div>
                   </div>
@@ -611,10 +615,13 @@ export default function UnifiedCameraConfigForm({
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
+                          size="icon-sm"
                           onClick={removeImage}
+                          title="Remove Image"
+                          aria-label="Remove Image"
+                          className="h-8 w-8"
                         >
-                          Remove Image
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     ) : (
@@ -622,18 +629,22 @@ export default function UnifiedCameraConfigForm({
                         <Button
                           type="button"
                           variant="outline"
+                          size="icon"
                           onClick={startCamera}
+                          title="Take Photo"
+                          aria-label="Take Photo"
                         >
-                          <Camera className="mr-2 h-4 w-4" />
-                          Take Photo
+                          <Camera className="h-5 w-5" />
                         </Button>
                         <div className="relative">
                           <Button
                             type="button"
                             variant="outline"
+                            size="icon"
+                            title="Upload Image"
+                            aria-label="Upload Image"
                           >
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Image
+                            <Upload className="h-5 w-5" />
                           </Button>
                           <input
                             type="file"
