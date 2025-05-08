@@ -21,7 +21,7 @@ import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
 import { LayerManager } from './LayerManager';
 import EquipmentFormDialog from './EquipmentFormDialog';
-import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/lib/coordinate-utils';
+import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/utils/coordinates';
 import CameraMarker from './markers/CameraMarker';
 import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
 import CombinedCameraConfigForm from './CombinedCameraConfigForm';

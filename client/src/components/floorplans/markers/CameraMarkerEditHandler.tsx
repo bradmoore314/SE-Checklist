@@ -2,6 +2,7 @@ import React from 'react';
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { Point } from '@/utils/coordinates';
 
 interface CameraMarkerEditHandlerProps {
   markerData: {
