@@ -72,14 +72,21 @@ function ImageUploadSection({
       
       console.log('Formatted images with cache busting:', formattedImages);
       
-      // Always update the state with the latest images
-      setImages(formattedImages);
-    } else if (existingImages.length === 0) {
-      // Clear images when the backend has none
+      // Check if the images array has actually changed before updating state
+      const haveImagesChanged = 
+        images.length !== formattedImages.length || 
+        !images.every((img, i) => img.id === formattedImages[i].id);
+      
+      // Only update the state if the images have changed
+      if (haveImagesChanged) {
+        setImages(formattedImages);
+      }
+    } else if (existingImages.length === 0 && images.length > 0) {
+      // Only clear images when the backend has none and our state has some
       console.log('Clearing images from state - no existing images found');
       setImages([]);
     }
-  }, [existingImages, refreshTimestamp]);
+  }, [existingImages, refreshTimestamp, images]);
 
   // Image upload mutation
   const uploadImageMutation = useMutation({
