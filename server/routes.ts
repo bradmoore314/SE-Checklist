@@ -1819,8 +1819,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
       
-      // Save the image
-      const image = await storage.saveImage(result.data);
+      // Check if Azure integration is enabled
+      const { isAzureConfigured, uploadImageToAzure } = require('./azure-storage');
+      
+      let imageData = result.data;
+      
+      // If Azure is configured and we have image data, try to upload to Azure first
+      if (isAzureConfigured && result.data.image_data) {
+        try {
+          console.log("Attempting to upload image to Azure Blob Storage");
+          const azureResult = await uploadImageToAzure(
+            result.data.image_data,
+            result.data.equipment_type,
+            result.data.equipment_id,
+            result.data.project_id,
+            result.data.filename || null
+          );
+          
+          if (azureResult) {
+            // Azure upload succeeded, update the image data for storage
+            imageData = {
+              ...result.data,
+              blob_url: azureResult.url,
+              blob_name: azureResult.blobName,
+              storage_type: 'azure'
+            };
+            
+            // If Azure is storing the image, we can save space in the DB by removing the base64 data
+            if (process.env.AZURE_OPTIMIZE_STORAGE === 'true') {
+              // Only store a thumbnail or remove image_data completely
+              imageData.image_data = null;
+            }
+            
+            console.log("Successfully uploaded image to Azure Blob Storage");
+          }
+        } catch (azureError) {
+          console.error("Failed to upload to Azure, falling back to database storage:", azureError);
+          // Continue with database storage as fallback
+          imageData = {
+            ...result.data,
+            storage_type: 'database'
+          };
+        }
+      } else {
+        // Azure not configured, use database storage
+        imageData = {
+          ...result.data,
+          storage_type: 'database'
+        };
+      }
+      
+      // Save the image with appropriate storage information
+      const image = await storage.saveImage(imageData);
       res.status(201).json(image);
     } catch (error) {
       res.status(500).json({ 
@@ -1831,17 +1881,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.delete("/api/images/:id", isAuthenticated, async (req: Request, res: Response) => {
-    const imageId = parseInt(req.params.id);
-    if (isNaN(imageId)) {
-      return res.status(400).json({ message: "Invalid image ID" });
+    try {
+      const imageId = parseInt(req.params.id);
+      if (isNaN(imageId)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+      
+      // First, retrieve the image to check if it exists and determine its storage type
+      const image = await storage.getImageById(imageId);
+      if (!image) {
+        return res.status(404).json({ message: "Image not found" });
+      }
+      
+      // If the image is stored in Azure Blob Storage, delete it from there first
+      if (image.storage_type === 'azure' && image.blob_name) {
+        const { deleteImageFromAzure } = require('./azure-storage');
+        try {
+          console.log(`Attempting to delete image from Azure Blob Storage: ${image.blob_name}`);
+          const azureDeleteSuccess = await deleteImageFromAzure(image.blob_name);
+          if (!azureDeleteSuccess) {
+            console.warn(`Warning: Failed to delete image from Azure Blob Storage: ${image.blob_name}`);
+            // Continue with database deletion anyway
+          } else {
+            console.log(`Successfully deleted image from Azure Blob Storage: ${image.blob_name}`);
+          }
+        } catch (azureError) {
+          console.error("Error deleting from Azure:", azureError);
+          // Continue with database deletion
+        }
+      }
+      
+      // Delete from database
+      const success = await storage.deleteImage(imageId);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete image from database" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      res.status(500).json({ 
+        message: "Failed to delete image", 
+        error: (error as Error).message 
+      });
     }
-    
-    const success = await storage.deleteImage(imageId);
-    if (!success) {
-      return res.status(404).json({ message: "Image not found" });
-    }
-    
-    res.status(204).end();
   });
 
   // Floorplan endpoints

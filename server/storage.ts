@@ -114,7 +114,9 @@ export interface IStorage {
   
   // Images
   saveImage(insertImage: InsertImage): Promise<Image>;
+  getImageById(id: number): Promise<Image | undefined>;
   getImages(equipmentType: string, equipmentId: number): Promise<Image[]>;
+  deleteImage(id: number): Promise<boolean>;
   
   // Feedback
   getFeedback(): Promise<Feedback[]>;
