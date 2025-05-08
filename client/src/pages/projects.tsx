@@ -185,8 +185,8 @@ export default function Projects() {
       
       // Show success toast
       toast({
-        title: "Site Walk Created",
-        description: `Site Walk "${newSiteWalk.name}" has been created successfully.`,
+        title: "Opportunity Created",
+        description: `Opportunity "${newSiteWalk.name}" has been created successfully.`,
       });
       
       // Set as current site walk and navigate to the dashboard
@@ -195,22 +195,22 @@ export default function Projects() {
       setLocation(`/projects/${newSiteWalk.id}/dashboard`);
     } catch (error) {
       toast({
-        title: "Site Walk Creation Failed",
+        title: "Opportunity Creation Failed",
         description: (error as Error).message,
         variant: "destructive",
       });
     }
   };
 
-  // Handle selecting a site walk
-  const selectSiteWalk = (siteWalk: Project) => {
+  // Handle selecting an opportunity
+  const selectOpportunity = (opportunity: Project) => {
     // First prefetch floorplans for this project to ensure they're in the cache
-    prefetchFloorplans(siteWalk.id);
+    prefetchFloorplans(opportunity.id);
     
     // Then set it as current project and navigate to the project details page
-    setCurrentSiteWalk(siteWalk);
-    setCurrentProject(siteWalk);
-    setLocation(`/projects/${siteWalk.id}/dashboard`);
+    setCurrentSiteWalk(opportunity);
+    setCurrentProject(opportunity);
+    setLocation(`/projects/${opportunity.id}/dashboard`);
   };
   
   // Toggle pinning/unpinning a project
@@ -224,13 +224,13 @@ export default function Projects() {
     }
   };
 
-  // Handle deleting a site walk
-  const deleteSiteWalk = async (e: React.MouseEvent, siteWalk: Project) => {
+  // Handle deleting an opportunity
+  const deleteOpportunity = async (e: React.MouseEvent, opportunity: Project) => {
     e.stopPropagation();
     
-    if (window.confirm(`Are you sure you want to delete "${siteWalk.name}"?`)) {
+    if (window.confirm(`Are you sure you want to delete "${opportunity.name}"?`)) {
       try {
-        await apiRequest("DELETE", `/api/projects/${siteWalk.id}`);
+        await apiRequest("DELETE", `/api/projects/${opportunity.id}`);
         
         // Invalidate and refetch
         queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -238,8 +238,8 @@ export default function Projects() {
         
         // Show success toast
         toast({
-          title: "Site Walk Deleted",
-          description: `Site Walk "${siteWalk.name}" has been deleted.`,
+          title: "Opportunity Deleted",
+          description: `Opportunity "${opportunity.name}" has been deleted.`,
         });
       } catch (error) {
         toast({
@@ -505,7 +505,7 @@ export default function Projects() {
               <Card
                 key={project.id}
                 className="hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => selectSiteWalk(project)}
+                onClick={() => selectOpportunity(project)}
               >
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-3">
@@ -542,7 +542,7 @@ export default function Projects() {
                         size="icon"
                         className="text-muted-foreground hover:text-red-500"
                         title="Delete"
-                        onClick={(e) => deleteSiteWalk(e, project)}
+                        onClick={(e) => deleteOpportunity(e, project)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -607,7 +607,7 @@ export default function Projects() {
               <Card key={project.id} className="overflow-hidden">
                 <div 
                   className="grid md:grid-cols-12 gap-3 p-4 hover:bg-muted/20 transition-colors cursor-pointer"
-                  onClick={() => selectSiteWalk(project)}
+                  onClick={() => selectOpportunity(project)}
                 >
                   <div className="md:col-span-3 flex items-center">
                     <div className="font-medium">{project.name}</div>
@@ -674,7 +674,7 @@ export default function Projects() {
                         size="icon"
                         className="text-muted-foreground hover:text-red-500"
                         title="Delete"
-                        onClick={(e) => deleteSiteWalk(e, project)}
+                        onClick={(e) => deleteOpportunity(e, project)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
