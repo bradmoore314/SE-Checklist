@@ -365,7 +365,7 @@ export default function UnifiedCameraConfigForm({
                         <RadioGroup 
                           value={field.value}
                           onValueChange={(value) => field.onChange(value)}
-                          className="flex space-x-4"
+                          className="flex flex-col space-y-2"
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="indoor" id="indoor" />
