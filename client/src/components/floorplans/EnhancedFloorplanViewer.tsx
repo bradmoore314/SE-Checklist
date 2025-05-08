@@ -238,19 +238,35 @@ export const EnhancedFloorplanViewer = ({
     }
   }, [scale, translateX, translateY, viewportDimensions, containerRef]);
   
-  // Use our new coordinate system for all transformations
+  // Use our coordinate system for all transformations
   const screenToPdfCoordinates = (screenX: number, screenY: number): Point => {
     if (!containerRef.current) return { x: 0, y: 0 };
     
     // The coordSystem is updated via useEffect when scale, translateX, or translateY changes
     // We use the debug parameter to provide detailed logging for important operations like adding markers
-    const result = coordSystem.screenToPdf(screenX, screenY, true);
+    
+    // IMPORTANT: Make sure we're getting coordinates relative to the viewerRef container
+    // rather than the full document, since mouse events come from clientX/clientY
+    // This ensures markers are placed exactly under the cursor
+    const viewerRect = containerRef.current.getBoundingClientRect();
+    
+    // 1. Convert screen coordinates to container-relative coordinates
+    const containerX = screenX - viewerRect.left;
+    const containerY = screenY - viewerRect.top;
+    
+    // 2. Convert container coordinates to PDF coordinates
+    const pdfPoint = {
+      x: (containerX - translateX) / scale,
+      y: (containerY - translateY) / scale
+    };
+    
+    console.log(`Screen(${screenX}, ${screenY}) → Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfPoint.x.toFixed(4)}, ${pdfPoint.y.toFixed(4)}) @ scale ${scale.toFixed(4)}`);
     
     // Ensure the result is using the precise scale value without any drift
     // This ensures markers are placed exactly where clicked at any zoom level
     return {
-      x: parseFloat((result.x).toFixed(2)),
-      y: parseFloat((result.y).toFixed(2))
+      x: parseFloat(pdfPoint.x.toFixed(2)),
+      y: parseFloat(pdfPoint.y.toFixed(2))
     };
   };
   
@@ -1995,9 +2011,28 @@ export const EnhancedFloorplanViewer = ({
         />
       )}
       
-      {/* Context Menu */}
+      {/* 
+      *************************************************************************
+      * RIGHT-CLICK CONTEXT MENU IMPLEMENTATION
+      * 
+      * LESSONS LEARNED:
+      * 1. Using <div> elements with onMouseDown is more reliable than <button> 
+      *    with onClick for custom context menus
+      * 2. Both e.stopPropagation() and e.preventDefault() are needed to prevent
+      *    event bubbling and default behaviors
+      * 3. Using cursor-pointer class explicitly shows users the elements are clickable
+      * 4. For complex interactions, avoid nesting many event handlers
+      * 5. Creating the menu as a direct DOM element works better than using portals
+      *    or other abstraction layers for this specific context
+      *
+      * COMMON PITFALLS AVOIDED:
+      * - Regular onClick handlers can be blocked by other mouse events
+      * - stopPropagation alone isn't enough when multiple event systems interact
+      * - button elements can have conflicting browser behaviors
+      * - Context menus need special handling to override default browser behavior
+      *************************************************************************
+      */}
       {contextMenuOpen && selectedMarker && (
-        // Create a Portal for the context menu for better event handling
         <div 
           className="fixed z-50 bg-white shadow-lg rounded-lg border border-gray-200" 
           style={{ 
@@ -2006,19 +2041,20 @@ export const EnhancedFloorplanViewer = ({
             width: '16rem'
           }}
           onMouseDown={(e) => {
-            // Prevent the container mouse down from interfering
+            // Critical: Prevent the container mouse down from interfering
+            // with the document-level click handler
             e.stopPropagation();
           }}
         >
           <div className="py-1">
-            {/* Duplicate button with improved event handling */}
+            {/* Duplicate button - creates copy with offset position */}
             <div 
               className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
               onMouseDown={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 
-                console.log(`TEST: Duplicating marker #${selectedMarker.id}`);
+                console.log(`Duplicating marker #${selectedMarker.id}`);
                 
                 // Create a duplicate with offset position
                 const duplicateData = {
@@ -2039,14 +2075,14 @@ export const EnhancedFloorplanViewer = ({
               Duplicate
             </div>
             
-            {/* Delete button with improved event handling */}
+            {/* Delete button - removes marker from floorplan */}
             <div 
               className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
               onMouseDown={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 
-                console.log(`TEST: Deleting marker #${selectedMarker.id}`);
+                console.log(`Deleting marker #${selectedMarker.id}`);
                 
                 // Delete the marker
                 deleteMarkerMutation.mutate(selectedMarker.id);
@@ -2060,7 +2096,7 @@ export const EnhancedFloorplanViewer = ({
               Delete
             </div>
             
-            {/* Only show camera settings for camera markers */}
+            {/* Only show camera settings option for camera markers */}
             {selectedMarker.marker_type === 'camera' && (
               <>
                 <div className="h-px bg-gray-200 my-1"></div>
@@ -2070,7 +2106,7 @@ export const EnhancedFloorplanViewer = ({
                     e.stopPropagation();
                     e.preventDefault();
                     
-                    console.log(`TEST: Opening camera settings for marker #${selectedMarker.id}`);
+                    console.log(`Opening camera settings for marker #${selectedMarker.id}`);
                     
                     // Open the camera edit dialog
                     setIsCameraEditDialogOpen(true);
