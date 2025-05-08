@@ -18,6 +18,7 @@ interface CombinedCameraConfigFormProps {
     label?: string;
   } | null;
   isNew?: boolean;
+  cameraData?: any; // Camera equipment data from the database
   onUpdate: (updatedData: {
     id?: number;
     position_x: number;
@@ -38,6 +39,7 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
   projectId,
   marker,
   isNew = false,
+  cameraData,
   onUpdate,
   onCancel
 }) => {
