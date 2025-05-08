@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Site Walk Checklist is a web application designed for security professionals to manage and track equipment during site walks. It replaces traditional Excel-based tracking systems with a digital solution that captures detailed information about various security equipment types.
+The Kastle Wizard is a web application designed for security professionals to manage and track equipment during security assessments. It replaces traditional Excel-based tracking systems with a digital solution that captures detailed information about various security equipment types.
 
 The application follows a modern web architecture with a clear separation between frontend and backend components. It's built with scalability, performance, and ease of deployment in mind, particularly targeting Azure cloud deployment.
 

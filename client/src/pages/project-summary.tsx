@@ -176,7 +176,7 @@ export default function SiteWalkSummary() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Site Walk Summary</h1>
+        <h1 className="text-2xl font-bold">Summary</h1>
         <div className="flex gap-2">
           <SiteWalkComprehensiveExport 
             projectId={currentSiteWalk.id} 
@@ -259,7 +259,7 @@ export default function SiteWalkSummary() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Site Walk Information</CardTitle>
+          <CardTitle>Project Information</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

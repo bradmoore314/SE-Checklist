@@ -1,6 +1,6 @@
-# Site Walk Checklist Application
+# Kastle Wizard
 
-A comprehensive web application for digitizing and streamlining security equipment tracking during site walks. This application replaces traditional Excel-based tracking systems with a modern, intelligent web interface.
+A comprehensive web application for digitizing and streamlining security equipment tracking during site assessments. This application replaces traditional Excel-based tracking systems with a modern, intelligent web interface.
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -18,9 +18,7 @@ A comprehensive web application for digitizing and streamlining security equipme
 
 ## Project Overview
 
-The Site Walk Checklist is a specialized application for security professionals to manage and track equipment during site walks. It captures detailed information about various security equipment types (card access points, cameras, elevators, and intercoms) and provides tools for analysis, reporting, and exporting.
-
-This application strictly uses "Site Walk" terminology instead of "Project" or "Proposal" as site walks come first in the workflow, followed by a proposal, and only becoming a project once the customer signs.
+The Kastle Wizard is a specialized application for security professionals to manage and track equipment for security projects. It captures detailed information about various security equipment types (card access points, cameras, elevators, and intercoms) and provides tools for analysis, reporting, and exporting.
 
 ## Technology Stack
 
