@@ -270,20 +270,6 @@ export default function Sidebar({ collapsed }: SidebarProps) {
               {!collapsed && <span className="text-gray-800 font-medium">Settings</span>}
             </div>
           </Link>
-          
-          <Link href="/crm-settings">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>cloud_sync</span>
-              {!collapsed && <span className="text-gray-800 font-medium">CRM Integration</span>}
-            </div>
-          </Link>
-          
-          <Link href="/gemini-test">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>smart_toy</span>
-              {!collapsed && <span className="text-gray-800 font-medium">Gemini AI Test</span>}
-            </div>
-          </Link>
         </div>
       </div>
     </div>
