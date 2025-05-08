@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import GeminiTest from "@/components/ai/GeminiTest";
 
 export default function Settings() {
   const [, setLocation] = useLocation();
@@ -43,6 +44,18 @@ export default function Settings() {
             className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none py-2 px-4"
           >
             Export
+          </TabsTrigger>
+          <TabsTrigger 
+            value="ai-test" 
+            className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none py-2 px-4"
+          >
+            AI Test
+          </TabsTrigger>
+          <TabsTrigger 
+            value="crm-integration" 
+            className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none py-2 px-4"
+          >
+            CRM Integration
           </TabsTrigger>
         </TabsList>
         
