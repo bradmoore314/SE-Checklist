@@ -95,6 +95,7 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState("mine");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedSeFilter, setSelectedSeFilter] = useState<string>("");
+  const [satelliteImages, setSatelliteImages] = useState<Record<number, string>>({});
   
   // Function to prefetch floorplans for a project
   const prefetchFloorplans = (projectId: number) => {
@@ -107,6 +108,28 @@ export default function Projects() {
     });
   };
 
+  // Function to fetch satellite image for a project
+  const fetchSatelliteImage = async (projectId: number) => {
+    try {
+      if (!projectId) return;
+      
+      // Skip if we already have this image
+      if (satelliteImages[projectId]) return;
+      
+      const response = await apiRequest('GET', `/api/projects/${projectId}/satellite-image`);
+      const data = await response.json();
+      
+      if (data.url) {
+        setSatelliteImages(prev => ({
+          ...prev,
+          [projectId]: data.url
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching satellite image for project ${projectId}:`, error);
+    }
+  };
+  
   // Preload floorplans for all projects when the page loads
   useEffect(() => {
     // Explicitly trigger a refetch of projects to ensure we have the latest data
@@ -133,6 +156,11 @@ export default function Projects() {
         allProjects.forEach(project => {
           if (!currentProject || project.id !== currentProject.id) {
             prefetchFloorplans(project.id);
+          }
+          
+          // Fetch satellite image for each project
+          if (project.site_address) {
+            fetchSatelliteImage(project.id);
           }
         });
       }
@@ -507,86 +535,99 @@ export default function Projects() {
                 className="hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => selectOpportunity(project)}
               >
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-medium truncate" title={project.name}>
-                      {project.name}
-                    </h3>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
-                        onClick={(e) => togglePinned(e, project)}
-                        title={isPinned(project.id) ? "Unpin project" : "Pin project"}
-                      >
-                        <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="relative group"
-                        title="AI Review"
-                        onClick={(e: React.MouseEvent) => {
-                          e.stopPropagation();
-                          setLocation(`/projects/${project.id}/quote-review`);
-                        }}
-                      >
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
-                          <span className="material-icons text-sm">auto_awesome</span>
+                <CardContent className="p-0 overflow-hidden">
+                  {satelliteImages[project.id] && (
+                    <div className="relative h-36 w-full overflow-hidden">
+                      <img 
+                        src={satelliteImages[project.id]} 
+                        alt={`Satellite view of ${project.name}`}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent h-12"></div>
+                    </div>
+                  )}
+                  
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-lg font-medium truncate" title={project.name}>
+                        {project.name}
+                      </h3>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className={isPinned(project.id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"}
+                          onClick={(e) => togglePinned(e, project)}
+                          title={isPinned(project.id) ? "Unpin project" : "Pin project"}
+                        >
+                          <Star className={`h-4 w-4 ${isPinned(project.id) ? "fill-yellow-500" : ""}`} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="relative group"
+                          title="AI Review"
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            setLocation(`/projects/${project.id}/quote-review`);
+                          }}
+                        >
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 blur-sm opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                          <div className="relative flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-1.5 rounded-full shadow-lg hover:shadow-indigo-500/50 transition-all">
+                            <span className="material-icons text-sm">auto_awesome</span>
+                          </div>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-red-500"
+                          title="Delete"
+                          onClick={(e) => deleteOpportunity(e, project)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-neutral-500 mb-4">
+                      {project.client && (
+                        <div className="mb-1 truncate" title={project.client}>
+                          Client: {project.client}
                         </div>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground hover:text-red-500"
-                        title="Delete"
-                        onClick={(e) => deleteOpportunity(e, project)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      )}
+                      {project.site_address && (
+                        <div className="mb-1 truncate" title={project.site_address}>
+                          Location: {project.site_address}
+                        </div>
+                      )}
+                      <div className="mb-1">
+                        Created: {formatDate(project.created_at)}
+                      </div>
+                      {(project as any).creator_name && (
+                        <div className="mb-1 flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          <span>Created by: {(project as any).creator_name}</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  
-                  <div className="text-sm text-neutral-500 mb-4">
-                    {project.client && (
-                      <div className="mb-1 truncate" title={project.client}>
-                        Client: {project.client}
-                      </div>
-                    )}
-                    {project.site_address && (
-                      <div className="mb-1 truncate" title={project.site_address}>
-                        Location: {project.site_address}
-                      </div>
-                    )}
-                    <div className="mb-1">
-                      Created: {formatDate(project.created_at)}
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {project.replace_readers && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          Replace Readers
+                        </span>
+                      )}
+                      {project.pull_wire && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                          Pull Wire
+                        </span>
+                      )}
+                      {project.install_locks && (
+                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                          Install Locks
+                        </span>
+                      )}
                     </div>
-                    {(project as any).creator_name && (
-                      <div className="mb-1 flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        <span>Created by: {(project as any).creator_name}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {project.replace_readers && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        Replace Readers
-                      </span>
-                    )}
-                    {project.pull_wire && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        Pull Wire
-                      </span>
-                    )}
-                    {project.install_locks && (
-                      <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                        Install Locks
-                      </span>
-                    )}
                   </div>
                 </CardContent>
               </Card>
