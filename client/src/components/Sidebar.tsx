@@ -35,8 +35,13 @@ export default function Sidebar({ collapsed }: SidebarProps) {
       {/* User Info */}
       {!collapsed && (
         <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
-               style={{ backgroundColor: 'var(--red-accent)' }}>SE</div>
+          <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+            <img 
+              src="/src/assets/kastle-logo.png" 
+              alt="Kastle Logo" 
+              className="w-full h-full object-contain"
+            />
+          </div>
           <div className="ml-3">
             <div className="font-medium text-gray-900">Sales Engineer</div>
             <div className="text-sm text-gray-600">Kastle Wizard</div>
