@@ -461,7 +461,7 @@ export default function UnifiedCameraConfigForm({
                     name="streaming_resolution"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Streaming Resolution</FormLabel>
+                        <FormLabel>Rec Resolution</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -758,21 +758,24 @@ export default function UnifiedCameraConfigForm({
                     </svg>
                   </div>
                 </div>
+                
+                {/* Action Buttons - Moved here to be closer to preview */}
+                <div className="flex justify-end gap-2 mt-6">
+                  {onCancel && (
+                    <Button type="button" variant="outline" onClick={onCancel}>
+                      {cancelButtonText}
+                    </Button>
+                  )}
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Saving..." : saveButtonText}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="flex justify-end gap-2 mt-8 pt-4 border-t">
-          {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
-              {cancelButtonText}
-            </Button>
-          )}
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : saveButtonText}
-          </Button>
-        </div>
+        
+        {/* Hidden canvas for image processing */}
         <canvas ref={canvasRef} className="hidden" />
       </form>
     </Form>
