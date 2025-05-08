@@ -205,11 +205,6 @@ export const EnhancedFloorplanViewer = ({
 
   // Function to determine if a marker's label should be visible
   const shouldShowMarkerLabel = (marker: MarkerData, isSelected: boolean): boolean => {
-    // Always show labels for all markers per user request
-    return true;
-    
-    // The following code is kept for reference but not used
-    /*
     // Always show labels for selected markers
     if (isSelected) return true;
     
@@ -221,7 +216,6 @@ export const EnhancedFloorplanViewer = ({
     
     // Check if this specific marker type should have visible labels
     return !!visibleLabelTypes[marker.marker_type];
-    */
   };
 
   // Update coordinate system when view state changes
@@ -2168,7 +2162,40 @@ export const EnhancedFloorplanViewer = ({
               Delete
             </div>
             
-            {/* Only show camera settings option for camera markers */}
+            {/* Access Point Edit option */}
+            {selectedMarker.marker_type === 'access_point' && (
+              <>
+                <div className="h-px bg-gray-200 my-1"></div>
+                <div 
+                  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    console.log(`Opening access point settings for marker #${selectedMarker.id}`);
+                    
+                    // Redirect to card access configurator with the equipment ID
+                    if (selectedMarker.equipment_id) {
+                      window.location.href = `/projects/${floorplan.project_id}/card-access#edit=${selectedMarker.equipment_id}`;
+                    } else {
+                      toast({
+                        title: "Missing Equipment",
+                        description: "This access point marker is not associated with any equipment.",
+                        variant: "destructive"
+                      });
+                    }
+                    
+                    // Close the context menu
+                    setContextMenuOpen(false);
+                  }}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Card Access
+                </div>
+              </>
+            )}
+
+            {/* Camera settings option */}
             {selectedMarker.marker_type === 'camera' && (
               <>
                 <div className="h-px bg-gray-200 my-1"></div>
