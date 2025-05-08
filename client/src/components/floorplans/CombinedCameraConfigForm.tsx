@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
 
 interface CombinedCameraConfigFormProps {
@@ -125,20 +126,22 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{isNew ? 'Add New Camera' : 'Edit Camera'}</DialogTitle>
         </DialogHeader>
         
-        <UnifiedCameraConfigForm
-          projectId={projectId}
-          initialData={initialData}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saveButtonText={isNew ? 'Add Camera' : 'Update Camera'}
-          showImageUpload={false}
-          mode={isNew ? "add" : "edit"}
-        />
+        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
+          <UnifiedCameraConfigForm
+            projectId={projectId}
+            initialData={initialData}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            saveButtonText={isNew ? 'Add Camera' : 'Update Camera'}
+            showImageUpload={false}
+            mode={isNew ? "add" : "edit"}
+          />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
