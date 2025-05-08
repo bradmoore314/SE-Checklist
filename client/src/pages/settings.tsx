@@ -139,6 +139,119 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="ai-test" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Test Interface</CardTitle>
+              <CardDescription>
+                Test the Gemini AI integration with simple prompts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GeminiTest />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="crm-integration" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>CRM Integration Settings</CardTitle>
+              <CardDescription>
+                Connect with Microsoft Dataverse and configure synchronization options
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Connection Settings</h3>
+                  <p className="text-muted-foreground">Configure your Dataverse connection</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="base_url">Base URL</Label>
+                        <input
+                          id="base_url"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder="https://your-org.crm.dynamics.com"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="auth_type">Authentication Type</Label>
+                        <select 
+                          id="auth_type"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="oauth2">OAuth 2.0</option>
+                          <option value="client_credentials">Client Credentials</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="settings" className="flex justify-between">
+                        <span>Settings (JSON)</span>
+                        <span className="text-xs text-muted-foreground">
+                          Include clientId, clientSecret, tenantId
+                        </span>
+                      </Label>
+                      <textarea
+                        id="settings"
+                        placeholder='{"clientId": "your-client-id", "clientSecret": "your-client-secret", "tenantId": "your-tenant-id"}'
+                        className="h-[140px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between mt-4">
+                    <Button variant="outline">Test Connection</Button>
+                    <Button>Save Settings</Button>
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">Synchronize with Dataverse</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Synchronize projects with opportunities in Dataverse.
+                      </p>
+                    </div>
+                    <Button>Start Sync</Button>
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t">
+                  <h3 className="text-lg font-semibold mb-4">Sync Settings</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="auto-sync">Auto Sync</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Automatically sync projects with Dataverse opportunities
+                        </p>
+                      </div>
+                      <Switch id="auto-sync" />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="two-way-sync">Two-way Sync</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Changes in either system will be reflected in the other
+                        </p>
+                      </div>
+                      <Switch id="two-way-sync" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
