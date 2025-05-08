@@ -434,32 +434,127 @@ export default function UnifiedCameraConfigForm({
               
               <div className="mt-4">
                 <h4 className="text-sm font-medium mb-2">Visualization Preview</h4>
-                <div className="relative bg-white border border-gray-300 rounded-md h-32 flex items-center justify-center">
+                <div className="relative bg-white border border-gray-300 rounded-md h-48 flex items-center justify-center overflow-hidden">
                   <div className="absolute">
+                    {/* Camera center point */}
                     <div 
-                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 rounded-full"
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 rounded-full z-10"
                     />
-                    <div
-                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center"
-                      style={{
-                        width: `${range * 0.2}px`,
-                        height: `${range * 0.2}px`,
-                        transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-                      }}
+                    
+                    {/* FOV visualization - much larger to fix the scaling issue */}
+                    <svg 
+                      width="400" 
+                      height="400" 
+                      viewBox="-200 -200 400 400" 
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     >
-                      <div 
-                        className="absolute top-1/2 left-1/2 bg-blue-200 opacity-50"
-                        style={{
-                          width: `${range * 0.2}px`,
-                          height: `${range * 0.2}px`,
-                          transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-                          clipPath: `polygon(50% 50%, ${50 - fov/2}% 0%, ${50 + fov/2}% 0%)`,
-                          borderRadius: '50%',
-                        }}
+                      {/* Field of view area */}
+                      <path
+                        d={(() => {
+                          const centerX = 0;
+                          const centerY = 0;
+                          const radius = range;
+                          const fovRadians = (fov * Math.PI) / 180;
+                          const rotationRadians = (rotation * Math.PI) / 180;
+                          const startAngle = rotationRadians - fovRadians / 2;
+                          const endAngle = rotationRadians + fovRadians / 2;
+                          
+                          // Generate arc points
+                          let path = `M${centerX},${centerY}`;
+                          
+                          // Add line to first point on arc
+                          const x1 = centerX + radius * Math.cos(startAngle);
+                          const y1 = centerY + radius * Math.sin(startAngle);
+                          path += ` L${x1},${y1}`;
+                          
+                          // Create arc
+                          const arcSweep = fovRadians <= Math.PI ? 0 : 1;
+                          const x2 = centerX + radius * Math.cos(endAngle);
+                          const y2 = centerY + radius * Math.sin(endAngle);
+                          
+                          // For FOV < 180 degrees (less than half circle)
+                          if (fov < 180) {
+                            path += ` A${radius},${radius} 0 0,1 ${x2},${y2}`;
+                          } else if (fov < 360) {
+                            // For FOV > 180 but < 360 (more than half, less than full)
+                            path += ` A${radius},${radius} 0 1,1 ${x2},${y2}`;
+                          } else {
+                            // For 360 degrees (full circle)
+                            path += ` A${radius},${radius} 0 1,1 ${centerX},${centerY + radius}`;
+                            path += ` A${radius},${radius} 0 1,1 ${centerX},${centerY - radius}`;
+                          }
+                          
+                          path += ` Z`;
+                          return path;
+                        })()}
+                        fill="rgba(59, 130, 246, 0.2)"
+                        stroke="rgba(59, 130, 246, 0.5)"
+                        strokeWidth="2"
+                        style={{ transform: `rotate(${rotation}deg)` }}
                       />
-                    </div>
+                      
+                      {/* Direction indicator line */}
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={-range}
+                        stroke="rgba(59, 130, 246, 0.7)"
+                        strokeWidth="2"
+                        strokeDasharray="4,4"
+                        style={{ transform: `rotate(${rotation}deg)` }}
+                      />
+                    </svg>
                   </div>
                 </div>
+                
+                {/* Gateway Calculator - only show when import_to_gateway is checked */}
+                {form.watch("import_to_gateway") && (
+                  <div className="mt-4 border p-3 rounded-md bg-blue-50">
+                    <h4 className="text-sm font-medium mb-2">Gateway Calculator</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Lens Count:</span>
+                        <span className="font-medium">{(fov > 180) ? 2 : 1}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Storage (7 days):</span>
+                        <span className="font-medium">
+                          {(() => {
+                            // Calculate storage based on resolution
+                            const resolution = form.watch("resolution");
+                            let storagePerDay = 0;
+                            
+                            if (resolution === "4K") {
+                              storagePerDay = 12;
+                            } else if (resolution === "1080p") {
+                              storagePerDay = 6;
+                            } else if (resolution === "720p") {
+                              storagePerDay = 3;
+                            } else {
+                              storagePerDay = 5; // Default value
+                            }
+                            
+                            // Double for dual lens
+                            if (fov > 180) {
+                              storagePerDay *= 2;
+                            }
+                            
+                            return `${storagePerDay * 7} GB`;
+                          })()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Recording:</span>
+                        <span className="font-medium">24/7</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Coverage:</span>
+                        <span className="font-medium">{fov}° FOV</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
