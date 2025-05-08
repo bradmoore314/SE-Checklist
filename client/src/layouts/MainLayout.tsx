@@ -13,19 +13,19 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { currentProject, setCurrentProject } = useProject();
-  const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
+  const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const { user, isLoading } = useAuth();
   const [location] = useLocation();
 
   // Keep the two contexts in sync during transition
   useEffect(() => {
-    if (currentProject && !currentSiteWalk) {
-      setCurrentSiteWalk(currentProject);
+    if (currentProject && !currentOpportunity) {
+      setCurrentOpportunity(currentProject);
     }
-    if (currentSiteWalk && !currentProject) {
-      setCurrentProject(currentSiteWalk);
+    if (currentOpportunity && !currentProject) {
+      setCurrentProject(currentOpportunity);
     }
-  }, [currentProject, currentSiteWalk, setCurrentProject, setCurrentSiteWalk]);
+  }, [currentProject, currentOpportunity, setCurrentProject, setCurrentOpportunity]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -59,7 +59,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNav 
-          project={currentSiteWalk} 
+          project={currentOpportunity} 
           onToggleSidebar={toggleSidebar} 
           user={user}
         />
