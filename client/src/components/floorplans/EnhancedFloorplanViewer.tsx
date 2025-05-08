@@ -2380,8 +2380,27 @@ export const EnhancedFloorplanViewer = ({
                     
                     console.log(`Opening camera settings for marker #${selectedMarker.id}`);
                     
-                    // Open the combined camera configuration dialog
-                    setCameraConfigOpen(true);
+                    // Get camera data if it exists
+                    if (selectedMarker.equipment_id) {
+                      // Fetch the camera data
+                      fetch(`/api/cameras/${selectedMarker.equipment_id}`)
+                        .then(response => response.json())
+                        .then(cameraData => {
+                          // Store the camera data in state
+                          setEditingCameraData(cameraData);
+                          
+                          // Open the combined camera configuration dialog
+                          setCameraConfigOpen(true);
+                        })
+                        .catch(error => {
+                          console.error("Error fetching camera data:", error);
+                          // Still open the dialog even if we couldn't fetch the data
+                          setCameraConfigOpen(true);
+                        });
+                    } else {
+                      // No equipment ID, just open the dialog
+                      setCameraConfigOpen(true);
+                    }
                     
                     // Close the context menu
                     setContextMenuOpen(false);
