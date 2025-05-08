@@ -109,7 +109,7 @@ export default function UnifiedCameraConfigForm({
       resolution: initialData?.resolution || "",
       field_of_view: initialData?.field_of_view || "",
       notes: initialData?.notes || "",
-      is_indoor: initialData?.is_indoor === true ? "indoor" : (initialData?.is_indoor === false ? "outdoor" : "indoor"),
+      is_indoor: typeof initialData?.is_indoor === 'string' ? initialData.is_indoor as "indoor" | "outdoor" : "indoor",
       import_to_gateway: initialData?.import_to_gateway ?? true,
       
       // Marker visualization defaults
@@ -247,11 +247,11 @@ export default function UnifiedCameraConfigForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        {/* Two-column Layout for Camera Info and Visualization */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
-          {/* Left Column - Camera Equipment */}
+        {/* Three-column Layout for Camera Info and Visualization */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-4">
+          {/* Left Column - Basic Camera Info */}
           <div>
-            <h3 className="font-medium mb-4">Camera Equipment</h3>
+            <h3 className="font-medium mb-4">Camera Information</h3>
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -806,21 +806,30 @@ export default function UnifiedCameraConfigForm({
             control={form.control}
             name="is_indoor"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-sm font-medium text-neutral-700">
-                    Camera Location
-                  </FormLabel>
-                  <FormDescription>
-                    Is this an indoor or outdoor camera?
-                  </FormDescription>
-                </div>
+              <FormItem className="space-y-2">
+                <FormLabel className="text-sm font-medium text-neutral-700">
+                  Camera Location
+                </FormLabel>
+                <FormDescription>
+                  Is this an indoor or outdoor camera?
+                </FormDescription>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <RadioGroup 
+                    value={field.value} 
+                    onValueChange={field.onChange}
+                    className="flex space-x-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="indoor" id="indoor" />
+                      <Label htmlFor="indoor">Indoor</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="outdoor" id="outdoor" />
+                      <Label htmlFor="outdoor">Outdoor</Label>
+                    </div>
+                  </RadioGroup>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
