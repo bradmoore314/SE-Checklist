@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Point } from '@/lib/coordinate-utils';
+import { Point } from '@/utils/coordinates';
 
 interface CameraMarkerProps {
   id: number;
