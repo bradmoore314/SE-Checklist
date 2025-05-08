@@ -2002,15 +2002,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/images/:id", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const imageId = parseInt(req.params.id);
+      console.log(`Deleting image with ID: ${imageId}`);
+      
       if (isNaN(imageId)) {
+        console.log(`Invalid image ID: ${req.params.id}`);
         return res.status(400).json({ message: "Invalid image ID" });
       }
       
       // First, retrieve the image to check if it exists and determine its storage type
       const image = await storage.getImageById(imageId);
       if (!image) {
+        console.log(`Image not found with ID: ${imageId}`);
         return res.status(404).json({ message: "Image not found" });
       }
+      
+      console.log(`Found image to delete:`, {
+        id: image.id,
+        equipment_type: image.equipment_type,
+        equipment_id: image.equipment_id,
+        storage_type: image.storage_type || 'database'
+      });
       
       // If the image is stored in Azure Blob Storage, delete it from there first
       if (image.storage_type === 'azure' && image.blob_name) {
@@ -2031,11 +2042,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Delete from database
+      console.log(`Attempting to delete image from database with ID: ${imageId}`);
       const success = await storage.deleteImage(imageId);
+      console.log(`Delete operation result: ${success}`);
+      
       if (!success) {
+        console.error(`Failed to delete image with ID: ${imageId} from database`);
         return res.status(500).json({ message: "Failed to delete image from database" });
       }
       
+      console.log(`Successfully deleted image with ID: ${imageId}`);
       res.status(204).end();
     } catch (error) {
       console.error("Error deleting image:", error);
