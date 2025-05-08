@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
-import { OpportunityAnalysis } from "@/components/ai/SiteWalkAnalysis";
+import { SiteWalkAnalysis as OpportunityAnalysis } from "@/components/ai/SiteWalkAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
 import ProjectExportMenu from "@/components/ProjectExportMenu";
 import ExportMenu from "@/components/ExportMenu";
-import ComprehensiveExport from "@/components/SiteWalkComprehensiveExport";
+import ComprehensiveExport from "@/components/ComprehensiveExport";
 
 interface EquipmentImage {
   id: number;
