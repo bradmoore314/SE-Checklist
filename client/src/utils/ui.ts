@@ -1,112 +1,123 @@
 /**
  * UI Utility Functions
  * 
- * Consolidated utility functions for UI functionality throughout the application.
- * Combines common UI utilities from various files for consistent usage.
+ * This file contains reusable utility functions for UI-related tasks.
  */
 
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { ColumnDef } from "@tanstack/react-table";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
- * Combine class names with Tailwind's merge functionality
+ * Combines class names using clsx and tailwind-merge
+ * This function is used to combine conditional class names with tailwind classes
+ * 
+ * @param inputs - Class name inputs to combine
+ * @returns Combined and merged class names
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 /**
- * Create column definitions helper for data tables
+ * Formats a number value to a specific currency
+ * 
+ * @param value - Number to format
+ * @param currency - Currency code (default: 'USD')
+ * @param locale - Locale for formatting (default: 'en-US')
+ * @returns Formatted currency string
  */
-export function createColumnHelper<T>() {
-  return {
-    accessor: <K extends keyof T & string>(
-      accessor: K,
-      options: Partial<ColumnDef<T, T[K]>> = {}
-    ): ColumnDef<T, T[K]> => ({
-      accessorKey: accessor,
-      ...options,
-    }),
+export function formatCurrency(value: number, currency: string = 'USD', locale: string = 'en-US'): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(value);
+}
 
-    display: <K extends keyof T & string>(
-      id: string,
-      options: Partial<ColumnDef<T, any>> = {}
-    ): ColumnDef<T, any> => ({
-      id,
-      ...options,
-    }),
+/**
+ * Formats a number as a percentage
+ * 
+ * @param value - Number to format (0-1)
+ * @param locale - Locale for formatting (default: 'en-US')
+ * @returns Formatted percentage string
+ */
+export function formatPercent(value: number, locale: string = 'en-US'): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'percent',
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+/**
+ * Creates a debounced version of a function
+ * 
+ * @param fn - Function to debounce
+ * @param delay - Delay in milliseconds
+ * @returns Debounced function
+ */
+export function debounce<T extends (...args: any[]) => any>(fn: T, delay: number): (...args: Parameters<T>) => void {
+  let timeoutId: NodeJS.Timeout;
+  
+  return function(...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      fn(...args);
+    }, delay);
   };
 }
 
 /**
- * Helper to load dropdown options from lookupData
+ * Truncates a string to a maximum length with ellipsis
+ * 
+ * @param text - Text to truncate
+ * @param maxLength - Maximum length before truncation
+ * @returns Truncated text with ellipsis if needed
  */
-export function createOptions(items: { label: string; value: string }[]): { label: string; value: string }[] {
-  return items.map(item => ({
-    label: item.label || item.value,
-    value: item.value
-  }));
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
 }
 
 /**
- * Function to create a sortable column definition
+ * Generates an array of numbers for pagination
+ * 
+ * @param currentPage - Current page number
+ * @param totalPages - Total pages available
+ * @param maxPageButtons - Maximum number of page buttons to show
+ * @returns Array of page numbers to display
  */
-export function createSortableColumn<T>(
-  accessor: keyof T & string,
-  header: string,
-  options: Partial<ColumnDef<T, any>> = {}
-): ColumnDef<T, any> {
-  return {
-    accessorKey: accessor,
-    header: header,
-    ...options,
-  };
-}
-
-/**
- * Format a number with thousands separators
- */
-export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
-}
-
-/**
- * Format a file size in bytes to a human readable format
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-/**
- * Format a percentage value with specified decimals
- */
-export function formatPercentage(value: number, decimals: number = 1): string {
-  return `${value.toFixed(decimals)}%`;
-}
-
-/**
- * Get a CSS compatible color with opacity
- */
-export function withOpacity(color: string, opacity: number): string {
-  // Handle hex colors
-  if (color.startsWith('#')) {
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+export function getPaginationRange(currentPage: number, totalPages: number, maxPageButtons: number = 5): number[] {
+  // If we have fewer pages than the max, just return all pages
+  if (totalPages <= maxPageButtons) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
   
-  // Handle rgb colors
-  if (color.startsWith('rgb(')) {
-    const rgb = color.slice(4, -1).split(',').map(c => parseInt(c.trim()));
-    return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`;
+  // Calculate the start and end of the pagination range
+  let start = Math.max(currentPage - Math.floor(maxPageButtons / 2), 1);
+  let end = start + maxPageButtons - 1;
+  
+  // Adjust if end is beyond total pages
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(end - maxPageButtons + 1, 1);
   }
   
-  // Handle named colors (less precise but still useful)
-  return color;
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+/**
+ * Downloads content as a file
+ * 
+ * @param content - Content to download
+ * @param fileName - Name of the file
+ * @param contentType - Content type of the file
+ */
+export function downloadFile(content: string, fileName: string, contentType: string): void {
+  const a = document.createElement('a');
+  const file = new Blob([content], { type: contentType });
+  
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+  
+  URL.revokeObjectURL(a.href);
 }

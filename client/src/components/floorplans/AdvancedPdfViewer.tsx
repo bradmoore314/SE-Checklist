@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/ui';
 
 // Custom hook for resize observer
 function useResizeObserver<T extends Element>(ref: React.RefObject<T>) {
