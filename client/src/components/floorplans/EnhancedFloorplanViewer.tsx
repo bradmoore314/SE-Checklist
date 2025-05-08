@@ -2196,6 +2196,7 @@ export const EnhancedFloorplanViewer = ({
             setIsEquipmentFormOpen(false);
           }}
           onClose={() => setIsEquipmentFormOpen(false)}
+          existingEquipmentId={selectedMarker.equipment_id || undefined}
         />
       )}
       

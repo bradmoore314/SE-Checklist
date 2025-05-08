@@ -15,6 +15,7 @@ interface EquipmentFormDialogProps {
   projectId: number;
   position: { x: number, y: number };
   onEquipmentCreated: (equipmentId: number, equipmentLabel: string) => void;
+  existingEquipmentId?: number;
 }
 
 /**
@@ -29,7 +30,8 @@ const EquipmentFormDialog = ({
   markerType,
   projectId,
   position,
-  onEquipmentCreated
+  onEquipmentCreated,
+  existingEquipmentId
 }: EquipmentFormDialogProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -93,6 +95,11 @@ const EquipmentFormDialog = ({
 
     // Handle access point form
     if (markerType === 'access_point') {
+      // Set the id field if we have an existing equipment ID
+      if (existingEquipmentId) {
+        accessPoint.id = existingEquipmentId;
+      }
+      
       return (
         <EditAccessPointModal
           isOpen={isOpen}
@@ -102,7 +109,7 @@ const EquipmentFormDialog = ({
             onEquipmentCreated(id, data.location);
           }}
           fromFloorplan={true}
-          isNewAccessPoint={true}
+          isNewAccessPoint={!existingEquipmentId} // Only new if no ID provided
         />
       );
     }
