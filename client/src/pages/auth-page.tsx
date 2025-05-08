@@ -377,10 +377,10 @@ export default function AuthPage() {
         <div className="max-w-md text-center">
           <ShieldCheck className="h-20 w-20 mx-auto mb-6 text-primary" />
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-            Site Walk Checklist
+            Kastle Wizard
           </h1>
           <p className="text-lg text-white mb-8">
-            Streamline your security site walk process with our comprehensive checklist tool. Track cameras, card access, elevators, and intercoms in one place.
+            The comprehensive security equipment management solution for professionals. Design, configure, and visualize your entire security infrastructure.
           </p>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
@@ -391,8 +391,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium text-primary">Complete Site Walk Documentation</h3>
-                <p className="text-sm text-white">Track all security equipment for your site walks</p>
+                <h3 className="font-medium text-primary">Advanced PDF Floorplan Annotation</h3>
+                <p className="text-sm text-white">Place and configure security equipment with precision on floorplans</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -403,8 +403,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium text-primary">Efficient Site Walk Management</h3>
-                <p className="text-sm text-white">Clone equipment with one click to speed up site walks</p>
+                <h3 className="font-medium text-primary">AI-Powered Analysis & Configuration</h3>
+                <p className="text-sm text-white">Leverage Gemini AI for intelligent security equipment configuration</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -415,8 +415,8 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div className="text-left">
-                <h3 className="font-medium text-primary">Site Walk Documentation</h3>
-                <p className="text-sm text-white">Generate detailed site walk reports and schedules</p>
+                <h3 className="font-medium text-primary">Comprehensive Documentation</h3>
+                <p className="text-sm text-white">Generate professional reports, door schedules, and SOW documents</p>
               </div>
             </div>
           </div>
