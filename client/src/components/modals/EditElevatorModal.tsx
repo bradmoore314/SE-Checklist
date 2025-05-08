@@ -78,19 +78,37 @@ export default function EditElevatorModal({
     try {
       // If it's a new elevator, create it
       if (isNewElevator) {
-        const response = await apiRequest("POST", `/api/projects/${elevator.project_id}/elevators`, values);
-        const newElevator = await response.json();
-        
-        // Invalidate elevators query
-        queryClient.invalidateQueries({ 
-          queryKey: [`/api/projects/${elevator.project_id}/elevators`]
-        });
-        
-        // Call onSave with the new elevator ID and data
-        onSave(newElevator.id, { ...newElevator });
+        try {
+          const response = await apiRequest("POST", `/api/projects/${elevator.project_id}/elevators`, values);
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server responded with ${response.status}: ${errorText}`);
+          }
+          const newElevator = await response.json();
+          
+          // Invalidate elevators query
+          queryClient.invalidateQueries({ 
+            queryKey: [`/api/projects/${elevator.project_id}/elevators`]
+          });
+          
+          // Call onSave with the new elevator ID and data
+          onSave(newElevator.id, { ...newElevator });
+          
+          toast({
+            title: "Success",
+            description: "Elevator created successfully",
+          });
+        } catch (err) {
+          console.error("Error creating elevator:", err);
+          throw err;
+        }
       } else {
         // Otherwise, update the existing elevator
-        await apiRequest("PUT", `/api/elevators/${elevator.id}`, values);
+        const response = await apiRequest("PUT", `/api/elevators/${elevator.id}`, values);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        }
         
         // Invalidate elevators query
         queryClient.invalidateQueries({ 
@@ -99,12 +117,17 @@ export default function EditElevatorModal({
         
         // Call onSave to refresh the parent component
         onSave(elevator.id, { ...elevator, ...values });
+        
+        toast({
+          title: "Success",
+          description: "Elevator updated successfully",
+        });
       }
     } catch (error) {
       console.error("Error saving elevator:", error);
       toast({
         title: "Error",
-        description: "Failed to save elevator",
+        description: "Failed to save elevator. " + (error instanceof Error ? error.message : ""),
         variant: "destructive",
       });
     } finally {

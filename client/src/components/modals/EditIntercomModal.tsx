@@ -73,19 +73,37 @@ export default function EditIntercomModal({
     try {
       // If it's a new intercom, create it
       if (isNewIntercom) {
-        const response = await apiRequest("POST", `/api/projects/${intercom.project_id}/intercoms`, values);
-        const newIntercom = await response.json();
-        
-        // Invalidate intercoms query
-        queryClient.invalidateQueries({ 
-          queryKey: [`/api/projects/${intercom.project_id}/intercoms`]
-        });
-        
-        // Call onSave with the new intercom ID and data
-        onSave(newIntercom.id, { ...newIntercom });
+        try {
+          const response = await apiRequest("POST", `/api/projects/${intercom.project_id}/intercoms`, values);
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server responded with ${response.status}: ${errorText}`);
+          }
+          const newIntercom = await response.json();
+          
+          // Invalidate intercoms query
+          queryClient.invalidateQueries({ 
+            queryKey: [`/api/projects/${intercom.project_id}/intercoms`]
+          });
+          
+          // Call onSave with the new intercom ID and data
+          onSave(newIntercom.id, { ...newIntercom });
+          
+          toast({
+            title: "Success",
+            description: "Intercom created successfully",
+          });
+        } catch (err) {
+          console.error("Error creating intercom:", err);
+          throw err;
+        }
       } else {
         // Otherwise, update the existing intercom
-        await apiRequest("PUT", `/api/intercoms/${intercom.id}`, values);
+        const response = await apiRequest("PUT", `/api/intercoms/${intercom.id}`, values);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        }
         
         // Invalidate intercoms query
         queryClient.invalidateQueries({ 
@@ -94,12 +112,17 @@ export default function EditIntercomModal({
         
         // Call onSave to refresh the parent component
         onSave(intercom.id, { ...intercom, ...values });
+        
+        toast({
+          title: "Success",
+          description: "Intercom updated successfully",
+        });
       }
     } catch (error) {
       console.error("Error saving intercom:", error);
       toast({
         title: "Error",
-        description: "Failed to save intercom",
+        description: "Failed to save intercom. " + (error instanceof Error ? error.message : ""),
         variant: "destructive",
       });
     } finally {
