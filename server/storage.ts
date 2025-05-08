@@ -1862,9 +1862,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getImages(equipmentType: string, equipmentId: number): Promise<Image[]> {
-    // In a real implementation, we would need to join with the appropriate junction table
-    // This is a simplified implementation
-    return [];
+    return await db.select().from(images)
+      .where(and(
+        eq(images.equipment_type, equipmentType),
+        eq(images.equipment_id, equipmentId)
+      ));
   }
 
   async deleteImage(id: number): Promise<boolean> {
