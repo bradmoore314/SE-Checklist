@@ -498,6 +498,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 setShowEditModal(true);
               }}
               onDelete={() => handleDelete(ap.id)}
+              onDuplicate={() => handleDuplicate(ap)}
               thumbnailImage={equipmentImages[ap.id]?.thumbnail_data}
               headerContent={
                 <div className="mt-2">
