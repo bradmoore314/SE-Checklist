@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { validateAndRefreshData } from '@/lib/equipmentConsistencyCheck';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, 
@@ -659,6 +660,9 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Perform consistency check between markers and equipment
+      validateAndRefreshData(floorplan.project_id);
       
       console.log("Marker added successfully, updating UI");
       
