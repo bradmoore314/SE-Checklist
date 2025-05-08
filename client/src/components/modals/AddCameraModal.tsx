@@ -60,10 +60,11 @@ export default function AddCameraModal({
   });
 
   const handleSave = async (data: CameraConfigData) => {
-    // Create the payload
+    // Create the payload with field_of_view for database compatibility
     const payload = {
       ...data,
       project_id: projectId,
+      field_of_view: data.fov ? data.fov.toString() : "90", // Convert fov to string for field_of_view
     };
     
     await addCameraMutation.mutateAsync(payload);
