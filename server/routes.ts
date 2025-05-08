@@ -594,6 +594,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID" });
       }
       
+      // Log the received data for debugging
+      console.log("Received camera data:", req.body);
+      
       // Extract image data first if present
       const { image_data, ...cameraData } = req.body;
       
@@ -603,13 +606,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         project_id: projectId
       };
       
+      console.log("Complete camera data before validation:", completeData);
+      
       const result = insertCameraSchema.safeParse(completeData);
       if (!result.success) {
+        console.error("Camera validation failed:", result.error.errors);
         return res.status(400).json({ 
           message: "Invalid camera data", 
           errors: result.error.errors 
         });
       }
+      
+      console.log("Camera validation successful")
 
       // Get list of projects the user has access to
       const userProjects = await storage.getProjectsForUser(req.user.id);
