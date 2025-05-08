@@ -878,7 +878,7 @@ export const EnhancedFloorplanViewer = ({
     return () => {
       containerRef.current?.removeEventListener('wheel', handleMouseWheel);
     };
-  }, [scale, isEquipmentFormOpen, isCalibrationDialogOpen, isLayerManagerOpen, contextMenuOpen]);
+  }, [scale, isEquipmentFormOpen, isCameraConfigOpen, isCalibrationDialogOpen, isLayerManagerOpen, contextMenuOpen]);
 
   // Keyboard handler for marker operations
   useEffect(() => {
@@ -944,7 +944,7 @@ export const EnhancedFloorplanViewer = ({
   // Mouse handling for pan/zoom and marker placement
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only process mouse events if no dialogs or context menus are open
-    if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
+    if (isEquipmentFormOpen || isCameraConfigOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
       return; // Exit early when dialogs are open
     }
     
@@ -1477,7 +1477,7 @@ export const EnhancedFloorplanViewer = ({
     // Instead let the custom wheel handler manage zoom behavior
     
     // Don't process wheel events if any modal or context menu is open
-    if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
+    if (isEquipmentFormOpen || isCameraConfigOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
       return; // Exit early - no zooming when dialogs are open
     }
     
