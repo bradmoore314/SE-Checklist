@@ -199,7 +199,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium bg-gradient-to-r from-red-500 to-rose-600 bg-clip-text text-transparent">Card Access Points</h3>
+        <h3 className="text-lg font-medium text-gray-700">Card Access Points</h3>
         <div className="flex items-center gap-2">
           <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
           
@@ -312,75 +312,42 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               onDelete={() => handleDelete(ap.id)}
               thumbnailImage={equipmentImages[ap.id]?.thumbnail_data}
               headerContent={
-                <div className="mt-2 grid grid-cols-2 gap-3">
+                <div className="mt-2">
+                {/* First row: Floor number */}
+                <div className="mb-2">
+                  <p className="text-xs font-medium text-gray-500">Floor {ap.location.split(' ')[1]}</p>
+                </div>
+                
+                {/* Second row: Key data points in two columns */}
+                <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Type</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium hover:underline cursor-pointer"
-                         onClick={() => {
-                           setSelectedAccessPoint(ap);
-                           setSelectedField("lock_type");
-                           setShowEditModal(true);
-                         }}
-                      >
-                        {ap.lock_type || "Not specified"}
-                      </p>
-                    </div>
+                    <p className="text-sm font-medium">{ap.lock_type || "Standard"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Monitoring Type</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium hover:underline cursor-pointer"
-                         onClick={() => {
-                           setSelectedAccessPoint(ap);
-                           setSelectedField("monitoring_type");
-                           setShowEditModal(true);
-                         }}
-                      >
-                        {ap.monitoring_type || "Not specified"}
-                      </p>
-                    </div>
+                    <p className="text-sm font-medium">{ap.monitoring_type || "Prop"}</p>
                   </div>
+                </div>
+                
+                {/* Third row: More data points in two columns */}
+                <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
                     <p className="text-xs text-muted-foreground">Lock Provider</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium hover:underline cursor-pointer"
-                         onClick={() => {
-                           setSelectedAccessPoint(ap);
-                           setShowEditModal(true);
-                         }}
-                      >
-                        {ap.lock_provider || "Not specified"}
-                      </p>
-                    </div>
+                    <p className="text-sm font-medium">{ap.lock_provider || "Kastle"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Interior/Perimeter</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium hover:underline cursor-pointer"
-                         onClick={() => {
-                           setSelectedAccessPoint(ap);
-                           setShowEditModal(true);
-                         }}
-                      >
-                        {ap.interior_perimeter || "Not specified"}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Takeover</p>
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium hover:underline cursor-pointer"
-                         onClick={() => {
-                           setSelectedAccessPoint(ap);
-                           setShowEditModal(true);
-                         }}
-                      >
-                        {ap.takeover || "Not specified"}
-                      </p>
-                    </div>
+                    <p className="text-sm font-medium">{ap.interior_perimeter || "Interior"}</p>
                   </div>
                 </div>
+                
+                {/* Fourth row: Takeover information */}
+                <div className="mt-2">
+                  <p className="text-xs text-muted-foreground">Takeover</p>
+                  <p className="text-sm font-medium">{ap.takeover || "Yes"}</p>
+                </div>
+              </div>
               }
             >
               <div className="space-y-6">
@@ -544,19 +511,19 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
         <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
           <table className="w-full text-sm text-left">
             <thead>
-              <tr className="bg-gradient-to-r from-red-500 to-rose-600">
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCATION</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">READER TYPE</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK TYPE</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">MONITORING</th>
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">TAKEOVER</th>
+              <tr className="bg-gray-100">
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCATION</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">READER TYPE</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCK TYPE</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">MONITORING</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">TAKEOVER</th>
                 {visibleColumns.lockProvider && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCK PROVIDER</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">LOCK PROVIDER</th>
                 )}
                 {visibleColumns.interiorPerimeter && (
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">INTERIOR/PERIMETER</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">INTERIOR/PERIMETER</th>
                 )}
-                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">ACTIONS</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
