@@ -5,6 +5,8 @@ import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { proxyTestGemini } from './gemini-proxy';
 import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
+import { compressImage, createThumbnail } from './utils/image-utils';
+import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
 import { 
   geocodeAddress, 
   getWeatherData, 
@@ -1883,8 +1885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
 
-      // Import the image compression utility
-      const { compressImage, createThumbnail } = require('./utils/image-utils');
+      // Use the image compression utility imported at the top of the file
       
       // Compress the image to save storage space
       let compressedImageData = result.data.image_data;
@@ -1905,8 +1906,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Check if Azure integration is enabled
-      const { isAzureConfigured, uploadImageToAzure } = require('./azure-storage');
+      // Use isAzureConfigured and uploadImageToAzure imported at the top of the file
       
       let imageData = {
         ...result.data,
@@ -1992,7 +1992,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If the image is stored in Azure Blob Storage, delete it from there first
       if (image.storage_type === 'azure' && image.blob_name) {
-        const { deleteImageFromAzure } = require('./azure-storage');
+        // Use the deleteImageFromAzure that was imported at the top of the file
         try {
           console.log(`Attempting to delete image from Azure Blob Storage: ${image.blob_name}`);
           const azureDeleteSuccess = await deleteImageFromAzure(image.blob_name);
