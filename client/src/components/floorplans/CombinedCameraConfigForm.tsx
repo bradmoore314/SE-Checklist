@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
+import ImageUploadSection from '@/components/ImageUploadSection';
 
 interface CombinedCameraConfigFormProps {
   open: boolean;
@@ -148,15 +150,33 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
-          <UnifiedCameraConfigForm
-            projectId={projectId}
-            initialData={initialData}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            saveButtonText={isNew ? 'Add Camera' : 'Update Camera'}
-            showImageUpload={false}
-            mode={isNew ? "add" : "edit"}
-          />
+          <div className="space-y-6">
+            <UnifiedCameraConfigForm
+              projectId={projectId}
+              initialData={initialData}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              saveButtonText={isNew ? 'Add Camera' : 'Update Camera'}
+              showImageUpload={false}
+              mode={isNew ? "add" : "edit"}
+            />
+            
+            {!isNew && cameraData && cameraData.id && (
+              <Card className="mt-6">
+                <CardContent className="p-6">
+                  <CardTitle className="text-lg font-medium mb-4">Camera Images</CardTitle>
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Add photos of the camera location to document its installation
+                  </div>
+                  <ImageUploadSection 
+                    projectId={projectId} 
+                    equipmentId={cameraData.id} 
+                    equipmentType="camera"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
