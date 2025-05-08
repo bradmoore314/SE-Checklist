@@ -189,14 +189,12 @@ function ImageUploadSection({
     setUploadingImage(true);
     
     try {
-      // Extract the base64 data without the prefix
-      const base64Data = image.data.split(',')[1];
-      
+      // Send the complete data URI as the server expects the prefix for content type detection
       await uploadImageMutation.mutateAsync({
         equipment_type: equipmentType,
         equipment_id: equipmentId,
         project_id: projectId,
-        image_data: base64Data,
+        image_data: image.data,
         filename: image.filename || null
       });
     } catch (error) {
