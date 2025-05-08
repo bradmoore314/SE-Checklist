@@ -81,21 +81,23 @@ export default function AddCameraModal({
 
   return (
     <Dialog open={open || isOpen} onOpenChange={onOpenChange || onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="camera-config-dialog">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">
             Add New Camera
           </DialogTitle>
         </DialogHeader>
         
-        <UnifiedCameraConfigForm
-          projectId={projectId}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saveButtonText="Add Camera"
-          showImageUpload={true}
-          mode="add"
-        />
+        <div id="camera-config-dialog">
+          <UnifiedCameraConfigForm
+            projectId={projectId}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            saveButtonText="Add Camera"
+            showImageUpload={true}
+            mode="add"
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

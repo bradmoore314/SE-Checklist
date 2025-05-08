@@ -126,12 +126,13 @@ export default function EditCameraModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto" aria-describedby="edit-camera-dialog">
         <DialogHeader>
           <DialogTitle>{isNewCamera ? "Add Camera" : "Edit Camera"}</DialogTitle>
         </DialogHeader>
         
-        {isLoadingLookups ? (
+        <div id="edit-camera-dialog">
+          {isLoadingLookups ? (
           <div className="flex justify-center py-4">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
@@ -357,6 +358,7 @@ export default function EditCameraModal({
             </form>
           </Form>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );
