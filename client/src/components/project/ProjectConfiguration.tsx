@@ -154,6 +154,10 @@ export default function ProjectConfiguration({
 
   // Format option name for display
   const formatOptionName = (option: string): string => {
+    // Special case for specific options
+    if (option === 'guard_controls') return "KFO";
+    if (option === 'visitor') return "Visitor Management";
+    
     return option
       .replace(/_/g, " ")
       .split(" ")
@@ -234,8 +238,6 @@ export default function ProjectConfiguration({
     ],
     access_control: [
       'need_credentials',
-      'photo_id',
-      'photo_badging',
       'ble',
       'test_card',
       'visitor',
