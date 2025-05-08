@@ -646,7 +646,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
           
-          const imageInsert: InsertImage = {
+          const imageInsert = {
             equipment_type: 'camera',
             equipment_id: camera.id,
             project_id: projectId,
@@ -761,7 +761,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
           
-          const imageInsert: InsertImage = {
+          const imageInsert = {
             equipment_type: 'camera',
             equipment_id: camera.id,
             project_id: result.data.project_id,
