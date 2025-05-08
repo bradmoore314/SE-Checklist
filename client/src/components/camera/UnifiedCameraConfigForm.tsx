@@ -1063,94 +1063,7 @@ export default function UnifiedCameraConfigForm({
           </div>
         </div>
 
-        {showImageUpload && (
-          <div className="space-y-4">
-            <FormLabel className="text-sm font-medium text-neutral-700">
-              Camera Image
-            </FormLabel>
-            <FormDescription>
-              Take a picture or upload an image of the camera location
-            </FormDescription>
-            
-            {isTakingPicture ? (
-              <div className="space-y-4">
-                <div className="relative border rounded-lg overflow-hidden">
-                  <video 
-                    ref={videoRef} 
-                    autoPlay 
-                    playsInline
-                    className="w-full h-auto"
-                    onLoadedMetadata={() => videoRef.current?.play()}
-                  />
-                </div>
-                <div className="flex gap-2 justify-center">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={cancelCamera}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={takePicture}
-                  >
-                    <Camera className="mr-2 h-4 w-4" />
-                    Take Photo
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={startCamera}
-                  >
-                    <Camera className="mr-2 h-4 w-4" />
-                    Take Photo
-                  </Button>
-                  <div className="relative">
-                    <Button
-                      type="button"
-                      variant="outline"
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload Image
-                    </Button>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      onChange={handleFileSelect}
-                    />
-                  </div>
-                </div>
-                
-                {image && (
-                  <div className="relative border rounded-lg overflow-hidden">
-                    <img 
-                      src={image} 
-                      alt="Camera" 
-                      className="w-full h-auto max-h-48 object-contain"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={removeImage}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Camera Image section moved to right column */}
         
         <FormField
           control={form.control}
@@ -1177,33 +1090,35 @@ export default function UnifiedCameraConfigForm({
           <FormField
             control={form.control}
             name="is_indoor"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-medium text-neutral-700">
-                  Camera Location
-                </FormLabel>
-                <FormDescription>
-                  Is this an indoor or outdoor camera?
-                </FormDescription>
-                <FormControl>
-                  <RadioGroup 
-                    value={field.value} 
-                    onValueChange={field.onChange}
-                    className="flex space-x-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="indoor" id="indoor" />
-                      <Label htmlFor="indoor">Indoor</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="outdoor" id="outdoor" />
-                      <Label htmlFor="outdoor">Outdoor</Label>
-                    </div>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              return (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-medium text-neutral-700">
+                    Camera Location
+                  </FormLabel>
+                  <FormDescription>
+                    Is this an indoor or outdoor camera?
+                  </FormDescription>
+                  <FormControl>
+                    <RadioGroup 
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="indoor" id="indoor" />
+                        <Label htmlFor="indoor">Indoor</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="outdoor" id="outdoor" />
+                        <Label htmlFor="outdoor">Outdoor</Label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField
