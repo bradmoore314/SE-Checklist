@@ -205,6 +205,11 @@ export const EnhancedFloorplanViewer = ({
 
   // Function to determine if a marker's label should be visible
   const shouldShowMarkerLabel = (marker: MarkerData, isSelected: boolean): boolean => {
+    // Always show labels for all markers per user request
+    return true;
+    
+    // The following code is kept for reference but not used
+    /*
     // Always show labels for selected markers
     if (isSelected) return true;
     
@@ -216,6 +221,7 @@ export const EnhancedFloorplanViewer = ({
     
     // Check if this specific marker type should have visible labels
     return !!visibleLabelTypes[marker.marker_type];
+    */
   };
 
   // Update coordinate system when view state changes
@@ -1058,13 +1064,32 @@ export const EnhancedFloorplanViewer = ({
       const mouseDeltaX = mouseScreenX - markerDragOffset.mouseStartX;
       const mouseDeltaY = mouseScreenY - markerDragOffset.mouseStartY;
       
-      // Convert screen delta to PDF coordinates (divide by scale)
-      const pdfDeltaX = mouseDeltaX / scale;
-      const pdfDeltaY = mouseDeltaY / scale;
+      // Convert screen coordinates to PDF coordinates for precise mapping
+      // Instead of just dividing by scale, use our accurate coordinate transformation
+      const currentMousePdf = screenToPdfCoordinates(mouseScreenX, mouseScreenY);
+      const startMousePdf = screenToPdfCoordinates(
+        markerDragOffset.mouseStartX, 
+        markerDragOffset.mouseStartY
+      );
       
-      // Apply PDF delta to the marker's original position
+      // Calculate the delta in PDF coordinate space
+      const pdfDeltaX = currentMousePdf.x - startMousePdf.x;
+      const pdfDeltaY = currentMousePdf.y - startMousePdf.y;
+      
+      // Apply PDF delta to the marker's original position 
+      // This ensures exact 1:1 movement regardless of zoom level
       const newX = markerDragOffset.markerStartX + pdfDeltaX;
       const newY = markerDragOffset.markerStartY + pdfDeltaY;
+      
+      // Log the exact calculation occasionally
+      if (Math.random() < 0.02) { // Only log 2% of moves to reduce console spam
+        console.log(`Drag precision calculation:
+          - Start PDF point: (${startMousePdf.x.toFixed(4)}, ${startMousePdf.y.toFixed(4)})
+          - Current PDF point: (${currentMousePdf.x.toFixed(4)}, ${currentMousePdf.y.toFixed(4)})
+          - PDF delta: (${pdfDeltaX.toFixed(4)}, ${pdfDeltaY.toFixed(4)})
+          - Scale: ${scale.toFixed(2)}
+        `);
+      }
       
       // Limited logging to avoid console spam
       if (Math.random() < 0.05) { // Only log ~5% of moves
