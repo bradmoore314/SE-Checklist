@@ -1,0 +1,60 @@
+Fetch finished loading: GET /api/projects/31/floorplans
+Fetch finished loading: GET /api/projects/28/floorplans
+Fetch finished loading: GET /api/projects/8/floorplans
+Fetch finished loading: GET /api/projects/33/floorplans
+Fetch finished loading: GET /api/projects/25/floorplans
+Fetch GET /api/projects/28/collaborators
+Fetch GET /api/projects/28/permission
+Fetch finished loading: GET /api/projects/28/permission
+Fetch finished loading: GET /api/projects/28/collaborators
+Fetch GET /api/floorplans/27
+Fetch finished loading: GET /api/floorplans/27
+Fetch GET /api/floorplans/27/markers?page=1
+Fetch GET /api/floorplans/27/calibration?page=1
+Fetch GET /api/projects/28/marker-stats
+Calculating fit scale: PDF width=792px, Container width=1102px, Scale=1.32
+Auto-scaling PDF to fit width: scale = 1.32
+Rendering cancelled as expected
+Fetch finished loading: GET /api/floorplans/27/calibration?page=1
+Fetch finished loading: GET /api/floorplans/27/markers?page=1
+Fetch finished loading: GET /api/projects/28/marker-stats
+Zooming: scale changed to 1.19
+coordSystem.calculateZoomTransform is not a function
+coordSystem.calculateZoomTransform is not a function
+Zooming: scale changed to 1.07
+coordSystem.calculateZoomTransform is not a function
+coordSystem.calculateZoomTransform is not a function
+Zooming: scale changed to 0.96
+coordSystem.calculateZoomTransform is not a function
+coordSystem.calculateZoomTransform is not a function
+Rendering cancelled as expected
+Zooming: scale changed to 0.87
+coordSystem.calculateZoomTransform is not a function
+coordSystem.calculateZoomTransform is not a function
+Zooming: scale changed to 0.78
+coordSystem.calculateZoomTransform is not a function
+at handleWheel (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/components/floorplans/EnhancedFloorplanViewer.tsx:942:38)
+at HTMLUnknownElement.callCallback2 (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3674:22)
+at Object.invokeGuardedCallbackDev (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3699:24)
+at invokeGuardedCallback (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3733:39)
+at invokeGuardedCallbackAndCatchFirstError (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3736:33)
+at executeDispatch (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7014:11)
+at processDispatchQueueItemsInOrder (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7034:15)
+at processDispatchQueue (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7043:13)
+at dispatchEventsForPlugins (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7051:11)
+at https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7174:20
+coordSystem.calculateZoomTransform is not a function
+at handleWheel (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/components/floorplans/EnhancedFloorplanViewer.tsx:942:38)
+at HTMLUnknownElement.callCallback2 (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3674:22)
+at Object.invokeGuardedCallbackDev (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3699:24)
+at invokeGuardedCallback (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3733:39)
+at invokeGuardedCallbackAndCatchFirstError (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:3736:33)
+at executeDispatch (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7014:11)
+at processDispatchQueueItemsInOrder (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7034:15)
+at processDispatchQueue (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7043:13)
+at dispatchEventsForPlugins (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7051:11)
+at https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-XQLYTHWV.js?v=962fa3c7:7174:20
+Fetch GET /api/floorplans/27/calibration?page=1
+Fetch finished loading: GET /api/floorplans/27/calibration?page=1
+Fetch GET /api/projects/28/marker-stats
+Fetch finished loading: GET /api/projects/28/marker-stats
