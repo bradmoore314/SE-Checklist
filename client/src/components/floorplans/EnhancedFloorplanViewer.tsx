@@ -694,6 +694,10 @@ export const EnhancedFloorplanViewer = ({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
       
+      // Perform consistency check between markers and equipment
+      // For updates we only want to check, not force refresh
+      validateAndRefreshData(floorplan.project_id, false);
+      
       console.log("Marker updated successfully, updating UI");
       
       // Call onMarkersUpdated callback if provided
@@ -725,6 +729,9 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Perform consistency check between markers and equipment
+      validateAndRefreshData(floorplan.project_id);
       
       console.log("[TEST] ✅ Marker deleted successfully");
       console.log("[TEST DETAIL] Successfully deleted marker and updated UI");
@@ -769,6 +776,9 @@ export const EnhancedFloorplanViewer = ({
       queryClient.invalidateQueries({
         queryKey: [`/api/projects/${floorplan.project_id}/marker-stats`],
       });
+      
+      // Perform consistency check between markers and equipment
+      validateAndRefreshData(floorplan.project_id);
       
       console.log("[TEST] ✅ Marker duplicated successfully");
       console.log(`[TEST DETAIL] New marker created with ID: ${data?.id || 'unknown'}`);
