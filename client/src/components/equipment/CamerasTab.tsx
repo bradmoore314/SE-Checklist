@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Camera, Project } from "@shared/schema";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,22 +72,47 @@ export default function CamerasTab({ project }: CamerasTabProps) {
     }
   };
 
+  // Add camera mutation
+  const addCameraMutation = useMutation({
+    mutationFn: async (data: any) => {
+      console.log("Making API call to add camera with data:", data);
+      const response = await apiRequest('POST', `/api/projects/${project.id}/cameras`, {
+        ...data,
+        project_id: project.id
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add camera');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log("Camera added successfully with ID:", data.id);
+      
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/projects/${project.id}/cameras`]
+      });
+      
+      toast({
+        title: "Camera Added",
+        description: "The camera has been added successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding camera:", error);
+      toast({
+        title: "Failed to Add Camera",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
+    }
+  });
+  
   // Handle save from add modal
-  const handleSave = (id: number, newData: Camera) => {
-    console.log("New Camera added:", id, newData);
-    
-    // Close modal
+  const handleSave = (newData: Camera) => {
+    console.log("Adding new camera with data:", newData);
+    addCameraMutation.mutate(newData);
     setShowAddModal(false);
-    
-    // Invalidate and refetch
-    queryClient.invalidateQueries({ 
-      queryKey: [`/api/projects/${project.id}/cameras`]
-    });
-    
-    toast({
-      title: "Camera Added",
-      description: "The camera has been added successfully.",
-    });
   };
   
   // Handle save from edit modal
@@ -509,7 +534,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
           }}
           projectId={project.id}
           isNew={true}
-          onSave={handleSave}
+          onSave={(updatedData) => handleSave(updatedData)}
           title="Add New Camera"
         />
       )}
