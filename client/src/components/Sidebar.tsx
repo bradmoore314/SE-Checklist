@@ -29,7 +29,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <svg className="w-8 h-8" style={{ color: 'var(--red-accent)' }} fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L14 11.586V6z" clipRule="evenodd"></path>
         </svg>
-        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">Kastle Wizard</span>}
+        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">Checklist Wizard</span>}
       </div>
       
       {/* User Info */}
@@ -37,14 +37,14 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
           <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
             <img 
-              src="/src/assets/kastle-logo.png" 
-              alt="Kastle Logo" 
+              src="/src/assets/checklist-wizard-logo.png" 
+              alt="Checklist Wizard Logo" 
               className="w-full h-full object-contain"
             />
           </div>
           <div className="ml-3">
             <div className="font-medium text-gray-900">Sales Engineer</div>
-            <div className="text-sm text-gray-600">Kastle Wizard</div>
+            <div className="text-sm text-gray-600">Checklist Wizard</div>
           </div>
         </div>
       )}
