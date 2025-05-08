@@ -923,6 +923,9 @@ export const EnhancedFloorplanViewer = ({
     };
   }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
 
+  // State for combined camera configuration
+  const [isCameraConfigOpen, setCameraConfigOpen] = useState(false);
+  
   // Mouse handling for pan/zoom and marker placement
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) { // Left click
@@ -943,13 +946,21 @@ export const EnhancedFloorplanViewer = ({
         // Get the mouse position using our coordinate system
         if (!containerRef.current) return; // Safety check
         
-        // Convert screen coordinates to PDF coordinates
-        const mousePdf = screenToPdfCoordinates(x, y);
+        // IMPORTANT FIX: Direct calculation for correct marker placement
+        // Get the container's position and apply inverse transform
+        const rect = containerRef.current.getBoundingClientRect();
+        const containerX = x - rect.left;
+        const containerY = y - rect.top;
+        
+        // Apply inverse transform to get PDF coordinates
+        const pdfX = (containerX - translateX) / scale;
+        const pdfY = (containerY - translateY) / scale;
         
         console.log(`=== ADDING NEW MARKER ===`);
         console.log(`Mouse screen position: (${x}, ${y})`);
+        console.log(`Container position: (${containerX}, ${containerY})`);
         console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
-        console.log(`Calculated PDF position: (${mousePdf.x.toFixed(2)}, ${mousePdf.y.toFixed(2)})`);
+        console.log(`Calculated PDF position: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
         
         // Create temporary marker based on tool mode
         const newMarker: Partial<MarkerData> = {
@@ -957,8 +968,8 @@ export const EnhancedFloorplanViewer = ({
           unique_id: uuidv4(),
           page: currentPage,
           marker_type: toolMode,
-          position_x: mousePdf.x,
-          position_y: mousePdf.y,
+          position_x: pdfX,
+          position_y: pdfY,
           version: 1,
           layer_id: activeLayer?.id
         };
@@ -976,13 +987,28 @@ export const EnhancedFloorplanViewer = ({
           setTempMarker(newMarker);
         } else if (toolMode === 'polyline' || toolMode === 'polygon') {
           // Start collecting points
-          console.log(`Starting polyline at: x=${mousePdf.x}, y=${mousePdf.y}`);
+          console.log(`Starting polyline at: x=${pdfX}, y=${pdfY}`);
           setIsDrawing(true);
-          setDrawingPoints([{ x: mousePdf.x, y: mousePdf.y }]);
+          setDrawingPoints([{ x: pdfX, y: pdfY }]);
         } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
           // For equipment markers that need configuration
           setTempMarker(newMarker);
-          setIsEquipmentFormOpen(true);
+          
+          // IMPORTANT CHANGE: For camera markers, open the combined config immediately
+          // instead of the regular equipment form - this prevents the infinite loop
+          if (toolMode === 'camera') {
+            setTempMarker({
+              ...newMarker,
+              // Set default values for camera visualization
+              fov: 90,
+              range: 60,
+              rotation: 0,
+              label: `Camera at ${Math.round(pdfX)}, ${Math.round(pdfY)}`
+            });
+            setCameraConfigOpen(true);
+          } else {
+            setIsEquipmentFormOpen(true);
+          }
         } else {
           // For other point markers that don't need sizing or configuration
           addMarkerMutation.mutate(newMarker);
