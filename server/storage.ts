@@ -110,6 +110,10 @@ export interface IStorage {
   updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
   deleteFloorplanMarker(id: number): Promise<boolean>;
   
+  // Images
+  saveImage(insertImage: InsertImage): Promise<Image>;
+  getImages(equipmentType: string, equipmentId: number): Promise<Image[]>;
+  
   // Feedback
   getFeedback(): Promise<Feedback[]>;
   getFeedbackById(id: number): Promise<Feedback | undefined>;
@@ -157,6 +161,7 @@ export class MemStorage implements IStorage {
   private floorplanMarkers: Map<number, FloorplanMarker>;
   private feedback: Map<number, Feedback>;
   private crmSettings: Map<number, CrmSetting>;
+  private images: Map<number, Image>;
   
   private currentUserId: number;
   private currentProjectId: number;

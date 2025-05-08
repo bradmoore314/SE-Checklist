@@ -627,6 +627,21 @@ export type KvgFormData = typeof kvgFormData.$inferSelect;
 export const insertKvgFormDataSchema = createInsertSchema(kvgFormData).omit({ id: true, created_at: true, updated_at: true });
 export type InsertKvgFormData = z.infer<typeof insertKvgFormDataSchema>;
 
+// Equipment Images
+export const images = pgTable("images", {
+  id: serial("id").primaryKey(),
+  equipment_type: text("equipment_type").notNull(),
+  equipment_id: integer("equipment_id").notNull(),
+  project_id: integer("project_id").notNull(),
+  image_data: text("image_data").notNull(),
+  filename: text("filename"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export type Image = typeof images.$inferSelect;
+export const insertImageSchema = createInsertSchema(images).omit({ id: true, created_at: true });
+export type InsertImage = z.infer<typeof insertImageSchema>;
+
 // CRM Settings
 export const crmSettings = pgTable("crm_settings", {
   id: serial("id").primaryKey(),
