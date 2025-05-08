@@ -74,15 +74,15 @@ export class CoordinateSystem {
   }
 
   /**
-   * Convert screen coordinates to PDF coordinates
+   * Convert screen coordinates to PDF coordinates with continuous dynamic precision
    * 
    * @param screenX - X coordinate in screen space
    * @param screenY - Y coordinate in screen space
    * @param debug - Whether to log debug information
-   * @param precision - Decimal places to preserve (default: 4)
+   * @param maxPrecision - Maximum decimal places to preserve (default: 6)
    * @returns Point in PDF coordinates
    */
-  screenToPdf(screenX: number, screenY: number, debug: boolean = false, precision: number = 4): Point {
+  screenToPdf(screenX: number, screenY: number, debug: boolean = false, maxPrecision: number = 6): Point {
     if (!this.containerElement) return { x: 0, y: 0 };
     
     // Get container-relative coordinates
@@ -90,21 +90,45 @@ export class CoordinateSystem {
     const containerX = screenX - rect.left;
     const containerY = screenY - rect.top;
     
-    // Transform to PDF coordinates
-    const pdfX = (containerX - this.translateX) / this.scale;
-    const pdfY = (containerY - this.translateY) / this.scale;
+    // Transform to PDF coordinates (unrounded)
+    const pdfXUnrounded = (containerX - this.translateX) / this.scale;
+    const pdfYUnrounded = (containerY - this.translateY) / this.scale;
     
-    if (debug) {
-      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(precision)}, ${pdfY.toFixed(precision)}) @ scale ${this.scale.toFixed(2)}`);
+    // Calculate pixels per PDF point for dynamic precision
+    const pixelsPerPdfPoint = this.scale;
+    
+    // Implement continuous dynamic precision calculation
+    let dynamicDecimalPlaces: number;
+    if (pixelsPerPdfPoint < 0.1) {
+      // Very low zoom (< 0.1x) - use minimal precision
+      dynamicDecimalPlaces = 1;
+    } else if (pixelsPerPdfPoint > 500) {
+      // Extremely high zoom (> 500x) - use maximum precision
+      dynamicDecimalPlaces = 5;
+    } else {
+      // Dynamic precision based on zoom level
+      // The formula log10(scale) + 2 gives a good approximation:
+      // - At scale 1, we get 2 decimal places
+      // - At scale 10, we get 3 decimal places
+      // - At scale 100, we get 4 decimal places
+      dynamicDecimalPlaces = Math.max(2, Math.ceil(Math.log10(pixelsPerPdfPoint)) + 2);
     }
     
-    // Use higher precision for greater zoom levels
-    const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(this.scale) + 2)), precision);
+    // Cap at maximum practical precision
+    const finalPrecision = Math.min(dynamicDecimalPlaces, maxPrecision);
     
-    // Ensure consistent precision with adaptive decimal places
+    if (debug) {
+      console.log(
+        `Screen(${screenX}, ${screenY}) → ` +
+        `PDF(${pdfXUnrounded.toFixed(finalPrecision)}, ${pdfYUnrounded.toFixed(finalPrecision)}) @ ` +
+        `scale ${this.scale.toFixed(2)}, precision: ${finalPrecision}`
+      );
+    }
+    
+    // Apply the calculated precision
     return {
-      x: Number(pdfX.toFixed(adjustedPrecision)),
-      y: Number(pdfY.toFixed(adjustedPrecision))
+      x: Number(pdfXUnrounded.toFixed(finalPrecision)),
+      y: Number(pdfYUnrounded.toFixed(finalPrecision))
     };
   }
 
@@ -132,7 +156,7 @@ export class CoordinateSystem {
 }
 
 /**
- * Standalone function to convert screen coordinates to PDF coordinates
+ * Standalone function to convert screen coordinates to PDF coordinates with continuous dynamic precision
  * 
  * @param screenX - X coordinate in screen space
  * @param screenY - Y coordinate in screen space
@@ -140,7 +164,7 @@ export class CoordinateSystem {
  * @param scale - Current zoom scale
  * @param translateX - X translation
  * @param translateY - Y translation
- * @param precision - Decimal places to preserve (default: 4)
+ * @param maxPrecision - Maximum decimal places to preserve (default: 6)
  * @returns Point in PDF coordinates
  */
 export function screenToPdfCoordinates(
@@ -150,21 +174,37 @@ export function screenToPdfCoordinates(
   scale: number,
   translateX: number,
   translateY: number,
-  precision: number = 4
+  maxPrecision: number = 6
 ): Point {
   const rect = containerElement.getBoundingClientRect();
   const containerX = screenX - rect.left;
   const containerY = screenY - rect.top;
   
-  const pdfX = (containerX - translateX) / scale;
-  const pdfY = (containerY - translateY) / scale;
+  const pdfXUnrounded = (containerX - translateX) / scale;
+  const pdfYUnrounded = (containerY - translateY) / scale;
   
-  // Use higher precision for greater zoom levels
-  const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(scale) + 2)), precision);
+  // Calculate pixels per PDF point for dynamic precision
+  const pixelsPerPdfPoint = scale;
+  
+  // Implement continuous dynamic precision calculation
+  let dynamicDecimalPlaces: number;
+  if (pixelsPerPdfPoint < 0.1) {
+    // Very low zoom (< 0.1x) - use minimal precision
+    dynamicDecimalPlaces = 1;
+  } else if (pixelsPerPdfPoint > 500) {
+    // Extremely high zoom (> 500x) - use maximum precision
+    dynamicDecimalPlaces = 5;
+  } else {
+    // Dynamic precision based on zoom level
+    dynamicDecimalPlaces = Math.max(2, Math.ceil(Math.log10(pixelsPerPdfPoint)) + 2);
+  }
+  
+  // Cap at maximum practical precision
+  const finalPrecision = Math.min(dynamicDecimalPlaces, maxPrecision);
   
   return {
-    x: Number(pdfX.toFixed(adjustedPrecision)),
-    y: Number(pdfY.toFixed(adjustedPrecision))
+    x: Number(pdfXUnrounded.toFixed(finalPrecision)),
+    y: Number(pdfYUnrounded.toFixed(finalPrecision))
   };
 }
 

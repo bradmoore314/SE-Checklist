@@ -1,0 +1,352 @@
+**Context:**
+We have an existing `CoordinateSystem` class in `utils/coordinates.ts` and a `screenToPdf` method that uses adaptive precision based on zoom tiers.
+
+*Your existing `CoordinateSystem` class and `screenToPdf` method snippet here.*
+
+**Task:**
+Refactor the `CoordinateSystem.screenToPdf` method to implement a *continuous dynamic precision* calculation based on the actual `this.scale` (ratio of screen pixels to PDF points), instead of fixed tiers. The goal is smoother precision scaling and potentially higher accuracy at extreme zooms.
+
+**Specific Changes:**
+1.  In `screenToPdf`, calculate `pixelsPerPdfPoint = this.scale`.
+2.  Implement `dynamicDecimalPlaces` logic:
+    *   If `pixelsPerPdfPoint < 0.1`, `precision = 1`.
+    *   If `pixelsPerPdfPoint > 500` (or a similar high threshold), `precision = 5` (or `6`).
+    *   Otherwise, `dynamicDecimalPlaces = Math.max(2, Math.ceil(Math.log10(pixelsPerPdfPoint)) + 2)`.
+3.  The final precision applied should be `Math.min(dynamicDecimalPlaces, maxPracticalPrecision)` where `maxPracticalPrecision` could be e.g., 6 or 7.
+4.  Apply this `finalPrecision` when calling `toFixed()` on the calculated PDF coordinates.
+5.  Ensure the `CoordinateSystem` class constructor or an `updateSystem` method correctly initializes/updates `this.containerElement`, `this.scale`, `this.translateX`, `this.translateY`, and potentially `this.viewportDimensions`. The `scale` should represent screen pixels per PDF point. `translateX` and `translateY` should be the screen coordinates of the PDF origin (0,0).
+
+**Example of new precision logic (for AI to integrate):**
+```typescript
+// Inside screenToPdf method:
+const pixelsPerPdfPoint = this.scale;
+let dynamicDecimalPlaces: number;
+if (pixelsPerPdfPoint < 0.1) { dynamicDecimalPlaces = 1; }
+else if (pixelsPerPdfPoint > 500) { dynamicDecimalPlaces = 5; }
+else { dynamicDecimalPlaces = Math.max(2, Math.ceil(Math.log10(pixelsPerPdfPoint)) + 2); }
+const finalPrecision = Math.min(dynamicDecimalPlaces, 6); // Max 6 decimal places
+
+return {
+  x: Number(pdfXUnrounded.toFixed(finalPrecision)),
+  y: Number(pdfYUnrounded.toFixed(finalPrecision))
+};
+Use code with caution.
+Markdown
+**Instruction 1.2: Centralize Viewport State Management (Introduce `useViewport` Hook)**
+
+```markdown
+**Context:**
+The `EnhancedFloorplanViewer.tsx` component currently manages `scale`, `translateX`, `translateY`, and `viewportDimensions` directly using `useState`. Zooming and panning logic is also embedded within this component.
+
+*Your existing `EnhancedFloorplanViewer.tsx` state definitions for scale/translate and relevant parts of `handleMouseDown`, `handleMouseMove`, `handleMouseUp` (for panning), and `handleWheel` (for zooming) here.*
+*Your `CoordinateSystem` class instance initialization.*
+
+**Task:**
+Create a new custom React hook named `useViewport(initialScale, initialTranslateX, initialTranslateY, containerRef, coordSystemInstance, pdfDimensions)` in `src/hooks/useViewport.ts`. This hook will encapsulate all viewport state (scale, translateX, translateY) and logic (zoom, pan).
+
+**Hook Responsibilities (`useViewport`):**
+1.  Manage `scale`, `translateX`, `translateY` state.
+2.  Provide functions:
+    *   `zoomToPoint(newScale: number, screenPoint: {x: number, y: number})`: Implements zoom centered on `screenPoint`.
+        *   Uses `coordSystemInstance.screenToPdf(screenPoint)` to find PDF point under cursor BEFORE zoom.
+        *   Calculates new `translateX`, `translateY` to keep that PDF point under the cursor AFTER zoom.
+    *   `panByDelta(deltaScreenX: number, deltaScreenY: number)`: Updates `translateX`, `translateY`.
+    *   `setZoom(newScale: number)`: Sets scale, potentially re-centering or maintaining current center.
+    *   `resetViewport()`: Resets to initial scale and centers the PDF based on `pdfDimensions` and `containerRef` dimensions.
+3.  Return `scale`, `translateX`, `translateY`, and the control functions.
+
+**Refactor `EnhancedFloorplanViewer.tsx`:**
+1.  Remove direct `useState` for `scale`, `translateX`, `translateY`.
+2.  Use the `useViewport` hook.
+3.  Update `handleMouseDown`, `handleMouseMove`, `handleMouseUp` (for background panning) and `handleWheel` to call the functions exposed by `useViewport` (e.g., `panByDelta`, `zoomToPoint`).
+4.  The `useEffect` that updates the `CoordinateSystem` instance and applies CSS transforms should now get `scale`, `translateX`, `translateY` from the `useViewport` hook.
+
+**Example `zoomToPoint` logic (for AI to integrate into `useViewport`):**
+```typescript
+// Inside useViewport hook
+const zoomToPoint = useCallback((newScaleTarget: number, screenPoint: {x: number, y: number}) => {
+  if (!containerRef.current || !coordSystemInstance) return;
+
+  const currentPdfPointAtScreenPoint = coordSystemInstance.screenToPdf(screenPoint.x, screenPoint.y);
+
+  // Calculate new translateX, translateY so currentPdfPointAtScreenPoint remains at screenPoint
+  // After scaling, screenPoint.x = (currentPdfPointAtScreenPoint.x * newScaleTarget) + newTranslateX
+  // So, newTranslateX = screenPoint.x - (currentPdfPointAtScreenPoint.x * newScaleTarget)
+  // Relative to container:
+  const rect = containerRef.current.getBoundingClientRect();
+  const containerRelativeScreenX = screenPoint.x - rect.left;
+  const containerRelativeScreenY = screenPoint.y - rect.top;
+
+  const newTX = containerRelativeScreenX - (currentPdfPointAtScreenPoint.x * newScaleTarget);
+  const newTY = containerRelativeScreenY - (currentPdfPointAtScreenPoint.y * newScaleTarget);
+  
+  setScale(newScaleTarget);
+  setTranslateX(newTX);
+  setTranslateY(newTY);
+}, [coordSystemInstance, containerRef, scale /* existing scale for coordSystem before update */, translateX, translateY]);
+Use code with caution.
+**Phase 2: Enhancing Marker Interactions and Visualizations**
+
+**Instruction 2.1: Robust Camera FOV Path Generation**
+
+```markdown
+**Context:**
+The `CameraMarker.tsx` component currently uses a `calculateFovArc` method that generates an FOV path by creating many small line segments.
+
+*Your existing `CameraMarker.tsx` and its `calculateFovArc` method snippet here.*
+
+**Task:**
+Refactor the FOV path generation to use a true SVG Arc command (`A`) for sectors less than 360°. For 360° FOV, it should generate a path that renders a complete circle (or simply use an SVG `<circle>` element if rendering is separate). This will improve rendering quality and efficiency.
+
+**Specific Changes:**
+1.  Create a new utility function, e.g., `calculateSvgFovPathD(centerX: number, centerY: number, range: number, fovDegrees: number, baseRotationDegrees: number)` (can be in `utils/geometry.ts` or `utils/coordinates.ts`).
+2.  This function should implement the logic (provided below) to generate an SVG path string `d` using the `A` command for arcs.
+3.  If `fovDegrees >= 359.9` (or similar threshold for full circle):
+    *   If `CameraMarker.tsx` directly renders SVG: it can switch to rendering an `<circle>` element.
+    *   If `calculateSvgFovPathD` *must* return a path string for a circle (e.g., for a generic path renderer), it should generate a path consisting of two semi-circular arcs.
+4.  In `CameraMarker.tsx`, replace the call to the old `calculateFovArc` with this new utility to get the `d` attribute for an SVG `<path>` element representing the FOV.
+
+**Example of `calculateSvgFovPathD` (for AI to create/integrate):**
+```typescript
+// utils/geometry.ts or similar
+export function calculateSvgFovPathD(
+  centerX: number, centerY: number, range: number, 
+  fovDegrees: number, baseRotationDegrees: number
+): string {
+  const clampedFov = Math.max(0, Math.min(360, fovDegrees));
+  if (clampedFov === 0 || range <= 0) return '';
+
+  if (clampedFov >= 359.9) {
+    // Path for a full circle that can be filled from center:
+    // M center L edge1 A ... edge2 A ... edge1 Z
+    // (Alternative: just use <circle> if possible in consuming component)
+    const p1x = centerX + range; const p1y = centerY;
+    const p2x = centerX - range; const p2y = centerY;
+    return `M ${centerX},${centerY} L ${p1x},${p1y} A ${range},${range} 0 1,1 ${p2x},${p2y} A ${range},${range} 0 1,1 ${p1x},${p1y} Z`;
+  }
+
+  const fovRadians = (clampedFov * Math.PI) / 180;
+  const rotationRadians = (baseRotationDegrees * Math.PI) / 180;
+  const angle1 = rotationRadians - fovRadians / 2;
+  const angle2 = rotationRadians + fovRadians / 2;
+
+  const x1 = centerX + range * Math.cos(angle1);
+  const y1 = centerY + range * Math.sin(angle1);
+  const x2 = centerX + range * Math.cos(angle2);
+  const y2 = centerY + range * Math.sin(angle2);
+
+  const largeArcFlag = fovRadians > Math.PI ? 1 : 0;
+  const sweepFlag = 1; 
+
+  return `M ${centerX},${centerY} L ${x1},${y1} A ${range},${range} 0 ${largeArcFlag},${sweepFlag} ${x2},${y2} Z`;
+}
+Use code with caution.
+**Instruction 2.2: Refactor Marker Dragging for Precision and Clarity**
+
+```markdown
+**Context:**
+Marker dragging logic is within `EnhancedFloorplanViewer.tsx` (`handleMarkerMouseDown`, `handleMarkerMouseMove`, `handleMarkerMouseUp`). It already scales mouse deltas by `1/scale`.
+
+*Your existing `handleMarkerMouseDown`, `handleMarkerMouseMove`, `handleMarkerMouseUp` (for marker dragging) and `markerDragOffset` state from `EnhancedFloorplanViewer.tsx` here.*
+*Your `CoordinateSystem` instance usage.*
+
+**Task:**
+Refine the marker dragging logic for improved clarity and to ensure adaptive precision is applied correctly upon drag completion. Consider creating a dedicated custom hook `useMarkerDragHandler` for this.
+
+**If creating `useMarkerDragHandler(coordSystemInstance, scale, updateMarkerMutation)`:**
+1.  **Hook State:** `isDragging`, `dragStartMarkerPdfPos`, `dragStartMouseScreenPos`, `draggedMarkerId`.
+2.  **Exposed Functions:**
+    *   `startMarkerDrag(event: React.MouseEvent, marker: MarkerData)`: Called on marker mousedown. Stores initial states.
+    *   `handleMarkerDragMove(event: MouseEvent)`: (To be called from a global mousemove listener if `isDragging`).
+        *   Calculates `deltaScreenX`, `deltaScreenY`.
+        *   `deltaPdfX = deltaScreenX / scale` (current scale from props/context).
+        *   `deltaPdfY = deltaScreenY / scale`.
+        *   `currentDraggedPdfPos = { x: dragStartMarkerPdfPos.x + deltaPdfX, y: dragStartMarkerPdfPos.y + deltaPdfY }`.
+        *   **Optimistic UI Update:** Update a local state for the dragged marker's position (or call a context dispatch) so the UI reflects dragging smoothly. This position should be unrounded for fluid movement.
+    *   `endMarkerDrag(event: MouseEvent)`:
+        *   Calculate final `finalPdfPos` similarly to `handleMarkerDragMove`.
+        *   **Crucially, round `finalPdfPos` using `coordSystemInstance.screenToPdf`-like logic (or a utility applying the same dynamic precision) based on the *current scale* before sending to `updateMarkerMutation`.**
+        *   Call `updateMarkerMutation.mutate(...)` with the rounded coordinates and version.
+        *   Reset dragging state.
+3.  **Refactor `EnhancedFloorplanViewer.tsx`:**
+    *   Use `useMarkerDragHandler`.
+    *   Attach `startMarkerDrag` to marker `onMouseDown`.
+    *   The global `mousemove` and `mouseup` listeners in `EnhancedFloorplanViewer` would call `dragHandler.handleMarkerDragMove(e)` and `dragHandler.endMarkerDrag(e)` if `dragHandler.isDragging` is true.
+
+**Alternative (Direct Refactor in `EnhancedFloorplanViewer.tsx`):**
+1.  Ensure `markerDragOffset` stores `markerStartX` and `markerStartY` in *unrounded* PDF coordinates if they come directly from a marker object that might already be rounded.
+2.  In `handleMarkerMouseMove` (your existing one for markers), the `newX`, `newY` calculated for optimistic UI updates can remain unrounded or use minimal precision for smoothness.
+3.  In `handleMarkerMouseUp` (when drag ends for a marker), before calling `updateMarkerMutation.mutate`:
+    *   Recalculate the final `newX`, `newY` based on total delta.
+    *   Create a `finalPrecisePdfPoint = {x: newX, y: newY}`.
+    *   Use a utility `roundPdfPoint(point: Point, currentScale: number, coordSystem: CoordinateSystem): Point` (which internally uses the dynamic precision logic) to round `finalPrecisePdfPoint`.
+    *   Pass these *rounded* coordinates to the mutation.
+
+**Example of final rounding (for AI to integrate):**
+```typescript
+// Assuming you have coordSystemInstance available
+// In handleMarkerMouseUp or equivalent end-drag logic:
+// ... calculate final unrounded newPdfX, newPdfY ...
+const finalPdfPoint = { x: newPdfX, y: newPdfY };
+
+// This is a conceptual step. screenToPdf converts screen to PDF. We already have PDF.
+// We need a function that just applies the precision rounding to an existing PDF point.
+// Let's assume CoordinateSystem has a helper or we create one:
+const roundUsingDynamicPrecision = (pdfPoint: Point, currentScale: number): Point => {
+  const pixelsPerPdfPoint = currentScale; // Assuming scale is pixels/pdf_unit
+  let dynamicDecimalPlaces: number;
+  // ... (same dynamic precision logic as in Instruction 1.1) ...
+  if (pixelsPerPdfPoint < 0.1) { dynamicDecimalPlaces = 1; }
+  else if (pixelsPerPdfPoint > 500) { dynamicDecimalPlaces = 5; }
+  else { dynamicDecimalPlaces = Math.max(2, Math.ceil(Math.log10(pixelsPerPdfPoint)) + 2); }
+  const finalPrecision = Math.min(dynamicDecimalPlaces, 6);
+  
+  return {
+    x: Number(pdfPoint.x.toFixed(finalPrecision)),
+    y: Number(pdfPoint.y.toFixed(finalPrecision))
+  };
+};
+
+const roundedFinalPdfPoint = roundUsingDynamicPrecision(finalPdfPoint, scale);
+
+updateMarkerMutation.mutate({
+  id: selectedMarker.id,
+  position_x: roundedFinalPdfPoint.x,
+  position_y: roundedFinalPdfPoint.y,
+  version: selectedMarker.version // Important for optimistic locking
+});
+Use code with caution.
+**Phase 3: Performance and Advanced Visuals**
+
+**Instruction 3.1: Implement More Robust Virtualized Marker Rendering**
+
+```markdown
+**Context:**
+The `EnhancedFloorplanViewer.tsx` uses a `useMemo` hook (`visibleMarkers`) to filter markers based on the current viewport, adding a buffer.
+
+*Your existing `visibleMarkers` `useMemo` hook snippet from `EnhancedFloorplanViewer.tsx` here.*
+*Your `CoordinateSystem.screenToPdfCoordinates` utility function signature/usage.*
+
+**Task:**
+Enhance the marker virtualization logic for robustness and accuracy.
+
+**Specific Changes:**
+1.  **Accurate Viewport in PDF Coordinates:** Ensure the `topLeft` and `bottomRight` PDF coordinates of the viewport are calculated correctly using your `CoordinateSystem` instance and current `scale`, `translateX`, `translateY`, and `containerRef.current.getBoundingClientRect()`.
+2.  **Marker Bounding Box:** For each marker, determine its bounding box in PDF coordinates.
+    *   For simple point markers (like `AccessPointMarker`, `NoteMarker` if it's just an icon): `bbox = { minX: pos.x - r, minY: pos.y - r, maxX: pos.x + r, maxY: pos.y + r }` where `r` is its radius in PDF units.
+    *   For `CameraMarker`: The bounding box must encompass the marker icon *and* its entire FOV visualization (based on `range` and `fov` angle). This will require `GeometryUtils` to calculate the extent of the FOV arc.
+3.  **Intersection Check:** Use a standard Axis-Aligned Bounding Box (AABB) intersection check between the marker's PDF bounding box and the (buffered) PDF viewport rectangle.
+4.  **Buffer Strategy:** The current buffer `100 / scale` (making PDF unit buffer constant relative to screen) is a decent approach. Test if this feels right or if a fixed PDF unit buffer is better in some cases.
+
+**Example for Camera Marker Bounding Box (Conceptual - AI to refine):**
+```typescript
+// utils/geometry.ts or similar
+function getCameraMarkerBoundingBox(marker: CameraMarkerData, iconRadiusPdf: number): AABB {
+  const { position_x, position_y, range, fov, rotation } = marker;
+  let points: Point[] = [{ x: position_x, y: position_y }]; // Start with marker center
+
+  // Add points for FOV extent
+  if (range && fov) {
+    const fovRad = (fov * Math.PI) / 180;
+    const rotRad = (rotation || 0) * Math.PI) / 180;
+    points.push({ 
+      x: position_x + range * Math.cos(rotRad - fovRad / 2), 
+      y: position_y + range * Math.sin(rotRad - fovRad / 2) 
+    });
+    points.push({ 
+      x: position_x + range * Math.cos(rotRad + fovRad / 2), 
+      y: position_y + range * Math.sin(rotRad + fovRad / 2) 
+    });
+    // For wide FOVs, might need more points or use arc properties
+    if (fov > 180) {
+        // Add point opposite to rotation direction at 'range' distance
+        points.push({
+            x: position_x + range * Math.cos(rotRad + Math.PI),
+            y: position_y + range * Math.sin(rotRad + Math.PI)
+        });
+    }
+  }
+  // Create AABB from all these points, also considering iconRadiusPdf around position_x, position_y
+  let minX = position_x - iconRadiusPdf, minY = position_y - iconRadiusPdf;
+  let maxX = position_x + iconRadiusPdf, maxY = position_y + iconRadiusPdf;
+
+  points.forEach(p => {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
+  });
+  return { minX, minY, maxX, maxY };
+}
+
+// In visibleMarkers useMemo:
+// const markerAABB = marker.marker_type === 'camera' 
+//   ? getCameraMarkerBoundingBox(marker as CameraMarkerData, ICON_RADIUS_PDF) 
+//   : getSimpleMarkerBoundingBox(marker, ICON_RADIUS_PDF);
+// if (!doAABBsIntersect(markerAABB, bufferedPdfViewportRect)) return false;
+Use code with caution.
+**Instruction 3.2: Implement Visual Editing Handles for Camera FOV**
+
+```markdown
+**Context:**
+The `EnhancedFloorplanViewer.tsx` has `handleMarkerHandleMouseDown`, `handleMarkerHandleMouseMove`, and `handleMarkerHandleMouseUp` for resizing/rotating camera FOVs, with logic to calculate new `fov`, `range`, or `rotation` based on mouse position. The `CameraMarker.tsx` component would need to render these handles.
+
+*Your existing `handleMarkerHandleMouseDown`, `handleMarkerHandleMouseMove`, `handleMarkerHandleMouseUp` (for handles) snippets from `EnhancedFloorplanViewer.tsx`.*
+*Your `CameraMarker.tsx` component structure.*
+*Your `CoordinateSystem.screenToPdfCoordinates` and geometry utilities like `calculateAngle`, `calculateDistance`.*
+
+**Task:**
+1.  **In `CameraMarker.tsx`:**
+    *   When the camera marker `isSelected`, render visual SVG handles (e.g., small circles or specific icons) for:
+        *   **Range adjustment:** A handle at the tip of the FOV's centerline.
+        *   **FOV Angle adjustment:** Two handles, one on each edge of the FOV arc at the `range` distance.
+        *   **Rotation adjustment:** A handle slightly offset from the marker center, or allow dragging a rotation line.
+    *   These handles should have `onMouseDown` handlers that call a prop like `onHandleMouseDown(event, handleType: 'range' | 'fov-edge-1' | 'fov-edge-2' | 'rotation')`.
+    *   The positions of these handles must be calculated based on the camera's current `position`, `range`, `fov`, and `rotation`.
+
+2.  **Refactor `EnhancedFloorplanViewer.tsx`'s handle adjustment logic (or move to a `useCameraEditor` hook):**
+    *   The `handleMarkerHandleMouseMove` function needs to robustly update the correct parameter (`range`, `fov`, or `rotation`) based on `activeHandle` and the mouse's current PDF coordinates.
+    *   **Range:** `newRange = calculateDistance(markerCenterPdf, mouseCurrentPdf)`.
+    *   **Rotation:** `newRotation = calculateAngle(markerCenterPdf, mouseCurrentPdf)` (ensure angle is relative to a consistent axis).
+    *   **FOV Angle:** This is the trickiest. When dragging an FOV edge handle:
+        1.  Get current mouse PDF position (`mouseCurrentPdf`).
+        2.  Calculate the angle of the vector from `markerCenterPdf` to `mouseCurrentPdf`. Let this be `mouseAngleDegrees`.
+        3.  The camera's current `rotation` defines the centerline of the FOV.
+        4.  The `newFovDegrees = 2 * Math.abs(normalizeAngle(mouseAngleDegrees - currentRotationDegrees))`. (This assumes the `mouseAngleDegrees` represents one edge of the FOV, and the FOV is symmetrical around `currentRotationDegrees`).
+        5.  Clamp `newFovDegrees` (e.g., 10 to 359 degrees).
+    *   Ensure `updateMarkerMutation.mutate` is called with the new values and the marker's current `version`.
+
+**Example Handle Positioning in `CameraMarker.tsx` (Conceptual for AI):**
+```typescript
+// Inside CameraMarker.tsx, if isSelected:
+// const { position_x, position_y, range, fov, rotation } = markerData;
+// const rotRad = (rotation || 0) * Math.PI / 180;
+// const fovRad = (fov || 90) * Math.PI / 180;
+
+// // Range handle (tip of FOV centerline)
+// const rangeHandleX = position_x + range * Math.cos(rotRad);
+// const rangeHandleY = position_y + range * Math.sin(rotRad);
+// // <circle cx={rangeHandleX} cy={rangeHandleY} r={5/scale} onMouseDown={(e) => onHandleMouseDown(e, 'range')} />
+
+// // FOV Edge 1 Handle
+// const edge1Angle = rotRad - fovRad / 2;
+// const fovEdge1X = position_x + range * Math.cos(edge1Angle);
+// const fovEdge1Y = position_y + range * Math.sin(edge1Angle);
+// // <circle cx={fovEdge1X} cy={fovEdge1Y} r={5/scale} onMouseDown={(e) => onHandleMouseDown(e, 'fov-edge-1')} />
+
+// // FOV Edge 2 Handle (similarly for + fovRad / 2)
+// // Rotation Handle (e.g., slightly offset or on a draggable line)
+Use code with caution.
+AI Task for handleMarkerHandleMouseMove refinement:
+"Given the activeHandle type ('range', 'rotation', 'fov-edge-1', 'fov-edge-2'), the selected camera marker's current properties, and the current mouse position in PDF coordinates, implement the precise calculation logic to update the corresponding FOV parameter. Ensure angles are handled correctly (normalized, correct datums) and that updates are sent via updateMarkerMutation."
+---
+
+**General Instructions for Replit AI When Applying These Changes:**
+
+*   "You will be provided with snippets of existing TypeScript and React code. Your task is to refactor and enhance these snippets based on the specific instructions for each phase and sub-instruction."
+*   "Maintain TypeScript types and aim for type safety."
+*   "When creating new hooks or utilities, place them in appropriate directories (e.g., `src/hooks/`, `src/utils/`)."
+*   "Focus on functional components and React hooks."
+*   "Preserve existing functionality unless explicitly told to change it. The goal is enhancement and architectural improvement, not removal of features."
+*   "If a new utility function is introduced (e.g., `calculateSvgFovPathD`), provide its full implementation."
+*   "For UI-related changes where specific shadcn/ui components are not mentioned, use standard HTML/SVG elements or placeholders, focusing on the logic."
