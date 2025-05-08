@@ -2457,6 +2457,7 @@ export const EnhancedFloorplanViewer = ({
                 // Create new camera equipment
                 apiRequest('POST', `/api/projects/${floorplan.project_id}/cameras`, {
                   location: updatedData.label,
+                  camera_type: 'IP Camera', // Adding the required camera_type field
                   gateway_id: updatedData.gateway_id || null
                 })
                 .then(async (response) => {
