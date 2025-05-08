@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
-import { SiteWalkAnalysis } from "@/components/ai/SiteWalkAnalysis";
+import { OpportunityAnalysis } from "@/components/ai/SiteWalkAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
 import ProjectExportMenu from "@/components/ProjectExportMenu";
 import ExportMenu from "@/components/ExportMenu";
-import SiteWalkComprehensiveExport from "@/components/SiteWalkComprehensiveExport";
+import ComprehensiveExport from "@/components/SiteWalkComprehensiveExport";
 
 interface EquipmentImage {
   id: number;
@@ -65,7 +65,7 @@ interface SiteSummary {
   };
 }
 
-export default function SiteWalkSummary() {
+export default function Summary() {
   const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const [, setLocation] = useLocation();
   
@@ -178,7 +178,7 @@ export default function SiteWalkSummary() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Summary</h1>
         <div className="flex gap-2">
-          <SiteWalkComprehensiveExport 
+          <ComprehensiveExport 
             projectId={currentOpportunity.id} 
             projectName={summary.project.name} 
           />
