@@ -32,12 +32,15 @@ function ImageUploadSection({
   // Force refresh images
   const refreshImages = useCallback(() => {
     console.log('Forcing image refresh with new timestamp');
-    setRefreshTimestamp(Date.now());
-    queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
-  }, [queryClient, equipmentType, equipmentId]);
+    const newTimestamp = Date.now();
+    setRefreshTimestamp(newTimestamp);
+    // Invalidate both the image queries and the summary page queries
+    queryClient.invalidateQueries({ queryKey: ['/api/images'] });
+    queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/reports/project-summary`] });
+  }, [queryClient, equipmentType, equipmentId, projectId]);
 
   // Fetch existing images if equipmentId is provided
-  const { data: existingImages = [], isLoading: loadingImages } = useQuery({
+  const { data: existingImages = [], isLoading: loadingImages, isRefetching } = useQuery({
     queryKey: ['/api/images', equipmentType, equipmentId, refreshTimestamp],
     queryFn: async () => {
       if (equipmentId <= 0) return [];
@@ -47,45 +50,49 @@ function ImageUploadSection({
       if (!response.ok) {
         throw new Error('Failed to fetch images');
       }
-      return response.json();
+      const data = await response.json();
+      console.log(`Fetched ${data.length} images at timestamp ${refreshTimestamp}`);
+      return data;
     },
     enabled: equipmentId > 0,
     staleTime: 0, // Disable stale time to force re-fetch
     gcTime: 0,    // Disable garbage collection time to force re-fetch
+    refetchInterval: false, // Don't refetch automatically - we'll control it with refreshTimestamp
   });
 
   // Load existing images when they're fetched
   useEffect(() => {
-    // Only process if we have actual images to display
-    if (existingImages && existingImages.length > 0) {
-      console.log('Processing existing images:', existingImages);
+    // Only process if we have actual images from the backend
+    if (existingImages && Array.isArray(existingImages)) {
+      console.log(`Processing ${existingImages.length} images for ${equipmentType} ${equipmentId}`);
       
-      // Create a deep comparison to prevent infinite rerenders
-      const formattedImages = existingImages.map((img: any) => ({
-        id: img.id,
-        // Just use the original image data without cache busting parameters
-        // This prevents issues with data URIs being corrupted
-        data: img.image_data || (img.blob_url || ''),
-        filename: img.filename || 'Uploaded Image'
-      }));
-      
-      console.log('Formatted images for display:', formattedImages);
-      
-      // Check if the images array has actually changed before updating state
-      const haveImagesChanged = 
-        images.length !== formattedImages.length || 
-        !images.every((img, i) => img.id === formattedImages[i].id);
-      
-      // Only update the state if the images have changed
-      if (haveImagesChanged) {
-        setImages(formattedImages);
+      if (existingImages.length > 0) {
+        // Map the images to a consistent format
+        const formattedImages = existingImages.map((img: any) => ({
+          id: img.id,
+          data: img.image_data || (img.blob_url || ''), // Use image_data or blob_url
+          filename: img.filename || 'Uploaded Image'
+        })).filter(img => !!img.data); // Filter out any images with no data
+        
+        // Only update the state if the images have meaningfully changed
+        // Compare length first for quick check
+        const haveImagesChanged = 
+          images.length !== formattedImages.length || 
+          // Do a deeper comparison by ID
+          JSON.stringify(images.map(img => img.id)) !== 
+          JSON.stringify(formattedImages.map(img => img.id));
+        
+        if (haveImagesChanged) {
+          console.log('Images changed, updating state with new images');
+          setImages(formattedImages);
+        }
+      } else if (images.length > 0) {
+        // Only clear images when the backend has none and our state has some
+        console.log('Clearing images from state - no existing images found');
+        setImages([]);
       }
-    } else if (existingImages.length === 0 && images.length > 0) {
-      // Only clear images when the backend has none and our state has some
-      console.log('Clearing images from state - no existing images found');
-      setImages([]);
     }
-  }, [existingImages, refreshTimestamp, images]);
+  }, [existingImages, equipmentType, equipmentId]);
 
   // Image upload mutation
   const uploadImageMutation = useMutation({
@@ -108,8 +115,12 @@ function ImageUploadSection({
         description: "Image uploaded successfully",
       });
       
-      // Refresh images list
-      queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
+      // Refresh both images and project summary
+      queryClient.invalidateQueries({ queryKey: ['/api/images'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/reports/project-summary`] });
+      
+      // Force refresh to ensure images display immediately
+      refreshImages();
     },
     onError: (error) => {
       toast({
@@ -253,8 +264,12 @@ function ImageUploadSection({
         description: "Image deleted successfully",
       });
       
-      // Refresh images list
-      queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
+      // Refresh both images and project summary
+      queryClient.invalidateQueries({ queryKey: ['/api/images'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/reports/project-summary`] });
+      
+      // Force refresh to ensure images update immediately
+      refreshImages();
     },
     onError: (error) => {
       setDeletingImageId(null);
@@ -285,19 +300,35 @@ function ImageUploadSection({
 
   return (
     <div className="space-y-4">
+      {/* Loading state */}
+      {(loadingImages || isRefetching) && images.length === 0 && (
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading images...</span>
+        </div>
+      )}
+      
       {/* Image gallery */}
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
           {images.map((image, index) => (
             <Card key={index} className="overflow-hidden">
               <CardContent className="p-2 relative">
-                <div className="relative pb-[75%]">
-                  {image.data && (
+                <div className="relative pb-[75%] bg-muted rounded-md">
+                  {image.data ? (
                     <img 
                       src={image.data} 
                       alt={image.filename || 'Equipment Image'} 
                       className="absolute inset-0 w-full h-full object-cover rounded-md"
+                      onError={(e) => {
+                        console.error('Image failed to load:', image.filename);
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
                     />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
                   )}
                 </div>
                 <button 
@@ -317,6 +348,13 @@ function ImageUploadSection({
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+      
+      {/* No images message when not loading */}
+      {!loadingImages && !isRefetching && images.length === 0 && (
+        <div className="text-sm text-muted-foreground text-center py-2">
+          No images yet. Use the buttons below to add images.
         </div>
       )}
       
