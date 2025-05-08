@@ -353,37 +353,39 @@ export default function CamerasTab({ project }: CamerasTabProps) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
                     LOCATION
                   </th>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
                     CAMERA TYPE
                   </th>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
                     MOUNTING TYPE
                   </th>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
                     RESOLUTION
                   </th>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
                     FIELD OF VIEW
                   </th>
-                  <th scope="col" className="px-6 py-3 text-xs font-semibold tracking-wide text-gray-700 text-right">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700 text-right">
                     ACTIONS
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200">
                 {paginatedCameras.map((camera: Camera) => (
-                  <tr key={camera.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-800">{camera.location}</td>
-                    <td className="px-6 py-4 text-gray-700">{camera.camera_type}</td>
-                    <td className="px-6 py-4 text-gray-700">{camera.mounting_type || "—"}</td>
-                    <td className="px-6 py-4 text-gray-700">{camera.resolution || "—"}</td>
-                    <td className="px-6 py-4 text-gray-700">{camera.field_of_view || "—"}</td>
-                    <td className="px-6 py-4 text-right">
+                  <tr key={camera.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <span className="text-blue-600">{camera.location || "—"}</span>
+                    </td>
+                    <td className="px-4 py-3 text-gray-700">{camera.camera_type}</td>
+                    <td className="px-4 py-3 text-gray-700">{camera.mounting_type || "—"}</td>
+                    <td className="px-4 py-3 text-gray-700">{camera.resolution || "—"}</td>
+                    <td className="px-4 py-3 text-gray-700">{camera.field_of_view || "—"}</td>
+                    <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button
                           variant="ghost"
