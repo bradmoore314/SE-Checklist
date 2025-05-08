@@ -21,6 +21,7 @@ function ImageUploadSection({
   const [images, setImages] = useState<Array<{ id?: number, file?: File, data?: string, filename?: string }>>([]);
   const [takingPhoto, setTakingPhoto] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -205,19 +206,46 @@ function ImageUploadSection({
     }
   };
 
+  // Image deletion mutation
+  const deleteImageMutation = useMutation({
+    mutationFn: async (imageId: number) => {
+      const response = await apiRequest('DELETE', `/api/images/${imageId}`);
+      if (!response.ok) {
+        throw new Error('Failed to delete image');
+      }
+      return true;
+    },
+    onSuccess: () => {
+      setDeletingImageId(null);
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+      
+      // Refresh images list
+      queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
+    },
+    onError: (error) => {
+      setDeletingImageId(null);
+      toast({
+        title: "Deletion Failed",
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+        variant: "destructive",
+      });
+    }
+  });
+
   // Handle removing an image
   const handleRemoveImage = (index: number) => {
     const imageToRemove = images[index];
     
     // If the image has an ID, it's stored on the server
     if (imageToRemove.id) {
-      // TODO: Implement API call to delete the image
-      // For now, just remove it from the local state
-      toast({
-        title: "Not Yet Implemented",
-        description: "Deleting existing images will be implemented in a future update.",
-        variant: "default",
-      });
+      // Confirm deletion
+      if (confirm('Are you sure you want to delete this image?')) {
+        setDeletingImageId(imageToRemove.id);
+        deleteImageMutation.mutate(imageToRemove.id);
+      }
     } else {
       // Otherwise just remove it from the local state
       setImages(prev => prev.filter((_, i) => i !== index));
@@ -244,8 +272,13 @@ function ImageUploadSection({
                 <button 
                   className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
                   onClick={() => handleRemoveImage(index)}
+                  disabled={deleteImageMutation.isPending}
                 >
-                  <X size={14} />
+                  {deleteImageMutation.isPending && deletingImageId === images[index].id ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <X size={14} />
+                  )}
                 </button>
                 {image.filename && (
                   <div className="text-xs mt-1 truncate">{image.filename}</div>
