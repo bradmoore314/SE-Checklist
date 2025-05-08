@@ -79,9 +79,10 @@ export class CoordinateSystem {
    * @param screenX - X coordinate in screen space
    * @param screenY - Y coordinate in screen space
    * @param debug - Whether to log debug information
+   * @param precision - Decimal places to preserve (default: 4)
    * @returns Point in PDF coordinates
    */
-  screenToPdf(screenX: number, screenY: number, debug: boolean = false): Point {
+  screenToPdf(screenX: number, screenY: number, debug: boolean = false, precision: number = 4): Point {
     if (!this.containerElement) return { x: 0, y: 0 };
     
     // Get container-relative coordinates
@@ -94,13 +95,16 @@ export class CoordinateSystem {
     const pdfY = (containerY - this.translateY) / this.scale;
     
     if (debug) {
-      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(2)}, ${pdfY.toFixed(2)}) @ scale ${this.scale.toFixed(2)}`);
+      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(precision)}, ${pdfY.toFixed(precision)}) @ scale ${this.scale.toFixed(2)}`);
     }
     
-    // Ensure consistent rounding
+    // Use higher precision for greater zoom levels
+    const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(this.scale) + 2)), precision);
+    
+    // Ensure consistent precision with adaptive decimal places
     return {
-      x: parseFloat(pdfX.toFixed(2)),
-      y: parseFloat(pdfY.toFixed(2))
+      x: Number(pdfX.toFixed(adjustedPrecision)),
+      y: Number(pdfY.toFixed(adjustedPrecision))
     };
   }
 
@@ -136,6 +140,7 @@ export class CoordinateSystem {
  * @param scale - Current zoom scale
  * @param translateX - X translation
  * @param translateY - Y translation
+ * @param precision - Decimal places to preserve (default: 4)
  * @returns Point in PDF coordinates
  */
 export function screenToPdfCoordinates(
@@ -144,7 +149,8 @@ export function screenToPdfCoordinates(
   containerElement: HTMLElement,
   scale: number,
   translateX: number,
-  translateY: number
+  translateY: number,
+  precision: number = 4
 ): Point {
   const rect = containerElement.getBoundingClientRect();
   const containerX = screenX - rect.left;
@@ -153,9 +159,12 @@ export function screenToPdfCoordinates(
   const pdfX = (containerX - translateX) / scale;
   const pdfY = (containerY - translateY) / scale;
   
+  // Use higher precision for greater zoom levels
+  const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(scale) + 2)), precision);
+  
   return {
-    x: parseFloat(pdfX.toFixed(2)),
-    y: parseFloat(pdfY.toFixed(2))
+    x: Number(pdfX.toFixed(adjustedPrecision)),
+    y: Number(pdfY.toFixed(adjustedPrecision))
   };
 }
 
