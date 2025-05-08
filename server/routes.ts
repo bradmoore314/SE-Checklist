@@ -1845,17 +1845,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const equipmentType = req.params.equipmentType;
     const equipmentId = parseInt(req.params.equipmentId);
     
+    console.log(`GET /api/images/${equipmentType}/${equipmentId} - Fetching images`);
+    
     if (isNaN(equipmentId)) {
+      console.log(`Invalid equipment ID: ${req.params.equipmentId}`);
       return res.status(400).json({ message: "Invalid equipment ID" });
     }
     
     // Validate equipment type
     if (!['access_point', 'camera', 'elevator', 'intercom'].includes(equipmentType)) {
+      console.log(`Invalid equipment type: ${equipmentType}`);
       return res.status(400).json({ message: "Invalid equipment type" });
     }
     
     // Get all images for this equipment
     const images = await storage.getImages(equipmentType, equipmentId);
+    console.log(`Found ${images.length} images for ${equipmentType} ${equipmentId}`);
+    
+    // If debugging, log some details about the first few images
+    if (images.length > 0) {
+      console.log(`First image: ID=${images[0].id}, Filename=${images[0].filename}, Has data: ${!!images[0].image_data}`);
+    }
+    
     res.json(images);
   });
   
@@ -1960,7 +1971,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Save the image with appropriate storage information
+      console.log("About to save image with imageData:", {
+        equipment_type: imageData.equipment_type,
+        equipment_id: imageData.equipment_id,
+        project_id: imageData.project_id,
+        has_image_data: !!imageData.image_data,
+        has_thumbnail: !!imageData.thumbnail_data,
+        filename: imageData.filename,
+        storage_type: imageData.storage_type
+      });
+      
       const image = await storage.saveImage(imageData);
+      console.log("Image saved successfully with ID:", image.id);
       res.status(201).json(image);
     } catch (error) {
       console.error("Error saving image:", error);
