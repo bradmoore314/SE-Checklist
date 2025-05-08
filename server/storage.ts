@@ -13,6 +13,7 @@ import {
   KvgStream, InsertKvgStream,
   KvgStreamImage, InsertKvgStreamImage,
   CrmSetting, InsertCrmSetting,
+  Image, InsertImage,
   PERMISSION, Permission,
   users,
   projects,
@@ -27,7 +28,8 @@ import {
   floorplanMarkers,
   feedback,
   projectCollaborators,
-  crmSettings
+  crmSettings,
+  images
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -174,6 +176,7 @@ export class MemStorage implements IStorage {
   private currentFloorplanMarkerId: number;
   private currentFeedbackId: number;
   private currentCrmSettingId: number;
+  private currentImageId: number;
   
   // Feedback
   async getFeedback(): Promise<Feedback[]> {
@@ -258,6 +261,7 @@ export class MemStorage implements IStorage {
     this.floorplanMarkers = new Map();
     this.feedback = new Map();
     this.crmSettings = new Map();
+    this.images = new Map();
     
     this.currentUserId = 1;
     this.currentProjectId = 1;
@@ -270,6 +274,7 @@ export class MemStorage implements IStorage {
     this.currentFloorplanMarkerId = 1;
     this.currentFeedbackId = 1;
     this.currentCrmSettingId = 1;
+    this.currentImageId = 1;
     
     // Initialize with sample data
     this.initSampleData();
