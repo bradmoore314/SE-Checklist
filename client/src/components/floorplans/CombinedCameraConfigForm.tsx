@@ -227,14 +227,14 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
                       </div>
                     ) : (
                       <Select 
-                        value={selectedGatewayId?.toString() || ""} 
-                        onValueChange={(value) => setSelectedGatewayId(value ? Number(value) : null)}
+                        value={selectedGatewayId?.toString() || "null"} 
+                        onValueChange={(value) => setSelectedGatewayId(value === "null" ? null : Number(value))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select gateway (optional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No Gateway</SelectItem>
+                          <SelectItem value="null">No Gateway</SelectItem>
                           {gateways?.map(gateway => (
                             <SelectItem key={gateway.id} value={gateway.id.toString()}>
                               {gateway.name || gateway.ip_address}
