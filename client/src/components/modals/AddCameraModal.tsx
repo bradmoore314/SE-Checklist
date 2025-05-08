@@ -16,7 +16,7 @@ interface AddCameraModalProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   onClose?: () => void;
-  onSave?: (data: any) => void;
+  onSave?: (id: number, data: any) => void;
   onCancel?: () => void;
 }
 
@@ -34,14 +34,14 @@ export default function AddCameraModal({
       const response = await apiRequest('POST', `/api/projects/${projectId}/cameras`, data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/cameras`] });
       toast({
         title: "Success",
         description: "Camera added successfully",
       });
       if (onSave) {
-        onSave({});
+        onSave(data.id, data);
       }
       if (onOpenChange) {
         onOpenChange(false);
