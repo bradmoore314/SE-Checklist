@@ -103,10 +103,10 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
 
   return (
     <Card className="shadow-sm border-gray-100">
-      <CardHeader className="flex flex-row items-center justify-between p-5 bg-white border-b border-gray-100">
+      <CardHeader className="flex flex-row items-center justify-between p-5 bg-red-700 border-b border-gray-100">
         <div>
-          <CardTitle className="text-xl font-medium text-gray-800">Elevators & Turnstiles</CardTitle>
-          <p className="text-sm text-gray-500 mt-1">
+          <CardTitle className="text-xl font-medium text-white">Elevators & Turnstiles</CardTitle>
+          <p className="text-sm text-white/80 mt-1">
             Manage elevator and turnstile equipment for this project
           </p>
         </div>

@@ -104,8 +104,8 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium">Intercoms</h3>
+      <div className="flex justify-between items-center mb-4 p-4 bg-red-700 rounded-lg">
+        <h3 className="text-lg font-medium text-white">Intercoms</h3>
         <div className="flex items-center">
           <div className="relative mr-2">
             <Input
