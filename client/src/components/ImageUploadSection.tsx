@@ -29,11 +29,11 @@ function ImageUploadSection({
 
   // Fetch existing images if equipmentId is provided
   const { data: existingImages = [], isLoading: loadingImages } = useQuery({
-    queryKey: ['/api/equipment-images', equipmentType, equipmentId],
+    queryKey: ['/api/images', equipmentType, equipmentId],
     queryFn: async () => {
       if (equipmentId <= 0) return [];
       
-      const response = await apiRequest('GET', `/api/equipment-images/${equipmentType}/${equipmentId}`);
+      const response = await apiRequest('GET', `/api/images/${equipmentType}/${equipmentId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch images');
       }
@@ -62,7 +62,7 @@ function ImageUploadSection({
       image_data: string, 
       filename: string | null 
     }) => {
-      const response = await apiRequest('POST', '/api/equipment-images', data);
+      const response = await apiRequest('POST', '/api/images', data);
       if (!response.ok) {
         throw new Error('Failed to upload image');
       }
@@ -75,7 +75,7 @@ function ImageUploadSection({
       });
       
       // Refresh images list
-      queryClient.invalidateQueries({ queryKey: ['/api/equipment-images', equipmentType, equipmentId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/images', equipmentType, equipmentId] });
     },
     onError: (error) => {
       toast({
