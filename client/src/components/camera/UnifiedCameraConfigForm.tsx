@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from '@/components/ui/slider';
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from '@/hooks/use-toast';
 import { Camera, Upload, X } from 'lucide-react';
 
@@ -126,14 +125,6 @@ export default function UnifiedCameraConfigForm({
     },
   });
 
-  // Add logger to see initial data values
-  useEffect(() => {
-    if (initialData) {
-      console.log("Camera form initialData:", initialData);
-      console.log("Form default values:", form.getValues());
-    }
-  }, [initialData, form]);
-  
   // Watch values for visualization
   const fov = form.watch("fov");
   const range = form.watch("range");
@@ -228,10 +219,7 @@ export default function UnifiedCameraConfigForm({
     setIsSubmitting(true);
     
     try {
-      // Pass the complete image data URL to preserve content type information
-      // The server expects the full data URI format for content detection
-      
-      // Pass data to parent component
+      // Pass data to parent component with image if present
       onSave({
         ...data,
         ...(image && { image_data: image })
@@ -247,67 +235,236 @@ export default function UnifiedCameraConfigForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="flex flex-col space-y-6">
-          {/* Tab header/navigation */}
-          <div className="border-b">
-            <div className="flex space-x-8">
-              <div className="border-b-2 border-primary px-1 py-2">
-                <h3 className="font-medium text-primary">Camera Information</h3>
-              </div>
-              <div className="px-1 py-2">
-                <h3 className="font-medium text-gray-500">Camera Equipment</h3>
-              </div>
-              <div className="px-1 py-2">
-                <h3 className="font-medium text-gray-500">Camera View & Visualization</h3>
-              </div>
-            </div>
-          </div>
+        {/* Main content area - 2 column layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left column - Basic camera info and settings */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-primary">Camera Details</h3>
+              
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Camera Name/Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter camera name or location" autoComplete="off" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Main content area */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Left column */}
-            <div className="space-y-6">
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="location"
+                  name="camera_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Camera Name/Location</FormLabel>
+                      <FormLabel>Camera Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            getLookupOptions("cameraTypes").map((type: string) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="mounting_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mounting Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            getLookupOptions("mountingTypes").map((type: string) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="resolution"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Resolution</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Resolution" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingLookups ? (
+                            <SelectItem value="loading">Loading...</SelectItem>
+                          ) : (
+                            getLookupOptions("resolutions").map((resolution: string) => (
+                              <SelectItem key={resolution} value={resolution}>
+                                {resolution}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="field_of_view"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Field of View</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter camera name or location" autoComplete="off" {...field} />
+                        <Input placeholder="e.g., 120° Wide Angle" autoComplete="off" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="is_indoor"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>Location Type</FormLabel>
+                      <FormControl>
+                        <RadioGroup 
+                          value={field.value}
+                          onValueChange={(value) => field.onChange(value)}
+                          className="flex space-x-4"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="indoor" id="indoor" />
+                            <Label htmlFor="indoor">Indoor</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="outdoor" id="outdoor" />
+                            <Label htmlFor="outdoor">Outdoor</Label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
+                <FormField
+                  control={form.control}
+                  name="import_to_gateway"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Gateway Import</FormLabel>
+                        <FormDescription className="text-xs">
+                          Add to gateway system
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter additional notes"
+                        rows={2}
+                        autoComplete="off"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Gateway Calculator - only show when import_to_gateway is checked */}
+            {form.watch("import_to_gateway") && (
+              <div className="border p-4 rounded-md bg-blue-50">
+                <h4 className="text-base font-medium mb-3">Gateway Calculator</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="camera_type"
+                    name="lens_count"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Camera Type</FormLabel>
+                        <FormLabel>Lens Count</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select Type" />
+                              <SelectValue placeholder="Select Lens Count" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {isLoadingLookups ? (
-                              <SelectItem value="loading">Loading...</SelectItem>
-                            ) : (
-                              getLookupOptions("cameraTypes").map((type: string) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))
-                            )}
+                            <SelectItem value="1 (Single Lens)">1 (Single Lens)</SelectItem>
+                            <SelectItem value="2 (Dual Lens)">2 (Dual Lens)</SelectItem>
+                            <SelectItem value="3 (Multi Lens)">3 (Multi Lens)</SelectItem>
+                            <SelectItem value="4 (360° View)">4 (360° View)</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -317,44 +474,10 @@ export default function UnifiedCameraConfigForm({
                   
                   <FormField
                     control={form.control}
-                    name="mounting_type"
+                    name="streaming_resolution"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mounting Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {isLoadingLookups ? (
-                              <SelectItem value="loading">Loading...</SelectItem>
-                            ) : (
-                              getLookupOptions("mountingTypes").map((type: string) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="resolution"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Resolution</FormLabel>
+                        <FormLabel>Streaming Resolution</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -365,15 +488,10 @@ export default function UnifiedCameraConfigForm({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {isLoadingLookups ? (
-                              <SelectItem value="loading">Loading...</SelectItem>
-                            ) : (
-                              getLookupOptions("resolutions").map((resolution: string) => (
-                                <SelectItem key={resolution} value={resolution}>
-                                  {resolution}
-                                </SelectItem>
-                              ))
-                            )}
+                            <SelectItem value="2 MP (1080p)">2 MP (1080p)</SelectItem>
+                            <SelectItem value="4 MP (1440p)">4 MP (1440p)</SelectItem>
+                            <SelectItem value="8 MP (4K)">8 MP (4K)</SelectItem>
+                            <SelectItem value="12 MP (5K)">12 MP (5K)</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -383,67 +501,180 @@ export default function UnifiedCameraConfigForm({
                   
                   <FormField
                     control={form.control}
-                    name="field_of_view"
+                    name="frame_rate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Field of View</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 120° Wide Angle" autoComplete="off" {...field} />
-                        </FormControl>
+                        <FormLabel>Frame Rate</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Frame Rate" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="10 fps">10 fps</SelectItem>
+                            <SelectItem value="15 fps">15 fps</SelectItem>
+                            <SelectItem value="20 fps">20 fps</SelectItem>
+                            <SelectItem value="30 fps">30 fps</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="storage_days"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Storage Days</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Storage Duration" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="7 days">7 days</SelectItem>
+                            <SelectItem value="14 days">14 days</SelectItem>
+                            <SelectItem value="30 days">30 days</SelectItem>
+                            <SelectItem value="60 days">60 days</SelectItem>
+                            <SelectItem value="90 days">90 days</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Right column - Camera image and visualization */}
+          <div className="space-y-6">
+            {/* Camera Image Section */}
+            {showImageUpload && (
+              <div className="border p-4 rounded-md bg-slate-50">
+                <h3 className="text-lg font-medium text-primary mb-2">Camera Image</h3>
+                <FormDescription className="mb-3">
+                  Take a picture or upload an image of the camera location
+                </FormDescription>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="is_indoor"
-                    render={({ field }) => {
-                      return (
-                        <FormItem className="space-y-2">
-                          <FormLabel>Camera Location</FormLabel>
-                          <FormDescription>
-                            Is this an indoor or outdoor camera?
-                          </FormDescription>
-                          <FormControl>
-                            <RadioGroup 
-                              value={field.value}
-                              onValueChange={(value) => field.onChange(value)}
-                              className="flex space-x-4"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="indoor" id="indoor" />
-                                <Label htmlFor="indoor">Indoor</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="outdoor" id="outdoor" />
-                                <Label htmlFor="outdoor">Outdoor</Label>
-                              </div>
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="import_to_gateway"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel>Import to Gateway</FormLabel>
-                          <FormDescription>
-                            Import this camera to gateway?
-                          </FormDescription>
+                {isTakingPicture ? (
+                  <div className="space-y-4">
+                    <div className="relative border rounded-lg overflow-hidden">
+                      <video 
+                        ref={videoRef} 
+                        autoPlay 
+                        playsInline
+                        className="w-full h-auto"
+                        onLoadedMetadata={() => videoRef.current?.play()}
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={cancelCamera}
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={takePicture}
+                      >
+                        <Camera className="mr-2 h-4 w-4" />
+                        Take Photo
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {image ? (
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="border p-1 rounded-md">
+                          <img
+                            src={image}
+                            alt="Camera view"
+                            className="max-w-full h-auto rounded max-h-[200px]"
+                          />
                         </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeImage}
+                        >
+                          Remove Image
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={startCamera}
+                        >
+                          <Camera className="mr-2 h-4 w-4" />
+                          Take Photo
+                        </Button>
+                        <div className="relative">
+                          <Button
+                            type="button"
+                            variant="outline"
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Image
+                          </Button>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleFileSelect}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Marker Visualization */}
+            <div className="border p-4 rounded-md">
+              <h3 className="text-lg font-medium text-primary mb-2">Marker Visualization</h3>
+              <FormDescription className="mb-3">
+                Configure how the camera appears on the floorplan
+              </FormDescription>
+              
+              <div className="space-y-5">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <FormLabel>Field of View: {formatAngle(fov)}</FormLabel>
+                    <span className="text-xs text-muted-foreground">(10° - 360°)</span>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="fov"
+                    render={({ field }) => (
+                      <FormItem>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Slider
+                            min={10}
+                            max={360}
+                            step={5}
+                            value={[field.value]}
+                            onValueChange={values => field.onChange(values[0])}
+                            className="mt-1"
                           />
                         </FormControl>
                       </FormItem>
@@ -451,344 +682,85 @@ export default function UnifiedCameraConfigForm({
                   />
                 </div>
                 
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter additional notes"
-                          rows={2}
-                          autoComplete="off"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              {/* Gateway Calculator */}
-              {form.watch("import_to_gateway") && (
-                <div className="border p-4 rounded-md bg-blue-50">
-                  <h4 className="font-medium mb-3">Gateway Calculator</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="lens_count"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Lens Count</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Lens Count" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="1 (Single Lens)">1 (Single Lens)</SelectItem>
-                              <SelectItem value="2 (Dual Lens)">2 (Dual Lens)</SelectItem>
-                              <SelectItem value="3 (Multi Lens)">3 (Multi Lens)</SelectItem>
-                              <SelectItem value="4 (360° View)">4 (360° View)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="streaming_resolution"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Streaming Resolution</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Resolution" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="2 MP (1080p)">2 MP (1080p)</SelectItem>
-                              <SelectItem value="4 MP (1440p)">4 MP (1440p)</SelectItem>
-                              <SelectItem value="8 MP (4K)">8 MP (4K)</SelectItem>
-                              <SelectItem value="12 MP (5K)">12 MP (5K)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="frame_rate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Frame Rate (fps)</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Frame Rate" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="10 fps">10 fps</SelectItem>
-                              <SelectItem value="15 fps">15 fps</SelectItem>
-                              <SelectItem value="20 fps">20 fps</SelectItem>
-                              <SelectItem value="30 fps">30 fps</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="storage_days"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Storage Days</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Storage Duration" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="7 days">7 days</SelectItem>
-                              <SelectItem value="14 days">14 days</SelectItem>
-                              <SelectItem value="30 days">30 days</SelectItem>
-                              <SelectItem value="60 days">60 days</SelectItem>
-                              <SelectItem value="90 days">90 days</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <FormLabel>Range: {range} units</FormLabel>
+                    <span className="text-xs text-muted-foreground">(20 - 200 units)</span>
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="range"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Slider
+                            min={20}
+                            max={200}
+                            step={10}
+                            value={[field.value]}
+                            onValueChange={values => field.onChange(values[0])}
+                            className="mt-1"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
-            </div>
-            
-            {/* Right column */}
-            <div className="space-y-6">
-              {/* Camera Image Section */}
-              {showImageUpload && (
-                <div className="border p-4 rounded-md bg-slate-50">
-                  <h4 className="font-medium mb-2">Camera Image</h4>
-                  <FormDescription className="mb-3">
-                    Take a picture or upload an image of the camera location
-                  </FormDescription>
-                  
-                  {isTakingPicture ? (
-                    <div className="space-y-4">
-                      <div className="relative border rounded-lg overflow-hidden">
-                        <video 
-                          ref={videoRef} 
-                          autoPlay 
-                          playsInline
-                          className="w-full h-auto"
-                          onLoadedMetadata={() => videoRef.current?.play()}
-                        />
-                      </div>
-                      <div className="flex gap-2 justify-center">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={cancelCamera}
-                        >
-                          <X className="mr-2 h-4 w-4" />
-                          Cancel
-                        </Button>
-                        <Button
-                          type="button"
-                          onClick={takePicture}
-                        >
-                          <Camera className="mr-2 h-4 w-4" />
-                          Take Photo
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {image ? (
-                        <div className="flex flex-col items-center space-y-2">
-                          <div className="border p-1 rounded-md">
-                            <img
-                              src={image}
-                              alt="Camera view"
-                              className="max-w-full h-auto rounded max-h-[200px]"
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={removeImage}
-                          >
-                            Remove Image
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={startCamera}
-                          >
-                            <Camera className="mr-2 h-4 w-4" />
-                            Take Photo
-                          </Button>
-                          <div className="relative">
-                            <Button
-                              type="button"
-                              variant="outline"
-                            >
-                              <Upload className="mr-2 h-4 w-4" />
-                              Upload Image
-                            </Button>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              onChange={handleFileSelect}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <FormLabel>Rotation: {formatAngle(rotation)}</FormLabel>
+                    <span className="text-xs text-muted-foreground">(0° - 359°)</span>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="rotation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Slider
+                            min={0}
+                            max={359}
+                            step={15}
+                            value={[field.value]}
+                            onValueChange={values => field.onChange(values[0])}
+                            className="mt-1"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
-              
-              {/* Marker Visualization */}
-              <div className="border p-4 rounded-md">
-                <h4 className="font-medium mb-3">Marker Visualization</h4>
-                <div className="space-y-5">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <FormLabel>Field of View: {formatAngle(fov)}</FormLabel>
-                      <span className="text-xs text-muted-foreground">(10° - 360°)</span>
+                
+                {/* Visualization Preview */}
+                <div className="pt-2">
+                  <div className="text-sm font-medium mb-2">Preview</div>
+                  <div className="relative bg-slate-50 border border-slate-200 rounded-md h-56 flex items-center justify-center">
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="w-4 h-4 rounded-full bg-blue-500 z-10"></div>
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="fov"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Slider
-                              min={10}
-                              max={360}
-                              step={5}
-                              value={[field.value]}
-                              onValueChange={values => field.onChange(values[0])}
-                              className="mt-1"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <FormLabel>Range: {range} units</FormLabel>
-                      <span className="text-xs text-muted-foreground">(20 - 200 units)</span>
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="range"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Slider
-                              min={20}
-                              max={200}
-                              step={10}
-                              value={[field.value]}
-                              onValueChange={values => field.onChange(values[0])}
-                              className="mt-1"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <FormLabel>Rotation: {formatAngle(rotation)}</FormLabel>
-                      <span className="text-xs text-muted-foreground">(0° - 359°)</span>
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="rotation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Slider
-                              min={0}
-                              max={359}
-                              step={15}
-                              value={[field.value]}
-                              onValueChange={values => field.onChange(values[0])}
-                              className="mt-1"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  {/* Visualization Preview */}
-                  <div className="pt-2">
-                    <div className="text-sm font-medium mb-2">Preview</div>
-                    <div className="relative bg-slate-50 border border-slate-200 rounded-md h-56 flex items-center justify-center">
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="w-4 h-4 rounded-full bg-blue-500 z-10"></div>
-                      </div>
-                      <svg viewBox="-100 -100 200 200" width="200" height="200" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        {/* Camera FOV visualization */}
-                        <path
-                          d={`M 0 0 L ${range * Math.cos((90 - fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 0 0 ${range * Math.cos((90 + fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 + fov / 2) * Math.PI / 180)} Z`}
-                          fill="rgba(59, 130, 246, 0.2)"
-                          stroke="rgba(59, 130, 246, 0.7)"
-                          strokeWidth="2"
-                          style={{ transform: `rotate(${rotation}deg)` }}
-                        />
-                        
-                        {/* Line for direction indication */}
-                        <line
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2={-range}
-                          stroke="rgba(59, 130, 246, 0.7)"
-                          strokeWidth="2"
-                          strokeDasharray="4,4"
-                          style={{ transform: `rotate(${rotation}deg)` }}
-                        />
-                      </svg>
-                    </div>
+                    <svg viewBox="-100 -100 200 200" width="200" height="200" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      {/* Camera FOV visualization */}
+                      <path
+                        d={`M 0 0 L ${range * Math.cos((90 - fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 0 0 ${range * Math.cos((90 + fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 + fov / 2) * Math.PI / 180)} Z`}
+                        fill="rgba(59, 130, 246, 0.2)"
+                        stroke="rgba(59, 130, 246, 0.7)"
+                        strokeWidth="2"
+                        transform={`rotate(${rotation})`}
+                      />
+                      
+                      {/* Line for direction indication */}
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={-range}
+                        stroke="rgba(59, 130, 246, 0.7)"
+                        strokeWidth="2"
+                        strokeDasharray="4,4"
+                        transform={`rotate(${rotation})`}
+                      />
+                    </svg>
                   </div>
                 </div>
               </div>
