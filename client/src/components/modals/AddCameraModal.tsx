@@ -733,6 +733,119 @@ export default function AddCameraModal({
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            
+            {/* Camera Visualization Settings */}
+            <div className="border rounded-md p-4 space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Move className="h-4 w-4" />
+                <h3 className="font-medium">Camera Visualization Settings</h3>
+              </div>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="fov"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <div className="flex justify-between">
+                            <FormLabel>Field of View: {formatAngle(field.value)}</FormLabel>
+                            <span className="text-xs text-gray-500">(10° - 360°)</span>
+                          </div>
+                          <FormControl>
+                            <Slider
+                              min={10}
+                              max={360}
+                              step={1}
+                              value={[field.value]}
+                              onValueChange={(values) => field.onChange(values[0])}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="range"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <div className="flex justify-between">
+                            <FormLabel>Range: {field.value.toFixed(0)} units</FormLabel>
+                            <span className="text-xs text-gray-500">(20 - 200 units)</span>
+                          </div>
+                          <FormControl>
+                            <Slider
+                              min={20}
+                              max={200}
+                              step={1}
+                              value={[field.value]}
+                              onValueChange={(values) => field.onChange(values[0])}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="rotation"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <div className="flex justify-between">
+                            <FormLabel>Rotation: {formatAngle(field.value)}</FormLabel>
+                            <span className="text-xs text-gray-500">(0° - 359°)</span>
+                          </div>
+                          <FormControl>
+                            <Slider
+                              min={0}
+                              max={359}
+                              step={1}
+                              value={[field.value]}
+                              onValueChange={(values) => field.onChange(values[0])}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
+                <h4 className="text-sm font-medium mb-2">Visualization Preview</h4>
+                <div className="relative bg-white border border-gray-300 rounded-md h-32 flex items-center justify-center">
+                  <div className="absolute w-20 h-20">
+                    <div 
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 rounded-full"
+                    />
+                    <div
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center"
+                      style={{
+                        width: `${range * 0.2}px`,
+                        height: `${range * 0.2}px`,
+                        transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+                      }}
+                    >
+                      <div 
+                        className="absolute top-1/2 left-1/2 bg-blue-200 opacity-50"
+                        style={{
+                          width: `${range * 0.2}px`,
+                          height: `${range * 0.2}px`,
+                          transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+                          clipPath: `polygon(50% 50%, ${50 - fov/2}% 0%, ${50 + fov/2}% 0%)`,
+                          borderRadius: '50%',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="space-y-4">
               <FormLabel className="text-sm font-medium text-neutral-700">
