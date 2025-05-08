@@ -5,6 +5,17 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 
+// Define interfaces for the marker stats response
+interface MarkerStats {
+  total: number;
+  types: {
+    access_point: { total: number; interior: number; perimeter: number };
+    camera: { total: number; indoor: number; outdoor: number };
+    elevator: { total: number };
+    intercom: { total: number };
+  };
+}
+
 interface EquipmentConsistencyCheckProps {
   projectId: number;
 }

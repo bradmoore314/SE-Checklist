@@ -5,6 +5,7 @@ import CardAccessTab from "./NewCardAccessTab";
 import CamerasTab from "./CamerasTab";
 import ElevatorsTab from "./ElevatorsTab";
 import IntercomsTab from "./IntercomsTab";
+import { EquipmentConsistencyCheck } from "@/components/EquipmentConsistencyCheck";
 
 interface EquipmentTabsProps {
   project: Project;
@@ -16,7 +17,7 @@ export default function EquipmentTabs({ project }: EquipmentTabsProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="border-b">
+        <div className="border-b flex justify-between items-center pr-4">
           <TabsList className="bg-transparent border-b-0">
             <TabsTrigger 
               value="card-access" 
@@ -43,6 +44,9 @@ export default function EquipmentTabs({ project }: EquipmentTabsProps) {
               Intercoms
             </TabsTrigger>
           </TabsList>
+          
+          {/* Equipment Consistency Check */}
+          <EquipmentConsistencyCheck projectId={project.id} />
         </div>
         
         <TabsContent value="card-access" className="mt-0">
