@@ -47,6 +47,8 @@ function ImageUploadSection({
   useEffect(() => {
     // Only process if we have actual images to display
     if (existingImages && existingImages.length > 0) {
+      console.log('Processing existing images:', existingImages);
+      
       // Create a deep comparison to prevent infinite rerenders
       const formattedImages = existingImages.map((img: any) => ({
         id: img.id,
@@ -54,15 +56,19 @@ function ImageUploadSection({
         filename: img.filename || 'Uploaded Image'
       }));
       
+      console.log('Formatted images:', formattedImages);
+      
       // Only update state if the images have changed
       const currentIds = images.map(img => img.id || '').sort().join(',');
       const newIds = formattedImages.map(img => img.id || '').sort().join(',');
       
       if (currentIds !== newIds || images.length !== formattedImages.length) {
+        console.log('Setting new images in state');
         setImages(formattedImages);
       }
     } else if (images.length > 0 && existingImages.length === 0) {
       // Only clear images when we have existing ones in state but the backend has none
+      console.log('Clearing images from state - no existing images found');
       setImages([]);
     }
   }, [existingImages]);
