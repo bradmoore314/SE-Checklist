@@ -944,33 +944,29 @@ export const EnhancedFloorplanViewer = ({
         // This will be handled by the marker click handler
       } else {
         // We're in an annotation tool mode - prepare to add a marker
-        // Get the mouse position using our coordinate system
         if (!containerRef.current) return; // Safety check
         
-        // IMPORTANT FIX: Direct calculation for correct marker placement
-        // Get the container's position and apply inverse transform
-        const rect = containerRef.current.getBoundingClientRect();
-        const containerX = x - rect.left;
-        const containerY = y - rect.top;
+        // IMPORTANT CHANGE: Always place marker at center of PDF
+        // Instead of using mouse position, we'll use the center of the current PDF page
+        // This is independent of zoom level or pan position
         
-        // Apply inverse transform to get PDF coordinates
-        const pdfX = (containerX - translateX) / scale;
-        const pdfY = (containerY - translateY) / scale;
+        // Get the PDF dimensions
+        const pdfCenterX = pdfDimensions.width / 2;
+        const pdfCenterY = pdfDimensions.height / 2;
         
-        console.log(`=== ADDING NEW MARKER ===`);
-        console.log(`Mouse screen position: (${x}, ${y})`);
-        console.log(`Container position: (${containerX}, ${containerY})`);
+        console.log(`=== ADDING NEW MARKER AT CENTER ===`);
+        console.log(`PDF dimensions: ${pdfDimensions.width} x ${pdfDimensions.height}`);
+        console.log(`Center PDF position: (${pdfCenterX.toFixed(2)}, ${pdfCenterY.toFixed(2)})`);
         console.log(`Current transform: scale=${scale.toFixed(2)}, translate=(${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
-        console.log(`Calculated PDF position: (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)})`);
         
-        // Create temporary marker based on tool mode
+        // Create temporary marker based on tool mode and place it at the center
         const newMarker: Partial<MarkerData> = {
           floorplan_id: floorplan.id,
           unique_id: uuidv4(),
           page: currentPage,
           marker_type: toolMode,
-          position_x: pdfX,
-          position_y: pdfY,
+          position_x: pdfCenterX,
+          position_y: pdfCenterY,
           version: 1,
           layer_id: activeLayer?.id
         };
@@ -987,10 +983,12 @@ export const EnhancedFloorplanViewer = ({
           setIsAddingMarker(true);
           setTempMarker(newMarker);
         } else if (toolMode === 'polyline' || toolMode === 'polygon') {
-          // Start collecting points
-          console.log(`Starting polyline at: x=${pdfX}, y=${pdfY}`);
+          // Start collecting points from the center
+          const centerX = pdfDimensions.width / 2;
+          const centerY = pdfDimensions.height / 2;
+          console.log(`Starting polyline at center: x=${centerX}, y=${centerY}`);
           setIsDrawing(true);
-          setDrawingPoints([{ x: pdfX, y: pdfY }]);
+          setDrawingPoints([{ x: centerX, y: centerY }]);
         } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
           // For equipment markers that need configuration
           setTempMarker(newMarker);
@@ -1004,7 +1002,7 @@ export const EnhancedFloorplanViewer = ({
               fov: 90,
               range: 60,
               rotation: 0,
-              label: `Camera at ${Math.round(pdfX)}, ${Math.round(pdfY)}`
+              label: `Camera at center`
             });
             setCameraConfigOpen(true);
           } else {
