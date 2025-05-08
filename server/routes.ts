@@ -2017,7 +2017,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid image ID" });
       }
       
-      // First, retrieve the image to check if it exists and determine its storage type
+      // First, retrieve the image to check if it exists
       const image = await storage.getImageById(imageId);
       if (!image) {
         console.log(`Image not found with ID: ${imageId}`);
@@ -2027,40 +2027,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Found image to delete:`, {
         id: image.id,
         equipment_type: image.equipment_type,
-        equipment_id: image.equipment_id,
-        storage_type: image.storage_type || 'database'
+        equipment_id: image.equipment_id
       });
       
-      // If the image is stored in Azure Blob Storage, delete it from there first
-      if (image.storage_type === 'azure' && image.blob_name) {
-        // Use the deleteImageFromAzure that was imported at the top of the file
-        try {
-          console.log(`Attempting to delete image from Azure Blob Storage: ${image.blob_name}`);
-          const azureDeleteSuccess = await deleteImageFromAzure(image.blob_name);
-          if (!azureDeleteSuccess) {
-            console.warn(`Warning: Failed to delete image from Azure Blob Storage: ${image.blob_name}`);
-            // Continue with database deletion anyway
-          } else {
-            console.log(`Successfully deleted image from Azure Blob Storage: ${image.blob_name}`);
-          }
-        } catch (azureError) {
-          console.error("Error deleting from Azure:", azureError);
-          // Continue with database deletion
-        }
-      }
+      // We're now only storing images in the database, so no Azure blob handling is needed
       
-      // Delete from database
+      // Delete from database using the storage implementation
       console.log(`Attempting to delete image from database with ID: ${imageId}`);
-      const success = await storage.deleteImage(imageId);
-      console.log(`Delete operation result: ${success}`);
       
-      if (!success) {
-        console.error(`Failed to delete image with ID: ${imageId} from database`);
-        return res.status(500).json({ message: "Failed to delete image from database" });
+      try {
+        const success = await storage.deleteImage(imageId);
+        console.log(`Delete operation result: ${success}`);
+        
+        if (success) {
+          console.log(`Successfully deleted image with ID: ${imageId}`);
+          return res.status(204).end();
+        } else {
+          console.error(`Failed to delete image with ID: ${imageId}`);
+          return res.status(500).json({ message: "Failed to delete image from database" });
+        }
+      } catch (dbError) {
+        console.error(`Database error deleting image:`, dbError);
+        return res.status(500).json({ 
+          message: "Database error deleting image", 
+          error: (dbError as Error).message 
+        });
       }
-      
-      console.log(`Successfully deleted image with ID: ${imageId}`);
-      res.status(204).end();
     } catch (error) {
       console.error("Error deleting image:", error);
       res.status(500).json({ 

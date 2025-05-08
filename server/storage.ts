@@ -1901,7 +1901,7 @@ export class DatabaseStorage implements IStorage {
       const result = await db.delete(images).where(eq(images.id, id));
       console.log(`DatabaseStorage: Delete operation result:`, result);
       
-      if (result.count > 0) {
+      if (result.rowCount > 0) {
         console.log(`DatabaseStorage: Successfully deleted image with ID ${id}`);
         return true;
       } else {
