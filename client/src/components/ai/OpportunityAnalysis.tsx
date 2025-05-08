@@ -32,10 +32,6 @@ interface OpportunityAnalysisProps {
 }
 
 export function OpportunityAnalysis({ projectId }: OpportunityAnalysisProps) {
-  return <SiteWalkAnalysis projectId={projectId} />;
-}
-
-export function SiteWalkAnalysis({ projectId }: OpportunityAnalysisProps) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<AiAnalysisResponse | null>(null);
   const [activeTab, setActiveTab] = useState('summary');
