@@ -1859,8 +1859,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/images", isAuthenticated, async (req: Request, res: Response) => {
     try {
+      console.log("Received image upload request with data:", { 
+        equipment_type: req.body.equipment_type,
+        equipment_id: req.body.equipment_id,
+        project_id: req.body.project_id,
+        has_image_data: !!req.body.image_data,
+        has_filename: !!req.body.filename,
+        keys: Object.keys(req.body)
+      });
+      
       const result = insertImageSchema.safeParse(req.body);
       if (!result.success) {
+        console.error("Image validation failed:", result.error.errors);
         return res.status(400).json({ 
           message: "Invalid image data", 
           errors: result.error.errors 
@@ -1953,9 +1963,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const image = await storage.saveImage(imageData);
       res.status(201).json(image);
     } catch (error) {
+      console.error("Error saving image:", error);
+      // Log stack trace for debugging
+      if (error instanceof Error && error.stack) {
+        console.error("Stack trace:", error.stack);
+      }
+      
       res.status(500).json({ 
         message: "Failed to save image",
-        error: (error as Error).message
+        error: (error as Error).message,
+        details: error instanceof Error ? error.stack : undefined
       });
     }
   });
