@@ -1,6 +1,6 @@
-# Deployment Guide for Site Walk Checklist Application
+# Deployment Guide for Kastle Wizard
 
-This guide provides instructions for deploying the Site Walk Checklist application to production environments like Azure.
+This guide provides instructions for deploying the Kastle Wizard application to production environments like Azure.
 
 ## Pre-Deployment Checklist
 
