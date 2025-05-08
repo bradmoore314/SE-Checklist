@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -7,11 +7,11 @@ interface SidebarProps {
 
 export default function Sidebar({ collapsed }: SidebarProps) {
   const [location] = useLocation();
-  const { currentSiteWalk } = useSiteWalk();
+  const { currentOpportunity } = useOpportunity();
 
   // Function to determine if a link is active
   const isActive = (path: string) => {
-    // Special case for My Site Walks - should be active for both "/" and "/projects"
+    // Special case for Opportunities - should be active for both "/" and "/projects"
     if (path === "/projects") {
       return location === "/" || location === "/projects";
     }
@@ -29,7 +29,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         <svg className="w-8 h-8" style={{ color: 'var(--red-accent)' }} fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L14 11.586V6z" clipRule="evenodd"></path>
         </svg>
-        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">SE Checklist</span>}
+        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">Kastle Wizard</span>}
       </div>
       
       {/* User Info */}
@@ -39,7 +39,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                style={{ backgroundColor: 'var(--red-accent)' }}>SE</div>
           <div className="ml-3">
             <div className="font-medium text-gray-900">Sales Engineer</div>
-            <div className="text-sm text-gray-600">Site Walk App</div>
+            <div className="text-sm text-gray-600">Kastle Wizard</div>
           </div>
         </div>
       )}
@@ -47,7 +47,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
       {/* Navigation Links */}
       <nav className="flex-1 overflow-y-auto py-2">
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>
-          {collapsed ? "" : "SITE WALKS"}
+          {collapsed ? "" : "OPPORTUNITIES"}
         </div>
         
         <div>
@@ -62,7 +62,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                  borderColor: 'var(--red-accent)' 
                } : {}}>
               <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/projects") ? "text-white" : "text-gray-600"}`}>folder</span>
-              {!collapsed && <span className={isActive("/projects") ? "text-white" : "text-gray-800 font-medium"}>My Site Walks</span>}
+              {!collapsed && <span className={isActive("/projects") ? "text-white" : "text-gray-800 font-medium"}>Opportunities</span>}
             </div>
           </Link>
         </div>
@@ -178,9 +178,9 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <div>
-          {currentSiteWalk ? (
-            // If we have a current site walk, use its ID
-            <Link href={`/projects/${currentSiteWalk.id}/enhanced-floorplans`}>
+          {currentOpportunity ? (
+            // If we have a current opportunity, use its ID
+            <Link href={`/projects/${currentOpportunity.id}/enhanced-floorplans`}>
               <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
                 location.includes("/floorplans") 
                   ? "border-r-4 nav-item active" 
@@ -195,7 +195,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
               </div>
             </Link>
           ) : (
-            // If no current site walk, link to projects page first
+            // If no current opportunity, link to projects page first
             <Link href="/projects">
               <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 nav-item hover:bg-gray-100 cursor-pointer`}>
                 <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>map</span>
@@ -255,7 +255,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                  borderColor: 'var(--red-accent)' 
                } : {}}>
               <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/project-summary") ? "text-white" : "text-gray-600"}`}>summarize</span>
-              {!collapsed && <span className={isActive("/project-summary") ? "text-white" : "text-gray-800 font-medium"}>Site Walk Summary</span>}
+              {!collapsed && <span className={isActive("/project-summary") ? "text-white" : "text-gray-800 font-medium"}>Summary</span>}
             </div>
           </Link>
         </div>
