@@ -263,11 +263,15 @@ export const EnhancedFloorplanViewer = ({
     
     console.log(`Screen(${screenX}, ${screenY}) → Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfPoint.x.toFixed(4)}, ${pdfPoint.y.toFixed(4)}) @ scale ${scale.toFixed(4)}`);
     
-    // Ensure the result is using the precise scale value without any drift
+    // Use higher precision for greater zoom levels
+    // This provides finer control at high zoom levels while maintaining sensible values at low zoom
+    const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(scale) + 2)), 4);
+    
+    // Ensure the result uses scale-appropriate precision without drift
     // This ensures markers are placed exactly where clicked at any zoom level
     return {
-      x: parseFloat(pdfPoint.x.toFixed(2)),
-      y: parseFloat(pdfPoint.y.toFixed(2))
+      x: Number(pdfPoint.x.toFixed(adjustedPrecision)),
+      y: Number(pdfPoint.y.toFixed(adjustedPrecision))
     };
   };
   
