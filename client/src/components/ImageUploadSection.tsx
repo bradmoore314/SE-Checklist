@@ -63,14 +63,13 @@ function ImageUploadSection({
       // Create a deep comparison to prevent infinite rerenders
       const formattedImages = existingImages.map((img: any) => ({
         id: img.id,
-        // Add cache busting to image URLs to prevent browser caching
-        data: img.image_data ? 
-          `${img.image_data}${img.image_data.includes('?') ? '&' : '?'}t=${refreshTimestamp}` : 
-          (img.blob_url ? `${img.blob_url}${img.blob_url.includes('?') ? '&' : '?'}t=${refreshTimestamp}` : ''),
+        // Just use the original image data without cache busting parameters
+        // This prevents issues with data URIs being corrupted
+        data: img.image_data || (img.blob_url || ''),
         filename: img.filename || 'Uploaded Image'
       }));
       
-      console.log('Formatted images with cache busting:', formattedImages);
+      console.log('Formatted images for display:', formattedImages);
       
       // Check if the images array has actually changed before updating state
       const haveImagesChanged = 
