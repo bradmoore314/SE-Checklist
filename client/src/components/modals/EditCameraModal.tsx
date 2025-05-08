@@ -85,9 +85,15 @@ export default function EditCameraModal({
     setIsSubmitting(true);
     
     try {
+      // Add field_of_view for database compatibility (using a default value)
+      const dataWithFieldOfView = {
+        ...values,
+        field_of_view: "90" // Use a default value since we don't have FOV data in this form
+      };
+      
       // If it's a new camera, create it
       if (isNewCamera) {
-        const response = await apiRequest("POST", `/api/projects/${camera.project_id}/cameras`, values);
+        const response = await apiRequest("POST", `/api/projects/${camera.project_id}/cameras`, dataWithFieldOfView);
         const newCamera = await response.json();
         
         // Invalidate cameras query
@@ -99,7 +105,7 @@ export default function EditCameraModal({
         onSave(newCamera.id, { ...newCamera });
       } else {
         // Otherwise, update the existing camera
-        await apiRequest("PUT", `/api/cameras/${camera.id}`, values);
+        await apiRequest("PUT", `/api/cameras/${camera.id}`, dataWithFieldOfView);
         
         // Invalidate cameras query
         queryClient.invalidateQueries({ 
