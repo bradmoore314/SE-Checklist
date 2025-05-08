@@ -2516,6 +2516,7 @@ export const EnhancedFloorplanViewer = ({
             // Close dialog and clean up
             setCameraConfigOpen(false);
             setTempMarker(null);
+            setEditingCameraData(null);
             
             // Show feedback
             toast({
