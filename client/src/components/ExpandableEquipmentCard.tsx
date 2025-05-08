@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Edit, Trash, Image } from "lucide-react";
+import { ChevronDown, ChevronUp, Edit, Trash, Copy, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExpandableEquipmentCardProps {
@@ -10,6 +10,8 @@ interface ExpandableEquipmentCardProps {
   number: number;
   onEdit: () => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
+  onUploadPhoto?: () => void;
   headerContent?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
@@ -22,6 +24,8 @@ export function ExpandableEquipmentCard({
   number,
   onEdit,
   onDelete,
+  onDuplicate,
+  onUploadPhoto,
   headerContent,
   className,
   children,
@@ -79,6 +83,26 @@ export function ExpandableEquipmentCard({
       
       <CardFooter className="px-4 py-2 flex justify-end border-t bg-muted/20">
         <div className="flex space-x-2">
+          {onUploadPhoto && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onUploadPhoto}
+            >
+              <Camera className="h-4 w-4 mr-1" />
+              Upload Photos
+            </Button>
+          )}
+          {onDuplicate && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onDuplicate}
+            >
+              <Copy className="h-4 w-4 mr-1" />
+              Duplicate
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
