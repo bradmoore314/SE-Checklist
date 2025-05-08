@@ -737,7 +737,7 @@ export default function UnifiedCameraConfigForm({
                     <svg viewBox="-100 -100 200 200" width="200" height="200" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                       {/* Camera FOV visualization */}
                       <path
-                        d={`M 0 0 L ${range * Math.cos((90 - fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 0 0 ${range * Math.cos((90 + fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 + fov / 2) * Math.PI / 180)} Z`}
+                        d={`M 0 0 L ${range * Math.cos((90 - fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 - fov / 2) * Math.PI / 180)} A ${range} ${range} 0 ${fov > 180 ? 1 : 0} 0 ${range * Math.cos((90 + fov / 2) * Math.PI / 180)} ${-range * Math.sin((90 + fov / 2) * Math.PI / 180)} Z`}
                         fill="rgba(59, 130, 246, 0.2)"
                         stroke="rgba(59, 130, 246, 0.7)"
                         strokeWidth="2"
