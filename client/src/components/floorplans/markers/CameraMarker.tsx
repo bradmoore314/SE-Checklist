@@ -57,28 +57,23 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
     const startAngle = rotationRadians - fovRadians / 2;
     const endAngle = rotationRadians + fovRadians / 2;
     
-    // Generate points along the arc
-    const arcPoints: Point[] = [];
-    // More segments for wider FOVs for smoother curves
-    const segments = Math.max(20, Math.ceil(clampedFov / 10)); 
+    // Create an SVG path for the arc using the SVG arc command
+    // This is a more efficient and precise way to draw arcs
     
-    for (let i = 0; i <= segments; i++) {
-      const angle = startAngle + (i / segments) * fovRadians;
-      const x = centerX + range * Math.cos(angle);
-      const y = centerY + range * Math.sin(angle);
-      arcPoints.push({ x, y });
-    }
+    // Calculate the start and end points on the arc
+    const startX = centerX + range * Math.cos(startAngle);
+    const startY = centerY + range * Math.sin(startAngle);
+    const endX = centerX + range * Math.cos(endAngle);
+    const endY = centerY + range * Math.sin(endAngle);
     
-    // Create an SVG path for the arc
-    let path = `M${centerX},${centerY}`;
+    // The large arc flag (0 for arcs less than 180 degrees, 1 for arcs greater than 180 degrees)
+    const largeArcFlag = clampedFov > 180 ? 1 : 0;
     
-    // Add the arc segments
-    arcPoints.forEach(point => {
-      path += ` L${point.x},${point.y}`;
-    });
-    
-    // Return to center to complete the shape
-    path += ` Z`;
+    // Create the path
+    let path = `M${centerX},${centerY} ` + // Move to center
+              `L${startX},${startY} ` +    // Line to start point
+              `A${range},${range} 0 ${largeArcFlag} 1 ${endX},${endY} ` + // Arc to end point
+              'Z';                         // Close path
     
     return path;
   };
