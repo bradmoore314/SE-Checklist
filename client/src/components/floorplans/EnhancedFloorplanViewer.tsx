@@ -1997,6 +1997,7 @@ export const EnhancedFloorplanViewer = ({
       
       {/* Context Menu */}
       {contextMenuOpen && selectedMarker && (
+        // Create a Portal for the context menu for better event handling
         <div 
           className="fixed z-50 bg-white shadow-lg rounded-lg border border-gray-200" 
           style={{ 
@@ -2004,19 +2005,23 @@ export const EnhancedFloorplanViewer = ({
             top: `${contextMenuPosition.y}px`,
             width: '16rem'
           }}
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => {
+            // Prevent the container mouse down from interfering
+            e.stopPropagation();
+          }}
         >
           <div className="py-1">
-            <button 
-              type="button"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
-              onClick={(e) => {
-                e.preventDefault();
+            {/* Duplicate button with improved event handling */}
+            <div 
+              className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
+              onMouseDown={(e) => {
                 e.stopPropagation();
-                console.log(`Duplicating marker #${selectedMarker.id}`);
+                e.preventDefault();
                 
-                // Create new marker data without an ID (will be assigned by the server)
-                const newMarkerData = {
+                console.log(`TEST: Duplicating marker #${selectedMarker.id}`);
+                
+                // Create a duplicate with offset position
+                const duplicateData = {
                   ...selectedMarker,
                   id: undefined,
                   position_x: selectedMarker.position_x + 20,
@@ -2024,48 +2029,50 @@ export const EnhancedFloorplanViewer = ({
                 };
                 
                 // Call the mutation
-                duplicateMarkerMutation.mutate(newMarkerData);
+                duplicateMarkerMutation.mutate(duplicateData);
                 
-                // Close menu
+                // Close the context menu
                 setContextMenuOpen(false);
               }}
             >
               <Copy className="mr-2 h-4 w-4" />
               Duplicate
-            </button>
+            </div>
             
-            <button 
-              type="button"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
-              onClick={(e) => {
-                e.preventDefault();
+            {/* Delete button with improved event handling */}
+            <div 
+              className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
+              onMouseDown={(e) => {
                 e.stopPropagation();
-                console.log(`Deleting marker #${selectedMarker.id}`);
+                e.preventDefault();
                 
-                // Call the delete mutation
+                console.log(`TEST: Deleting marker #${selectedMarker.id}`);
+                
+                // Delete the marker
                 deleteMarkerMutation.mutate(selectedMarker.id);
                 
-                // Update state
+                // Close the context menu and clear selection
                 setSelectedMarker(null);
                 setContextMenuOpen(false);
               }}
             >
               <Trash className="mr-2 h-4 w-4" />
               Delete
-            </button>
+            </div>
             
+            {/* Only show camera settings for camera markers */}
             {selectedMarker.marker_type === 'camera' && (
               <>
                 <div className="h-px bg-gray-200 my-1"></div>
-                <button 
-                  type="button"
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
-                  onClick={(e) => {
-                    e.preventDefault();
+                <div 
+                  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                  onMouseDown={(e) => {
                     e.stopPropagation();
-                    console.log(`Opening camera settings for marker #${selectedMarker.id}`);
+                    e.preventDefault();
                     
-                    // Set the dialog state to open
+                    console.log(`TEST: Opening camera settings for marker #${selectedMarker.id}`);
+                    
+                    // Open the camera edit dialog
                     setIsCameraEditDialogOpen(true);
                     
                     // Close the context menu
@@ -2077,7 +2084,7 @@ export const EnhancedFloorplanViewer = ({
                     <circle cx="12" cy="13" r="3" />
                   </svg>
                   Edit Camera
-                </button>
+                </div>
               </>
             )}
           </div>
