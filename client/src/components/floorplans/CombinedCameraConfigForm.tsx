@@ -46,22 +46,39 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
       // Save the original overflow style
       const originalStyle = document.body.style.overflow;
       
-      // Prevent scroll wheel events from propagating to the PDF in the background
+      // Create a modal overlay that captures all wheel events
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.right = '0';
+      overlay.style.bottom = '0';
+      overlay.style.zIndex = '999'; // High z-index below dialog
+      overlay.style.background = 'transparent';
+      document.body.appendChild(overlay);
+      
+      // Completely block all wheel events on the document
       const handleWheel = (e: WheelEvent) => {
-        const dialogContent = document.querySelector('.max-w-3xl');
-        if (dialogContent && !dialogContent.contains(e.target as Node)) {
+        const dialogContent = document.querySelector('[role="dialog"]');
+        
+        // Only allow wheel events inside the dialog content
+        if (!dialogContent || !dialogContent.contains(e.target as Node)) {
           e.preventDefault();
           e.stopPropagation();
+          return false;
         }
       };
       
-      // Add the event listener with capture phase to catch events before they reach the PDF
+      // Add the event listeners with capture phase to catch events before they reach the PDF
       document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
       
-      // Clean up the event listener when the dialog closes
+      // Clean up when the dialog closes
       return () => {
         document.body.style.overflow = originalStyle;
         document.removeEventListener('wheel', handleWheel, { capture: true });
+        if (overlay && overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
       };
     }
   }, [open]);
