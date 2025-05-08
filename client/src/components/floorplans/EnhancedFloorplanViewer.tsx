@@ -929,14 +929,27 @@ export const EnhancedFloorplanViewer = ({
   
   // Mouse handling for pan/zoom and marker placement
   const handleMouseDown = (e: React.MouseEvent) => {
+    // Only process mouse events if no dialogs or context menus are open
+    if (isEquipmentFormOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
+      return; // Exit early when dialogs are open
+    }
+    
+    // Get mouse position and ensure we have a valid container reference
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    // Ensure any existing drag operations are properly canceled
+    if (isDragging || isDraggingMarker || isResizingMarker) {
+      setIsDragging(false);
+      setIsDraggingMarker(false);
+      setIsResizingMarker(false);
+    }
+    
     if (e.button === 0) { // Left click
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      
-      const x = e.clientX;
-      const y = e.clientY;
-      
-      if (toolMode === 'pan' || e.button === 1) { // Middle click or pan tool
+      if (toolMode === 'pan') { // Pan tool
         setIsDragging(true);
         setDragStart({ x, y });
       } else if (toolMode === 'select') {
@@ -1486,10 +1499,15 @@ export const EnhancedFloorplanViewer = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={() => {
-        // Reset cursor when mouse leaves the container entirely
-        if (containerRef.current && !isDraggingMarker) {
+        // Reset cursor and all dragging states when mouse leaves the container entirely
+        if (containerRef.current) {
           containerRef.current.style.cursor = 'default';
         }
+        
+        // Important: Reset drag state to prevent panning inconsistency
+        setIsDragging(false);
+        setIsDraggingMarker(false);
+        setIsResizingMarker(false);
       }}
       onWheel={handleWheel}
       onDoubleClick={handleDoubleClick}
