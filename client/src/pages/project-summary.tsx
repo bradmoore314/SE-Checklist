@@ -31,8 +31,13 @@ interface EquipmentImage {
   created_at?: string;
 }
 
+// Helper function to check if an image has valid source data
+const hasValidImageData = (img: EquipmentImage): boolean => {
+  return !!(img.blob_url || img.image_data || img.thumbnail_data);
+}
+
 // Helper function to get image source based on available data
-const getImageSrc = (img: EquipmentImage): string => {
+const getImageSrc = (img: EquipmentImage): string | null => {
   try {
     if (img.blob_url) {
       return img.blob_url;
@@ -41,13 +46,12 @@ const getImageSrc = (img: EquipmentImage): string => {
     } else if (img.thumbnail_data) {
       return `data:image/jpeg;base64,${img.thumbnail_data}`;
     } else {
-      // Return a placeholder image if no image data available
       console.log('No image data available for image ID:', img.id);
-      return '/assets/placeholder-image.svg';
+      return null;
     }
   } catch (error) {
     console.error('Error getting image source:', error);
-    return '/assets/placeholder-image.svg';
+    return null;
   }
 }
 
@@ -358,19 +362,23 @@ export default function Summary() {
                         )}
                       </div>
                     </div>
-                    {ap.images && ap.images.length > 0 && (
+                    {ap.images && ap.images.filter(hasValidImageData).length > 0 && (
                       <div className="flex-shrink-0">
-                        <p className="text-neutral-600 text-sm mb-2">Images ({ap.images.length})</p>
+                        <p className="text-neutral-600 text-sm mb-2">Images ({ap.images.filter(hasValidImageData).length})</p>
                         <div className="flex gap-2 flex-wrap">
-                          {ap.images.map((img) => (
-                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
-                              <img 
-                                src={getImageSrc(img)} 
-                                alt={`Image for ${ap.location}`} 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                          {ap.images.filter(hasValidImageData).map((img) => {
+                            const imgSrc = getImageSrc(img);
+                            if (!imgSrc) return null;
+                            return (
+                              <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                                <img 
+                                  src={imgSrc} 
+                                  alt={`Image for ${ap.location}`} 
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -428,19 +436,23 @@ export default function Summary() {
                         )}
                       </div>
                     </div>
-                    {camera.images && camera.images.length > 0 && (
+                    {camera.images && camera.images.filter(hasValidImageData).length > 0 && (
                       <div className="flex-shrink-0">
-                        <p className="text-neutral-600 text-sm mb-2">Images ({camera.images.length})</p>
+                        <p className="text-neutral-600 text-sm mb-2">Images ({camera.images.filter(hasValidImageData).length})</p>
                         <div className="flex gap-2 flex-wrap">
-                          {camera.images.map((img) => (
-                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
-                              <img 
-                                src={getImageSrc(img)} 
-                                alt={`Image for ${camera.location}`} 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                          {camera.images.filter(hasValidImageData).map((img) => {
+                            const imgSrc = getImageSrc(img);
+                            if (!imgSrc) return null;
+                            return (
+                              <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                                <img 
+                                  src={imgSrc} 
+                                  alt={`Image for ${camera.location}`} 
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -498,19 +510,23 @@ export default function Summary() {
                         )}
                       </div>
                     </div>
-                    {elevator.images && elevator.images.length > 0 && (
+                    {elevator.images && elevator.images.filter(hasValidImageData).length > 0 && (
                       <div className="flex-shrink-0">
-                        <p className="text-neutral-600 text-sm mb-2">Images ({elevator.images.length})</p>
+                        <p className="text-neutral-600 text-sm mb-2">Images ({elevator.images.filter(hasValidImageData).length})</p>
                         <div className="flex gap-2 flex-wrap">
-                          {elevator.images.map((img) => (
-                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
-                              <img 
-                                src={getImageSrc(img)} 
-                                alt={`Image for ${elevator.location}`} 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                          {elevator.images.filter(hasValidImageData).map((img) => {
+                            const imgSrc = getImageSrc(img);
+                            if (!imgSrc) return null;
+                            return (
+                              <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                                <img 
+                                  src={imgSrc} 
+                                  alt={`Image for ${elevator.location}`} 
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -560,19 +576,23 @@ export default function Summary() {
                         )}
                       </div>
                     </div>
-                    {intercom.images && intercom.images.length > 0 && (
+                    {intercom.images && intercom.images.filter(hasValidImageData).length > 0 && (
                       <div className="flex-shrink-0">
-                        <p className="text-neutral-600 text-sm mb-2">Images ({intercom.images.length})</p>
+                        <p className="text-neutral-600 text-sm mb-2">Images ({intercom.images.filter(hasValidImageData).length})</p>
                         <div className="flex gap-2 flex-wrap">
-                          {intercom.images.map((img) => (
-                            <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
-                              <img 
-                                src={getImageSrc(img)} 
-                                alt={`Image for ${intercom.location}`} 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                          {intercom.images.filter(hasValidImageData).map((img) => {
+                            const imgSrc = getImageSrc(img);
+                            if (!imgSrc) return null;
+                            return (
+                              <div key={img.id} className="w-24 h-24 relative border rounded overflow-hidden">
+                                <img 
+                                  src={imgSrc} 
+                                  alt={`Image for ${intercom.location}`} 
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
