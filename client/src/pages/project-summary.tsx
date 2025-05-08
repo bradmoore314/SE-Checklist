@@ -561,15 +561,15 @@ export default function SiteWalkSummary() {
       )}
 
       {/* AI Analysis */}
-      <SiteWalkAnalysis projectId={currentSiteWalk.id} />
+      <SiteWalkAnalysis projectId={currentOpportunity.id} />
       
       {/* Meeting Agenda Generator */}
-      <AgendaContainer projectId={currentSiteWalk.id} />
+      <AgendaContainer projectId={currentOpportunity.id} />
 
       {/* Export Options */}
       <div className="flex gap-2">
         <ProjectExportMenu 
-          projectId={currentSiteWalk.id} 
+          projectId={currentOpportunity.id} 
           variant="default"
           size="default"
         />
