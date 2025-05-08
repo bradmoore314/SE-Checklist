@@ -2004,19 +2004,30 @@ export const EnhancedFloorplanViewer = ({
             top: `${contextMenuPosition.y}px`,
             width: '16rem'
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="py-1">
             <button 
+              type="button"
               className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
-              onClick={() => {
-                duplicateMarkerMutation.mutate({
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`Duplicating marker #${selectedMarker.id}`);
+                
+                // Create new marker data without an ID (will be assigned by the server)
+                const newMarkerData = {
                   ...selectedMarker,
                   id: undefined,
                   position_x: selectedMarker.position_x + 20,
                   position_y: selectedMarker.position_y + 20,
-                });
+                };
+                
+                // Call the mutation
+                duplicateMarkerMutation.mutate(newMarkerData);
+                
+                // Close menu
                 setContextMenuOpen(false);
-                console.log('Marker duplicated');
               }}
             >
               <Copy className="mr-2 h-4 w-4" />
@@ -2024,46 +2035,50 @@ export const EnhancedFloorplanViewer = ({
             </button>
             
             <button 
+              type="button"
               className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`Deleting marker #${selectedMarker.id}`);
+                
+                // Call the delete mutation
                 deleteMarkerMutation.mutate(selectedMarker.id);
+                
+                // Update state
                 setSelectedMarker(null);
                 setContextMenuOpen(false);
-                console.log('Marker deleted');
               }}
             >
               <Trash className="mr-2 h-4 w-4" />
               Delete
             </button>
             
-            <div className="h-px bg-gray-200 my-1"></div>
-            
-            <button 
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
-              onClick={() => {
-                console.log(`Opening properties dialog for marker ${selectedMarker.id}`);
-                setIsEquipmentFormOpen(true);
-                setContextMenuOpen(false);
-              }}
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Properties
-            </button>
-            
             {selectedMarker.marker_type === 'camera' && (
-              <button 
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
-                onClick={() => {
-                  setIsCameraEditDialogOpen(true);
-                  setContextMenuOpen(false);
-                }}
-              >
-                <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                  <circle cx="12" cy="13" r="3" />
-                </svg>
-                Camera Settings
-              </button>
+              <>
+                <div className="h-px bg-gray-200 my-1"></div>
+                <button 
+                  type="button"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(`Opening camera settings for marker #${selectedMarker.id}`);
+                    
+                    // Set the dialog state to open
+                    setIsCameraEditDialogOpen(true);
+                    
+                    // Close the context menu
+                    setContextMenuOpen(false);
+                  }}
+                >
+                  <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                    <circle cx="12" cy="13" r="3" />
+                  </svg>
+                  Edit Camera
+                </button>
+              </>
             )}
           </div>
         </div>
