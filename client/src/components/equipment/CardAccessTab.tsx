@@ -74,11 +74,6 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     enabled: !!project.id,
   });
   
-  // Fetch lookup data for dropdown options
-  const { data: lookupData } = useQuery({
-    queryKey: ["/api/lookup"],
-  });
-
   // Filter access points based on search term
   const filteredAccessPoints = accessPoints.filter((ap) => 
     ap.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,6 +87,43 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  
+  // Fetch equipment images (for thumbnails)
+  const { data: equipmentImages = {} } = useQuery<Record<number, { image_data: string, thumbnail_data: string }>>({
+    queryKey: [`/api/projects/${project.id}/equipment-thumbnails`, 'access_point', currentPage, searchTerm],
+    queryFn: async () => {
+      if (!paginatedAccessPoints.length) return {};
+      
+      // Create a map of equipment ID to its first image thumbnail
+      const imageMap: Record<number, { image_data: string, thumbnail_data: string }> = {};
+      
+      // We'll only fetch for the visible/paginated items to avoid excessive requests
+      for (const ap of paginatedAccessPoints) {
+        try {
+          const res = await apiRequest('GET', `/api/images/access_point/${ap.id}`);
+          const images = await res.json();
+          
+          if (images && images.length > 0) {
+            // Use thumbnail_data if available, otherwise use full image_data
+            imageMap[ap.id] = { 
+              image_data: images[0].image_data,
+              thumbnail_data: images[0].thumbnail_data || images[0].image_data 
+            };
+          }
+        } catch (error) {
+          console.error(`Failed to fetch images for access point ${ap.id}:`, error);
+        }
+      }
+      
+      return imageMap;
+    },
+    enabled: !!project.id && paginatedAccessPoints.length > 0,
+  });
+  
+  // Fetch lookup data for dropdown options
+  const { data: lookupData } = useQuery({
+    queryKey: ["/api/lookup"],
+  });
 
   // Handle access point deletion
   const handleDelete = async (id: number) => {
@@ -274,6 +306,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
                 setShowEditModal(true);
               }}
               onDelete={() => handleDelete(ap.id)}
+              thumbnailImage={equipmentImages[ap.id]?.thumbnail_data}
               headerContent={
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <div>
