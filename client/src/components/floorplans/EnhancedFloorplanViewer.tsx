@@ -24,6 +24,7 @@ import EquipmentFormDialog from './EquipmentFormDialog';
 import { CoordinateSystem, Point, screenToPdfCoordinates as utilScreenToPdf, pdfToScreenCoordinates as utilPdfToScreen } from '@/lib/coordinate-utils';
 import CameraMarker from './markers/CameraMarker';
 import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
+import CombinedCameraConfigForm from './CombinedCameraConfigForm';
 
 import {
   ContextMenu,
@@ -2134,8 +2135,8 @@ export const EnhancedFloorplanViewer = ({
                     
                     console.log(`Opening camera settings for marker #${selectedMarker.id}`);
                     
-                    // Open the camera edit dialog
-                    setIsCameraEditDialogOpen(true);
+                    // Open the combined camera configuration dialog
+                    setCameraConfigOpen(true);
                     
                     // Close the context menu
                     setContextMenuOpen(false);
@@ -2153,33 +2154,115 @@ export const EnhancedFloorplanViewer = ({
         </div>
       )}
       
-      {/* Camera Settings Edit Dialog */}
-      {selectedMarker && selectedMarker.marker_type === 'camera' && (
-        <CameraMarkerEditDialog
-          open={isCameraEditDialogOpen}
-          onOpenChange={setIsCameraEditDialogOpen}
-          marker={selectedMarker}
+      {/* Combined Camera Configuration Dialog */}
+      {(isCameraConfigOpen && (selectedMarker?.marker_type === 'camera' || tempMarker?.marker_type === 'camera')) && (
+        <CombinedCameraConfigForm
+          open={isCameraConfigOpen}
+          onOpenChange={setCameraConfigOpen}
+          projectId={floorplan.project_id}
+          marker={selectedMarker || tempMarker}
+          isNew={!selectedMarker && !!tempMarker}
           onUpdate={(updatedData) => {
-            // Update the camera marker with new settings
-            const updatedMarker = {
-              ...selectedMarker,
-              label: updatedData.label,
-              // Use spread for additional attributes that might not be in MarkerData type
-              ...(updatedData.fov !== undefined ? { fov: updatedData.fov } : {}),
-              ...(updatedData.range !== undefined ? { range: updatedData.range } : {}),
-              ...(updatedData.rotation !== undefined ? { rotation: updatedData.rotation } : {})
-            };
-            updateMarkerMutation.mutate(updatedMarker);
+            console.log("Camera config updated:", updatedData);
             
-            // Close the dialog
-            setIsCameraEditDialogOpen(false);
+            if (selectedMarker) {
+              // Editing an existing marker
+              const updatedMarker = {
+                ...selectedMarker,
+                label: updatedData.label,
+                fov: updatedData.fov,
+                range: updatedData.range,
+                rotation: updatedData.rotation
+              };
+              
+              // Update the marker and related equipment
+              updateMarkerMutation.mutate(updatedMarker);
+              
+              // Update camera equipment data if provided
+              if (updatedData.equipment_id) {
+                apiRequest('PUT', `/api/cameras/${updatedData.equipment_id}`, {
+                  location: updatedData.label,
+                  gateway_id: updatedData.gateway_id
+                })
+                .then(() => {
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', floorplan.project_id, 'cameras'] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/cameras', updatedData.equipment_id] });
+                })
+                .catch(error => {
+                  console.error("Error updating camera data:", error);
+                });
+              }
+            } else if (tempMarker) {
+              // Creating a new marker - we need to:
+              // 1. Create the camera equipment if needed
+              // 2. Then create the marker linked to that equipment
+              
+              if (updatedData.equipment_id) {
+                // We selected an existing camera, just link to it
+                const markerData = {
+                  ...tempMarker,
+                  equipment_id: updatedData.equipment_id,
+                  label: updatedData.label,
+                  fov: updatedData.fov,
+                  range: updatedData.range,
+                  rotation: updatedData.rotation
+                };
+                addMarkerMutation.mutate(markerData);
+              } else {
+                // Create new camera equipment
+                apiRequest('POST', `/api/projects/${floorplan.project_id}/cameras`, {
+                  location: updatedData.label,
+                  gateway_id: updatedData.gateway_id || null
+                })
+                .then(async (response) => {
+                  const camera = await response.json();
+                  
+                  // Now create the marker with the equipment ID
+                  const markerData = {
+                    ...tempMarker,
+                    equipment_id: camera.id,
+                    label: updatedData.label,
+                    fov: updatedData.fov,
+                    range: updatedData.range,
+                    rotation: updatedData.rotation
+                  };
+                  
+                  addMarkerMutation.mutate(markerData);
+                  
+                  // Refresh camera data
+                  queryClient.invalidateQueries({ queryKey: ['/api/projects', floorplan.project_id, 'cameras'] });
+                })
+                .catch(error => {
+                  console.error("Error creating camera:", error);
+                  
+                  // Show error toast
+                  toast({
+                    title: "Error",
+                    description: "Failed to create camera",
+                    variant: "destructive",
+                    duration: 3000
+                  });
+                });
+              }
+            }
+            
+            // Close dialog and clean up
+            setCameraConfigOpen(false);
+            setTempMarker(null);
             
             // Show feedback
             toast({
-              title: "Camera Updated",
-              description: "Camera settings have been updated successfully.",
+              title: selectedMarker ? "Camera Updated" : "Camera Added",
+              description: selectedMarker ? 
+                "Camera settings have been updated" : 
+                "New camera has been added to the floorplan",
               duration: 3000
             });
+          }}
+          onCancel={() => {
+            // Properly cancel the operation
+            setCameraConfigOpen(false);
+            setTempMarker(null);
           }}
         />
       )}
