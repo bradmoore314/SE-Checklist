@@ -15,6 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  RadioGroup,
+  RadioGroupItem
+} from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -36,7 +41,7 @@ export const cameraConfigSchema = z.object({
   resolution: z.string().optional(),
   field_of_view: z.string().optional(),
   notes: z.string().optional(),
-  is_indoor: z.boolean().default(true),
+  is_indoor: z.enum(["indoor", "outdoor"]).default("indoor"),
   import_to_gateway: z.boolean().default(true),
   
   // Marker visualization fields
@@ -104,7 +109,7 @@ export default function UnifiedCameraConfigForm({
       resolution: initialData?.resolution || "",
       field_of_view: initialData?.field_of_view || "",
       notes: initialData?.notes || "",
-      is_indoor: initialData?.is_indoor ?? true,
+      is_indoor: initialData?.is_indoor === true ? "indoor" : (initialData?.is_indoor === false ? "outdoor" : "indoor"),
       import_to_gateway: initialData?.import_to_gateway ?? true,
       
       // Marker visualization defaults
