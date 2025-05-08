@@ -78,14 +78,10 @@ function Router() {
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />
-      <ProtectedRoute path="/crm-settings" component={CrmSettingsPage} />
       
       {/* Documentation and Feedback */}
       <ProtectedRoute path="/documentation" component={DocumentationPage} />
       <ProtectedRoute path="/feedback" component={FeedbackPage} />
-      
-      {/* AI Features */}
-      <ProtectedRoute path="/gemini-test" component={GeminiTestPage} />
       <ProtectedRoute path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <ProtectedRoute path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       
