@@ -21,7 +21,6 @@ const cameraSchema = z.object({
   camera_type: z.string().min(1, "Camera type is required"),
   mounting_type: z.string().min(1, "Mounting type is required"),
   resolution: z.string().min(1, "Resolution is required"),
-  field_of_view: z.string().optional(),
   notes: z.string().optional(),
   is_indoor: z.boolean().default(true),
   import_to_gateway: z.boolean().default(true),
@@ -36,7 +35,6 @@ interface Camera {
   camera_type: string;
   mounting_type: string;
   resolution: string;
-  field_of_view?: string;
   notes?: string;
   is_indoor?: boolean;
   import_to_gateway?: boolean;
@@ -77,7 +75,6 @@ export default function EditCameraModal({
       camera_type: camera.camera_type,
       mounting_type: camera.mounting_type,
       resolution: camera.resolution,
-      field_of_view: camera.field_of_view || "",
       notes: camera.notes || "",
       is_indoor: camera.is_indoor !== undefined ? camera.is_indoor : true,
       import_to_gateway: camera.import_to_gateway !== undefined ? camera.import_to_gateway : true,
@@ -258,21 +255,7 @@ export default function EditCameraModal({
                 />
               </div>
               
-              {/* Field of View */}
-              <FormField
-                control={form.control}
-                name="field_of_view"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Field of View</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 120° Wide Angle" autoComplete="off" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
+
               <div className="grid grid-cols-2 gap-4">
                 {/* Is Indoor */}
                 <FormField
