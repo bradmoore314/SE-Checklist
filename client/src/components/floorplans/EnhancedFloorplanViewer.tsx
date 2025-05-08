@@ -2531,6 +2531,7 @@ export const EnhancedFloorplanViewer = ({
             // Properly cancel the operation
             setCameraConfigOpen(false);
             setTempMarker(null);
+            setEditingCameraData(null);
           }}
         />
       )}
