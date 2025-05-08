@@ -1,358 +1,233 @@
 /**
- * Coordinate System Module for PDF Viewer
+ * Coordinate Transformation Utilities
  * 
- * This module provides a robust and consistent way to convert between coordinate systems
- * in the PDF viewer. It helps ensure markers remain stable during zoom operations by
- * providing precision-controlled coordinate transformations.
- * 
- * Coordinate Systems:
- * - Screen coordinates: Relative to the browser viewport (e.clientX, e.clientY)
- * - Container coordinates: Relative to the PDF container element (after accounting for container position)
- * - PDF coordinates: The coordinate system of the PDF document itself (after removing scale and translation)
+ * This file contains utilities for transforming coordinates between PDF space and screen space,
+ * which is crucial for accurate marker placement and interaction in the floorplan viewer.
  */
-
-export type Point = { x: number; y: number };
 
 /**
- * Coordinates class to encapsulate coordinate transformations with built-in precision control
- * and validation to ensure coordinate stability during zoom operations.
+ * Represents a point in 2D space
+ */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Interface for viewport dimensions
+ */
+export interface ViewportDimensions {
+  width: number;
+  height: number;
+}
+
+/**
+ * Coordinate system class for handling transformations between screen and PDF spaces
  */
 export class CoordinateSystem {
-  // PDF viewport dimensions
-  private viewportWidth: number = 0;
-  private viewportHeight: number = 0;
-  
-  // Current transform state
-  private scale: number = 1;
-  private translateX: number = 0;
-  private translateY: number = 0;
-  
-  // Container reference
-  private containerElement: HTMLElement | null = null;
-  
-  // Precision control (number of decimal places to keep)
-  private precision: number = 2;
-  
+  private containerElement: HTMLElement | null;
+  private scale: number;
+  private translateX: number;
+  private translateY: number;
+  private viewportDimensions: ViewportDimensions;
+
   /**
-   * Create a new coordinate system
-   * @param containerElement The HTML element containing the PDF viewer
-   * @param initialScale Initial zoom scale (default 1.0)
-   * @param initialTranslateX Initial X translation (default 0)
-   * @param initialTranslateY Initial Y translation (default 0)
-   * @param viewportDimensions The dimensions of the PDF viewport
+   * Creates a coordinate system
+   * 
+   * @param containerElement - The containing element for the coordinate system
+   * @param scale - The current zoom scale
+   * @param translateX - The X translation (pan position)
+   * @param translateY - The Y translation (pan position)
+   * @param viewportDimensions - Dimensions of the viewport
    */
   constructor(
-    containerElement: HTMLElement | null = null,
-    initialScale: number = 1,
-    initialTranslateX: number = 0,
-    initialTranslateY: number = 0,
-    viewportDimensions: { width: number; height: number } = { width: 0, height: 0 }
+    containerElement: HTMLElement | null, 
+    scale: number = 1, 
+    translateX: number = 0, 
+    translateY: number = 0,
+    viewportDimensions: ViewportDimensions = { width: 0, height: 0 }
   ) {
     this.containerElement = containerElement;
-    this.scale = initialScale;
-    this.translateX = initialTranslateX;
-    this.translateY = initialTranslateY;
-    this.viewportWidth = viewportDimensions.width;
-    this.viewportHeight = viewportDimensions.height;
+    this.scale = scale;
+    this.translateX = translateX;
+    this.translateY = translateY;
+    this.viewportDimensions = viewportDimensions;
   }
-  
+
   /**
-   * Update the coordinate system parameters
-   * @param params Parameters to update (only specified parameters will be updated)
+   * Update the coordinate system with new values
+   * 
+   * @param params - Parameters to update
    */
   updateSystem(params: {
     containerElement?: HTMLElement | null;
     scale?: number;
     translateX?: number;
     translateY?: number;
-    viewportDimensions?: { width: number; height: number };
-  }): void {
-    if (params.containerElement !== undefined) {
-      this.containerElement = params.containerElement;
-    }
-    
-    if (params.scale !== undefined) {
-      this.scale = params.scale;
-    }
-    
-    if (params.translateX !== undefined) {
-      this.translateX = params.translateX;
-    }
-    
-    if (params.translateY !== undefined) {
-      this.translateY = params.translateY;
-    }
-    
-    if (params.viewportDimensions) {
-      this.viewportWidth = params.viewportDimensions.width;
-      this.viewportHeight = params.viewportDimensions.height;
-    }
+    viewportDimensions?: ViewportDimensions;
+  }) {
+    if (params.containerElement !== undefined) this.containerElement = params.containerElement;
+    if (params.scale !== undefined) this.scale = params.scale;
+    if (params.translateX !== undefined) this.translateX = params.translateX;
+    if (params.translateY !== undefined) this.translateY = params.translateY;
+    if (params.viewportDimensions !== undefined) this.viewportDimensions = params.viewportDimensions;
   }
-  
+
   /**
-   * Limit precision of numeric values to avoid floating point errors
-   * @param value Value to limit precision
-   * @returns Value with limited precision
-   */
-  limitPrecision(value: number): number {
-    return parseFloat(value.toFixed(this.precision));
-  }
-  
-  /**
-   * Get the container's bounding rect (with validation)
-   * @returns The container's DOMRect or an empty rect if no container exists
-   */
-  getContainerRect(): DOMRect {
-    if (!this.containerElement) {
-      console.warn("No container element set for coordinate system");
-      return new DOMRect(0, 0, 0, 0);
-    }
-    return this.containerElement.getBoundingClientRect();
-  }
-  
-  /**
-   * Convert screen coordinates (from mouse events) to PDF coordinates
-   * @param screenX X coordinate in screen space (e.clientX)
-   * @param screenY Y coordinate in screen space (e.clientY)
-   * @param debug Whether to log debug information
-   * @returns Point in PDF coordinate space
+   * Convert screen coordinates to PDF coordinates
+   * 
+   * @param screenX - X coordinate in screen space
+   * @param screenY - Y coordinate in screen space
+   * @param debug - Whether to log debug information
+   * @returns Point in PDF coordinates
    */
   screenToPdf(screenX: number, screenY: number, debug: boolean = false): Point {
-    const rect = this.getContainerRect();
+    if (!this.containerElement) return { x: 0, y: 0 };
     
-    // 1. Convert to container-relative coordinates
+    // Get container-relative coordinates
+    const rect = this.containerElement.getBoundingClientRect();
     const containerX = screenX - rect.left;
     const containerY = screenY - rect.top;
     
-    // 2. Apply inverse transformation to get PDF coordinates
-    // Be extra careful to preserve precision during division
+    // Transform to PDF coordinates
     const pdfX = (containerX - this.translateX) / this.scale;
     const pdfY = (containerY - this.translateY) / this.scale;
     
     if (debug) {
-      console.log(`Screen(${screenX}, ${screenY}) → Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfX.toFixed(4)}, ${pdfY.toFixed(4)}) @ scale ${this.scale.toFixed(4)}`);
+      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(2)}, ${pdfY.toFixed(2)}) @ scale ${this.scale.toFixed(2)}`);
     }
     
-    // Only limit precision at the very end to avoid cumulative errors
-    return { 
-      x: this.limitPrecision(pdfX),
-      y: this.limitPrecision(pdfY)
+    // Ensure consistent rounding
+    return {
+      x: parseFloat(pdfX.toFixed(2)),
+      y: parseFloat(pdfY.toFixed(2))
     };
   }
-  
+
   /**
    * Convert PDF coordinates to screen coordinates
-   * @param pdfX X coordinate in PDF space
-   * @param pdfY Y coordinate in PDF space
-   * @param debug Whether to log debug information
-   * @returns Point in screen coordinate space (relative to viewport)
+   * 
+   * @param pdfX - X coordinate in PDF space
+   * @param pdfY - Y coordinate in PDF space
+   * @param debug - Whether to log debug information
+   * @returns Point in screen coordinates
    */
   pdfToScreen(pdfX: number, pdfY: number, debug: boolean = false): Point {
-    const rect = this.getContainerRect();
+    if (!this.containerElement) return { x: 0, y: 0 };
     
-    // 1. Apply transformation to convert to container coordinates
-    const containerX = this.limitPrecision(pdfX * this.scale + this.translateX);
-    const containerY = this.limitPrecision(pdfY * this.scale + this.translateY);
-    
-    // 2. Convert to screen coordinates
-    const screenX = containerX + rect.left;
-    const screenY = containerY + rect.top;
+    // Apply transformation to get screen coordinates
+    const screenX = pdfX * this.scale + this.translateX;
+    const screenY = pdfY * this.scale + this.translateY;
     
     if (debug) {
-      console.log(`PDF(${pdfX}, ${pdfY}) → Container(${containerX}, ${containerY}) → Screen(${screenX.toFixed(2)}, ${screenY.toFixed(2)}) @ scale ${this.scale.toFixed(2)}`);
+      console.log(`PDF(${pdfX}, ${pdfY}) → Screen(${screenX.toFixed(2)}, ${screenY.toFixed(2)}) @ scale ${this.scale.toFixed(2)}`);
     }
     
     return { x: screenX, y: screenY };
   }
-  
-  /**
-   * Convert container coordinates to PDF coordinates
-   * @param containerX X coordinate relative to container
-   * @param containerY Y coordinate relative to container
-   * @param debug Whether to log debug information
-   * @returns Point in PDF coordinate space
-   */
-  containerToPdf(containerX: number, containerY: number, debug: boolean = false): Point {
-    // Calculate precise PDF coordinates by correctly inverting the transform
-    const pdfX = (containerX - this.translateX) / this.scale;
-    const pdfY = (containerY - this.translateY) / this.scale;
-    
-    if (debug) {
-      console.log(`Container(${containerX.toFixed(2)}, ${containerY.toFixed(2)}) → PDF(${pdfX.toFixed(4)}, ${pdfY.toFixed(4)}) @ scale ${this.scale.toFixed(4)}`);
-    }
-    
-    // Apply precision limits at the end to avoid cumulative errors
-    return { 
-      x: this.limitPrecision(pdfX), 
-      y: this.limitPrecision(pdfY) 
-    };
-  }
-  
-  /**
-   * Convert PDF coordinates to container coordinates
-   * @param pdfX X coordinate in PDF space
-   * @param pdfY Y coordinate in PDF space
-   * @returns Point in container coordinate space
-   */
-  pdfToContainer(pdfX: number, pdfY: number): Point {
-    const containerX = this.limitPrecision(pdfX * this.scale + this.translateX);
-    const containerY = this.limitPrecision(pdfY * this.scale + this.translateY);
-    
-    return { x: containerX, y: containerY };
-  }
-  
-  /**
-   * Calculate a new zoom transformation centered on a specific point
-   * @param mouseX X coordinate of mouse in container space
-   * @param mouseY Y coordinate of mouse in container space
-   * @param newScale New scale factor
-   * @returns New transform parameters (scale, translateX, translateY)
-   */
-  calculateZoomTransform(
-    mouseX: number, 
-    mouseY: number, 
-    newScale: number
-  ): { scale: number; translateX: number; translateY: number } {
-    // Get the point in PDF coordinates
-    const mousePdfX = (mouseX - this.translateX) / this.scale;
-    const mousePdfY = (mouseY - this.translateY) / this.scale;
-    
-    // Calculate new translation to keep the mouse point fixed
-    const newTranslateX = this.limitPrecision(mouseX - mousePdfX * newScale);
-    const newTranslateY = this.limitPrecision(mouseY - mousePdfY * newScale);
-    
-    return {
-      scale: newScale,
-      translateX: newTranslateX,
-      translateY: newTranslateY
-    };
-  }
-  
-  /**
-   * Calculate drag offset between cursor and marker position
-   * @param cursorPdfX X position of cursor in PDF coordinates
-   * @param cursorPdfY Y position of cursor in PDF coordinates
-   * @param markerPdfX X position of marker in PDF coordinates
-   * @param markerPdfY Y position of marker in PDF coordinates
-   * @returns Offset point in PDF coordinates
-   */
-  calculateDragOffset(
-    cursorPdfX: number,
-    cursorPdfY: number,
-    markerPdfX: number,
-    markerPdfY: number
-  ): Point {
-    // Calculate the offset in PDF coordinates
-    // This works at any zoom level because both coordinates are in the same PDF coordinate space
-    return {
-      x: this.limitPrecision(cursorPdfX - markerPdfX),
-      y: this.limitPrecision(cursorPdfY - markerPdfY)
-    };
-  }
-  
-  /**
-   * Determine if a point is inside a marker's hit area
-   * @param point The point to test (in PDF coordinates)
-   * @param markerPosition The marker's position
-   * @param hitRadius Additional hit area radius beyond the marker's visual size
-   * @returns True if the point is inside the marker's hit area
-   */
-  isPointInMarker(
-    point: Point,
-    markerPosition: Point,
-    hitRadius: number = 10
-  ): boolean {
-    const dx = point.x - markerPosition.x;
-    const dy = point.y - markerPosition.y;
-    const distanceSquared = dx * dx + dy * dy;
-    
-    // When zoomed out, increase the hit radius for easier selection
-    const adjustedRadius = hitRadius / this.scale;
-    
-    return distanceSquared <= adjustedRadius * adjustedRadius;
-  }
-  
-  /**
-   * Get the current transform parameters
-   * @returns Current transform parameters
-   */
-  getTransform(): { scale: number; translateX: number; translateY: number } {
-    return {
-      scale: this.scale,
-      translateX: this.translateX,
-      translateY: this.translateY
-    };
-  }
 }
 
-// Export legacy API for backward compatibility, but with improved precision
+/**
+ * Standalone function to convert screen coordinates to PDF coordinates
+ * 
+ * @param screenX - X coordinate in screen space
+ * @param screenY - Y coordinate in screen space
+ * @param containerElement - The containing element
+ * @param scale - Current zoom scale
+ * @param translateX - X translation
+ * @param translateY - Y translation
+ * @returns Point in PDF coordinates
+ */
 export function screenToPdfCoordinates(
-  screenX: number,
-  screenY: number,
-  containerRect: DOMRect,
+  screenX: number, 
+  screenY: number, 
+  containerElement: HTMLElement,
   scale: number,
   translateX: number,
-  translateY: number,
-  pdfViewport: { width: number; height: number } = { width: 0, height: 0 }
+  translateY: number
 ): Point {
-  // Create a temporary coordinate system with our improved approach
-  const coords = new CoordinateSystem(
-    null,
-    scale,
-    translateX,
-    translateY,
-    pdfViewport
-  );
+  const rect = containerElement.getBoundingClientRect();
+  const containerX = screenX - rect.left;
+  const containerY = screenY - rect.top;
   
-  // 1. Convert client coordinates to relative coordinates within the container
-  const containerX = screenX - containerRect.left;
-  const containerY = screenY - containerRect.top;
-  
-  // 2. Enable debug mode for better logging
-  return coords.containerToPdf(containerX, containerY, true);
-}
-
-export function pdfToScreenCoordinates(
-  pdfX: number,
-  pdfY: number,
-  containerRect: DOMRect = new DOMRect(0, 0, 0, 0),
-  scale: number = 1,
-  translateX: number = 0,
-  translateY: number = 0,
-  viewport: { width: number; height: number } = { width: 0, height: 0 }
-): Point {
-  // Create a temporary coordinate system
-  const coords = new CoordinateSystem(
-    null,
-    scale,
-    translateX,
-    translateY,
-    viewport
-  );
-  
-  const containerCoords = coords.pdfToContainer(pdfX, pdfY);
+  const pdfX = (containerX - translateX) / scale;
+  const pdfY = (containerY - translateY) / scale;
   
   return {
-    x: containerCoords.x + containerRect.left,
-    y: containerCoords.y + containerRect.top
+    x: parseFloat(pdfX.toFixed(2)),
+    y: parseFloat(pdfY.toFixed(2))
   };
 }
 
-export function calculateDragOffset(
-  cursorPdfX: number,
-  cursorPdfY: number,
-  markerPdfX: number,
-  markerPdfY: number
+/**
+ * Standalone function to convert PDF coordinates to screen coordinates
+ * 
+ * @param pdfX - X coordinate in PDF space
+ * @param pdfY - Y coordinate in PDF space
+ * @param containerElement - The containing element
+ * @param scale - Current zoom scale
+ * @param translateX - X translation
+ * @param translateY - Y translation
+ * @returns Point in screen coordinates
+ */
+export function pdfToScreenCoordinates(
+  pdfX: number, 
+  pdfY: number, 
+  containerElement: HTMLElement,
+  scale: number,
+  translateX: number,
+  translateY: number
 ): Point {
-  const coords = new CoordinateSystem();
-  return coords.calculateDragOffset(cursorPdfX, cursorPdfY, markerPdfX, markerPdfY);
+  const screenX = pdfX * scale + translateX;
+  const screenY = pdfY * scale + translateY;
+  
+  return { x: screenX, y: screenY };
 }
 
-export function isPointInMarker(
-  point: Point,
-  markerPosition: Point,
-  hitRadius: number = 10
-): boolean {
-  const coords = new CoordinateSystem();
-  return coords.isPointInMarker(point, markerPosition, hitRadius);
+/**
+ * Calculate distance between two points
+ * 
+ * @param p1 - First point
+ * @param p2 - Second point
+ * @returns Distance between points
+ */
+export function calculateDistance(p1: Point, p2: Point): number {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Calculate angle between two points in degrees
+ * 
+ * @param p1 - First point (center)
+ * @param p2 - Second point
+ * @returns Angle in degrees
+ */
+export function calculateAngle(p1: Point, p2: Point): number {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  
+  // Calculate angle in radians, then convert to degrees
+  let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  
+  // Normalize to 0-360 range
+  if (angle < 0) angle += 360;
+  
+  return angle;
+}
+
+/**
+ * Normalize an angle to the range -180 to 180 degrees
+ * This is important for smooth camera FOV calculations
+ * 
+ * @param angle - Angle in degrees
+ * @returns Normalized angle
+ */
+export function normalizeAngle(angle: number): number {
+  // Normalize angle to range [-180, 180]
+  let normalizedAngle = angle;
+  while (normalizedAngle > 180) normalizedAngle -= 360;
+  while (normalizedAngle < -180) normalizedAngle += 360;
+  return normalizedAngle;
 }
