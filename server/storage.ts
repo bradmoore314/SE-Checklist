@@ -838,6 +838,10 @@ export class MemStorage implements IStorage {
     return image;
   }
 
+  async getImageById(id: number): Promise<Image | undefined> {
+    return this.images.get(id);
+  }
+
   async getImages(equipmentType: string, equipmentId: number): Promise<Image[]> {
     return Array.from(this.images.values()).filter(
       (image) => image.equipment_type === equipmentType && image.equipment_id === equipmentId
@@ -1860,6 +1864,11 @@ export class DatabaseStorage implements IStorage {
   // Images
   async saveImage(insertImage: InsertImage): Promise<Image> {
     const [image] = await db.insert(images).values(insertImage).returning();
+    return image;
+  }
+
+  async getImageById(id: number): Promise<Image | undefined> {
+    const [image] = await db.select().from(images).where(eq(images.id, id));
     return image;
   }
 
