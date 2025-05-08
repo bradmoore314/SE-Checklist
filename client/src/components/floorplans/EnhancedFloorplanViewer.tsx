@@ -185,6 +185,7 @@ export const EnhancedFloorplanViewer = ({
   const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [areLabelsVisible, setAreLabelsVisible] = useState<boolean>(true);
+  const [editingCameraData, setEditingCameraData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDraggingMarker, setIsDraggingMarker] = useState<boolean>(false);
   const [isResizingMarker, setIsResizingMarker] = useState<boolean>(false);
@@ -2426,6 +2427,7 @@ export const EnhancedFloorplanViewer = ({
           projectId={floorplan.project_id}
           marker={selectedMarker || tempMarker}
           isNew={!selectedMarker && !!tempMarker}
+          cameraData={editingCameraData}
           onUpdate={(updatedData) => {
             console.log("Camera config updated:", updatedData);
             
