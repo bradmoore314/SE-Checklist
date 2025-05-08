@@ -42,28 +42,28 @@ export function EquipmentConsistencyCheck({ projectId }: EquipmentConsistencyChe
   });
 
   // Get marker statistics from the floorplan
-  const { data: markerStats, refetch: refetchMarkerStats } = useQuery({
+  const { data: markerStats, refetch: refetchMarkerStats } = useQuery<MarkerStats>({
     queryKey: [`/api/projects/${projectId}/marker-stats`],
     enabled: !!projectId,
   });
 
   // Get equipment counts from their respective endpoints
-  const { data: accessPoints, refetch: refetchAccessPoints } = useQuery({
+  const { data: accessPoints, refetch: refetchAccessPoints } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/access-points`],
     enabled: !!projectId,
   });
 
-  const { data: cameras, refetch: refetchCameras } = useQuery({
+  const { data: cameras, refetch: refetchCameras } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/cameras`],
     enabled: !!projectId,
   });
 
-  const { data: elevators, refetch: refetchElevators } = useQuery({
+  const { data: elevators, refetch: refetchElevators } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/elevators`],
     enabled: !!projectId,
   });
 
-  const { data: intercoms, refetch: refetchIntercoms } = useQuery({
+  const { data: intercoms, refetch: refetchIntercoms } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/intercoms`],
     enabled: !!projectId,
   });
@@ -81,16 +81,32 @@ export function EquipmentConsistencyCheck({ projectId }: EquipmentConsistencyChe
       refetchIntercoms()
     ]);
     
-    // Get counts
-    const markerAccessPoints = markerStats?.types?.access_point?.total || 0;
-    const markerCameras = markerStats?.types?.camera?.total || 0;
-    const markerElevators = markerStats?.types?.elevator?.total || 0;
-    const markerIntercoms = markerStats?.types?.intercom?.total || 0;
+    // Get counts from markers - need to handle potential undefined types safely
+    const stats = markerStats || { 
+      total: 0, 
+      types: {
+        access_point: { total: 0, interior: 0, perimeter: 0 },
+        camera: { total: 0, indoor: 0, outdoor: 0 },
+        elevator: { total: 0 },
+        intercom: { total: 0 }
+      }
+    };
     
-    const equipmentAccessPoints = accessPoints?.length || 0;
-    const equipmentCameras = cameras?.length || 0;
-    const equipmentElevators = elevators?.length || 0;
-    const equipmentIntercoms = intercoms?.length || 0;
+    const markerAccessPoints = stats.types.access_point.total;
+    const markerCameras = stats.types.camera.total;
+    const markerElevators = stats.types.elevator.total;
+    const markerIntercoms = stats.types.intercom.total;
+    
+    // Get equipment lists safely
+    const apList = accessPoints || [];
+    const camList = cameras || [];
+    const elevList = elevators || [];
+    const interList = intercoms || [];
+    
+    const equipmentAccessPoints = apList.length;
+    const equipmentCameras = camList.length;
+    const equipmentElevators = elevList.length;
+    const equipmentIntercoms = interList.length;
     
     // Calculate differences
     const apDiff = Math.abs(markerAccessPoints - equipmentAccessPoints);
