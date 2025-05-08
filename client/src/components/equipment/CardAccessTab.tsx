@@ -154,7 +154,9 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   };
 
   // Handle save from Add modal
-  const handleAddSave = () => {
+  const handleAddSave = (id: number, newData: AccessPoint) => {
+    console.log("New Access Point added:", id, newData);
+    
     // Close modal
     setShowAddModal(false);
     
@@ -173,7 +175,9 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   };
   
   // Handle save from Edit modal
-  const handleEditSave = () => {
+  const handleEditSave = (id: number, updatedData: AccessPoint) => {
+    console.log("Access Point updated:", id, updatedData);
+    
     // Close modal
     setShowEditModal(false);
     setSelectedAccessPoint(null);
