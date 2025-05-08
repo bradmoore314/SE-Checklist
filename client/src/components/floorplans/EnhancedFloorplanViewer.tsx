@@ -27,6 +27,8 @@ import IntercomMarker from './markers/IntercomMarker';
 import ElevatorMarker from './markers/ElevatorMarker';
 import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
 import CombinedCameraConfigForm from './CombinedCameraConfigForm';
+import EditIntercomModal from '../modals/EditIntercomModal';
+import EditElevatorModal from '../modals/EditElevatorModal';
 
 import {
   ContextMenu,
@@ -172,6 +174,9 @@ export const EnhancedFloorplanViewer = ({
   const [contextMenuOpen, setContextMenuOpen] = useState<boolean>(false);
   const [contextMenuPosition, setContextMenuPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [isLayerManagerOpen, setIsLayerManagerOpen] = useState<boolean>(false);
+  const [isIntercomModalOpen, setIsIntercomModalOpen] = useState<boolean>(false);
+  const [isElevatorModalOpen, setIsElevatorModalOpen] = useState<boolean>(false);
+  const [isCameraConfigOpen, setCameraConfigOpen] = useState<boolean>(false);
   const [layerOpacity, setLayerOpacity] = useState<number>(0.5);
   const [drawingPoints, setDrawingPoints] = useState<Array<{x: number, y: number}>>([]);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -930,8 +935,7 @@ export const EnhancedFloorplanViewer = ({
     };
   }, [selectedMarker, deleteMarkerMutation, duplicateMarkerMutation, scale, currentPage]);
 
-  // State for combined camera configuration
-  const [isCameraConfigOpen, setCameraConfigOpen] = useState(false);
+  // State for combined camera configuration is now declared at the top with other state variables
   
   // Mouse handling for pan/zoom and marker placement
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -2284,9 +2288,9 @@ export const EnhancedFloorplanViewer = ({
                     
                     console.log(`Opening elevator settings for marker #${selectedMarker.id}`);
                     
-                    // Redirect to elevators page with the equipment ID
+                    // Open the elevator modal for the selected marker
                     if (selectedMarker.equipment_id) {
-                      window.location.href = `/project/${floorplan.project_id}/elevators?edit=${selectedMarker.equipment_id}`;
+                      setIsElevatorModalOpen(true);
                     } else {
                       toast({
                         title: "Missing Equipment",
@@ -2317,9 +2321,9 @@ export const EnhancedFloorplanViewer = ({
                     
                     console.log(`Opening intercom settings for marker #${selectedMarker.id}`);
                     
-                    // Redirect to intercoms page with the equipment ID
+                    // Open the intercom modal for the selected marker
                     if (selectedMarker.equipment_id) {
-                      window.location.href = `/project/${floorplan.project_id}/intercoms?edit=${selectedMarker.equipment_id}`;
+                      setIsIntercomModalOpen(true);
                     } else {
                       toast({
                         title: "Missing Equipment",
@@ -2478,6 +2482,85 @@ export const EnhancedFloorplanViewer = ({
             // Properly cancel the operation
             setCameraConfigOpen(false);
             setTempMarker(null);
+          }}
+        />
+      )}
+
+      {/* Elevator Edit Modal */}
+      {isElevatorModalOpen && selectedMarker?.equipment_id && (
+        <EditElevatorModal
+          isOpen={isElevatorModalOpen}
+          elevator={{
+            id: selectedMarker.equipment_id,
+            project_id: floorplan.project_id,
+            location: selectedMarker.label || '',
+            manufacturer: '',
+            model: '',
+            number_of_floors: 0,
+            control_board_location: '',
+            notes: ''
+          }}
+          onClose={() => setIsElevatorModalOpen(false)}
+          fromFloorplan={true}
+          isNewElevator={false}
+          onSave={(id, data) => {
+            // Update the marker label to match the location
+            const updatedMarker = {
+              ...selectedMarker,
+              label: data.location
+            };
+            
+            // Update the marker
+            updateMarkerMutation.mutate(updatedMarker);
+            
+            // Close the modal
+            setIsElevatorModalOpen(false);
+            
+            // Show success feedback
+            toast({
+              title: "Elevator Updated",
+              description: "Elevator settings have been saved successfully",
+              duration: 3000
+            });
+          }}
+        />
+      )}
+
+      {/* Intercom Edit Modal */}
+      {isIntercomModalOpen && selectedMarker?.equipment_id && (
+        <EditIntercomModal
+          isOpen={isIntercomModalOpen}
+          intercom={{
+            id: selectedMarker.equipment_id,
+            project_id: floorplan.project_id,
+            location: selectedMarker.label || '',
+            intercom_type: '',
+            connection_type: '',
+            mounting_type: '',
+            notes: ''
+          }}
+          onClose={() => setIsIntercomModalOpen(false)}
+          fromFloorplan={true}
+          isNewIntercom={false}
+          onSave={(id, data) => {
+            // Update the marker label to match the location
+            const updatedMarker = {
+              ...selectedMarker,
+              label: data.location
+            };
+            
+            // Update the marker
+            updateMarkerMutation.mutate(updatedMarker);
+            
+            // Close the modal
+            setIsIntercomModalOpen(false);
+            
+            // Show success feedback
+            toast({
+              title: "Intercom Updated",
+              description: "Intercom settings have been saved successfully",
+              duration: 3000
+            });
           }}
         />
       )}
