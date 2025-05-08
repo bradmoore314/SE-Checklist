@@ -634,6 +634,7 @@ export const images = pgTable("images", {
   equipment_id: integer("equipment_id").notNull(),
   project_id: integer("project_id").notNull(),
   image_data: text("image_data"), // Now optional when using Azure storage
+  thumbnail_data: text("thumbnail_data"), // Store a smaller thumbnail version
   filename: text("filename"),
   created_at: timestamp("created_at").defaultNow(),
   // Azure Blob Storage fields
