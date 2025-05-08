@@ -512,7 +512,6 @@ export default function UnifiedCameraConfigForm({
                         fill="rgba(59, 130, 246, 0.2)"
                         stroke="rgba(59, 130, 246, 0.5)"
                         strokeWidth="2"
-                        style={{ transform: `rotate(${rotation}deg)` }}
                       />
                       
                       {/* Direction indicator line */}
