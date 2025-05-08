@@ -453,6 +453,23 @@ export const EnhancedFloorplanViewer = ({
       - Position: (${marker.position_x.toFixed(2)}, ${marker.position_y.toFixed(2)})
     `);
   };
+
+  // Effect to handle closing the context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (contextMenuOpen) {
+        setContextMenuOpen(false);
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [contextMenuOpen]);
   
   // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
   const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
@@ -1981,87 +1998,74 @@ export const EnhancedFloorplanViewer = ({
       {/* Context Menu */}
       {contextMenuOpen && selectedMarker && (
         <div 
-          className="fixed z-50" 
+          className="fixed z-50 bg-white shadow-lg rounded-lg border border-gray-200" 
           style={{ 
             left: `${contextMenuPosition.x}px`, 
-            top: `${contextMenuPosition.y}px` 
+            top: `${contextMenuPosition.y}px`,
+            width: '16rem'
           }}
         >
-          <ContextMenu onOpenChange={setContextMenuOpen}>
-            <ContextMenuTrigger />
-            <ContextMenuContent className="w-64">
-              <ContextMenuItem
+          <div className="py-1">
+            <button 
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
+              onClick={() => {
+                duplicateMarkerMutation.mutate({
+                  ...selectedMarker,
+                  id: undefined,
+                  position_x: selectedMarker.position_x + 20,
+                  position_y: selectedMarker.position_y + 20,
+                });
+                setContextMenuOpen(false);
+                console.log('Marker duplicated');
+              }}
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Duplicate
+            </button>
+            
+            <button 
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
+              onClick={() => {
+                deleteMarkerMutation.mutate(selectedMarker.id);
+                setSelectedMarker(null);
+                setContextMenuOpen(false);
+                console.log('Marker deleted');
+              }}
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </button>
+            
+            <div className="h-px bg-gray-200 my-1"></div>
+            
+            <button 
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center" 
+              onClick={() => {
+                console.log(`Opening properties dialog for marker ${selectedMarker.id}`);
+                setIsEquipmentFormOpen(true);
+                setContextMenuOpen(false);
+              }}
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Properties
+            </button>
+            
+            {selectedMarker.marker_type === 'camera' && (
+              <button 
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
                 onClick={() => {
-                  // Duplicate the selected marker with a slight offset
-                  duplicateMarkerMutation.mutate({
-                    ...selectedMarker,
-                    id: undefined, // Remove ID so a new one is generated
-                    position_x: selectedMarker.position_x + 20,
-                    position_y: selectedMarker.position_y + 20,
-                  });
+                  setIsCameraEditDialogOpen(true);
                   setContextMenuOpen(false);
-                  // Removed toast notification per user request
-                  console.log('Marker duplicated');
                 }}
               >
-                <Copy className="mr-2 h-4 w-4" />
-                Duplicate
-              </ContextMenuItem>
-              
-              <ContextMenuItem
-                onClick={() => {
-                  // Delete the selected marker
-                  deleteMarkerMutation.mutate(selectedMarker.id);
-                  setSelectedMarker(null);
-                  setContextMenuOpen(false);
-                  // Removed toast notification per user request
-                  console.log('Marker deleted');
-                }}
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete
-              </ContextMenuItem>
-              
-              <ContextMenuSeparator />
-              
-              <ContextMenuItem
-                onClick={() => {
-                  // TEST: Log edit marker attempt
-                  console.log(`[TEST] Opening edit properties dialog for marker:
-                    - ID: ${selectedMarker?.id}
-                    - Type: ${selectedMarker?.marker_type}
-                    - Label: ${selectedMarker?.label || 'No label'}
-                  `);
-                  
-                  // Open the marker properties dialog
-                  setIsEquipmentFormOpen(true);
-                  setContextMenuOpen(false);
-                }}
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Properties
-              </ContextMenuItem>
-              
-              {/* Only show camera settings option for camera markers */}
-              {selectedMarker && selectedMarker.marker_type === 'camera' && (
-                <ContextMenuItem
-                  onClick={() => {
-                    // Open the camera settings dialog
-                    setIsCameraEditDialogOpen(true);
-                    setContextMenuOpen(false);
-                  }}
-                >
-                  <div className="flex items-center">
-                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                      <circle cx="12" cy="13" r="3" />
-                    </svg>
-                    Camera Settings
-                  </div>
-                </ContextMenuItem>
-              )}
-            </ContextMenuContent>
-          </ContextMenu>
+                <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
+                Camera Settings
+              </button>
+            )}
+          </div>
         </div>
       )}
       
