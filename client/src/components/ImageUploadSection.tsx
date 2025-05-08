@@ -45,17 +45,27 @@ function ImageUploadSection({
 
   // Load existing images when they're fetched
   useEffect(() => {
+    // Only process if we have actual images to display
     if (existingImages && existingImages.length > 0) {
-      setImages(existingImages.map((img: any) => ({
+      // Create a deep comparison to prevent infinite rerenders
+      const formattedImages = existingImages.map((img: any) => ({
         id: img.id,
         data: img.image_data || (img.blob_url || ''), // Use blob_url if available
         filename: img.filename || 'Uploaded Image'
-      })));
-    } else {
-      // Clear images when none are found
+      }));
+      
+      // Only update state if the images have changed
+      const currentIds = images.map(img => img.id || '').sort().join(',');
+      const newIds = formattedImages.map(img => img.id || '').sort().join(',');
+      
+      if (currentIds !== newIds || images.length !== formattedImages.length) {
+        setImages(formattedImages);
+      }
+    } else if (images.length > 0 && existingImages.length === 0) {
+      // Only clear images when we have existing ones in state but the backend has none
       setImages([]);
     }
-  }, [existingImages, equipmentId]);
+  }, [existingImages]);
 
   // Image upload mutation
   const uploadImageMutation = useMutation({
