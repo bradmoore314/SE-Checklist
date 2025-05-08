@@ -175,6 +175,8 @@ export default function EditAccessPointModal({
     try {
       let resultData;
       
+      // If isNewAccessPoint is true, create a new access point
+      // Otherwise, update the existing one
       if (isNewAccessPoint) {
         // Create a new access point
         console.log("Creating new access point with data:", {
