@@ -2282,8 +2282,8 @@ export const EnhancedFloorplanViewer = ({
                     
                     // Redirect to card access configurator with the equipment ID
                     if (selectedMarker.equipment_id) {
-                      // Use client-side navigation to avoid 404 errors
-                      window.location.href = `/project/${floorplan.project_id}/card-access?edit=${selectedMarker.equipment_id}`;
+                      // Use proper equipment form dialog instead of page navigation
+                      setIsEquipmentFormOpen(true);
                     } else {
                       toast({
                         title: "Missing Equipment",
@@ -2297,7 +2297,7 @@ export const EnhancedFloorplanViewer = ({
                   }}
                 >
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit Card Access
+                  Edit Access Point
                 </div>
               </>
             )}

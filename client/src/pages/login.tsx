@@ -56,17 +56,18 @@ export default function Login() {
         // Redirect to dashboard
         setLocation("/dashboard");
       } else {
-        // Show error toast
+        // Show error toast with user-friendly message
         toast({
           title: "Login Failed",
-          description: response?.message || "Invalid username or password",
+          description: "The username or password you entered is incorrect. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
+      // Show user-friendly error message
       toast({
-        title: "Login Error",
-        description: (error as Error).message || "An error occurred during login",
+        title: "Login Failed",
+        description: "The username or password you entered is incorrect. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -78,9 +79,9 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">SE Checklist App</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Kastle Wizard</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access your account
+            Your comprehensive security equipment management solution
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Project } from "@shared/schema";
 import { useProject } from "@/contexts/ProjectContext";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ProjectSwitcher() {
   const { currentProject, setCurrentProject, pinnedProjects, recentProjects, allProjects, pinProject, unpinProject } = useProject();
-  const { setCurrentSiteWalk } = useSiteWalk();
+  const { setCurrentOpportunity } = useOpportunity();
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +38,7 @@ export default function ProjectSwitcher() {
   // Function to select a project
   const selectProject = (project: Project) => {
     setCurrentProject(project);
-    setCurrentSiteWalk(project);
+    setCurrentOpportunity(project);
     setIsOpen(false);
   };
 
