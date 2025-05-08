@@ -354,23 +354,23 @@ export default function CamerasTab({ project }: CamerasTabProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="bg-gray-100">
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
+                <tr className="bg-primary">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
                     LOCATION
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
                     CAMERA TYPE
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
                     MOUNTING TYPE
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
                     RESOLUTION
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
                     FIELD OF VIEW
                   </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-gray-700 text-right">
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white text-right">
                     ACTIONS
                   </th>
                 </tr>
