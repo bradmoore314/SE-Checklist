@@ -60,11 +60,12 @@ export default function AddCameraModal({
   });
 
   const handleSave = async (data: CameraConfigData) => {
-    // Create the payload with field_of_view for database compatibility
+    // Create the payload with proper format conversions for database compatibility
     const payload = {
       ...data,
       project_id: projectId,
       field_of_view: data.fov ? data.fov.toString() : "90", // Convert fov to string for field_of_view
+      is_indoor: data.is_indoor === "indoor" ? true : false, // Convert "indoor"/"outdoor" to boolean
     };
     
     // Debug the payload
