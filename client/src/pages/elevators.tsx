@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { Project } from "@shared/schema";
 import { useLocation } from "wouter";
 import ElevatorsTab from "@/components/equipment/ElevatorsTab";
@@ -10,20 +10,20 @@ import { Link } from "wouter";
 import { AlertTriangle } from "lucide-react";
 
 export default function Elevators() {
-  const { currentSiteWalk, setCurrentSiteWalk } = useSiteWalk();
+  const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const [, setLocation] = useLocation();
   
-  // Fetch site walks
-  const { data: siteWalks, isLoading } = useQuery<Project[]>({
+  // Fetch opportunities
+  const { data: opportunities, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"]
   });
 
-  // If current site walk is not set, use the first one from the list
+  // If current opportunity is not set, use the first one from the list
   useEffect(() => {
-    if (!currentSiteWalk && siteWalks && siteWalks.length > 0) {
-      setCurrentSiteWalk(siteWalks[0]);
+    if (!currentOpportunity && opportunities && opportunities.length > 0) {
+      setCurrentOpportunity(opportunities[0]);
     }
-  }, [currentSiteWalk, siteWalks, setCurrentSiteWalk]);
+  }, [currentOpportunity, opportunities, setCurrentOpportunity]);
 
   // Loading state
   if (isLoading) {

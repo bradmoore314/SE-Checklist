@@ -13,17 +13,17 @@ export default function Cameras() {
   const { currentOpportunity, setCurrentOpportunity } = useOpportunity();
   const [, setLocation] = useLocation();
   
-  // Fetch site walks
-  const { data: siteWalks, isLoading } = useQuery<Project[]>({
+  // Fetch opportunities
+  const { data: opportunities, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"]
   });
 
-  // If current site walk is not set, use the first one from the list
+  // If current opportunity is not set, use the first one from the list
   useEffect(() => {
-    if (!currentSiteWalk && siteWalks && siteWalks.length > 0) {
-      setCurrentSiteWalk(siteWalks[0]);
+    if (!currentOpportunity && opportunities && opportunities.length > 0) {
+      setCurrentOpportunity(opportunities[0]);
     }
-  }, [currentSiteWalk, siteWalks, setCurrentSiteWalk]);
+  }, [currentOpportunity, opportunities, setCurrentOpportunity]);
 
   // Loading state
   if (isLoading) {
@@ -33,14 +33,14 @@ export default function Cameras() {
           <div className="material-icons text-4xl animate-spin text-primary mb-4">
             sync
           </div>
-          <p className="text-neutral-600">Loading site walks...</p>
+          <p className="text-neutral-600">Loading opportunities...</p>
         </div>
       </div>
     );
   }
 
-  // No site walks state
-  if (!siteWalks || siteWalks.length === 0) {
+  // No opportunities state
+  if (!opportunities || opportunities.length === 0) {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="max-w-md w-full">
@@ -49,14 +49,14 @@ export default function Cameras() {
               <div className="flex justify-center mb-4">
                 <AlertTriangle className="h-12 w-12 text-amber-500" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">No Site Walks Found</h2>
+              <h2 className="text-2xl font-bold mb-2">No Opportunities Found</h2>
               <p className="text-neutral-600 mb-4">
-                You don't have any security site walks yet. Create your first site walk to get started.
+                You don't have any opportunities yet. Create your first opportunity to get started.
               </p>
               <Link href="/projects">
                 <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center mx-auto">
                   <span className="material-icons mr-1">add</span>
-                  Create New Site Walk
+                  Create New Opportunity
                 </Button>
               </Link>
             </div>
@@ -66,9 +66,9 @@ export default function Cameras() {
     );
   }
 
-  // If currentSiteWalk is not set but we have site walks, this should not happen
+  // If currentOpportunity is not set but we have opportunities, this should not happen
   // due to the useEffect, but let's handle it anyway
-  if (!currentSiteWalk) {
+  if (!currentOpportunity) {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="max-w-md w-full">
@@ -77,13 +77,13 @@ export default function Cameras() {
               <div className="flex justify-center mb-4">
                 <AlertTriangle className="h-12 w-12 text-amber-500" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Select a Site Walk</h2>
+              <h2 className="text-2xl font-bold mb-2">Select an Opportunity</h2>
               <p className="text-neutral-600 mb-4">
-                Please select a site walk to continue.
+                Please select an opportunity to continue.
               </p>
               <Link href="/projects">
                 <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md mx-auto">
-                  View Site Walks
+                  View Opportunities
                 </Button>
               </Link>
             </div>
@@ -106,7 +106,7 @@ export default function Cameras() {
           Back to Dashboard
         </Button>
       </div>
-      <CamerasTab project={currentSiteWalk} />
+      <CamerasTab project={currentOpportunity} />
     </div>
   );
 }
