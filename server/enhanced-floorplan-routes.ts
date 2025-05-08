@@ -255,17 +255,17 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
           .where(inArray(cameras.id, cameraIds as number[]));
       }
       
-      // Count interior/perimeter access points
+      // Count interior/perimeter access points - case insensitive comparison 
       const interiorAccessPoints = accessPointDetails.filter(ap => 
-        ap.interior_perimeter === 'interior').length;
+        ap.interior_perimeter?.toLowerCase() === 'interior').length;
       const perimeterAccessPoints = accessPointDetails.filter(ap => 
-        ap.interior_perimeter === 'perimeter').length;
+        ap.interior_perimeter?.toLowerCase() === 'perimeter').length;
         
-      // Count indoor/outdoor cameras
+      // Count indoor/outdoor cameras - case insensitive comparison
       const indoorCameras = cameraDetails.filter(cam => 
-        cam.indoor_outdoor === 'indoor').length;
+        cam.indoor_outdoor?.toLowerCase() === 'indoor').length;
       const outdoorCameras = cameraDetails.filter(cam => 
-        cam.indoor_outdoor === 'outdoor').length;
+        cam.indoor_outdoor?.toLowerCase() === 'outdoor').length;
       
       // Compile stats
       const stats = {
