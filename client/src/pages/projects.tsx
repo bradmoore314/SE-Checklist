@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useSiteWalk } from "@/contexts/SiteWalkContext";
+import { useOpportunity } from "@/contexts/OpportunityContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -77,7 +77,7 @@ type OpportunityFormValues = z.infer<typeof projectSchema>;
 
 export default function Projects() {
   const [, setLocation] = useLocation();
-  const { setCurrentSiteWalk: setCurrentOpportunity } = useSiteWalk();
+  const { setCurrentOpportunity } = useOpportunity();
   const { 
     setCurrentProject, 
     allProjects, 

@@ -29,7 +29,7 @@ import FeedbackPage from "@/pages/feedback-page";
 import GeminiTestPage from "@/pages/gemini-test-page";
 import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration-workspace-page";
 import MainLayout from "@/layouts/MainLayout";
-import { SiteWalkProvider } from "@/contexts/SiteWalkContext";
+import { OpportunityProvider } from "@/contexts/OpportunityContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -100,7 +100,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ProjectProvider>
-          <SiteWalkProvider>
+          <OpportunityProvider>
             <ChatbotProvider>
               <MainLayout>
                 <Router />
@@ -109,7 +109,7 @@ function App() {
                 <FullPageChatbot />
               </MainLayout>
             </ChatbotProvider>
-          </SiteWalkProvider>
+          </OpportunityProvider>
         </ProjectProvider>
         <Toaster />
       </AuthProvider>
