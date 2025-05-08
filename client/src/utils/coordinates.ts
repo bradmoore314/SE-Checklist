@@ -74,6 +74,56 @@ export class CoordinateSystem {
   }
 
   /**
+   * Calculate a zoom transform with the mouse position as the zoom origin
+   * 
+   * @param mouseX - Mouse X position in container coordinates
+   * @param mouseY - Mouse Y position in container coordinates
+   * @param newScale - The new scale to zoom to
+   * @returns An object with the new scale and translations
+   */
+  calculateZoomTransform(mouseX: number, mouseY: number, newScale: number): { scale: number, translateX: number, translateY: number } {
+    if (!this.containerElement) {
+      return { scale: newScale, translateX: 0, translateY: 0 };
+    }
+
+    // Calculate the point in PDF space where the mouse is pointing
+    const pointBeforeZoom = this.containerToPdf(mouseX, mouseY);
+    
+    // Calculate what the translations would be to keep the point under the mouse
+    const newTranslateX = mouseX - pointBeforeZoom.x * newScale;
+    const newTranslateY = mouseY - pointBeforeZoom.y * newScale;
+    
+    return {
+      scale: newScale,
+      translateX: newTranslateX,
+      translateY: newTranslateY
+    };
+  }
+
+  /**
+   * Convert container coordinates to PDF coordinates
+   * Similar to screenToPdf but doesn't account for the container's position
+   * 
+   * @param containerX - X coordinate in container space
+   * @param containerY - Y coordinate in container space
+   * @returns Point in PDF coordinates
+   */
+  containerToPdf(containerX: number, containerY: number): Point {
+    // Transform to PDF coordinates
+    const pdfX = (containerX - this.translateX) / this.scale;
+    const pdfY = (containerY - this.translateY) / this.scale;
+    
+    // Use higher precision for greater zoom levels
+    const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(this.scale) + 2)), 4);
+    
+    // Ensure consistent precision with adaptive decimal places
+    return {
+      x: Number(pdfX.toFixed(adjustedPrecision)),
+      y: Number(pdfY.toFixed(adjustedPrecision))
+    };
+  }
+
+  /**
    * Convert screen coordinates to PDF coordinates
    * 
    * @param screenX - X coordinate in screen space
@@ -90,22 +140,14 @@ export class CoordinateSystem {
     const containerX = screenX - rect.left;
     const containerY = screenY - rect.top;
     
-    // Transform to PDF coordinates
-    const pdfX = (containerX - this.translateX) / this.scale;
-    const pdfY = (containerY - this.translateY) / this.scale;
+    // Transform to PDF coordinates using containerToPdf
+    const pdfPoint = this.containerToPdf(containerX, containerY);
     
     if (debug) {
-      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfX.toFixed(precision)}, ${pdfY.toFixed(precision)}) @ scale ${this.scale.toFixed(2)}`);
+      console.log(`Screen(${screenX}, ${screenY}) → PDF(${pdfPoint.x.toFixed(precision)}, ${pdfPoint.y.toFixed(precision)}) @ scale ${this.scale.toFixed(2)}`);
     }
     
-    // Use higher precision for greater zoom levels
-    const adjustedPrecision = Math.min(Math.max(2, Math.ceil(Math.log10(this.scale) + 2)), precision);
-    
-    // Ensure consistent precision with adaptive decimal places
-    return {
-      x: Number(pdfX.toFixed(adjustedPrecision)),
-      y: Number(pdfY.toFixed(adjustedPrecision))
-    };
+    return pdfPoint;
   }
 
   /**
