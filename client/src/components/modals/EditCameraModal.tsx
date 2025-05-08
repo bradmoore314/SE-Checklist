@@ -85,10 +85,13 @@ export default function EditCameraModal({
     setIsSubmitting(true);
     
     try {
-      // Add field_of_view for database compatibility (using a default value)
+      // Add field_of_view for database compatibility and convert is_indoor to boolean
       const dataWithFieldOfView = {
         ...values,
-        field_of_view: "90" // Use a default value since we don't have FOV data in this form
+        field_of_view: "90", // Use a default value since we don't have FOV data in this form
+        is_indoor: typeof values.is_indoor === 'string' 
+          ? (values.is_indoor === "indoor") 
+          : values.is_indoor // Convert string "indoor"/"outdoor" to boolean true/false
       };
       
       // If it's a new camera, create it
