@@ -353,13 +353,13 @@ export default function Projects() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">My Site Walks</h2>
+        <h2 className="text-2xl font-bold">Opportunities</h2>
         <Button
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center"
           onClick={() => setShowNewSiteWalkModal(true)}
         >
           <Plus className="h-4 w-4 mr-1" />
-          New Site Walk
+          New
         </Button>
       </div>
 
@@ -456,7 +456,7 @@ export default function Projects() {
           <div className="relative w-full sm:w-64">
             <Input
               type="text"
-              placeholder="Search site walks"
+              placeholder="Search opportunities"
               className="pl-10 pr-4 py-2"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -470,7 +470,7 @@ export default function Projects() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4 mx-auto" />
-            <p className="text-neutral-600">Loading site walks...</p>
+            <p className="text-neutral-600">Loading opportunities...</p>
           </div>
         </div>
       ) : filteredProjects.length === 0 ? (
@@ -479,13 +479,13 @@ export default function Projects() {
             <div className="flex justify-center mb-4">
               <FolderOpen className="h-16 w-16 text-muted-foreground/30" />
             </div>
-            <h3 className="text-lg font-medium mb-2">No Site Walks Found</h3>
+            <h3 className="text-lg font-medium mb-2">No Opportunities Found</h3>
             <p className="text-neutral-500 mb-4">
               {searchTerm
-                ? "No site walks match your search criteria."
+                ? "No opportunities match your search criteria."
                 : activeTab !== "all"
-                  ? `You don't have any site walks in the "${activeTab}" category.`
-                  : "You haven't created any site walks yet."}
+                  ? `You don't have any opportunities in the "${activeTab}" category.`
+                  : "You haven't created any opportunities yet."}
             </p>
             {searchTerm && (
               <Button
@@ -687,12 +687,12 @@ export default function Projects() {
         )
       )}
 
-      {/* New Site Walk Modal */}
+      {/* New Opportunity Modal */}
       <Dialog open={showNewSiteWalkModal} onOpenChange={setShowNewSiteWalkModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-medium">
-              Create New Site Walk
+              Create New Opportunity
             </DialogTitle>
           </DialogHeader>
 
@@ -704,10 +704,10 @@ export default function Projects() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-neutral-700">
-                      Site Walk Name *
+                      Project Name *
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter site walk name" {...field} />
+                      <Input placeholder="Enter project name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -832,7 +832,7 @@ export default function Projects() {
                   type="submit"
                   className="bg-primary hover:bg-primary-dark text-white"
                 >
-                  Create Site Walk
+                  Create Opportunity
                 </Button>
               </DialogFooter>
             </form>
