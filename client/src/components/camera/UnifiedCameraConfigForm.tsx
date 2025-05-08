@@ -223,17 +223,13 @@ export default function UnifiedCameraConfigForm({
     setIsSubmitting(true);
     
     try {
-      // Extract the base64 part of the image data if it exists
-      let imageData = null;
-      if (image) {
-        const base64Data = image.split(',')[1];
-        imageData = base64Data;
-      }
+      // Pass the complete image data URL to preserve content type information
+      // The server expects the full data URI format for content detection
       
       // Pass data to parent component
       onSave({
         ...data,
-        ...(imageData && { image_data: imageData })
+        ...(image && { image_data: image })
       });
       
       setIsSubmitting(false);
