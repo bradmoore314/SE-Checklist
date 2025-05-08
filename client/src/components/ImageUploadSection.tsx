@@ -48,11 +48,14 @@ function ImageUploadSection({
     if (existingImages && existingImages.length > 0) {
       setImages(existingImages.map((img: any) => ({
         id: img.id,
-        data: img.image_data,
+        data: img.image_data || (img.blob_url || ''), // Use blob_url if available
         filename: img.filename || 'Uploaded Image'
       })));
+    } else {
+      // Clear images when none are found
+      setImages([]);
     }
-  }, [existingImages]);
+  }, [existingImages, equipmentId]);
 
   // Image upload mutation
   const uploadImageMutation = useMutation({

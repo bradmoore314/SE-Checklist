@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Edit, Trash } from "lucide-react";
+import { ChevronDown, ChevronUp, Edit, Trash, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExpandableEquipmentCardProps {
@@ -13,6 +13,7 @@ interface ExpandableEquipmentCardProps {
   headerContent?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
+  thumbnailImage?: string;
 }
 
 export function ExpandableEquipmentCard({
@@ -23,7 +24,8 @@ export function ExpandableEquipmentCard({
   onDelete,
   headerContent,
   className,
-  children
+  children,
+  thumbnailImage
 }: ExpandableEquipmentCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -32,9 +34,19 @@ export function ExpandableEquipmentCard({
       <CardHeader className="p-4 pb-3 flex flex-row items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center">
-            <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-medium mr-2">
-              {number}
-            </div>
+            {thumbnailImage ? (
+              <div className="mr-3 rounded-md overflow-hidden h-12 w-12 flex-shrink-0">
+                <img 
+                  src={thumbnailImage} 
+                  alt={`${title} thumbnail`} 
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-medium mr-2">
+                {number}
+              </div>
+            )}
             <div>
               <h3 className="text-lg font-medium">{title}</h3>
               {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
