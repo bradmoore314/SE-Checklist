@@ -2176,7 +2176,8 @@ export const EnhancedFloorplanViewer = ({
                     
                     // Redirect to card access configurator with the equipment ID
                     if (selectedMarker.equipment_id) {
-                      window.location.href = `/projects/${floorplan.project_id}/card-access#edit=${selectedMarker.equipment_id}`;
+                      // Use client-side navigation to avoid 404 errors
+                      window.location.href = `/project/${floorplan.project_id}/card-access?edit=${selectedMarker.equipment_id}`;
                     } else {
                       toast({
                         title: "Missing Equipment",
@@ -2191,6 +2192,72 @@ export const EnhancedFloorplanViewer = ({
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Card Access
+                </div>
+              </>
+            )}
+
+            {/* Elevator Edit option */}
+            {selectedMarker.marker_type === 'elevator' && (
+              <>
+                <div className="h-px bg-gray-200 my-1"></div>
+                <div 
+                  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    console.log(`Opening elevator settings for marker #${selectedMarker.id}`);
+                    
+                    // Redirect to elevators page with the equipment ID
+                    if (selectedMarker.equipment_id) {
+                      window.location.href = `/project/${floorplan.project_id}/elevators?edit=${selectedMarker.equipment_id}`;
+                    } else {
+                      toast({
+                        title: "Missing Equipment",
+                        description: "This elevator marker is not associated with any equipment.",
+                        variant: "destructive"
+                      });
+                    }
+                    
+                    // Close the context menu
+                    setContextMenuOpen(false);
+                  }}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Elevator
+                </div>
+              </>
+            )}
+
+            {/* Intercom Edit option */}
+            {selectedMarker.marker_type === 'intercom' && (
+              <>
+                <div className="h-px bg-gray-200 my-1"></div>
+                <div 
+                  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    console.log(`Opening intercom settings for marker #${selectedMarker.id}`);
+                    
+                    // Redirect to intercoms page with the equipment ID
+                    if (selectedMarker.equipment_id) {
+                      window.location.href = `/project/${floorplan.project_id}/intercoms?edit=${selectedMarker.equipment_id}`;
+                    } else {
+                      toast({
+                        title: "Missing Equipment",
+                        description: "This intercom marker is not associated with any equipment.",
+                        variant: "destructive"
+                      });
+                    }
+                    
+                    // Close the context menu
+                    setContextMenuOpen(false);
+                  }}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Intercom
                 </div>
               </>
             )}
