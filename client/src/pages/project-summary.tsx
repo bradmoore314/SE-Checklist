@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
-import { SiteWalkAnalysis as OpportunityAnalysis } from "@/components/ai/SiteWalkAnalysis";
+import { OpportunityAnalysis } from "@/components/ai/OpportunityAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
 import ProjectExportMenu from "@/components/ProjectExportMenu";
 import ExportMenu from "@/components/ExportMenu";
@@ -561,7 +561,7 @@ export default function Summary() {
       )}
 
       {/* AI Analysis */}
-      <SiteWalkAnalysis projectId={currentOpportunity.id} />
+      <OpportunityAnalysis projectId={currentOpportunity.id} />
       
       {/* Meeting Agenda Generator */}
       <AgendaContainer projectId={currentOpportunity.id} />
