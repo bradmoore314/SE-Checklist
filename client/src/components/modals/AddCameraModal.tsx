@@ -38,9 +38,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from '@/hooks/use-toast';
-import { Camera, Upload, X, ChevronDown, ChevronRight, Sliders } from 'lucide-react';
+import { Camera, Upload, X, ChevronDown, ChevronRight, Sliders, Move, RotateCcw } from 'lucide-react';
 
 // Define the schema for camera data
 const cameraSchema = z.object({
@@ -59,7 +60,12 @@ const cameraSchema = z.object({
   frameRate: z.coerce.number().int().min(1).max(60).default(10),
   storageDays: z.coerce.number().int().min(1).max(365).default(30),
   recordingResolution: z.coerce.number().min(0.3).max(12).default(2),
-  sameAsStreaming: z.boolean().default(true)
+  sameAsStreaming: z.boolean().default(true),
+  
+  // Marker visualization fields (from CombinedCameraConfigForm)
+  fov: z.coerce.number().min(10).max(360).default(90),
+  range: z.coerce.number().min(20).max(200).default(60),
+  rotation: z.coerce.number().min(0).max(359).default(0)
 });
 
 type CameraData = z.infer<typeof cameraSchema>;
@@ -122,13 +128,21 @@ export default function AddCameraModal({
       frameRate: 10,
       storageDays: 30,
       recordingResolution: 2,
-      sameAsStreaming: true
+      sameAsStreaming: true,
+      
+      // Marker visualization defaults
+      fov: 90,
+      range: 60,
+      rotation: 0
     },
   });
 
   // Watch for changes to streaming resolution and sameAsStreaming
   const streamingResolution = form.watch("streamingResolution");
   const sameAsStreaming = form.watch("sameAsStreaming");
+  const fov = form.watch("fov");
+  const range = form.watch("range");
+  const rotation = form.watch("rotation");
   
   // Update recording resolution when streamingResolution changes and sameAsStreaming is true
   useEffect(() => {
@@ -136,6 +150,11 @@ export default function AddCameraModal({
       form.setValue("recordingResolution", streamingResolution);
     }
   }, [sameAsStreaming, streamingResolution, form]);
+  
+  // Format angle to display degrees symbol
+  const formatAngle = (angle: number): string => {
+    return `${angle.toFixed(0)}°`;
+  };
 
   const resolutionOptions = [
     { value: 0.3, label: "0.3 MP (480p)" },
