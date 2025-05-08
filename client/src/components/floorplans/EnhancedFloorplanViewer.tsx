@@ -1021,12 +1021,13 @@ export const EnhancedFloorplanViewer = ({
           // For equipment markers that need configuration
           setTempMarker(newMarker);
           
-          // IMPORTANT CHANGE: For camera markers, open the combined config immediately
-          // instead of the regular equipment form - this prevents the infinite loop
+          // For both camera and other equipment markers, place at center and open the appropriate form
           if (toolMode === 'camera') {
             setTempMarker({
               ...newMarker,
               // Set default values for camera visualization
+              position_x: pdfCenterX,
+              position_y: pdfCenterY,
               fov: 90,
               range: 60,
               rotation: 0,
