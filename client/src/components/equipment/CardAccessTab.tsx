@@ -32,7 +32,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
-  const itemsPerPage = 10;
+  const itemsPerPage = 50;
   const queryClient = useQueryClient();
   const { toast } = useToast();
   

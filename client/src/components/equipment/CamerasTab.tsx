@@ -21,7 +21,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 50;
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
