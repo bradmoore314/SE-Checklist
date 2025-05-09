@@ -3959,34 +3959,145 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
         
-<TabsContent value="use-case">
-  <Card className="mb-6">
-    <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
-      <CardTitle className="flex items-center gap-2 text-xl text-purple-800">
-        <span className="p-1.5 bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-          </svg>
-        </span>
-        Use Case - SOW - SME
-      </CardTitle>
-      <CardDescription className="text-base text-purple-700">
-        Define the use case, scope of work, and service commitment details for this project
-      </CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="grid grid-cols-1 gap-6">
-        {/* Opportunity Stage Ownership Section */}
+        <TabsContent value="use-case">
+          <Card className="mb-6">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+              <CardTitle className="flex items-center gap-2 text-xl text-purple-800">
+                <span className="p-1.5 bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                  </svg>
+                </span>
+                Use Case - SOW - SME
+              </CardTitle>
+              <CardDescription className="text-base text-purple-700">
+                Define the use case, scope of work, and service commitment details for this project
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-6">
+        {/* Use Case Section */}
         <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100">
           <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
             <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+              </svg>
+            </span>
+            Use Case Service Commitment
+          </h3>
+          
+          <div className="grid grid-cols-1 gap-4 mb-4">
+            <div>
+              <Label htmlFor="useCaseCommitment" className="text-sm font-medium text-purple-700 mb-1.5">
+                Use Case Commitment: 
+              </Label>
+              <Select 
+                value={formData.useCaseCommitment} 
+                onValueChange={(value) => handleFormChange("useCaseCommitment", value)}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select commitment level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Events Only">Events Only</SelectItem>
+                  <SelectItem value="Virtual Patrol Only">Virtual Patrol Only</SelectItem>
+                  <SelectItem value="Events & Virtual Patrol">Events & Virtual Patrol</SelectItem>
+                  <SelectItem value="Camera Health Only">Camera Health Only</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="useCaseResponse" className="text-sm font-medium text-purple-700 mb-1.5">
+                Use Case Response:
+              </Label>
+              <Textarea 
+                value={formData.useCaseResponse || ""}
+                onChange={(e) => handleFormChange("useCaseResponse", e.target.value)}
+                placeholder="Describe the specific response procedures for this use case"
+                className="min-h-[100px] w-full resize-y bg-white"
+              />
+            </div>
+          </div>
+        </div>
+          
+        {/* SOW Details Section */}
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-lg shadow-sm border border-blue-100">
+          <h3 className="text-lg font-semibold mb-4 text-blue-800 flex items-center gap-2">
+            <span className="p-1 bg-blue-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
+              </svg>
+            </span>
+            Scope of Work (SOW)
+          </h3>
+          
+          <div className="grid grid-cols-1 gap-4 mb-4">
+            <div>
+              <Label htmlFor="sowDetailedOutline" className="text-sm font-medium text-blue-700 mb-1.5">
+                Detailed SOW Outline:
+              </Label>
+              <Textarea 
+                value={formData.sowDetailedOutline || ""}
+                onChange={(e) => handleFormChange("sowDetailedOutline", e.target.value)}
+                placeholder="Provide a detailed outline of the scope of work for this project"
+                className="min-h-[150px] w-full resize-y bg-white"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="scheduleDetails" className="text-sm font-medium text-blue-700 mb-1.5">
+                Schedule Details:
+              </Label>
+              <Textarea 
+                value={formData.scheduleDetails || ""}
+                onChange={(e) => handleFormChange("scheduleDetails", e.target.value)}
+                placeholder="Provide details about the monitoring schedule and response times"
+                className="min-h-[100px] w-full resize-y bg-white"
+              />
+            </div>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg border border-blue-100 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-blue-700 block mb-2">Quote with SOW attached?</Label>
+                <div className="flex gap-2">
+                  <ToggleGroup type="single" variant="outline" value={formData.quoteWithSowAttached} onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}>
+                    <ToggleGroupItem value="Yes" className={formData.quoteWithSowAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                    <ToggleGroupItem value="No" className={formData.quoteWithSowAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                    <ToggleGroupItem value="N/A" className={formData.quoteWithSowAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium text-blue-700 block mb-2">Quote design attached?</Label>
+                <div className="flex gap-2">
+                  <ToggleGroup type="single" variant="outline" value={formData.quoteDesignAttached} onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}>
+                    <ToggleGroupItem value="Yes" className={formData.quoteDesignAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                    <ToggleGroupItem value="No" className={formData.quoteDesignAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                    <ToggleGroupItem value="N/A" className={formData.quoteDesignAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Opportunity Stage Ownership Section */}
+        <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-5 rounded-lg shadow-sm border border-yellow-100">
+          <h3 className="text-lg font-semibold mb-4 text-amber-800 flex items-center gap-2">
+            <span className="p-1 bg-amber-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
               </svg>
             </span>
             Opportunity Stage Ownership
           </h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="bdmOwner">BDM Name:</Label>
               <Input 
@@ -4037,67 +4148,17 @@ const KastleVideoGuardingPage: React.FC = () => {
             </div>
           </div>
         </div>
-                
-        {/* SOW Details Section */}
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100">
-          <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
-            <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
-              </svg>
-            </span>
-            SOW Outline
-          </h3>
-                  
-          {/* Incident Types - Criminal Activity Group */}
-          <div className="bg-white/80 p-4 rounded-lg border border-gray-200 mb-4">
-            <h4 className="text-md font-semibold mb-4 text-blue-700 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Z" />
-              </svg>
-              Criminal Activity
-            </h4>
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.obviousCriminalAct}
-                  onPressedChange={(value) => handleFormChange("obviousCriminalAct", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.obviousCriminalAct ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Obvious Criminal Act</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.activeBreakIn}
-                  onPressedChange={(value) => handleFormChange("activeBreakIn", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.activeBreakIn ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Active Break-in</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.destructionOfProperty}
-                  onPressedChange={(value) => handleFormChange("destructionOfProperty", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.destructionOfProperty ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Destruction of Property</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <Toggle 
-                  pressed={formData.carDrivingThroughGate}
-                  onPressedChange={(value) => handleFormChange("carDrivingThroughGate", value)}
-                  className="data-[state=on]:bg-red-500 h-8 w-full"
-                >
-                  {formData.carDrivingThroughGate ? "Yes" : "No"}
-                </Toggle>
-                <span className="text-xs mt-1 text-center">Car Driving Through Gate</span>
-              </div>
+        
+        {/* Save Button */}
+        <div className="mt-6 flex justify-end">
+          <Button 
+            className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 gap-2"
+            onClick={() => handleSave()}
+          >
+            <Save size={16} />
+            Save Use Case Details
+          </Button>
+        </div>
               <div className="flex flex-col items-center">
                 <TooltipProvider>
                   <Tooltip>
@@ -4378,8 +4439,34 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
               </div>
             </div>
-                  
-            {/* Use Case Commitment and Response */}
+          </CardContent>
+        </Card>
+        
+        {/* Moved to a separate Card component */}
+        <Card className="mt-6 mb-6">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+            <CardTitle className="flex items-center gap-2 text-xl text-purple-800">
+              <span className="p-1.5 bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+              </span>
+              Use Case Details
+            </CardTitle>
+            <CardDescription className="text-base text-purple-700">
+              Document use case, SOW, and commitment details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100">
+            <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
+              <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+              </span>
+              Use Case Details
+            </h3>
             <div className="grid grid-cols-1 gap-4 mb-6">
               <div>
                 <Label htmlFor="useCaseCommitment">Use Case Commitment:</Label>
@@ -4423,173 +4510,184 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
             </div>
           </div>
-                
-          {/* Quote Attachment Section */}
-          <div className="bg-gray-100 p-4 rounded">
-            <h3 className="text-lg font-semibold mb-4">Paste Screen-shot of KVG Services Quote</h3>
-            <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center mb-4">
-              <div className="text-center mb-4">
-                <Label htmlFor="quoteScreenshot" className="cursor-pointer flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                    <ImageIcon className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">Click to upload quote screenshot</span>
-                  <span className="text-xs text-gray-500">SVG, PNG, JPG or GIF (max. 10MB)</span>
-                  <Input id="quoteScreenshot" type="file" className="hidden" />
-                </Label>
+        </CardContent>
+        
+        {/* Quote Attachment Section */}
+        <div className="mx-6 mb-6">
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100">
+            <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
+              <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+              </span>
+              Quote Documentation
+            </h3>
+            <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+              <h4 className="font-semibold text-purple-700 mb-3">KVG Services Quote</h4>
+              <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center mb-4">
+                <div className="text-center mb-4">
+                  <Label htmlFor="quoteScreenshot" className="cursor-pointer flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                      <ImageIcon className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">Click to upload quote screenshot</span>
+                    <span className="text-xs text-gray-500">SVG, PNG, JPG or GIF (max. 10MB)</span>
+                    <Input id="quoteScreenshot" type="file" className="hidden" />
+                  </Label>
+                </div>
+                <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
+                  The KVG SME Quote must be attached before completing any CRM Opportunity Quote.
+                </p>
               </div>
-              <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
-                The KVG SME Quote must be attached before completing any CRM Opportunity Quote.
-              </p>
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="quoteWithSowAttached">Quote with SOW Attached:</Label>
-              <Select 
-                value={formData.quoteWithSowAttached} 
-                onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                  <SelectItem value="Select">Select</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-                
-          {/* KVG Services Configuration Section */}
-          <div className="bg-gray-100 p-4 rounded">
-            <h3 className="text-lg font-semibold mb-4">Paste spreadsheet of KVG Services configuration from Calculator</h3>
-            <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center mb-4">
-              <div className="text-center mb-4">
-                <Label htmlFor="configSpreadsheet" className="cursor-pointer flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                    <ImageIcon className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">Click to upload spreadsheet</span>
-                  <span className="text-xs text-gray-500">SVG, PNG, JPG or GIF (max. 10MB)</span>
-                  <Input id="configSpreadsheet" type="file" className="hidden" />
-                </Label>
+              <div className="mb-4">
+                <Label htmlFor="quoteWithSowAttached">Quote with SOW Attached:</Label>
+                <Select 
+                  value={formData.quoteWithSowAttached} 
+                  onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Yes">Yes</SelectItem>
+                    <SelectItem value="No">No</SelectItem>
+                    <SelectItem value="Select">Select</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
-                KVG SME to paste in this area from the KVG calculator "KVG Process Output" Rows 6 to End and Column A-Q. Paste in same columns here and add pics in columns designated after R.
-              </p>
             </div>
-            <div className="mb-4">
-              <Label htmlFor="quoteDesignAttached">Quote Design Attached:</Label>
-              <Select 
-                value={formData.quoteDesignAttached} 
-                onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                  <SelectItem value="Select">Select</SelectItem>
-                </SelectContent>
-              </Select>
+                  
+            {/* KVG Services Configuration Section */}
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <h4 className="font-semibold text-purple-700 mb-3">KVG Services Configuration</h4>
+              <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center mb-4">
+                <div className="text-center mb-4">
+                  <Label htmlFor="configSpreadsheet" className="cursor-pointer flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                      <ImageIcon className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">Click to upload spreadsheet</span>
+                    <span className="text-xs text-gray-500">SVG, PNG, JPG or GIF (max. 10MB)</span>
+                    <Input id="configSpreadsheet" type="file" className="hidden" />
+                  </Label>
+                </div>
+                <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
+                  KVG SME to paste in this area from the KVG calculator "KVG Process Output" Rows 6 to End and Column A-Q. Paste in same columns here and add pics in columns designated after R.
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="quoteDesignAttached">Quote Design Attached:</Label>
+                <Select 
+                  value={formData.quoteDesignAttached} 
+                  onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Yes">Yes</SelectItem>
+                    <SelectItem value="No">No</SelectItem>
+                    <SelectItem value="Select">Select</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </CardContent>
-  </Card>
-</TabsContent>        
-        <TabsContent value="voc-protocol">
-          <Card className="mb-6">
-            <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b">
-              <CardTitle className="flex items-center gap-2 text-xl text-orange-800">
-                <span className="p-1.5 bg-orange-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                  </svg>
-                </span>
-                VOC Protocol Configuration
-              </CardTitle>
-              <CardDescription className="text-base text-orange-700">
-                Configure escalation processes, monitoring actions, and response plans for the Virtual Operations Center
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-6">
-                {/* Project Stage Ownership Section */}
-                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-lg shadow-sm border border-orange-100">
-                  <h3 className="text-lg font-semibold mb-4 text-orange-800 flex items-center gap-2">
-                    <span className="p-1 bg-orange-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                      </svg>
-                    </span>
-                    Project Stage Ownership
-                  </h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="amName">AM Name:</Label>
-                      <Input 
-                        id="amName"
-                        value={formData.amName || ""} 
-                        onChange={(e) => handleFormChange("amName", e.target.value)}
-                        placeholder="Enter Account Manager name"
-                        className="bg-white"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="region">Region:</Label>
-                      <Select 
-                        value={formData.region} 
-                        onValueChange={(value) => handleFormChange("region", value)}
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Northeast">Northeast</SelectItem>
-                          <SelectItem value="Mid-Atlantic">Mid-Atlantic</SelectItem>
-                          <SelectItem value="Southeast">Southeast</SelectItem>
-                          <SelectItem value="Midwest">Midwest</SelectItem>
-                          <SelectItem value="Southwest">Southwest</SelectItem>
-                          <SelectItem value="Western">Western</SelectItem>
-                          <SelectItem value="International">International</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="vocScript">VOC Script:</Label>
-                      <Select 
-                        value={formData.vocScript || ""} 
-                        onValueChange={(value) => handleFormChange("vocScript", value)}
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Standard">Standard</SelectItem>
-                          <SelectItem value="Custom">Custom</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="kvgSmeName">KVG SME Name:</Label>
-                      <Select 
-                        value={formData.kvgSme} 
-                        onValueChange={(value) => handleFormChange("kvgSme", value)}
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="John Smith">John Smith</SelectItem>
-                          <SelectItem value="Jane Doe">Jane Doe</SelectItem>
-                          <SelectItem value="David Johnson">David Johnson</SelectItem>
-                          <SelectItem value="Sarah Wilson">Sarah Wilson</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+      </CardContent>
+    </Card>
+  </TabsContent>
+  <TabsContent value="voc-protocol">
+    <Card className="mb-6">
+      <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b">
+        <CardTitle className="flex items-center gap-2 text-xl text-orange-800">
+          <span className="p-1.5 bg-orange-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+          </span>
+          VOC Protocol Configuration
+        </CardTitle>
+        <CardDescription className="text-base text-orange-700">
+          Configure escalation processes, monitoring actions, and response plans for the Virtual Operations Center
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 gap-6">
+          {/* Project Stage Ownership Section */}
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-lg shadow-sm border border-orange-100">
+            <h3 className="text-lg font-semibold mb-4 text-orange-800 flex items-center gap-2">
+              <span className="p-1 bg-orange-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                </svg>
+              </span>
+              Project Stage Ownership
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="amName">AM Name:</Label>
+                <Input 
+                  id="amName"
+                  value={formData.amName || ""} 
+                  onChange={(e) => handleFormChange("amName", e.target.value)}
+                  placeholder="Enter Account Manager name"
+                  className="bg-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="region">Region:</Label>
+                <Select 
+                  value={formData.region} 
+                  onValueChange={(value) => handleFormChange("region", value)}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Northeast">Northeast</SelectItem>
+                    <SelectItem value="Mid-Atlantic">Mid-Atlantic</SelectItem>
+                    <SelectItem value="Southeast">Southeast</SelectItem>
+                    <SelectItem value="Midwest">Midwest</SelectItem>
+                    <SelectItem value="Southwest">Southwest</SelectItem>
+                    <SelectItem value="Western">Western</SelectItem>
+                    <SelectItem value="International">International</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="vocScript">VOC Script:</Label>
+                <Select 
+                  value={formData.vocScript || ""} 
+                  onValueChange={(value) => handleFormChange("vocScript", value)}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Standard">Standard</SelectItem>
+                    <SelectItem value="Custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="kvgSmeName">KVG SME Name:</Label>
+                <Select 
+                  value={formData.kvgSme} 
+                  onValueChange={(value) => handleFormChange("kvgSme", value)}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="John Smith">John Smith</SelectItem>
+                    <SelectItem value="Jane Doe">Jane Doe</SelectItem>
+                    <SelectItem value="David Johnson">David Johnson</SelectItem>
+                    <SelectItem value="Sarah Wilson">Sarah Wilson</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
                     <div>
                       <Label htmlFor="projectId">Project ID:</Label>
                       <Input 
