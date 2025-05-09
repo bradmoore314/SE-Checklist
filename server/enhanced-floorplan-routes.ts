@@ -1,7 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { floorplanMarkers, floorplanLayers, floorplanCalibrations, insertFloorplanMarkerSchema, insertFloorplanLayerSchema, insertFloorplanCalibrationSchema, floorplans, accessPoints, cameras } from '@shared/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { floorplanMarkers, floorplanLayers, floorplanCalibrations, insertFloorplanMarkerSchema, insertFloorplanLayerSchema, insertFloorplanCalibrationSchema, floorplans, accessPoints, cameras, elevators, intercoms } from '@shared/schema';
+import { eq, and, inArray, not, isNull } from 'drizzle-orm';
 
 /**
  * Register enhanced floorplan routes

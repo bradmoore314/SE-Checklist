@@ -33,6 +33,7 @@ import { MobileToolbar } from '@/components/floorplans/MobileToolbar';
 import { TopToolbar } from '@/components/floorplans/TopToolbar';
 import FloorplanThumbnail from '@/components/floorplans/FloorplanThumbnail';
 import { MarkerStatsLegend } from '@/components/floorplans/MarkerStatsLegend';
+import { EquipmentConsistencyResolver } from '@/components/floorplans/EquipmentConsistencyResolver';
 import { FullScreenButton } from '@/components/ui/fullscreen-button';
 
 interface FloorplanData {
@@ -1008,6 +1009,10 @@ function EnhancedFloorplansPage() {
               visibleLabelTypes={visibleLabelTypes}
               onToggleLabelVisibility={toggleLabelVisibility}
             />
+            
+            <div className="mt-4 border-t pt-4">
+              <EquipmentConsistencyResolver projectId={floorplan.project_id} />
+            </div>
           </div>
         )}
         
@@ -1018,6 +1023,10 @@ function EnhancedFloorplansPage() {
             visibleLabelTypes={visibleLabelTypes}
             onToggleLabelVisibility={toggleLabelVisibility}
           />
+          
+          <div className="mt-4 border-t pt-4">
+            <EquipmentConsistencyResolver projectId={floorplan.project_id} />
+          </div>
         </div>
       </div>
     </div>
