@@ -3339,7 +3339,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                   </svg>
                 </span>
-                KVG Site Assessment
+                Site Assessment - SE
               </CardTitle>
               <CardDescription className="text-base text-green-700">
                 Evaluate the site conditions for successful KVG deployment
@@ -3347,7 +3347,156 @@ const KastleVideoGuardingPage: React.FC = () => {
             </CardHeader>
             <CardContent className="pt-6">
               
-              {/* Technical Requirements */}
+              {/* Site Information */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-blue-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-blue-800 flex items-center gap-2">
+                  <span className="p-1 bg-blue-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                    </svg>
+                  </span>
+                  Site Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label htmlFor="customerName" className="text-sm text-blue-700">Customer Name:</Label>
+                    <Input 
+                      id="customerName"
+                      value={formData.customerName} 
+                      onChange={(e) => handleFormChange("customerName", e.target.value)}
+                      placeholder="Enter customer name"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <Label htmlFor="siteAddress" className="text-sm text-blue-700">Site Address:</Label>
+                    <Input 
+                      id="siteAddress"
+                      value={formData.siteAddress} 
+                      onChange={(e) => handleFormChange("siteAddress", e.target.value)}
+                      placeholder="Enter site address"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label htmlFor="city" className="text-sm text-blue-700">City:</Label>
+                        <Input 
+                          id="city"
+                          value={formData.city} 
+                          onChange={(e) => handleFormChange("city", e.target.value)}
+                          placeholder="City"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="state" className="text-sm text-blue-700">State:</Label>
+                        <Select 
+                          value={formData.state} 
+                          onValueChange={(value) => handleFormChange("state", value)}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="AL">AL</SelectItem>
+                            <SelectItem value="AK">AK</SelectItem>
+                            <SelectItem value="AZ">AZ</SelectItem>
+                            <SelectItem value="AR">AR</SelectItem>
+                            <SelectItem value="CA">CA</SelectItem>
+                            <SelectItem value="CO">CO</SelectItem>
+                            <SelectItem value="CT">CT</SelectItem>
+                            <SelectItem value="DE">DE</SelectItem>
+                            <SelectItem value="FL">FL</SelectItem>
+                            <SelectItem value="GA">GA</SelectItem>
+                            <SelectItem value="HI">HI</SelectItem>
+                            <SelectItem value="ID">ID</SelectItem>
+                            <SelectItem value="IL">IL</SelectItem>
+                            <SelectItem value="IN">IN</SelectItem>
+                            <SelectItem value="IA">IA</SelectItem>
+                            <SelectItem value="KS">KS</SelectItem>
+                            <SelectItem value="KY">KY</SelectItem>
+                            <SelectItem value="LA">LA</SelectItem>
+                            <SelectItem value="ME">ME</SelectItem>
+                            <SelectItem value="MD">MD</SelectItem>
+                            <SelectItem value="MA">MA</SelectItem>
+                            <SelectItem value="MI">MI</SelectItem>
+                            <SelectItem value="MN">MN</SelectItem>
+                            <SelectItem value="MS">MS</SelectItem>
+                            <SelectItem value="MO">MO</SelectItem>
+                            <SelectItem value="MT">MT</SelectItem>
+                            <SelectItem value="NE">NE</SelectItem>
+                            <SelectItem value="NV">NV</SelectItem>
+                            <SelectItem value="NH">NH</SelectItem>
+                            <SelectItem value="NJ">NJ</SelectItem>
+                            <SelectItem value="NM">NM</SelectItem>
+                            <SelectItem value="NY">NY</SelectItem>
+                            <SelectItem value="NC">NC</SelectItem>
+                            <SelectItem value="ND">ND</SelectItem>
+                            <SelectItem value="OH">OH</SelectItem>
+                            <SelectItem value="OK">OK</SelectItem>
+                            <SelectItem value="OR">OR</SelectItem>
+                            <SelectItem value="PA">PA</SelectItem>
+                            <SelectItem value="RI">RI</SelectItem>
+                            <SelectItem value="SC">SC</SelectItem>
+                            <SelectItem value="SD">SD</SelectItem>
+                            <SelectItem value="TN">TN</SelectItem>
+                            <SelectItem value="TX">TX</SelectItem>
+                            <SelectItem value="UT">UT</SelectItem>
+                            <SelectItem value="VT">VT</SelectItem>
+                            <SelectItem value="VA">VA</SelectItem>
+                            <SelectItem value="WA">WA</SelectItem>
+                            <SelectItem value="WV">WV</SelectItem>
+                            <SelectItem value="WI">WI</SelectItem>
+                            <SelectItem value="WY">WY</SelectItem>
+                            <SelectItem value="DC">DC</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="zipCode" className="text-sm text-blue-700">Zip Code:</Label>
+                        <Input 
+                          id="zipCode"
+                          value={formData.zipCode} 
+                          onChange={(e) => handleFormChange("zipCode", e.target.value)}
+                          placeholder="Zip"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="bdmOwner" className="text-sm text-blue-700">BDM Name:</Label>
+                    <Input 
+                      id="bdmOwner"
+                      value={formData.bdmOwner} 
+                      onChange={(e) => handleFormChange("bdmOwner", e.target.value)}
+                      placeholder="Enter BDM name"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <Label htmlFor="salesEngineer" className="text-sm text-blue-700">Sales Engineer:</Label>
+                    <Input 
+                      id="salesEngineer"
+                      value={formData.salesEngineer} 
+                      onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
+                      placeholder="Enter Sales Engineer name"
+                      className="bg-white mb-4"
+                    />
+                    
+                    <Label htmlFor="kvgSme" className="text-sm text-blue-700">KVG SME:</Label>
+                    <Input 
+                      id="kvgSme"
+                      value={formData.kvgSme} 
+                      onChange={(e) => handleFormChange("kvgSme", e.target.value)}
+                      placeholder="Enter KVG SME name"
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Site Environment Assessment */}
               <div className="bg-gradient-to-br from-green-50 to-teal-50 p-5 rounded-lg shadow-sm border border-green-100 mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center gap-2">
                   <span className="p-1 bg-green-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
@@ -3355,7 +3504,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
                     </svg>
                   </span>
-                  Technical Requirements
+                  Site Environment Assessment
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   <div>
@@ -3445,6 +3594,28 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className="w-full bg-white"
                         />
                       </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-green-700 mb-1.5">RSPNDR-GDODS:</Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      <Select 
+                        value={formData.rspndrGdods} 
+                        onValueChange={(value) => handleFormChange("rspndrGdods", value)}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Select">Select</SelectItem>
+                          <SelectItem value="No">No</SelectItem>
+                          <SelectItem value="GDODS - Dispatch on Demand Subscriptions">GDODS - Dispatch on Demand Subscriptions</SelectItem>
+                          <SelectItem value="SGPP - Scheduled Periodic Site Checks">SGPP - Scheduled Periodic Site Checks</SelectItem>
+                          <SelectItem value="Both GDODS and SGPP">Both GDODS and SGPP</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
@@ -3610,7 +3781,92 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
               
 
-              {/* Notes & Plan Section */}
+              {/* Schedule Details */}
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
+                  <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                    </svg>
+                  </span>
+                  Monitoring Schedule Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label className="text-sm text-purple-700">Schedule Type:</Label>
+                    <Select 
+                      value={formData.scheduleType} 
+                      onValueChange={(value) => handleFormChange("scheduleType", value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select schedule type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Standard">Standard</SelectItem>
+                        <SelectItem value="Custom">Custom</SelectItem>
+                        <SelectItem value="24/7">24/7</SelectItem>
+                        <SelectItem value="Business Hours">Business Hours</SelectItem>
+                        <SelectItem value="After Hours">After Hours</SelectItem>
+                        <SelectItem value="Weekend Only">Weekend Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm text-purple-700">Monitoring Days of Week:</Label>
+                    <Input 
+                      value={formData.monitoringDaysOfWeek} 
+                      onChange={(e) => handleFormChange("monitoringDaysOfWeek", e.target.value)}
+                      placeholder="e.g., Mon-Fri, Weekends only, etc."
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm text-purple-700">Monitoring Hours:</Label>
+                    <Input 
+                      value={formData.monitoringHours} 
+                      onChange={(e) => handleFormChange("monitoringHours", e.target.value)}
+                      placeholder="e.g., 8am-5pm, After Hours 5pm-8am, etc."
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm text-purple-700">Schedule Notes:</Label>
+                    <Input 
+                      value={formData.scheduleNotes} 
+                      onChange={(e) => handleFormChange("scheduleNotes", e.target.value)}
+                      placeholder="Additional schedule details or exceptions"
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <Label className="text-sm text-purple-700">Patrol Frequency - Days:</Label>
+                    <Input 
+                      value={formData.patrolFrequencyDays} 
+                      onChange={(e) => handleFormChange("patrolFrequencyDays", e.target.value)}
+                      placeholder="e.g., Daily, Weekdays, etc."
+                      className="bg-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm text-purple-700">Patrol Frequency - Hours:</Label>
+                    <Input 
+                      value={formData.patrolFrequencyHours} 
+                      onChange={(e) => handleFormChange("patrolFrequencyHours", e.target.value)}
+                      placeholder="e.g., Every 2 hours, Once per day, etc."
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Site Assessment Notes & Plan */}
               <div className="bg-gradient-to-br from-amber-50 to-yellow-50 p-5 rounded-lg shadow-sm border border-amber-100 mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-amber-800 flex items-center gap-2">
                   <span className="p-1 bg-amber-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
@@ -3627,22 +3883,66 @@ const KastleVideoGuardingPage: React.FC = () => {
                   className="min-h-[150px] w-full resize-y bg-white mb-4"
                 />
                 
-                <Label className="text-sm font-medium text-amber-700 block mb-2">Quote with SOW attached?</Label>
-                <div className="flex gap-2 mb-4">
-                  <ToggleGroup type="single" variant="outline" value={formData.quoteWithSowAttached} onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}>
-                    <ToggleGroupItem value="Yes" className={formData.quoteWithSowAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
-                    <ToggleGroupItem value="No" className={formData.quoteWithSowAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
-                    <ToggleGroupItem value="N/A" className={formData.quoteWithSowAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
-                  </ToggleGroup>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label className="text-sm font-medium text-amber-700 block mb-2">Quote with SOW attached?</Label>
+                    <div className="flex gap-2">
+                      <ToggleGroup type="single" variant="outline" value={formData.quoteWithSowAttached} onValueChange={(value) => handleFormChange("quoteWithSowAttached", value)}>
+                        <ToggleGroupItem value="Yes" className={formData.quoteWithSowAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                        <ToggleGroupItem value="No" className={formData.quoteWithSowAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                        <ToggleGroupItem value="N/A" className={formData.quoteWithSowAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                      </ToggleGroup>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-amber-700 block mb-2">Quote design attached?</Label>
+                    <div className="flex gap-2">
+                      <ToggleGroup type="single" variant="outline" value={formData.quoteDesignAttached} onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}>
+                        <ToggleGroupItem value="Yes" className={formData.quoteDesignAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
+                        <ToggleGroupItem value="No" className={formData.quoteDesignAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
+                        <ToggleGroupItem value="N/A" className={formData.quoteDesignAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
+                      </ToggleGroup>
+                    </div>
+                  </div>
                 </div>
                 
-                <Label className="text-sm font-medium text-amber-700 block mb-2">Quote design attached?</Label>
-                <div className="flex gap-2">
-                  <ToggleGroup type="single" variant="outline" value={formData.quoteDesignAttached} onValueChange={(value) => handleFormChange("quoteDesignAttached", value)}>
-                    <ToggleGroupItem value="Yes" className={formData.quoteDesignAttached === "Yes" ? "bg-green-100 border-green-400 text-green-900" : ""}>Yes</ToggleGroupItem>
-                    <ToggleGroupItem value="No" className={formData.quoteDesignAttached === "No" ? "bg-red-100 border-red-400 text-red-900" : ""}>No</ToggleGroupItem>
-                    <ToggleGroupItem value="N/A" className={formData.quoteDesignAttached === "N/A" ? "bg-gray-100 border-gray-400 text-gray-900" : ""}>N/A</ToggleGroupItem>
-                  </ToggleGroup>
+                <div className="mt-4">
+                  <Label className="text-sm font-medium text-amber-700 block mb-2">Suggested Incident Response:</Label>
+                  <Textarea 
+                    value={formData.suggestedIncidentResponse || ""}
+                    onChange={(e) => handleFormChange("suggestedIncidentResponse", e.target.value)}
+                    placeholder="Provide suggested incident response protocols"
+                    className="min-h-[100px] w-full resize-y bg-white"
+                  />
+                </div>
+              </div>
+              
+              {/* "Think Design" with Camera Visuals, Layouts, Topo and Other */}
+              <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-5 rounded-lg shadow-sm border border-slate-200 mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-slate-800 flex items-center gap-2">
+                  <span className="p-1 bg-slate-700 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                  </span>
+                  Think Design with Camera Visuals, Layouts, Topography and Other
+                </h3>
+                
+                <div className="bg-white border border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
+                  <div className="text-slate-500 mb-4 text-center">
+                    <p>Upload design layouts, camera visuals, and other supporting documents</p>
+                    <p className="text-sm mt-2">Supported formats: PDF, JPG, PNG, DWG</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Button variant="outline" className="border-slate-300 text-slate-700 gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                      </svg>
+                      Upload Files
+                    </Button>
+                  </div>
+                  {/* This would typically have a list of uploaded files displayed here */}
                 </div>
               </div>
               
