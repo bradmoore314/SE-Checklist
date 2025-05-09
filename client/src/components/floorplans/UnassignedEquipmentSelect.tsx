@@ -76,6 +76,13 @@ export const UnassignedEquipmentSelect: React.FC<UnassignedEquipmentSelectProps>
     
     if (found) {
       onSelectEquipment(found);
+      
+      // Clear the selection and refetch the unassigned equipment list
+      // This ensures the dropdown reflects the most current state
+      setTimeout(() => {
+        setSelectedEquipment("");
+        refetch();
+      }, 500);
     }
   };
   
