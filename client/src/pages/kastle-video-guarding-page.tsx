@@ -111,6 +111,11 @@ interface FormData {
   maintenance: string;
   servicesRecommended: string;
   
+  // KVG-specific fields
+  kvgCameraStreamsCount: number;
+  siteSceneActivityNotes: string;
+  reviewers: string;
+  
   // Schedule details fields
   scheduleType: string;
   monitoringDaysOfWeek: string;
@@ -344,6 +349,11 @@ const KastleVideoGuardingPage: React.FC = () => {
     propertyCategory: "",
     maintenance: "",
     servicesRecommended: "",
+    
+    // KVG-specific fields
+    kvgCameraStreamsCount: 0,
+    siteSceneActivityNotes: "",
+    reviewers: "",
     
     // Schedule details fields
     scheduleType: "Standard",
