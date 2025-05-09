@@ -2033,6 +2033,30 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </div>
                   
                   <div>
+                    <Label htmlFor="salesEngineer" className="text-sm text-blue-700">Sales Engineer:</Label>
+                    <Input 
+                      id="salesEngineer"
+                      value={formData.salesEngineer} 
+                      onChange={(e) => handleFormChange("salesEngineer", e.target.value)}
+                      placeholder="Enter Sales Engineer name"
+                      className="bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="kvgSme" className="text-sm text-blue-700">KVG SME:</Label>
+                    <Input 
+                      id="kvgSme"
+                      value={formData.kvgSme} 
+                      onChange={(e) => handleFormChange("kvgSme", e.target.value)}
+                      placeholder="Enter KVG SME name"
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                  <div>
                     <Label htmlFor="crmOpportunity" className="text-sm text-blue-700">CRM Opportunity:</Label>
                     <Input 
                       id="crmOpportunity"
@@ -2053,11 +2077,14 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Engage">Engage</SelectItem>
+                        <SelectItem value="Identify">Identify</SelectItem>
+                        <SelectItem value="Qualify">Qualify</SelectItem>
+                        <SelectItem value="Expect">Expect</SelectItem>
                         <SelectItem value="Design">Design</SelectItem>
-                        <SelectItem value="Proposal">Proposal</SelectItem>
-                        <SelectItem value="Close">Close</SelectItem>
-                        <SelectItem value="Install">Install</SelectItem>
+                        <SelectItem value="Design Complete">Design Complete</SelectItem>
+                        <SelectItem value="Present">Present</SelectItem>
+                        <SelectItem value="Closed Won">Closed Won</SelectItem>
+                        <SelectItem value="Implement">Implement</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
