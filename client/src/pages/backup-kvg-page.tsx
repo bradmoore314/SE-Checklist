@@ -2404,6 +2404,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
             </CardContent>
           </Card>
           
@@ -4018,34 +4019,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                   <SelectItem value="Virtual Patrol Only">Virtual Patrol Only</SelectItem>
                   <SelectItem value="Events & Virtual Patrol">Events & Virtual Patrol</SelectItem>
                   <SelectItem value="Camera Health Only">Camera Health Only</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="customerVertical" className="text-sm font-medium text-purple-700 mb-1.5">
-                Customer Vertical:
-              </Label>
-              <Select 
-                value={formData.customerVertical} 
-                onValueChange={(value) => handleFormChange("customerVertical", value)}
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select customer vertical" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Commercial">Commercial</SelectItem>
-                  <SelectItem value="Commercial - Retail">Commercial - Retail</SelectItem>
-                  <SelectItem value="Commercial - Office">Commercial - Office</SelectItem>
-                  <SelectItem value="Commercial - Industrial">Commercial - Industrial</SelectItem>
-                  <SelectItem value="Residential">Residential</SelectItem>
-                  <SelectItem value="Multi-Family">Multi-Family</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Healthcare">Healthcare</SelectItem>
-                  <SelectItem value="Government">Government</SelectItem>
-                  <SelectItem value="Construction">Construction</SelectItem>
-                  <SelectItem value="Self Storage">Self Storage</SelectItem>
                   <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
