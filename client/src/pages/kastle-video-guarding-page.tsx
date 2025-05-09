@@ -296,6 +296,11 @@ interface FormData {
   customIncidentType4Selected: boolean;
   customIncidentType5: string;
   customIncidentType5Selected: boolean;
+  // Added additional custom incident types
+  customIncidentType6: string;
+  customIncidentType6Selected: boolean;
+  customIncidentType7: string;
+  customIncidentType7Selected: boolean;
 }
 
 const KastleVideoGuardingPage: React.FC = () => {
@@ -469,6 +474,10 @@ const KastleVideoGuardingPage: React.FC = () => {
     customIncidentType4Selected: false,
     customIncidentType5: "",
     customIncidentType5Selected: false,
+    customIncidentType6: "",
+    customIncidentType6Selected: false,
+    customIncidentType7: "",
+    customIncidentType7Selected: false,
     
     // VOC Protocol tab fields
     amName: "",
@@ -1229,6 +1238,57 @@ const KastleVideoGuardingPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* KVG-specific fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pb-4 border-b border-gray-200">
+                <div>
+                  <Label htmlFor="kvgCameraStreamsCount" className="text-sm text-teal-700 font-medium flex items-center gap-1.5">
+                    <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📹</span>
+                    # of KVG Cameras Video Streams
+                  </Label>
+                  <div className="mt-1">
+                    <Input 
+                      id="kvgCameraStreamsCount"
+                      type="number"
+                      min="0"
+                      value={formData.kvgCameraStreamsCount}
+                      onChange={(e) => handleFormChange("kvgCameraStreamsCount", parseInt(e.target.value) || 0)}
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="reviewers" className="text-sm text-teal-700 font-medium flex items-center gap-1.5">
+                    <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">👥</span>
+                    Reviewer(s)
+                  </Label>
+                  <div className="mt-1">
+                    <Input 
+                      id="reviewers"
+                      value={formData.reviewers}
+                      onChange={(e) => handleFormChange("reviewers", e.target.value)}
+                      placeholder="Enter names of reviewers..."
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="md:col-span-2">
+                  <Label htmlFor="siteSceneActivityNotes" className="text-sm text-teal-700 font-medium flex items-center gap-1.5">
+                    <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📝</span>
+                    Site and Scene Activity Notes
+                  </Label>
+                  <div className="mt-1">
+                    <Textarea 
+                      id="siteSceneActivityNotes"
+                      value={formData.siteSceneActivityNotes}
+                      onChange={(e) => handleFormChange("siteSceneActivityNotes", e.target.value)}
+                      placeholder="Enter general notes about site activity, restricted areas, and operational context..."
+                      className="min-h-[100px] bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
               <div className="flex flex-col sm:flex-row justify-between mb-4 gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex border rounded-lg overflow-hidden shadow-sm">
