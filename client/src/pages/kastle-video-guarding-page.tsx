@@ -733,14 +733,66 @@ const KastleVideoGuardingPage: React.FC = () => {
     },
   });
 
+  // Helper function to convert client stream object to match server schema
+  const convertStreamForServer = (stream: any) => {
+    // Ensure daysOfWeek is a string, not an array
+    const daysOfWeekStr = Array.isArray(stream.daysOfWeek) 
+      ? stream.daysOfWeek.join(',') 
+      : stream.daysOfWeek || '';
+      
+    // Return object that matches server schema
+    return {
+      project_id: stream.project_id,
+      location: stream.location || null,
+      fov_accessibility: stream.fovAccessibility || null,
+      camera_accessibility: stream.cameraAccessibility || null,
+      camera_type: stream.cameraType || null,
+      environment: stream.environment || null,
+      use_case_problem: stream.useCaseProblem || null,
+      speaker_association: stream.speakerAssociation || null,
+      audio_talk_down: stream.audioTalkDown || null,
+      event_monitoring: stream.eventMonitoring || null,
+      monitoring_start_time: stream.monitoringStartTime || null,
+      monitoring_end_time: stream.monitoringEndTime || null,
+      patrol_groups: stream.patrolGroups || null,
+      patrol_start_time: stream.patrolStartTime || null,
+      patrol_end_time: stream.patrolEndTime || null,
+      schedule_type: stream.scheduleType || null,
+      monitoring_days_of_week: stream.monitoringDaysOfWeek || null,
+      monitoring_hours: stream.monitoringHours || null,
+      use_main_schedule: stream.useMainSchedule === true,
+      quantity: stream.quantity || 1,
+      description: stream.description || null,
+      monitored_area: stream.monitoredArea || null,
+      accessibility: stream.accessibility || null,
+      use_case: stream.useCase || null,
+      analytic_rule1: stream.analyticRule1 || null,
+      dwell_time1: stream.dwellTime1 || 0,
+      analytic_rule2: stream.analyticRule2 || null,
+      dwell_time2: stream.dwellTime2 || 0,
+      days_of_week: daysOfWeekStr,
+      schedule: stream.schedule || null,
+      event_volume: stream.eventVolume || 0,
+      patrol_type: stream.patrolType || null,
+      patrols_per_week: stream.patrolsPerWeek || 0
+    };
+  };
+
   // Stream mutation for adding
   const addStreamMutation = useMutation({
     mutationFn: async (stream: any) => {
       if (!currentProject?.id) throw new Error('No project selected');
+      
+      // Convert client fields to match server schema
+      const serverStream = convertStreamForServer({
+        ...stream,
+        project_id: currentProject.id
+      });
+      
       const res = await apiRequest(
         'POST', 
         '/api/kvg-streams', 
-        { ...stream, project_id: currentProject.id }
+        serverStream
       );
       return res.json();
     },
@@ -759,7 +811,10 @@ const KastleVideoGuardingPage: React.FC = () => {
   // Stream mutation for updating
   const updateStreamMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const res = await apiRequest('PUT', `/api/kvg-streams/${id}`, data);
+      // Convert client fields to match server schema
+      const serverStream = convertStreamForServer(data);
+      
+      const res = await apiRequest('PUT', `/api/kvg-streams/${id}`, serverStream);
       return res.json();
     },
     onSuccess: () => {
