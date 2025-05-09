@@ -2649,7 +2649,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="rspndrGdods" className="text-sm text-teal-700">RSPDIG-GDODS:</Label>
+                    <Label htmlFor="rspndrGdods" className="text-sm text-teal-700">RSPNDR-GDODS:</Label>
                     <Select 
                       value={formData.rspndrGdods} 
                       onValueChange={(value) => handleFormChange("rspndrGdods", value)}
@@ -2659,9 +2659,11 @@ const KastleVideoGuardingPage: React.FC = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Select">Select</SelectItem>
-                        <SelectItem value="Yes">Yes</SelectItem>
                         <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="TBD">TBD</SelectItem>
+                        <SelectItem value="GDODS - Dispatch on Demand Subscriptions">GDODS - Dispatch on Demand Subscriptions</SelectItem>
+                        <SelectItem value="SGPP - Scheduled Periodic Site Checks">SGPP - Scheduled Periodic Site Checks</SelectItem>
+                        <SelectItem value="Both GDODS and SGPP">Both GDODS and SGPP</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
