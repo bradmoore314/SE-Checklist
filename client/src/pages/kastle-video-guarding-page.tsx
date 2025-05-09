@@ -4513,7 +4513,7 @@ const KastleVideoGuardingPage: React.FC = () => {
         </CardContent>
         
         {/* Quote Attachment Section */}
-        <div className="mx-6 mb-6">
+        <CardContent className="pb-0">
           <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-lg shadow-sm border border-purple-100">
             <h3 className="text-lg font-semibold mb-4 text-purple-800 flex items-center gap-2">
               <span className="p-1 bg-purple-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
@@ -4594,8 +4594,7 @@ const KastleVideoGuardingPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
   </TabsContent>
   <TabsContent value="voc-protocol">
