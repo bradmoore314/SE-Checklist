@@ -448,4 +448,240 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       res.status(500).json({ error: 'Failed to create/update floorplan calibration' });
     }
   });
+
+  // Get equipment consistency data for a project
+  app.get('/api/projects/:projectId/equipment-consistency', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { projectId } = req.params;
+      const numericProjectId = parseInt(projectId);
+      
+      // First fetch all floorplans for this project
+      const projectFloorplans = await db
+        .select()
+        .from(floorplans)
+        .where(eq(floorplans.project_id, numericProjectId));
+      
+      // Get all floorplan IDs for this project
+      const floorplanIds = projectFloorplans.map(fp => fp.id);
+      
+      // Markers from floorplans - only get the ones with actual equipment IDs (not temporary 0 values)
+      let accessPointMarkers: { equipment_id: number }[] = [];
+      let cameraMarkers: { equipment_id: number }[] = [];
+      let elevatorMarkers: { equipment_id: number }[] = [];
+      let intercomMarkers: { equipment_id: number }[] = [];
+      
+      if (floorplanIds.length > 0) {
+        // Fetch all markers across all floorplans for this project
+        const markers = await db
+          .select()
+          .from(floorplanMarkers)
+          .where(
+            and(
+              inArray(floorplanMarkers.floorplan_id, floorplanIds),
+              not(eq(floorplanMarkers.equipment_id, 0))
+            )
+          );
+        
+        // Group markers by type
+        accessPointMarkers = markers.filter(m => m.marker_type === 'access_point');
+        cameraMarkers = markers.filter(m => m.marker_type === 'camera');
+        elevatorMarkers = markers.filter(m => m.marker_type === 'elevator');
+        intercomMarkers = markers.filter(m => m.marker_type === 'intercom');
+      }
+      
+      // Fetch all equipment for this project
+      const allAccessPoints = await db
+        .select()
+        .from(accessPoints)
+        .where(eq(accessPoints.project_id, numericProjectId));
+      
+      const allCameras = await db
+        .select()
+        .from(cameras)
+        .where(eq(cameras.project_id, numericProjectId));
+      
+      const allElevators = await db
+        .select()
+        .from(elevators)
+        .where(eq(elevators.project_id, numericProjectId));
+      
+      const allIntercoms = await db
+        .select()
+        .from(intercoms)
+        .where(eq(intercoms.project_id, numericProjectId));
+      
+      // Get equipment IDs that have markers
+      const mappedAccessPointIds = new Set(accessPointMarkers.map(m => m.equipment_id));
+      const mappedCameraIds = new Set(cameraMarkers.map(m => m.equipment_id));
+      const mappedElevatorIds = new Set(elevatorMarkers.map(m => m.equipment_id));
+      const mappedIntercomIds = new Set(intercomMarkers.map(m => m.equipment_id));
+      
+      // Find equipment that doesn't have markers (unmapped)
+      const unmappedAccessPoints = allAccessPoints
+        .filter(ap => !mappedAccessPointIds.has(ap.id))
+        .map(ap => ({ id: ap.id, location: ap.location || 'Unnamed access point' }));
+      
+      const unmappedCameras = allCameras
+        .filter(cam => !mappedCameraIds.has(cam.id))
+        .map(cam => ({ id: cam.id, location: cam.location || 'Unnamed camera' }));
+      
+      const unmappedElevators = allElevators
+        .filter(elev => !mappedElevatorIds.has(elev.id))
+        .map(elev => ({ id: elev.id, location: elev.location || 'Unnamed elevator' }));
+      
+      const unmappedIntercoms = allIntercoms
+        .filter(inter => !mappedIntercomIds.has(inter.id))
+        .map(inter => ({ id: inter.id, location: inter.location || 'Unnamed intercom' }));
+      
+      // Compile consistency data
+      const consistencyData = {
+        access_points: {
+          total: allAccessPoints.length,
+          markers: accessPointMarkers.length,
+          unmapped: unmappedAccessPoints
+        },
+        cameras: {
+          total: allCameras.length,
+          markers: cameraMarkers.length,
+          unmapped: unmappedCameras
+        },
+        elevators: {
+          total: allElevators.length,
+          markers: elevatorMarkers.length,
+          unmapped: unmappedElevators
+        },
+        intercoms: {
+          total: allIntercoms.length,
+          markers: intercomMarkers.length,
+          unmapped: unmappedIntercoms
+        }
+      };
+      
+      res.status(200).json(consistencyData);
+    } catch (error) {
+      console.error('Error fetching equipment consistency data:', error);
+      res.status(500).json({ error: 'Failed to fetch equipment consistency data' });
+    }
+  });
+
+  // Resolve equipment consistency issue
+  app.post('/api/enhanced-floorplan/resolve-equipment', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { projectId, equipmentType, equipmentId } = req.body;
+      
+      if (!projectId || !equipmentType || !equipmentId) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+      
+      // Convert to expected types
+      const numericProjectId = parseInt(projectId.toString());
+      const numericEquipmentId = parseInt(equipmentId.toString());
+      
+      // Validate equipment type
+      const validEquipmentTypes = ['access_point', 'camera', 'elevator', 'intercom'];
+      if (!validEquipmentTypes.includes(equipmentType)) {
+        return res.status(400).json({ error: 'Invalid equipment type' });
+      }
+      
+      // Mark equipment as resolved by updating its status
+      switch (equipmentType) {
+        case 'access_point':
+          // Get the access point to confirm it exists
+          const [accessPoint] = await db
+            .select()
+            .from(accessPoints)
+            .where(
+              and(
+                eq(accessPoints.project_id, numericProjectId),
+                eq(accessPoints.id, numericEquipmentId)
+              )
+            );
+          
+          if (!accessPoint) {
+            return res.status(404).json({ error: 'Access point not found' });
+          }
+          
+          // Update status or create an optional "resolved" flag field
+          await db
+            .update(accessPoints)
+            .set({ notes: accessPoint.notes ? `${accessPoint.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .where(eq(accessPoints.id, numericEquipmentId));
+          break;
+          
+        case 'camera':
+          // Get the camera to confirm it exists
+          const [camera] = await db
+            .select()
+            .from(cameras)
+            .where(
+              and(
+                eq(cameras.project_id, numericProjectId),
+                eq(cameras.id, numericEquipmentId)
+              )
+            );
+          
+          if (!camera) {
+            return res.status(404).json({ error: 'Camera not found' });
+          }
+          
+          // Update status or create an optional "resolved" flag field
+          await db
+            .update(cameras)
+            .set({ notes: camera.notes ? `${camera.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .where(eq(cameras.id, numericEquipmentId));
+          break;
+          
+        case 'elevator':
+          // Get the elevator to confirm it exists
+          const [elevator] = await db
+            .select()
+            .from(elevators)
+            .where(
+              and(
+                eq(elevators.project_id, numericProjectId),
+                eq(elevators.id, numericEquipmentId)
+              )
+            );
+          
+          if (!elevator) {
+            return res.status(404).json({ error: 'Elevator not found' });
+          }
+          
+          // Update status or create an optional "resolved" flag field
+          await db
+            .update(elevators)
+            .set({ notes: elevator.notes ? `${elevator.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .where(eq(elevators.id, numericEquipmentId));
+          break;
+          
+        case 'intercom':
+          // Get the intercom to confirm it exists
+          const [intercom] = await db
+            .select()
+            .from(intercoms)
+            .where(
+              and(
+                eq(intercoms.project_id, numericProjectId),
+                eq(intercoms.id, numericEquipmentId)
+              )
+            );
+          
+          if (!intercom) {
+            return res.status(404).json({ error: 'Intercom not found' });
+          }
+          
+          // Update status or create an optional "resolved" flag field
+          await db
+            .update(intercoms)
+            .set({ notes: intercom.notes ? `${intercom.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .where(eq(intercoms.id, numericEquipmentId));
+          break;
+      }
+      
+      res.status(200).json({ success: true, message: `${equipmentType} with ID ${equipmentId} marked as resolved` });
+    } catch (error) {
+      console.error('Error resolving equipment inconsistency:', error);
+      res.status(500).json({ error: 'Failed to resolve equipment inconsistency' });
+    }
+  });
 }
