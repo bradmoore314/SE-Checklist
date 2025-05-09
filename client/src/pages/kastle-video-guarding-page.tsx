@@ -2253,6 +2253,9 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectItem value="Financial">Financial</SelectItem>
                         <SelectItem value="Hospitality">Hospitality</SelectItem>
                         <SelectItem value="Industrial">Industrial</SelectItem>
+                        <SelectItem value="Construction">Construction</SelectItem>
+                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Technology">Technology</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -2650,6 +2653,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectItem value="Take-over Only">Take-over Only</SelectItem>
                         <SelectItem value="New Install - Video/KVG">New Install - Video/KVG</SelectItem>
                         <SelectItem value="Existing Acct - Add KVG">Existing Acct - Add KVG</SelectItem>
+                        <SelectItem value="Takeover + New Cameras">Takeover + New Cameras</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
