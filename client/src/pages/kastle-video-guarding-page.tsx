@@ -738,43 +738,54 @@ const KastleVideoGuardingPage: React.FC = () => {
     // Ensure daysOfWeek is a string, not an array
     const daysOfWeekStr = Array.isArray(stream.daysOfWeek) 
       ? stream.daysOfWeek.join(',') 
-      : stream.daysOfWeek || '';
+      : typeof stream.daysOfWeek === 'string' ? stream.daysOfWeek : '';
+    
+    // Safely convert numeric fields with fallbacks to prevent NaN
+    const quantity = typeof stream.quantity === 'number' ? stream.quantity : 1;
+    const dwellTime1 = typeof stream.dwellTime1 === 'number' ? stream.dwellTime1 : 0;
+    const dwellTime2 = typeof stream.dwellTime2 === 'number' ? stream.dwellTime2 : 0;
+    const eventVolume = typeof stream.eventVolume === 'number' ? stream.eventVolume : 0;
+    const patrolsPerWeek = typeof stream.patrolsPerWeek === 'number' ? stream.patrolsPerWeek : 0;
+    
+    // Boolean conversion with explicit check
+    const useMainSchedule = stream.useMainSchedule === true;
       
-    // Return object that matches server schema
+    // Return object that matches server schema - using empty strings instead of null for text fields
+    // to avoid potential database validation issues
     return {
       project_id: stream.project_id,
-      location: stream.location || null,
-      fov_accessibility: stream.fovAccessibility || null,
-      camera_accessibility: stream.cameraAccessibility || null,
-      camera_type: stream.cameraType || null,
-      environment: stream.environment || null,
-      use_case_problem: stream.useCaseProblem || null,
-      speaker_association: stream.speakerAssociation || null,
-      audio_talk_down: stream.audioTalkDown || null,
-      event_monitoring: stream.eventMonitoring || null,
-      monitoring_start_time: stream.monitoringStartTime || null,
-      monitoring_end_time: stream.monitoringEndTime || null,
-      patrol_groups: stream.patrolGroups || null,
-      patrol_start_time: stream.patrolStartTime || null,
-      patrol_end_time: stream.patrolEndTime || null,
-      schedule_type: stream.scheduleType || null,
-      monitoring_days_of_week: stream.monitoringDaysOfWeek || null,
-      monitoring_hours: stream.monitoringHours || null,
-      use_main_schedule: stream.useMainSchedule === true,
-      quantity: stream.quantity || 1,
-      description: stream.description || null,
-      monitored_area: stream.monitoredArea || null,
-      accessibility: stream.accessibility || null,
-      use_case: stream.useCase || null,
-      analytic_rule1: stream.analyticRule1 || null,
-      dwell_time1: stream.dwellTime1 || 0,
-      analytic_rule2: stream.analyticRule2 || null,
-      dwell_time2: stream.dwellTime2 || 0,
+      location: stream.location || '',
+      fov_accessibility: stream.fovAccessibility || '',
+      camera_accessibility: stream.cameraAccessibility || '',
+      camera_type: stream.cameraType || '',
+      environment: stream.environment || '',
+      use_case_problem: stream.useCaseProblem || '',
+      speaker_association: stream.speakerAssociation || '',
+      audio_talk_down: stream.audioTalkDown || '',
+      event_monitoring: stream.eventMonitoring || '',
+      monitoring_start_time: stream.monitoringStartTime || '',
+      monitoring_end_time: stream.monitoringEndTime || '',
+      patrol_groups: stream.patrolGroups || '',
+      patrol_start_time: stream.patrolStartTime || '',
+      patrol_end_time: stream.patrolEndTime || '',
+      schedule_type: stream.scheduleType || '',
+      monitoring_days_of_week: stream.monitoringDaysOfWeek || '',
+      monitoring_hours: stream.monitoringHours || '',
+      use_main_schedule: useMainSchedule,
+      quantity: quantity,
+      description: stream.description || '',
+      monitored_area: stream.monitoredArea || '',
+      accessibility: stream.accessibility || '',
+      use_case: stream.useCase || '',
+      analytic_rule1: stream.analyticRule1 || '',
+      dwell_time1: dwellTime1,
+      analytic_rule2: stream.analyticRule2 || '',
+      dwell_time2: dwellTime2,
       days_of_week: daysOfWeekStr,
-      schedule: stream.schedule || null,
-      event_volume: stream.eventVolume || 0,
-      patrol_type: stream.patrolType || null,
-      patrols_per_week: stream.patrolsPerWeek || 0
+      schedule: stream.schedule || '',
+      event_volume: eventVolume,
+      patrol_type: stream.patrolType || '',
+      patrols_per_week: patrolsPerWeek
     };
   };
 
@@ -1063,17 +1074,26 @@ const KastleVideoGuardingPage: React.FC = () => {
     // Update UI immediately
     setStreams(updatedStreams);
     
-    // Persist changes to database
+    // Persist changes to database in a safe way
     if (currentProject?.id) {
-      updatedStreams.forEach(stream => {
+      // Update one stream at a time with a small delay to prevent server overload
+      updatedStreams.forEach((stream, index) => {
         if (stream.id > 0) { // Only update in DB if it's an existing record
-          updateStreamMutation.mutate({ 
-            id: stream.id, 
-            data: { 
-              ...stream,
-              project_id: currentProject.id
-            } 
-          });
+          // Add a small delay between requests to prevent overwhelming the server
+          setTimeout(() => {
+            try {
+              updateStreamMutation.mutate({ 
+                id: stream.id, 
+                data: { 
+                  ...stream,
+                  project_id: currentProject.id
+                } 
+              });
+            } catch (error) {
+              console.error("Error updating stream:", error);
+              // Continue with other streams even if one fails
+            }
+          }, index * 300); // 300ms delay between each stream update
         }
       });
     }
