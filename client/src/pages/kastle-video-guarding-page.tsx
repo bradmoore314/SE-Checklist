@@ -146,11 +146,8 @@ interface FormData {
   
   // Technology fields
   technology: string;
-  technologyDeployed: string;
-  cameraType: string;
   rspndrGdods: string;
   rspndrSubscriptions: string;
-  installType: string;
   
   // Stream counts
   eventVideoTriggerStreams: number;
@@ -371,11 +368,8 @@ const KastleVideoGuardingPage: React.FC = () => {
     
     // Technology fields
     technology: "",
-    technologyDeployed: "",
-    cameraType: "",
     rspndrGdods: "",
     rspndrSubscriptions: "",
-    installType: "",
     
     // Stream counts
     eventVideoTriggerStreams: 0,
@@ -2667,58 +2661,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                         <SelectItem value="Other - Take-over">Other - Take-over</SelectItem>
                         <SelectItem value="TBD - SE follow-up">TBD - SE follow-up</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="technologyDeployed" className="text-sm text-teal-700">Technology Deployed:</Label>
-                    <Select 
-                      value={formData.technologyDeployed} 
-                      onValueChange={(value) => handleFormChange("technologyDeployed", value)}
-                    >
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="New System">New System</SelectItem>
-                        <SelectItem value="Existing System">Existing System</SelectItem>
-                        <SelectItem value="Hybrid">Hybrid (New+Existing)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="cameraType" className="text-sm text-teal-700">Camera Type:</Label>
-                    <Select 
-                      value={formData.cameraType} 
-                      onValueChange={(value) => handleFormChange("cameraType", value)}
-                    >
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="IP">IP</SelectItem>
-                        <SelectItem value="Analog">Analog</SelectItem>
-                        <SelectItem value="Hybrid">Hybrid</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="installType" className="text-sm text-teal-700">Install Type:</Label>
-                    <Select 
-                      value={formData.installType} 
-                      onValueChange={(value) => handleFormChange("installType", value)}
-                    >
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="New">New</SelectItem>
-                        <SelectItem value="Takeover">Takeover</SelectItem>
-                        <SelectItem value="Add-on">Add-on</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
