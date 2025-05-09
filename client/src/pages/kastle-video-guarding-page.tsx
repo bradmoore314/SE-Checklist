@@ -3117,6 +3117,78 @@ const KastleVideoGuardingPage: React.FC = () => {
                           className="flex-1 bg-white"
                         />
                       </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <Toggle 
+                          pressed={formData.customIncidentType4Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType4Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType4Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          <span className="flex items-center gap-1">🔷 Custom Type 4</span>
+                        </Toggle>
+                        <Input 
+                          value={formData.customIncidentType4 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType4", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <Toggle 
+                          pressed={formData.customIncidentType5Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType5Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType5Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          <span className="flex items-center gap-1">🔹 Custom Type 5</span>
+                        </Toggle>
+                        <Input 
+                          value={formData.customIncidentType5 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType5", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <Toggle 
+                          pressed={formData.customIncidentType6Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType6Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType6Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          <span className="flex items-center gap-1">🔸 Custom Type 6</span>
+                        </Toggle>
+                        <Input 
+                          value={formData.customIncidentType6 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType6", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <Toggle 
+                          pressed={formData.customIncidentType7Selected}
+                          onPressedChange={(pressed) => handleFormChange("customIncidentType7Selected", pressed)}
+                          variant="outline"
+                          size="sm"
+                          className={formData.customIncidentType7Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                        >
+                          <span className="flex items-center gap-1">💠 Custom Type 7</span>
+                        </Toggle>
+                        <Input 
+                          value={formData.customIncidentType7 || ""}
+                          onChange={(e) => handleFormChange("customIncidentType7", e.target.value)}
+                          placeholder="Enter custom incident type"
+                          className="flex-1 bg-white"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3905,6 +3977,70 @@ const KastleVideoGuardingPage: React.FC = () => {
                     className="data-[state=on]:bg-green-500"
                   >
                     {formData.customIncidentType3Selected ? "Yes" : "No"}
+                  </Toggle>
+                </div>
+                
+                {/* Added row for custom incident types 4-5 */}
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={formData.customIncidentType4}
+                    onChange={(e) => handleFormChange("customIncidentType4", e.target.value)}
+                    placeholder="Custom incident type"
+                    className="bg-white flex-1"
+                  />
+                  <Toggle 
+                    pressed={formData.customIncidentType4Selected}
+                    onPressedChange={(value) => handleFormChange("customIncidentType4Selected", value)}
+                    className="data-[state=on]:bg-green-500"
+                  >
+                    {formData.customIncidentType4Selected ? "Yes" : "No"}
+                  </Toggle>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={formData.customIncidentType5}
+                    onChange={(e) => handleFormChange("customIncidentType5", e.target.value)}
+                    placeholder="Custom incident type"
+                    className="bg-white flex-1"
+                  />
+                  <Toggle 
+                    pressed={formData.customIncidentType5Selected}
+                    onPressedChange={(value) => handleFormChange("customIncidentType5Selected", value)}
+                    className="data-[state=on]:bg-green-500"
+                  >
+                    {formData.customIncidentType5Selected ? "Yes" : "No"}
+                  </Toggle>
+                </div>
+                
+                {/* Added row for custom incident types 6-7 */}
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={formData.customIncidentType6}
+                    onChange={(e) => handleFormChange("customIncidentType6", e.target.value)}
+                    placeholder="Custom incident type"
+                    className="bg-white flex-1"
+                  />
+                  <Toggle 
+                    pressed={formData.customIncidentType6Selected}
+                    onPressedChange={(value) => handleFormChange("customIncidentType6Selected", value)}
+                    className="data-[state=on]:bg-green-500"
+                  >
+                    {formData.customIncidentType6Selected ? "Yes" : "No"}
+                  </Toggle>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={formData.customIncidentType7}
+                    onChange={(e) => handleFormChange("customIncidentType7", e.target.value)}
+                    placeholder="Custom incident type"
+                    className="bg-white flex-1"
+                  />
+                  <Toggle 
+                    pressed={formData.customIncidentType7Selected}
+                    onPressedChange={(value) => handleFormChange("customIncidentType7Selected", value)}
+                    className="data-[state=on]:bg-green-500"
+                  >
+                    {formData.customIncidentType7Selected ? "Yes" : "No"}
                   </Toggle>
                 </div>
               </div>
