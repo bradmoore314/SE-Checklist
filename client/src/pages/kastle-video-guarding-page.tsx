@@ -1535,88 +1535,186 @@ const KastleVideoGuardingPage: React.FC = () => {
                             </div>
                             
                             {/* Core Properties Grid - Mobile Responsive */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-3">
-                              <div>
-                                <Label htmlFor={`stream-${stream.id}-fov`} className="text-sm font-medium text-blue-700 mb-1.5 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-blue-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">🔍</span>
-                                  FOV Accessibility
-                                </Label>
-                                <Select 
-                                  value={stream.fovAccessibility}
-                                  onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
-                                >
-                                  <SelectTrigger id={`stream-${stream.id}-fov`} className="h-10 rounded-lg">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Yes">Yes</SelectItem>
-                                    <SelectItem value="No">No</SelectItem>
-                                    <SelectItem value="Select">Select</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div>
-                                <Label htmlFor={`stream-${stream.id}-camera-type`} className="text-sm font-medium text-indigo-700 mb-1.5 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-indigo-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📹</span>
-                                  Camera Type
-                                </Label>
-                                <Select 
-                                  value={stream.cameraType}
-                                  onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
-                                >
-                                  <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-10 rounded-lg">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Indoor">Indoor</SelectItem>
-                                    <SelectItem value="Outdoor">Outdoor</SelectItem>
-                                    <SelectItem value="PTZ">PTZ</SelectItem>
-                                    <SelectItem value="Fixed">Fixed</SelectItem>
-                                    <SelectItem value="Select">Select</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div>
-                                <Label htmlFor={`stream-${stream.id}-monitoring`} className="text-sm font-medium text-orange-700 mb-1.5 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-orange-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">👁️</span>
-                                  Event Monitoring
-                                </Label>
-                                <Select 
-                                  value={stream.eventMonitoring}
-                                  onValueChange={(value) => updateStream(stream.id, "eventMonitoring", value)}
-                                >
-                                  <SelectTrigger id={`stream-${stream.id}-monitoring`} className="h-10 rounded-lg">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Yes">Yes</SelectItem>
-                                    <SelectItem value="No">No</SelectItem>
-                                    <SelectItem value="Select">Select</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div>
-                                <Label htmlFor={`stream-${stream.id}-audio`} className="text-sm font-medium text-pink-700 mb-1.5 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-pink-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">🔊</span>
-                                  Audio Talk Down
-                                </Label>
-                                <Select 
-                                  value={stream.audioTalkDown}
-                                  onValueChange={(value) => updateStream(stream.id, "audioTalkDown", value)}
-                                >
-                                  <SelectTrigger id={`stream-${stream.id}-audio`} className="h-10 rounded-lg">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Yes">Yes</SelectItem>
-                                    <SelectItem value="No">No</SelectItem>
-                                    <SelectItem value="Select">Select</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                            {/* Camera Stream Details Table - All fields in one place, matching requested format */}
+                            <div className="overflow-hidden border border-gray-200 rounded-lg mt-3">
+                              <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field</th>
+                                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                  {/* FOV Area Accessibility */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">FOV Area Accessibility</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Select 
+                                        value={stream.fovAccessibility}
+                                        onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
+                                      >
+                                        <SelectTrigger id={`stream-${stream.id}-fov`} className="h-10 rounded-lg">
+                                          <SelectValue placeholder="Y/N" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Yes">Yes</SelectItem>
+                                          <SelectItem value="No">No</SelectItem>
+                                          <SelectItem value="Select">Select</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Camera Type */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Camera Type & Environment</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Select 
+                                        value={stream.cameraType}
+                                        onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
+                                      >
+                                        <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-10 rounded-lg">
+                                          <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Indoor">Indoor</SelectItem>
+                                          <SelectItem value="Outdoor">Outdoor</SelectItem>
+                                          <SelectItem value="PTZ">PTZ</SelectItem>
+                                          <SelectItem value="Fixed">Fixed</SelectItem>
+                                          <SelectItem value="Select">Select</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Event Monitoring */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Event Monitoring</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Select 
+                                        value={stream.eventMonitoring}
+                                        onValueChange={(value) => updateStream(stream.id, "eventMonitoring", value)}
+                                      >
+                                        <SelectTrigger id={`stream-${stream.id}-monitoring`} className="h-10 rounded-lg">
+                                          <SelectValue placeholder="Y/N" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Yes">Yes</SelectItem>
+                                          <SelectItem value="No">No</SelectItem>
+                                          <SelectItem value="Select">Select</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Audio Talk Down */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Audio Talk-Down</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Select 
+                                        value={stream.audioTalkDown}
+                                        onValueChange={(value) => updateStream(stream.id, "audioTalkDown", value)}
+                                      >
+                                        <SelectTrigger id={`stream-${stream.id}-audio`} className="h-10 rounded-lg">
+                                          <SelectValue placeholder="Y/N" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Yes">Yes</SelectItem>
+                                          <SelectItem value="No">No</SelectItem>
+                                          <SelectItem value="Select">Select</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                  </tr>
+
+                                  {/* Monitoring Start Time */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Monitoring Hours Start Time</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Input
+                                        type="time"
+                                        className="h-10 text-sm rounded-lg"
+                                        value={(stream.monitoringStartTime || '')}
+                                        onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
+                                      />
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Monitoring End Time */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Monitoring Hours End Time</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Input
+                                        type="time"
+                                        className="h-10 text-sm rounded-lg"
+                                        value={(stream.monitoringEndTime || '')}
+                                        onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
+                                      />
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Patrol Groups */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Groups</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Select 
+                                        value={stream.patrolGroups}
+                                        onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
+                                      >
+                                        <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-10 rounded-lg">
+                                          <SelectValue placeholder="Y/N" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Yes">Yes</SelectItem>
+                                          <SelectItem value="No">No</SelectItem>
+                                          <SelectItem value="Select">Select</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Patrol Start Time */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Hours Start Time</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Input
+                                        type="time"
+                                        className="h-10 text-sm rounded-lg"
+                                        value={(stream.patrolStartTime || '')}
+                                        onChange={(e) => updateStream(stream.id, "patrolStartTime", e.target.value)}
+                                      />
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Patrol End Time */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Hours End Time</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Input
+                                        type="time"
+                                        className="h-10 text-sm rounded-lg"
+                                        value={(stream.patrolEndTime || '')}
+                                        onChange={(e) => updateStream(stream.id, "patrolEndTime", e.target.value)}
+                                      />
+                                    </td>
+                                  </tr>
+                                  
+                                  {/* Speaker Association */}
+                                  <tr>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Speaker Video Stream Association & Name</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">
+                                      <Input 
+                                        id={`stream-${stream.id}-speaker`}
+                                        type="text"
+                                        value={stream.speakerAssociation || ""}
+                                        onChange={(e) => updateStream(stream.id, "speakerAssociation", e.target.value)}
+                                        className="h-10 text-sm rounded-lg"
+                                        placeholder="Enter speaker name/identifier"
+                                      />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
                             
                             {/* Schedule Section - Mobile Optimized */}
