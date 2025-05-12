@@ -788,9 +788,9 @@ const KastleVideoGuardingPage: React.FC = () => {
       // patrol_group_details removed (not in database schema)
       patrol_start_time: stream.patrolStartTime || '',
       patrol_end_time: stream.patrolEndTime || '',
-      vehicle_license_plate_analysis: stream.vehicleLicensePlateAnalysis || '',
-      people_movement_analysis: stream.peopleMovementAnalysis || '',
-      object_detection: stream.objectDetection || '',
+      // vehicle_license_plate_analysis removed (not in database schema)
+      // people_movement_analysis removed (not in database schema)
+      // object_detection removed (not in database schema)
       schedule_type: stream.scheduleType || '',
       monitoring_days_of_week: stream.monitoringDaysOfWeek || '',
       monitoring_hours: stream.monitoringHours || '',
@@ -6099,59 +6099,11 @@ const KastleVideoGuardingPage: React.FC = () => {
                           
                           {/* Patrol Group Details - Removed as field doesn't exist in database schema */}
                           
-                          {/* Vehicle License Plate Analysis */}
-                          <div className="space-y-2">
-                            <Label htmlFor={`stream_license_plate_${index}`} className="text-sm">Vehicle License Plate Analysis</Label>
-                            <Select
-                              value={stream.vehicleLicensePlateAnalysis}
-                              onValueChange={(value) => handleStreamChange(index, "vehicleLicensePlateAnalysis", value)}
-                            >
-                              <SelectTrigger id={`stream_license_plate_${index}`} className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Select">Select</SelectItem>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Vehicle License Plate Analysis - removed (not in database schema) */}
                           
-                          {/* People Movement Analysis */}
-                          <div className="space-y-2">
-                            <Label htmlFor={`stream_people_movement_${index}`} className="text-sm">People Movement Analysis</Label>
-                            <Select
-                              value={stream.peopleMovementAnalysis}
-                              onValueChange={(value) => handleStreamChange(index, "peopleMovementAnalysis", value)}
-                            >
-                              <SelectTrigger id={`stream_people_movement_${index}`} className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Select">Select</SelectItem>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* People Movement Analysis - removed (not in database schema) */}
                           
-                          {/* Object Detection */}
-                          <div className="space-y-2">
-                            <Label htmlFor={`stream_object_detection_${index}`} className="text-sm">Object Detection</Label>
-                            <Select
-                              value={stream.objectDetection}
-                              onValueChange={(value) => handleStreamChange(index, "objectDetection", value)}
-                            >
-                              <SelectTrigger id={`stream_object_detection_${index}`} className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Select">Select</SelectItem>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Object Detection - removed (not in database schema) */}
                           
                           {/* Audio Talk Down */}
                           <div className="space-y-2">
