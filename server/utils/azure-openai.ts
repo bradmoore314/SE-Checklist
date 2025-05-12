@@ -137,7 +137,11 @@ Ensure your response is properly formatted as JSON.
 }
 
 /**
- * Generates a quote review meeting agenda.
+ * Generates a quote review meeting agenda using Kastle's secure Azure OpenAI service.
+ * 
+ * This function processes client quote details and requirements through Kastle's protected
+ * Azure OpenAI deployment, ensuring all sensitive pricing and project information remains
+ * within Kastle's secure infrastructure during AI processing.
  */
 export async function generateQuoteReviewAgenda(
   projectName: string,
@@ -193,7 +197,12 @@ Ensure your response is properly formatted as JSON.
 }
 
 /**
- * Generates a turnover call agenda.
+ * Generates a turnover call agenda using Kastle's secure Azure OpenAI service.
+ * 
+ * This function processes client installation details and requirements through Kastle's protected
+ * Azure OpenAI deployment, ensuring all sensitive handover information remains within Kastle's
+ * secure infrastructure during AI processing. The resulting agenda includes properly secured
+ * client-specific implementation details.
  */
 export async function generateTurnoverCallAgenda(
   projectName: string,
@@ -255,7 +264,11 @@ Ensure your response is properly formatted as JSON.
 }
 
 /**
- * Simple test function to check if the Azure OpenAI API is working
+ * Simple test function to check if Kastle's secure Azure OpenAI connection is working
+ * 
+ * This function tests connectivity to Kastle's secure Azure OpenAI deployment.
+ * The test is performed through Kastle's protected infrastructure, ensuring
+ * that even test prompts never leave the secure environment.
  */
 export async function testAzureOpenAI(prompt: string): Promise<string> {
   try {
