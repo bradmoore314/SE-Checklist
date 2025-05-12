@@ -24,13 +24,13 @@ export interface Stream {
   
   // Event Monitoring Details
   eventMonitoring: string; // Yes/No
-  eventMonitoringDetails: string; // Yes/No/Select - New field
+  // eventMonitoringDetails field removed (not in database schema)
   monitoringStartTime: string;
   monitoringEndTime: string;
   
   // Patrol Group Details
   patrolGroups: string; // Yes/No
-  patrolGroupDetails: string; // Yes/No/Select - New field
+  // patrolGroupDetails field removed (not in database schema)
   patrolStartTime: string;
   patrolEndTime: string;
   

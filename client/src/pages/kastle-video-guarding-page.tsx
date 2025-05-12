@@ -651,7 +651,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           // Initialize new fields with default values
           cameraType: "Select",
           // eventMonitoringDetails removed (not in database schema)
-          patrolGroupDetails: "Select",
+          // patrolGroupDetails removed (not in database schema)
           vehicleLicensePlateAnalysis: "Select",
           peopleMovementAnalysis: "Select",
           objectDetection: "Select",
@@ -988,7 +988,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           monitoringStartTime: "",
           monitoringEndTime: "",
           patrolGroups: "Select",
-          patrolGroupDetails: "Select",
+          // patrolGroupDetails removed (not in database schema)
           patrolStartTime: "",
           patrolEndTime: "",
           vehicleLicensePlateAnalysis: "Select",
@@ -5998,23 +5998,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                           
                           {/* Event Monitoring Details field removed (not in database schema) */}
                           
-                          {/* Patrol Group Details */}
-                          <div className="space-y-2">
-                            <Label htmlFor={`stream_patrol_group_${index}`} className="text-sm">Patrol Group Details</Label>
-                            <Select
-                              value={stream.patrolGroupDetails}
-                              onValueChange={(value) => handleStreamChange(index, "patrolGroupDetails", value)}
-                            >
-                              <SelectTrigger id={`stream_patrol_group_${index}`} className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Select">Select</SelectItem>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Patrol Group Details - Removed as field doesn't exist in database schema */}
                           
                           {/* Vehicle License Plate Analysis */}
                           <div className="space-y-2">
