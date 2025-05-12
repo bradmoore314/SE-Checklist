@@ -8,7 +8,10 @@ import { proxyTestAzureOpenAI } from './azure-openai-proxy';
 import { generateSiteWalkAnalysis as generateGeminiSiteWalkAnalysis, 
          generateQuoteReviewAgenda as generateGeminiQuoteReviewAgenda, 
          generateTurnoverCallAgenda as generateGeminiTurnoverCallAgenda } from './utils/gemini';
-import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/azure-openai';
+import { generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis, 
+         generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
+         generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda } from './utils/azure-openai';
+import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './services/ai-service';
 import { compressImage, createThumbnail } from './utils/image-utils';
 import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
 import { 
@@ -3544,6 +3547,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Add Azure OpenAI endpoint
   app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
+  
+  // AI Analysis endpoints using smart AI service
+  app.post("/api/ai/analysis/site-walk", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { 
+        projectName, 
+        projectDescription, 
+        buildingCount,
+        accessPointCount,
+        cameraCount,
+        clientRequirements,
+        specialConsiderations,
+        provider // Optional parameter to force a specific provider
+      } = req.body;
+
+      // Validate required fields
+      if (!projectName || !projectDescription) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const analysis = await generateSiteWalkAnalysis(
+        projectName,
+        projectDescription,
+        buildingCount || 1,
+        accessPointCount || 0,
+        cameraCount || 0,
+        clientRequirements || "",
+        specialConsiderations || "",
+        provider as 'azure' | 'gemini' | undefined
+      );
+
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error generating site walk analysis:", error);
+      res.status(500).json({ 
+        error: "Failed to generate site walk analysis",
+        details: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+  
+  app.post("/api/ai/analysis/quote-review", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { 
+        projectName, 
+        projectDescription, 
+        quoteDetails,
+        clientBackground,
+        provider // Optional parameter to force a specific provider
+      } = req.body;
+
+      // Validate required fields
+      if (!projectName || !projectDescription) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const agenda = await generateQuoteReviewAgenda(
+        projectName,
+        projectDescription,
+        quoteDetails || "",
+        clientBackground || "",
+        provider as 'azure' | 'gemini' | undefined
+      );
+
+      res.json(agenda);
+    } catch (error) {
+      console.error("Error generating quote review agenda:", error);
+      res.status(500).json({ 
+        error: "Failed to generate quote review agenda",
+        details: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+  
+  app.post("/api/ai/analysis/turnover-call", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { 
+        projectName, 
+        projectDescription, 
+        installationDetails,
+        clientNeeds,
+        provider // Optional parameter to force a specific provider
+      } = req.body;
+
+      // Validate required fields
+      if (!projectName || !projectDescription) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const agenda = await generateTurnoverCallAgenda(
+        projectName,
+        projectDescription,
+        installationDetails || "",
+        clientNeeds || "",
+        provider as 'azure' | 'gemini' | undefined
+      );
+
+      res.json(agenda);
+    } catch (error) {
+      console.error("Error generating turnover call agenda:", error);
+      res.status(500).json({ 
+        error: "Failed to generate turnover call agenda",
+        details: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
 
   // Check Gemini API configuration
   app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
