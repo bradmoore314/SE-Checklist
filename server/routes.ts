@@ -2572,8 +2572,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
-  // Gemini AI Translation endpoint
-  app.post("/api/gemini-translate", isAuthenticated, async (req: Request, res: Response) => {
+  // Azure OpenAI Translation endpoint
+  app.post("/api/azure-translate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { text, targetLanguage, sourceLanguage = 'en' } = req.body;
       
@@ -2583,19 +2583,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      if (!process.env.GEMINI_API_KEY) {
+      if (!process.env.AZURE_OPENAI_API_KEY) {
         return res.status(500).json({ 
-          error: "Gemini API key is not configured on the server." 
+          error: "Azure OpenAI API key is not configured on the server." 
         });
       }
       
-      const translatedText = await translateText(text, targetLanguage, sourceLanguage);
+      // Import the Azure OpenAI test function which we'll use for translation
+      const { testAzureOpenAI } = await import("./utils/azure-openai");
+      
+      // Use Azure OpenAI to translate the text through Kastle's secure environment
+      const prompt = `Translate the following text from ${sourceLanguage} to ${targetLanguage}. Return only the translated text without explanations or quotation marks:\n\n${text}`;
+      const translatedText = await testAzureOpenAI(prompt);
       
       res.json({
         success: true,
         translatedText,
         sourceLanguage,
-        targetLanguage
+        targetLanguage,
+        provider: "azure",
+        secureEnvironment: "Kastle Azure OpenAI"
       });
     } catch (error) {
       console.error("Translation error:", error);
@@ -2606,15 +2613,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Gemini API diagnostic endpoint
-  app.get("/api/diagnose/gemini", isAuthenticated, async (req: Request, res: Response) => {
-    console.log("Gemini API diagnostic endpoint called");
+  // Azure OpenAI diagnostic endpoint
+  app.get("/api/diagnose/azure", isAuthenticated, async (req: Request, res: Response) => {
+    console.log("Azure OpenAI diagnostic endpoint called");
     try {
       // First check if API key is configured
-      if (!process.env.GEMINI_API_KEY) {
+      if (!process.env.AZURE_OPENAI_API_KEY) {
         return res.status(500).json({
           success: false,
-          message: "Gemini API key is not configured on the server"
+          message: "Azure OpenAI API key is not configured on the server"
         });
       }
       
@@ -2657,15 +2664,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       };
       
-      console.log("Making Gemini API call with sample data");
+      console.log("Making Azure OpenAI API call with sample data from Kastle's secure environment");
       const startTime = Date.now();
       
-      // Call the Gemini API with sample data
-      const analysis = await generateSiteWalkAnalysis(sampleData);
+      // Call the Azure OpenAI API with sample data through Kastle's secure environment
+      const { generateSiteWalkAnalysis } = await import("./services/ai-service");
+      const analysis = await generateSiteWalkAnalysis(
+        sampleData.project.name,
+        "Sample project for diagnostic testing",
+        2,
+        sampleData.summary.accessPointCount,
+        sampleData.summary.cameraCount,
+        "Standard security requirements",
+        "None"
+      );
       
       const endTime = Date.now();
       const timeTaken = (endTime - startTime) / 1000;
-      console.log(`Gemini API call completed in ${timeTaken} seconds`);
+      console.log(`Azure OpenAI API call completed in ${timeTaken} seconds`);
       
       // Check for default values
       const hasDefaultSummary = analysis.summary === "Executive summary not available";
@@ -2681,6 +2697,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({
         success: true,
+        provider: "azure",
+        deployment: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+        endpoint: "https://azuresearchservice2.openai.azure.com/",
         diagnostics: {
           apiKeyConfigured: true,
           timeTaken: timeTaken,
@@ -3914,7 +3933,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Chatbot API endpoints
-  app.post("/api/gemini/chat", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/azure/chat", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { messages, context } = req.body;
       
@@ -3925,7 +3944,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const result = await chatbotGeminiService.processMessage(messages, context || {});
+      // Format messages for Azure OpenAI
+      const formattedMessages = messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }));
+      
+      // Import the Azure OpenAI client 
+      const { getAzureOpenAIClient } = await import("./utils/azure-openai");
+      const openai = getAzureOpenAIClient();
+      
+      // Process the message through Azure OpenAI in Kastle's secure environment
+      const response = await openai.chat.completions.create({
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 800
+      });
+      
+      // Get the response content
+      const result = {
+        success: true,
+        response: response.choices[0].message.content,
+        provider: "azure",
+        secureEnvironment: "Kastle Azure OpenAI",
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini"
+      };
+      
       res.json(result);
     } catch (error) {
       console.error("Error processing chat message:", error);
@@ -3937,7 +3982,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/gemini/chat/recommendations", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/azure/chat/recommendations", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { messages, context } = req.body;
       
@@ -3948,9 +3993,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const response = await chatbotGeminiService.processMessage(messages, context || {});
-      const recommendations = await chatbotGeminiService.extractEquipmentRecommendations(response);
-      res.json({ recommendations });
+      // Format messages for Azure OpenAI
+      const formattedMessages = messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }));
+      
+      // Import the Azure OpenAI client 
+      const { getAzureOpenAIClient } = await import("./utils/azure-openai");
+      const openai = getAzureOpenAIClient();
+      
+      // Get initial response through Azure OpenAI in Kastle's secure environment
+      const chatResponse = await openai.chat.completions.create({
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 800
+      });
+      
+      const responseText = chatResponse.choices[0].message.content || '';
+      
+      // Now extract equipment recommendations from the response
+      const extractPrompt = [
+        { 
+          role: "system", 
+          content: "You are a security system expert. Extract specific equipment recommendations from the following text. Format as a JSON array of strings. Only include actual equipment items like 'KR-RP40 readers', 'magnetic locks', etc. Don't include general concepts or advice."
+        },
+        {
+          role: "user",
+          content: responseText
+        }
+      ];
+      
+      // Extract recommendations
+      const extractResponse = await openai.chat.completions.create({
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+        messages: extractPrompt,
+        temperature: 0.2,
+        max_tokens: 500,
+        response_format: { type: "json_object" }
+      });
+      
+      let recommendations = [];
+      
+      try {
+        // Parse the JSON response
+        const extractedText = extractResponse.choices[0].message.content || '{"recommendations":[]}';
+        const parsed = JSON.parse(extractedText);
+        recommendations = parsed.recommendations || [];
+      } catch (err) {
+        console.error("Error parsing recommendations:", err);
+        recommendations = [];
+      }
+      
+      res.json({ 
+        recommendations,
+        provider: "azure",
+        secureEnvironment: "Kastle Azure OpenAI",
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini"
+      });
     } catch (error) {
       console.error("Error generating equipment recommendations:", error);
       res.status(500).json({
