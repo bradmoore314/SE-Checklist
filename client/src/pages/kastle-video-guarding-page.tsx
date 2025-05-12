@@ -1558,8 +1558,10 @@ const KastleVideoGuardingPage: React.FC = () => {
                                           <SelectValue placeholder="Y/N" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="Yes">Yes</SelectItem>
-                                          <SelectItem value="No">No</SelectItem>
+                                          <SelectItem value="Yes - Full Visibility">Yes - Full Visibility</SelectItem>
+                                          <SelectItem value="Yes - Limited View">Yes - Limited View</SelectItem>
+                                          <SelectItem value="No - Obstructed">No - Obstructed</SelectItem>
+                                          <SelectItem value="No - Requires Hardware">No - Requires Hardware</SelectItem>
                                           <SelectItem value="Select">Select</SelectItem>
                                         </SelectContent>
                                       </Select>
