@@ -504,9 +504,10 @@ export const kvgStreams = pgTable('kvg_streams', {
   patrolStartTime: text('patrol_start_time'),
   
   // Analysis Features - New fields
-  vehicleLicensePlateAnalysis: text('vehicle_license_plate_analysis'),
-  peopleMovementAnalysis: text('people_movement_analysis'),
-  objectDetection: text('object_detection'),
+  // These columns don't exist in the actual database
+  // vehicleLicensePlateAnalysis: text('vehicle_license_plate_analysis'),
+  // peopleMovementAnalysis: text('people_movement_analysis'),
+  // objectDetection: text('object_detection'),
   patrolEndTime: text('patrol_end_time'),
   
   // Schedule fields
