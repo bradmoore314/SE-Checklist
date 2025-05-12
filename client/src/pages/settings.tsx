@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import GeminiTest from "@/components/ai/GeminiTest";
+import AzureOpenAITest from "@/components/ai/AzureOpenAITest";
 
 export default function Settings() {
   const [, setLocation] = useLocation();
@@ -144,11 +144,11 @@ export default function Settings() {
             <CardHeader>
               <CardTitle>AI Test Interface</CardTitle>
               <CardDescription>
-                Test the Gemini AI integration with simple prompts
+                Test the Azure OpenAI integration with simple prompts in Kastle's secure environment
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GeminiTest />
+              <AzureOpenAITest />
             </CardContent>
           </Card>
         </TabsContent>
