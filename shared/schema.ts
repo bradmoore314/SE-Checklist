@@ -492,7 +492,8 @@ export const kvgStreams = pgTable('kvg_streams', {
   
   // Event Monitoring Details
   eventMonitoring: text('event_monitoring'),
-  eventMonitoringDetails: text('event_monitoring_details'),
+  // This column doesn't exist in the actual database
+  // eventMonitoringDetails: text('event_monitoring_details'),
   monitoringStartTime: text('monitoring_start_time'),
   monitoringEndTime: text('monitoring_end_time'),
   
