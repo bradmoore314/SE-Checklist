@@ -3,7 +3,7 @@ import OpenAI from "openai";
 // Default Azure OpenAI API configuration
 const AZURE_ENDPOINT = "https://azuresearchservice2.openai.azure.com/";
 const AZURE_API_VERSION = "2023-12-01-preview";
-const AZURE_DEPLOYMENT_NAME = "gpt-4";
+const AZURE_DEPLOYMENT_NAME = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4";
 const AZURE_MODEL = "gpt-4";
 
 /**
