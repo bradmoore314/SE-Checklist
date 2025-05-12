@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { testAzureOpenAI } from './utils/azure-openai';
+import { Request, Response } from "express";
+import { testAzureOpenAI } from "./utils/azure-openai";
 
 /**
  * Proxy function to test Azure OpenAI
@@ -8,24 +8,22 @@ export async function proxyTestAzureOpenAI(req: Request, res: Response) {
   try {
     const { prompt } = req.body;
     
-    if (!prompt || typeof prompt !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid prompt. Please provide a valid string prompt.'
-      });
+    if (!prompt) {
+      return res.status(400).json({ error: "Missing required prompt parameter" });
     }
-
-    // Call the test function
-    const result = await testAzureOpenAI(prompt);
     
-    return res.json({
-      result,
-      model: 'azure-openai'
-    });
+    // Send the prompt to Azure OpenAI API
+    const response = await testAzureOpenAI(prompt);
+    
+    // Return the response to the client
+    res.json({ response });
   } catch (error) {
-    console.error('Error in Azure OpenAI proxy:', error);
-    return res.status(500).json({
-      error: 'Failed to process request',
-      details: error instanceof Error ? error.message : String(error)
-    });
+    console.error("Error calling Azure OpenAI API:", error);
+    
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Unknown error occurred" });
+    }
   }
 }

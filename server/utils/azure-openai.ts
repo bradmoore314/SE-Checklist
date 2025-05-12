@@ -1,26 +1,29 @@
-import { OpenAI } from 'openai';
+import OpenAI from "openai";
 
-// Access the API key from environment variables
-const API_KEY = process.env.AZURE_OPENAI_API_KEY;
-const AZURE_ENDPOINT = 'https://azuresearchservice2.openai.azure.com/';
-const API_VERSION = '2024-02-15-preview';
-const DEPLOYMENT_NAME = 'gpt-4';
+// Default Azure OpenAI API configuration
+const AZURE_ENDPOINT = "https://azuresearchservice2.openai.azure.com/";
+const AZURE_API_VERSION = "2023-12-01-preview";
+const AZURE_DEPLOYMENT_NAME = "gpt-4";
+const AZURE_MODEL = "gpt-4";
 
-// Initialize the Azure OpenAI client
+/**
+ * Create and return an Azure OpenAI client
+ */
 export function getAzureOpenAIClient() {
-  if (!API_KEY) {
-    throw new Error('AZURE_OPENAI_API_KEY environment variable is not set');
+  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("Azure OpenAI API key is not configured");
   }
-
+  
   return new OpenAI({
-    apiKey: API_KEY,
-    baseURL: `${AZURE_ENDPOINT}openai/deployments/${DEPLOYMENT_NAME}`,
-    defaultQuery: { 'api-version': API_VERSION },
-    defaultHeaders: { 'api-key': API_KEY },
+    apiKey,
+    baseURL: `${AZURE_ENDPOINT}openai/deployments/${AZURE_DEPLOYMENT_NAME}`,
+    defaultQuery: { "api-version": AZURE_API_VERSION },
+    defaultHeaders: { "api-key": apiKey }
   });
 }
 
-// Define the result types (keeping the same interfaces as the Gemini implementation)
 interface AnalysisResult {
   summary: string;
   detailedAnalysis: string;
@@ -62,51 +65,52 @@ export async function generateSiteWalkAnalysis(
   const openai = getAzureOpenAIClient();
   
   const prompt = `
-    You are a professional security systems analyst creating a site walk analysis report.
-    
-    PROJECT DETAILS:
-    - Project Name: ${projectName}
-    - Project Description: ${projectDescription}
-    - Building Count: ${buildingCount}
-    - Access Point Count: ${accessPointCount}
-    - Camera Count: ${cameraCount}
-    - Client Requirements: ${clientRequirements}
-    - Special Considerations: ${specialConsiderations}
-    
-    Please provide a comprehensive analysis with the following sections:
-    
-    1. EXECUTIVE SUMMARY: A high-level overview of the project and key findings.
-    2. DETAILED ANALYSIS: In-depth assessment of the security requirements and site conditions.
-    3. RECOMMENDATIONS: List specific actionable recommendations (at least 5).
-    4. RISKS: Identify potential risks and challenges (at least 3).
-    5. TIMELINE: Suggested implementation timeline with key milestones.
-    
-    Format your response as a valid JSON object with the following structure:
-    {
-      "summary": "Executive summary text",
-      "detailedAnalysis": "Detailed analysis text",
-      "recommendations": ["Recommendation 1", "Recommendation 2", ...],
-      "risks": ["Risk 1", "Risk 2", ...],
-      "timeline": "Timeline text"
-    }
-  `;
+You are a security systems expert assisting in analyzing a site walk for a security installation project.
 
+PROJECT INFORMATION:
+- Project Name: ${projectName}
+- Project Description: ${projectDescription}
+- Number of Buildings: ${buildingCount}
+- Access Points to be Installed: ${accessPointCount}
+- Cameras to be Installed: ${cameraCount}
+- Client Requirements: ${clientRequirements || "No specific requirements provided"}
+- Special Considerations: ${specialConsiderations || "None provided"}
+
+Based on this information, please provide a comprehensive site walk analysis with the following:
+
+1. A brief executive summary of the project
+2. A detailed analysis of the security needs, challenges, and opportunities
+3. 3-5 specific recommendations for the security system design
+4. 2-3 potential risks or challenges that should be addressed
+5. A suggested timeline for implementation
+
+Format your response as a JSON object with the following keys:
+- summary: The executive summary
+- detailedAnalysis: The detailed analysis
+- recommendations: An array of recommendation strings
+- risks: An array of risk strings
+- timeline: A suggested timeline
+
+Ensure your response is properly formatted as JSON.
+`;
+
+  const response = await openai.chat.completions.create({
+    model: AZURE_MODEL,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    response_format: { type: "json_object" }
+  });
+
+  const content = response.choices[0].message.content;
+  if (!content) {
+    throw new Error("Empty response from Azure OpenAI");
+  }
+  
   try {
-    const response = await openai.chat.completions.create({
-      model: DEPLOYMENT_NAME,
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-    });
-
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No content in response');
-    }
-
     return JSON.parse(content) as AnalysisResult;
   } catch (error) {
-    console.error('Error generating site walk analysis:', error);
-    throw new Error('Failed to generate site walk analysis');
+    console.error("Failed to parse Azure OpenAI response:", error);
+    throw new Error("Failed to parse Azure OpenAI response");
   }
 }
 
@@ -122,46 +126,47 @@ export async function generateQuoteReviewAgenda(
   const openai = getAzureOpenAIClient();
   
   const prompt = `
-    You are a professional security systems consultant preparing for a quote review meeting.
-    
-    PROJECT DETAILS:
-    - Project Name: ${projectName}
-    - Project Description: ${projectDescription}
-    - Quote Details: ${quoteDetails}
-    - Client Background: ${clientBackground}
-    
-    Please create a comprehensive meeting agenda with the following sections:
-    
-    1. INTRODUCTION: Brief introduction for the meeting.
-    2. AGENDA ITEMS: List 4-6 specific agenda items to cover during the meeting.
-    3. QUESTIONS: 3-5 important questions to ask the client during the review.
-    4. NEXT STEPS: 2-3 action items to propose at the end of the meeting.
-    
-    Format your response as a valid JSON object with the following structure:
-    {
-      "introduction": "Introduction text",
-      "agenda": ["Agenda item 1", "Agenda item 2", ...],
-      "questions": ["Question 1", "Question 2", ...],
-      "nextSteps": ["Next step 1", "Next step 2", ...]
-    }
-  `;
+You are a security systems sales expert preparing for a quote review meeting with a client.
 
+PROJECT INFORMATION:
+- Project Name: ${projectName}
+- Project Description: ${projectDescription}
+- Quote Details: ${quoteDetails || "No specific quote details provided"}
+- Client Background: ${clientBackground || "No specific client background provided"}
+
+Based on this information, please generate a professional meeting agenda for a quote review meeting with the following:
+
+1. A brief introduction paragraph that sets the context for the meeting
+2. 4-6 agenda items to discuss during the meeting
+3. 3-5 key questions to ask the client to ensure their needs are addressed
+4. 2-3 recommended next steps after the meeting
+
+Format your response as a JSON object with the following keys:
+- introduction: The introduction paragraph
+- agenda: An array of agenda item strings
+- questions: An array of question strings
+- nextSteps: An array of next step strings
+
+Ensure your response is properly formatted as JSON.
+`;
+
+  const response = await openai.chat.completions.create({
+    model: AZURE_MODEL,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    response_format: { type: "json_object" }
+  });
+
+  const content = response.choices[0].message.content;
+  if (!content) {
+    throw new Error("Empty response from Azure OpenAI");
+  }
+  
   try {
-    const response = await openai.chat.completions.create({
-      model: DEPLOYMENT_NAME,
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-    });
-
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No content in response');
-    }
-
     return JSON.parse(content) as QuoteReviewAgendaResult;
   } catch (error) {
-    console.error('Error generating quote review agenda:', error);
-    throw new Error('Failed to generate quote review agenda');
+    console.error("Failed to parse Azure OpenAI response:", error);
+    throw new Error("Failed to parse Azure OpenAI response");
   }
 }
 
@@ -169,61 +174,61 @@ export async function generateQuoteReviewAgenda(
  * Generates a turnover call agenda.
  */
 export async function generateTurnoverCallAgenda(
-  projectName: string, 
-  projectDescription: string, 
-  installationDetails: string, 
+  projectName: string,
+  projectDescription: string,
+  installationDetails: string,
   clientNeeds: string
 ): Promise<TurnoverCallAgendaResult> {
   const openai = getAzureOpenAIClient();
   
   const prompt = `
-    You are a professional security systems project manager preparing for a turnover call.
-    
-    PROJECT DETAILS:
-    - Project Name: ${projectName}
-    - Project Description: ${projectDescription}
-    - Installation Details: ${installationDetails}
-    - Client Needs: ${clientNeeds}
-    
-    Please create a comprehensive turnover call agenda with the following sections:
-    
-    1. INTRODUCTION: Brief introduction for the call.
-    2. AGENDA ITEMS: List 4-6 specific agenda items to cover during the call.
-    3. TRAINING ITEMS: List 3-5 specific training topics to cover during the call.
-    4. RESPONSIBILITIES:
-       - List 3-4 client responsibilities after the turnover.
-       - List 3-4 Kastle responsibilities after the turnover.
-    5. NEXT STEPS: 2-3 action items to propose at the end of the call.
-    
-    Format your response as a valid JSON object with the following structure:
-    {
-      "introduction": "Introduction text",
-      "agenda": ["Agenda item 1", "Agenda item 2", ...],
-      "trainingItems": ["Training item 1", "Training item 2", ...],
-      "responsibilities": {
-        "customer": ["Customer responsibility 1", "Customer responsibility 2", ...],
-        "kastle": ["Kastle responsibility 1", "Kastle responsibility 2", ...]
-      },
-      "nextSteps": ["Next step 1", "Next step 2", ...]
-    }
-  `;
+You are a security systems project manager preparing for a turnover call with a client after system installation.
 
+PROJECT INFORMATION:
+- Project Name: ${projectName}
+- Project Description: ${projectDescription}
+- Installation Details: ${installationDetails || "No specific installation details provided"}
+- Client Needs and Expectations: ${clientNeeds || "No specific client needs provided"}
+
+Based on this information, please generate a professional turnover call agenda with the following:
+
+1. A brief introduction paragraph that sets the context for the call
+2. 4-6 agenda items to discuss during the call
+3. 3-5 key training items to cover with the client
+4. Clearly defined responsibilities for:
+   a. 2-4 customer responsibilities
+   b. 2-4 Kastle responsibilities
+5. 2-3 recommended next steps after the call
+
+Format your response as a JSON object with the following keys:
+- introduction: The introduction paragraph
+- agenda: An array of agenda item strings
+- trainingItems: An array of training item strings
+- responsibilities: An object with two keys:
+  - customer: An array of customer responsibility strings
+  - kastle: An array of Kastle responsibility strings
+- nextSteps: An array of next step strings
+
+Ensure your response is properly formatted as JSON.
+`;
+
+  const response = await openai.chat.completions.create({
+    model: AZURE_MODEL,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    response_format: { type: "json_object" }
+  });
+
+  const content = response.choices[0].message.content;
+  if (!content) {
+    throw new Error("Empty response from Azure OpenAI");
+  }
+  
   try {
-    const response = await openai.chat.completions.create({
-      model: DEPLOYMENT_NAME,
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-    });
-
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No content in response');
-    }
-
     return JSON.parse(content) as TurnoverCallAgendaResult;
   } catch (error) {
-    console.error('Error generating turnover call agenda:', error);
-    throw new Error('Failed to generate turnover call agenda');
+    console.error("Failed to parse Azure OpenAI response:", error);
+    throw new Error("Failed to parse Azure OpenAI response");
   }
 }
 
@@ -233,14 +238,19 @@ export async function generateTurnoverCallAgenda(
 export async function testAzureOpenAI(prompt: string): Promise<string> {
   try {
     const openai = getAzureOpenAIClient();
-    const response = await openai.chat.completions.create({
-      model: DEPLOYMENT_NAME,
-      messages: [{ role: 'user', content: prompt }],
-    });
     
-    return response.choices[0]?.message?.content || 'No response';
+    const response = await openai.chat.completions.create({
+      model: AZURE_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7
+    });
+
+    return response.choices[0].message.content || "No response from Azure OpenAI";
   } catch (error) {
-    console.error('Error testing Azure OpenAI:', error);
-    return `Error: ${error instanceof Error ? error.message : String(error)}`;
+    console.error("Error testing Azure OpenAI:", error);
+    if (error instanceof Error) {
+      return `Error: ${error.message}`;
+    }
+    return "Unknown error occurred";
   }
 }
