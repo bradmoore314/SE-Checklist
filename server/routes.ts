@@ -3944,20 +3944,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Format messages for Azure OpenAI
-      const formattedMessages = messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.content
-      }));
-      
       // Import the Azure OpenAI client 
       const { getAzureOpenAIClient } = await import("./utils/azure-openai");
       const openai = getAzureOpenAIClient();
       
+      // Format messages for Azure OpenAI with proper typing
+      const formattedMessages: {role: 'user' | 'assistant' | 'system', content: string}[] = [];
+      
+      // Add a system message for context
+      formattedMessages.push({
+        role: 'system',
+        content: 'You are a helpful security systems expert from Kastle Systems. Provide accurate, professional responses about security systems, access control, and cameras.'
+      });
+      
+      // Add user messages with proper typing
+      messages.forEach(msg => {
+        // Convert the role to a type that OpenAI accepts
+        const role = msg.role === 'user' ? 'user' : 
+                     msg.role === 'assistant' ? 'assistant' : 'system';
+                     
+        formattedMessages.push({
+          role: role as 'user' | 'assistant' | 'system',
+          content: msg.content.toString()
+        });
+      });
+      
       // Process the message through Azure OpenAI in Kastle's secure environment
       const response = await openai.chat.completions.create({
         model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
-        messages: formattedMessages,
+        messages: formattedMessages as any, // Type casting to avoid TypeScript errors
         temperature: 0.7,
         max_tokens: 800
       });
@@ -3993,15 +4008,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Format messages for Azure OpenAI
-      const formattedMessages = messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.content
-      }));
-      
       // Import the Azure OpenAI client 
       const { getAzureOpenAIClient } = await import("./utils/azure-openai");
       const openai = getAzureOpenAIClient();
+      
+      // Format messages for Azure OpenAI with proper typing
+      const formattedMessages: {role: 'user' | 'assistant' | 'system', content: string}[] = [];
+      
+      // Add a system message for context
+      formattedMessages.push({
+        role: 'system',
+        content: 'You are a helpful security systems expert from Kastle Systems. Provide accurate, professional responses about security systems, access control, and cameras.'
+      });
+      
+      // Add user messages with proper typing
+      messages.forEach(msg => {
+        // Convert the role to a type that OpenAI accepts
+        const role = msg.role === 'user' ? 'user' : 
+                     msg.role === 'assistant' ? 'assistant' : 'system';
+                     
+        formattedMessages.push({
+          role: role as 'user' | 'assistant' | 'system',
+          content: msg.content.toString()
+        });
+      });
       
       // Get initial response through Azure OpenAI in Kastle's secure environment
       const chatResponse = await openai.chat.completions.create({
@@ -4014,7 +4044,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const responseText = chatResponse.choices[0].message.content || '';
       
       // Now extract equipment recommendations from the response
-      const extractPrompt = [
+      const extractPrompt: {role: 'user' | 'assistant' | 'system', content: string}[] = [
         { 
           role: "system", 
           content: "You are a security system expert. Extract specific equipment recommendations from the following text. Format as a JSON array of strings. Only include actual equipment items like 'KR-RP40 readers', 'magnetic locks', etc. Don't include general concepts or advice."
@@ -4025,10 +4055,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
       
-      // Extract recommendations
+      // Extract recommendations - need to use a proper cast for OpenAI API compatibility
       const extractResponse = await openai.chat.completions.create({
         model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
-        messages: extractPrompt,
+        messages: extractPrompt as any, // Type casting to avoid TypeScript errors
         temperature: 0.2,
         max_tokens: 500,
         response_format: { type: "json_object" }
