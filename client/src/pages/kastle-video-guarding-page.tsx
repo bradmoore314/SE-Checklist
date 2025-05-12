@@ -333,9 +333,9 @@ const KastleVideoGuardingPage: React.FC = () => {
         cameraType: "Select",
         // eventMonitoringDetails removed (not in database schema)
         // patrolGroupDetails removed (not in database schema)
-        vehicleLicensePlateAnalysis: "Select",
-        peopleMovementAnalysis: "Select",
-        objectDetection: "Select",
+        // vehicleLicensePlateAnalysis field removed (not in database schema)
+        // peopleMovementAnalysis field removed (not in database schema)
+        // objectDetection field removed (not in database schema)
         audioTalkDown: "Select"
       }
     ],
@@ -991,9 +991,10 @@ const KastleVideoGuardingPage: React.FC = () => {
           // patrolGroupDetails removed (not in database schema)
           patrolStartTime: "",
           patrolEndTime: "",
-          vehicleLicensePlateAnalysis: "Select",
-          peopleMovementAnalysis: "Select",
-          objectDetection: "Select",
+          // These fields don't exist in the database schema
+          // vehicleLicensePlateAnalysis: "Select",
+          // peopleMovementAnalysis: "Select",
+          // objectDetection: "Select",
           // Legacy fields
           quantity: 1,
           description: "",
