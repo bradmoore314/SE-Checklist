@@ -79,7 +79,7 @@ interface PriceStream {
   // New fields based on reference image - using string type for dropdown fields
   cameraType: string;
   // eventMonitoringDetails field removed (not in database schema)
-  patrolGroupDetails: string;
+  // patrolGroupDetails field removed (not in database schema)
   vehicleLicensePlateAnalysis: string;
   peopleMovementAnalysis: string;
   objectDetection: string;
@@ -332,7 +332,7 @@ const KastleVideoGuardingPage: React.FC = () => {
         // Initialize new fields with default values
         cameraType: "Select",
         // eventMonitoringDetails removed (not in database schema)
-        patrolGroupDetails: "Select",
+        // patrolGroupDetails removed (not in database schema)
         vehicleLicensePlateAnalysis: "Select",
         peopleMovementAnalysis: "Select",
         objectDetection: "Select",
@@ -785,7 +785,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       monitoring_start_time: stream.monitoringStartTime || '',
       monitoring_end_time: stream.monitoringEndTime || '',
       patrol_groups: stream.patrolGroups || '',
-      patrol_group_details: stream.patrolGroupDetails || '',
+      // patrol_group_details removed (not in database schema)
       patrol_start_time: stream.patrolStartTime || '',
       patrol_end_time: stream.patrolEndTime || '',
       vehicle_license_plate_analysis: stream.vehicleLicensePlateAnalysis || '',

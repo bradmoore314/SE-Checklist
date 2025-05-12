@@ -499,7 +499,8 @@ export const kvgStreams = pgTable('kvg_streams', {
   
   // Patrol Group Details
   patrolGroups: text('patrol_groups'),
-  patrolGroupDetails: text('patrol_group_details'),
+  // This column doesn't exist in the actual database
+  // patrolGroupDetails: text('patrol_group_details'),
   patrolStartTime: text('patrol_start_time'),
   
   // Analysis Features - New fields
