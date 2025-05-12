@@ -43,6 +43,8 @@ const skipForPublicPaths = createAuthBypassMiddleware({
     '/api/register',
     '/api/lookup',
     '/api/auth/microsoft/status',
+    '/api/public/azure/status',
+    '/api/public/azure/test',
     '/assets/',
     '/api/health',
     '/api/session-status',
