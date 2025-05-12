@@ -1854,63 +1854,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                               )}
                             </div>
                             
-                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg border border-amber-200 mt-4">
-                              <h4 className="text-sm font-medium text-amber-800 mb-3 flex items-center gap-1.5">
-                                <Badge className="bg-amber-500 text-white py-0.5 px-2">
-                                  <Shield size={14} className="mr-1" />
-                                  Patrol Settings
-                                </Badge>
-                              </h4>
-                              
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                  <Label htmlFor={`stream-${stream.id}-patrol-groups`} className="text-sm font-medium text-amber-700 mb-1.5 flex items-center gap-1.5">
-                                    <Users2 size={14} className="text-amber-600" />
-                                    Include in Patrol Groups
-                                  </Label>
-                                  <Select 
-                                    value={stream.patrolGroups}
-                                    onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
-                                  >
-                                    <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-10 rounded-lg">
-                                      <SelectValue placeholder="Select" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="Yes">Yes</SelectItem>
-                                      <SelectItem value="No">No</SelectItem>
-                                      <SelectItem value="Select">Select</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                
-                                <div>
-                                  <Label className="text-sm font-medium text-amber-700 mb-1.5 flex items-center gap-1.5">
-                                    <Clock3 size={14} className="text-amber-600" />
-                                    Patrol Time Window
-                                  </Label>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="relative">
-                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">Start</span>
-                                      <Input 
-                                        type="time"
-                                        value={stream.patrolStartTime || ""}
-                                        onChange={(e) => updateStream(stream.id, "monitoringStartTime", e.target.value)}
-                                        className="h-10 text-sm pl-12 rounded-lg"
-                                      />
-                                    </div>
-                                    <div className="relative">
-                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">End</span>
-                                      <Input 
-                                        type="time"
-                                        value={stream.monitoringEndTime || ""}
-                                        onChange={(e) => updateStream(stream.id, "monitoringEndTime", e.target.value)}
-                                        className="h-10 text-sm pl-12 rounded-lg"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            {/* Patrol Settings section removed as requested */}
                             
                             {/* Collapsible Sections */}
                             <div className="border-t pt-2 mt-2">
@@ -2003,28 +1947,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                 </div>
                               </div>
                               
-                              {/* Patrol Times Section - Collapsible */}
-                              <div id={`stream-${stream.id}-patrol-times`} className="mb-3" style={{display: 'none'}}>
-                                <Label className="text-xs font-medium text-red-700 mb-1 flex items-center gap-1.5">
-                                  <span className="p-0.5 bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[10px]">⏱️</span>
-                                  Patrol Times
-                                </Label>
-                                <div className="flex gap-1 items-center">
-                                  <Input 
-                                    type="time"
-                                    value={stream.patrolStartTime || ""}
-                                    onChange={(e) => updateStream(stream.id, "patrolStartTime", e.target.value)}
-                                    className="h-8"
-                                  />
-                                  <span className="text-xs text-gray-500">to</span>
-                                  <Input 
-                                    type="time"
-                                    value={stream.patrolEndTime || ""}
-                                    onChange={(e) => updateStream(stream.id, "patrolEndTime", e.target.value)}
-                                    className="h-8"
-                                  />
-                                </div>
-                              </div>
+                              {/* Patrol Times Section removed as requested */}
                             </div>
                           </div>
                         </CardContent>
