@@ -3029,7 +3029,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/kvg-streams", isAuthenticated, async (req: Request, res: Response) => {
     try {
-      const result = insertKvgStreamSchema.safeParse(req.body);
+      // Use a more flexible schema to handle additional fields
+      const { flexibleKvgStreamSchema } = require('./custom-schemas');
+      const result = flexibleKvgStreamSchema.safeParse(req.body);
       if (!result.success) {
         return res.status(400).json({ 
           message: "Invalid KVG stream data", 
@@ -3062,7 +3064,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const result = insertKvgStreamSchema.partial().safeParse(req.body);
+      // Use a more flexible schema to handle additional fields
+      const { flexibleKvgStreamSchema } = require('./custom-schemas');
+      const result = flexibleKvgStreamSchema.partial().safeParse(req.body);
       if (!result.success) {
         return res.status(400).json({ 
           message: "Invalid KVG stream data", 

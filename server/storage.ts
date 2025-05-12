@@ -2376,15 +2376,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
-    const [stream] = await db.insert(kvgStreams).values(insertStream).returning();
+    // Extract only known properties from the insert schema to prevent database errors
+    const safeValues = Object.keys(kvgStreams.columns).reduce((acc: any, key) => {
+      if (key in insertStream && key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+        acc[key] = (insertStream as any)[key];
+      }
+      return acc;
+    }, {});
+    
+    const [stream] = await db.insert(kvgStreams).values(safeValues).returning();
     return stream;
   }
 
   async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
     const now = new Date();
+    
+    // Extract only known properties from the update schema to prevent database errors
+    const safeValues = Object.keys(kvgStreams.columns).reduce((acc: any, key) => {
+      if (key in updateStream && key !== 'id' && key !== 'created_at') {
+        acc[key] = (updateStream as any)[key];
+      }
+      return acc;
+    }, {});
+    
+    // Always set the updated_at field
+    safeValues.updated_at = now;
+    
     const [stream] = await db
       .update(kvgStreams)
-      .set({ ...updateStream, updated_at: now })
+      .set(safeValues)
       .where(eq(kvgStreams.id, id))
       .returning();
     return stream;
