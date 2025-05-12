@@ -24,13 +24,20 @@ export interface Stream {
   
   // Event Monitoring Details
   eventMonitoring: string; // Yes/No
+  eventMonitoringDetails: string; // Yes/No/Select - New field
   monitoringStartTime: string;
   monitoringEndTime: string;
   
   // Patrol Group Details
   patrolGroups: string; // Yes/No
+  patrolGroupDetails: string; // Yes/No/Select - New field
   patrolStartTime: string;
   patrolEndTime: string;
+  
+  // Analysis Features - New fields
+  vehicleLicensePlateAnalysis: string; // Yes/No/Select
+  peopleMovementAnalysis: string; // Yes/No/Select
+  objectDetection: string; // Yes/No/Select
   
   // Schedule fields
   scheduleType?: string;
