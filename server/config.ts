@@ -4,6 +4,10 @@
 
 /**
  * AI provider configuration
+ * 
+ * The application uses Microsoft Azure OpenAI service hosted in Kastle's secure Azure environment
+ * for all AI-powered features. This provides enterprise-grade security and compliance compared to
+ * public third-party services, with data processed within Kastle's protected infrastructure.
  */
 export const AI_CONFIG = {
   // Default AI provider: 'azure' only
