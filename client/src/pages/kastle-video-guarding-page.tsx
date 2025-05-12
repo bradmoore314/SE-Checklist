@@ -1890,20 +1890,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                   >
                                     Audio Devices
                                   </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 text-xs px-2 text-red-600"
-                                    onClick={() => {
-                                      const el = document.getElementById(`stream-${stream.id}-patrol-times`);
-                                      if (el) {
-                                        const isVisible = el.style.display !== 'none';
-                                        el.style.display = isVisible ? 'none' : 'block';
-                                      }
-                                    }}
-                                  >
-                                    Patrol
-                                  </Button>
+                                  {/* Patrol button removed as requested */}
                                 </div>
                               </div>
                               
