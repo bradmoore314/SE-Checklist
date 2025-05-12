@@ -976,7 +976,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       : {
           id: tempId,
           location: "",
-          fovAccessibility: "Select", // Updated with new options in dropdown
+          fovAccessibility: "Select", // Updated with security level options
           cameraAccessibility: "Select",
           cameraType: "Select",
           environment: "",
@@ -1555,13 +1555,16 @@ const KastleVideoGuardingPage: React.FC = () => {
                                         onValueChange={(value) => updateStream(stream.id, "fovAccessibility", value)}
                                       >
                                         <SelectTrigger id={`stream-${stream.id}-fov`} className="h-10 rounded-lg">
-                                          <SelectValue placeholder="Y/N" />
+                                          <SelectValue placeholder="Select Security Level" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="Yes - Full Visibility">Yes - Full Visibility</SelectItem>
-                                          <SelectItem value="Yes - Limited View">Yes - Limited View</SelectItem>
-                                          <SelectItem value="No - Obstructed">No - Obstructed</SelectItem>
-                                          <SelectItem value="No - Requires Hardware">No - Requires Hardware</SelectItem>
+                                          <SelectItem value="Secure - Locked Down Indoor - No Access After Hours (30+)">Secure - Locked Down Indoor - No Access After Hours (30+)</SelectItem>
+                                          <SelectItem value="Secure - Credential Indoor/Outdoor After Hours (60 +)">Secure - Credential Indoor/Outdoor After Hours (60 +)</SelectItem>
+                                          <SelectItem value="Semi-Secure - Fence or Gated Perimeter After Hours (80+)">Semi-Secure - Fence or Gated Perimeter After Hours (80+)</SelectItem>
+                                          <SelectItem value="Restricted - Posted After Hours (100 +)">Restricted - Posted After Hours (100 +)</SelectItem>
+                                          <SelectItem value="Unsecure Exterior Building Perimeter After Hours (120+)">Unsecure Exterior Building Perimeter After Hours (120+)</SelectItem>
+                                          <SelectItem value="Unsecure Interior Common Access Areas After Hours (150 +)">Unsecure Interior Common Access Areas After Hours (150 +)</SelectItem>
+                                          <SelectItem value="Unsecure Exterior Common Walk-Through After Hours (200+)">Unsecure Exterior Common Walk-Through After Hours (200+)</SelectItem>
                                           <SelectItem value="Select">Select</SelectItem>
                                         </SelectContent>
                                       </Select>
