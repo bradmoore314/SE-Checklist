@@ -78,7 +78,7 @@ interface PriceStream {
   patrolsPerWeek: number;
   // New fields based on reference image - using string type for dropdown fields
   cameraType: string;
-  eventMonitoringDetails: string;
+  // eventMonitoringDetails field removed (not in database schema)
   patrolGroupDetails: string;
   vehicleLicensePlateAnalysis: string;
   peopleMovementAnalysis: string;
@@ -331,7 +331,7 @@ const KastleVideoGuardingPage: React.FC = () => {
         patrolsPerWeek: 1,
         // Initialize new fields with default values
         cameraType: "Select",
-        eventMonitoringDetails: "Select",
+        // eventMonitoringDetails removed (not in database schema)
         patrolGroupDetails: "Select",
         vehicleLicensePlateAnalysis: "Select",
         peopleMovementAnalysis: "Select",
@@ -781,7 +781,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       speaker_association: stream.speakerAssociation || '',
       audio_talk_down: stream.audioTalkDown || '',
       event_monitoring: stream.eventMonitoring || '',
-      event_monitoring_details: stream.eventMonitoringDetails || '',
+      // event_monitoring_details field removed (not in database schema)
       monitoring_start_time: stream.monitoringStartTime || '',
       monitoring_end_time: stream.monitoringEndTime || '',
       patrol_groups: stream.patrolGroups || '',
@@ -5996,23 +5996,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                             </Select>
                           </div>
                           
-                          {/* Event Monitoring Details */}
-                          <div className="space-y-2">
-                            <Label htmlFor={`stream_event_monitoring_${index}`} className="text-sm">Event Monitoring Details</Label>
-                            <Select
-                              value={stream.eventMonitoringDetails}
-                              onValueChange={(value) => handleStreamChange(index, "eventMonitoringDetails", value)}
-                            >
-                              <SelectTrigger id={`stream_event_monitoring_${index}`} className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Select">Select</SelectItem>
-                                <SelectItem value="Yes">Yes</SelectItem>
-                                <SelectItem value="No">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Event Monitoring Details field removed (not in database schema) */}
                           
                           {/* Patrol Group Details */}
                           <div className="space-y-2">
