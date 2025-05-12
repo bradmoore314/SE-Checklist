@@ -76,7 +76,7 @@ interface PriceStream {
   quantity: number;
   eventVolume: number;
   patrolsPerWeek: number;
-  // New fields based on reference image
+  // New fields based on reference image - using string type for dropdown fields
   cameraType: string;
   eventMonitoringDetails: string;
   patrolGroupDetails: string;
@@ -328,7 +328,15 @@ const KastleVideoGuardingPage: React.FC = () => {
       {
         quantity: 2,
         eventVolume: 250,
-        patrolsPerWeek: 1
+        patrolsPerWeek: 1,
+        // Initialize new fields with default values
+        cameraType: "Select",
+        eventMonitoringDetails: "Select",
+        patrolGroupDetails: "Select",
+        vehicleLicensePlateAnalysis: "Select",
+        peopleMovementAnalysis: "Select",
+        objectDetection: "Select",
+        audioTalkDown: "Select"
       }
     ],
     vocEscalations: 1,
@@ -660,7 +668,7 @@ const KastleVideoGuardingPage: React.FC = () => {
     }));
   };
 
-  const handleStreamChange = (index: number, field: keyof PriceStream, value: number) => {
+  const handleStreamChange = (index: number, field: keyof PriceStream, value: number | string) => {
     setFormData(prev => ({
       ...prev,
       streams: prev.streams.map((stream, i) =>
