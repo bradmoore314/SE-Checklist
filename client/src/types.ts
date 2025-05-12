@@ -28,11 +28,7 @@ export interface Stream {
   monitoringStartTime: string;
   monitoringEndTime: string;
   
-  // Patrol Group Details
-  patrolGroups: string; // Yes/No
-  // patrolGroupDetails field removed (not in database schema)
-  patrolStartTime: string;
-  patrolEndTime: string;
+  // Patrol Group Details - removed as requested
   
   // Analysis Features - New fields
   // These fields don't exist in the database schema
