@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
-import { registerRoutes } from "./routes";
+import { registerRoutes, registerPublicRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
@@ -10,6 +10,10 @@ const app = express();
 // Increase JSON payload size limit to 50MB
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+// Register public routes before authentication
+// These will be accessible without authentication
+registerPublicRoutes(app);
 
 // Session setup
 const SessionStore = MemoryStore(session);

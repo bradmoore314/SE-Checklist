@@ -132,9 +132,8 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  // Use auto-detection routes
-  app.use('/api', autoDetectionRoutes);
+// Register completely public routes before the Express app is created
+export function registerPublicRoutes(app: Express): void {
   // Health check endpoint for Azure monitoring
   app.get("/api/health", (req: Request, res: Response) => {
     res.status(200).json({
@@ -152,6 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ 
       configured: isConfigured,
       model: isConfigured ? "gpt-4" : null,
+      deployment: isConfigured ? process.env.AZURE_OPENAI_DEPLOYMENT_NAME : null,
       endpoint: isConfigured ? "https://azuresearchservice2.openai.azure.com/" : null 
     });
   });
@@ -160,6 +160,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Public Azure OpenAI test endpoint called");
     proxyTestAzureOpenAI(req, res);
   });
+}
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Use auto-detection routes
+  app.use('/api', autoDetectionRoutes);
 
   // Authentication is already set up in index.ts
   
@@ -3691,6 +3696,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ 
       configured: isConfigured,
       model: isConfigured ? "gpt-4" : null,
+      deployment: isConfigured ? process.env.AZURE_OPENAI_DEPLOYMENT_NAME : null,
       endpoint: isConfigured ? "https://azuresearchservice2.openai.azure.com/" : null 
     });
   });
