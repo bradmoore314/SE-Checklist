@@ -19,7 +19,7 @@ import {
   Loader2, 
   Timer 
 } from 'lucide-react';
-import { generateAiAnalysis, AiAnalysisResponse } from '@/utils/gemini';
+import { generateAiAnalysis, AiAnalysisResponse } from '@/utils/azure-openai';
 import { toast } from '@/hooks/use-toast';
 import { useProject } from '@/contexts/ProjectContext';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
