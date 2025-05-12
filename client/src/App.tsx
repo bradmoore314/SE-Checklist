@@ -26,7 +26,7 @@ import QuoteReviewPage from "@/pages/quote-review-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
-import GeminiTestPage from "@/pages/gemini-test-page";
+import AzureOpenAITestPage from "@/pages/azure-openai-test-page";
 import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration-workspace-page";
 import MainLayout from "@/layouts/MainLayout";
 import { OpportunityProvider } from "@/contexts/OpportunityContext";
