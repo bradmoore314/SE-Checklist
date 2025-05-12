@@ -1666,51 +1666,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                     </td>
                                   </tr>
                                   
-                                  {/* Patrol Groups */}
-                                  <tr>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Groups</td>
-                                    <td className="px-3 py-2 whitespace-nowrap">
-                                      <Select 
-                                        value={stream.patrolGroups}
-                                        onValueChange={(value) => updateStream(stream.id, "patrolGroups", value)}
-                                      >
-                                        <SelectTrigger id={`stream-${stream.id}-patrol-groups`} className="h-10 rounded-lg">
-                                          <SelectValue placeholder="Y/N" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="Yes">Yes</SelectItem>
-                                          <SelectItem value="No">No</SelectItem>
-                                          <SelectItem value="Select">Select</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </td>
-                                  </tr>
-                                  
-                                  {/* Patrol Start Time */}
-                                  <tr>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Hours Start Time</td>
-                                    <td className="px-3 py-2 whitespace-nowrap">
-                                      <Input
-                                        type="time"
-                                        className="h-10 text-sm rounded-lg"
-                                        value={(stream.patrolStartTime || '')}
-                                        onChange={(e) => updateStream(stream.id, "patrolStartTime", e.target.value)}
-                                      />
-                                    </td>
-                                  </tr>
-                                  
-                                  {/* Patrol End Time */}
-                                  <tr>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-700">Patrol Hours End Time</td>
-                                    <td className="px-3 py-2 whitespace-nowrap">
-                                      <Input
-                                        type="time"
-                                        className="h-10 text-sm rounded-lg"
-                                        value={(stream.patrolEndTime || '')}
-                                        onChange={(e) => updateStream(stream.id, "patrolEndTime", e.target.value)}
-                                      />
-                                    </td>
-                                  </tr>
+                                  {/* Patrol fields removed as requested */}
                                   
                                   {/* Speaker Association */}
                                   <tr>
