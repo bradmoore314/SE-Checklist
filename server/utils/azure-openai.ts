@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 /**
  * Kastle's secure Azure OpenAI configuration
@@ -17,6 +18,14 @@ const AZURE_ENDPOINT = "https://azuresearchservice2.openai.azure.com/";
 const AZURE_API_VERSION = "2023-12-01-preview";
 const AZURE_DEPLOYMENT_NAME = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini";
 const AZURE_MODEL = "gpt-4";
+
+// Helper function to create properly typed messages for Azure OpenAI
+export function createChatMessage(role: 'user' | 'assistant' | 'system', content: string): ChatCompletionMessageParam {
+  return {
+    role,
+    content
+  } as ChatCompletionMessageParam;
+}
 
 /**
  * Create and return an Azure OpenAI client connected to Kastle's secure environment
@@ -118,7 +127,7 @@ Ensure your response is properly formatted as JSON.
 
   const response = await openai.chat.completions.create({
     model: AZURE_MODEL,
-    messages: [{ role: "user", content: prompt }],
+    messages: [createChatMessage("user", prompt)],
     temperature: 0.7,
     response_format: { type: "json_object" }
   });
@@ -276,7 +285,7 @@ export async function testAzureOpenAI(prompt: string): Promise<string> {
     
     const response = await openai.chat.completions.create({
       model: AZURE_MODEL,
-      messages: [{ role: "user", content: prompt }],
+      messages: [createChatMessage("user", prompt)],
       temperature: 0.7
     });
 
