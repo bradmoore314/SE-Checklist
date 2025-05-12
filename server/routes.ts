@@ -4,7 +4,11 @@ import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 import { proxyTestGemini } from './gemini-proxy';
-import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/gemini';
+import { proxyTestAzureOpenAI } from './azure-openai-proxy';
+import { generateSiteWalkAnalysis as generateGeminiSiteWalkAnalysis, 
+         generateQuoteReviewAgenda as generateGeminiQuoteReviewAgenda, 
+         generateTurnoverCallAgenda as generateGeminiTurnoverCallAgenda } from './utils/gemini';
+import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './utils/azure-openai';
 import { compressImage, createThumbnail } from './utils/image-utils';
 import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
 import { 
@@ -3535,7 +3539,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Gemini AI API Proxy
   // Test endpoint for Gemini API
+  // Keep Gemini endpoint for backward compatibility
   app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
+  
+  // Add Azure OpenAI endpoint
+  app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
 
   // Check Gemini API configuration
   app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
@@ -3543,6 +3551,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ 
       configured: isConfigured,
       model: isConfigured ? "gemini-2.0-flash" : null 
+    });
+  });
+  
+  // Check Azure OpenAI API configuration
+  app.get("/api/azure/status", isAuthenticated, (req: Request, res: Response) => {
+    const isConfigured = !!process.env.AZURE_OPENAI_API_KEY;
+    res.json({ 
+      configured: isConfigured,
+      model: isConfigured ? "gpt-4" : null,
+      endpoint: isConfigured ? "https://azuresearchservice2.openai.azure.com/" : null 
     });
   });
 
