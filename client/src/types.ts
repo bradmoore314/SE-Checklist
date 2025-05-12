@@ -35,9 +35,10 @@ export interface Stream {
   patrolEndTime: string;
   
   // Analysis Features - New fields
-  vehicleLicensePlateAnalysis: string; // Yes/No/Select
-  peopleMovementAnalysis: string; // Yes/No/Select
-  objectDetection: string; // Yes/No/Select
+  // These fields don't exist in the database schema
+  // vehicleLicensePlateAnalysis: string; // Yes/No/Select
+  // peopleMovementAnalysis: string; // Yes/No/Select
+  // objectDetection: string; // Yes/No/Select
   
   // Schedule fields
   scheduleType?: string;
