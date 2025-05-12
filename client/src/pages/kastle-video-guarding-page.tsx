@@ -650,7 +650,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           patrolsPerWeek: 0,
           // Initialize new fields with default values
           cameraType: "Select",
-          eventMonitoringDetails: "Select",
+          // eventMonitoringDetails removed (not in database schema)
           patrolGroupDetails: "Select",
           vehicleLicensePlateAnalysis: "Select",
           peopleMovementAnalysis: "Select",
@@ -984,7 +984,7 @@ const KastleVideoGuardingPage: React.FC = () => {
           speakerAssociation: "",
           audioTalkDown: "Select",
           eventMonitoring: "Select",
-          eventMonitoringDetails: "Select",
+          // eventMonitoringDetails removed (not in database schema)
           monitoringStartTime: "",
           monitoringEndTime: "",
           patrolGroups: "Select",
