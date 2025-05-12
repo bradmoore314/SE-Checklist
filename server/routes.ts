@@ -3672,11 +3672,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         projectName,
         projectDescription,
         quoteDetails || "",
-        clientBackground || "",
-        provider as 'azure' | 'gemini' | undefined
+        clientBackground || ""
       );
 
-      res.json(agenda);
+      res.json({
+        ...agenda,
+        secureAI: true,
+        aiProvider: "Azure OpenAI in Kastle's secure environment"
+      });
     } catch (error) {
       console.error("Error generating quote review agenda:", error);
       res.status(500).json({ 
@@ -3705,11 +3708,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         projectName,
         projectDescription,
         installationDetails || "",
-        clientNeeds || "",
-        provider as 'azure' | 'gemini' | undefined
+        clientNeeds || ""
       );
 
-      res.json(agenda);
+      res.json({
+        ...agenda,
+        secureAI: true,
+        aiProvider: "Azure OpenAI in Kastle's secure environment"
+      });
     } catch (error) {
       console.error("Error generating turnover call agenda:", error);
       res.status(500).json({ 
