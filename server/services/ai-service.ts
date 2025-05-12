@@ -9,7 +9,7 @@ import {
 } from '../utils/azure-openai';
 
 /**
- * Generate site walk analysis using the preferred AI provider
+ * Generate site walk analysis using Kastle's secure Azure OpenAI
  */
 export async function generateSiteWalkAnalysis(
   projectName: string,
@@ -18,103 +18,67 @@ export async function generateSiteWalkAnalysis(
   accessPointCount: number,
   cameraCount: number,
   clientRequirements: string,
-  specialConsiderations: string,
-  forceProvider?: 'azure' | 'gemini' // Optional parameter to force a specific provider
+  specialConsiderations: string
 ) {
-  // Determine which provider to use
-  const provider = forceProvider || AI_CONFIG.getActiveProvider();
-  
-  if (provider === 'azure' && AI_CONFIG.isAzureConfigured()) {
-    const result = await generateAzureSiteWalkAnalysis(
-      projectName,
-      projectDescription,
-      buildingCount,
-      accessPointCount,
-      cameraCount,
-      clientRequirements,
-      specialConsiderations
-    );
-    return { ...result, provider: 'azure' };
-  } else if (provider === 'gemini' && AI_CONFIG.isGeminiConfigured()) {
-    const result = await generateGeminiSiteWalkAnalysis(
-      projectName,
-      projectDescription,
-      buildingCount,
-      accessPointCount,
-      cameraCount,
-      clientRequirements,
-      specialConsiderations
-    );
-    return { ...result, provider: 'gemini' };
-  } else {
-    throw new Error('No AI provider configured');
+  // Check if Azure OpenAI is configured
+  if (!AI_CONFIG.isAzureConfigured()) {
+    throw new Error('Azure OpenAI is not configured');
   }
+  
+  const result = await generateAzureSiteWalkAnalysis(
+    projectName,
+    projectDescription,
+    buildingCount,
+    accessPointCount,
+    cameraCount,
+    clientRequirements,
+    specialConsiderations
+  );
+  return { ...result, provider: 'azure' };
 }
 
 /**
- * Generate quote review agenda using the preferred AI provider
+ * Generate quote review agenda using Kastle's secure Azure OpenAI
  */
 export async function generateQuoteReviewAgenda(
   projectName: string,
   projectDescription: string,
   quoteDetails: string,
-  clientBackground: string,
-  forceProvider?: 'azure' | 'gemini' // Optional parameter to force a specific provider
+  clientBackground: string
 ) {
-  // Determine which provider to use
-  const provider = forceProvider || AI_CONFIG.getActiveProvider();
-  
-  if (provider === 'azure' && AI_CONFIG.isAzureConfigured()) {
-    const result = await generateAzureQuoteReviewAgenda(
-      projectName,
-      projectDescription,
-      quoteDetails,
-      clientBackground
-    );
-    return { ...result, provider: 'azure' };
-  } else if (provider === 'gemini' && AI_CONFIG.isGeminiConfigured()) {
-    const result = await generateGeminiQuoteReviewAgenda(
-      projectName,
-      projectDescription,
-      quoteDetails,
-      clientBackground
-    );
-    return { ...result, provider: 'gemini' };
-  } else {
-    throw new Error('No AI provider configured');
+  // Check if Azure OpenAI is configured
+  if (!AI_CONFIG.isAzureConfigured()) {
+    throw new Error('Azure OpenAI is not configured');
   }
+  
+  const result = await generateAzureQuoteReviewAgenda(
+    projectName,
+    projectDescription,
+    quoteDetails,
+    clientBackground
+  );
+  return { ...result, provider: 'azure' };
 }
 
 /**
- * Generate turnover call agenda using the preferred AI provider
+ * Generate turnover call agenda using Kastle's secure Azure OpenAI
  */
 export async function generateTurnoverCallAgenda(
   projectName: string,
   projectDescription: string,
   installationDetails: string,
-  clientNeeds: string,
-  forceProvider?: 'azure' | 'gemini' // Optional parameter to force a specific provider
+  clientNeeds: string
 ) {
-  // Determine which provider to use
-  const provider = forceProvider || AI_CONFIG.getActiveProvider();
-  
-  if (provider === 'azure' && AI_CONFIG.isAzureConfigured()) {
-    const result = await generateAzureTurnoverCallAgenda(
-      projectName,
-      projectDescription,
-      installationDetails,
-      clientNeeds
-    );
-    return { ...result, provider: 'azure' };
-  } else if (provider === 'gemini' && AI_CONFIG.isGeminiConfigured()) {
-    const result = await generateGeminiTurnoverCallAgenda(
-      projectName,
-      projectDescription,
-      installationDetails,
-      clientNeeds
-    );
-    return { ...result, provider: 'gemini' };
-  } else {
-    throw new Error('No AI provider configured');
+  // Check if Azure OpenAI is configured
+  if (!AI_CONFIG.isAzureConfigured()) {
+    throw new Error('Azure OpenAI is not configured');
   }
+  
+  const result = await generateAzureTurnoverCallAgenda(
+    projectName,
+    projectDescription,
+    installationDetails,
+    clientNeeds
+  );
+  return { ...result, provider: 'azure' };
 }

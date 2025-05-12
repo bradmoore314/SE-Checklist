@@ -3636,11 +3636,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         accessPointCount || 0,
         cameraCount || 0,
         clientRequirements || "",
-        specialConsiderations || "",
-        provider as 'azure' | 'gemini' | undefined
+        specialConsiderations || ""
       );
 
-      res.json(analysis);
+      res.json({
+        ...analysis,
+        secureAI: true,
+        aiProvider: "Azure OpenAI in Kastle's secure environment"
+      });
     } catch (error) {
       console.error("Error generating site walk analysis:", error);
       res.status(500).json({ 
@@ -3717,13 +3720,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Check Gemini API configuration
-  app.get("/api/gemini/status", isAuthenticated, (req: Request, res: Response) => {
-    const isConfigured = !!process.env.GEMINI_API_KEY;
-    res.json({ 
-      configured: isConfigured,
-      model: isConfigured ? "gemini-2.0-flash" : null 
-    });
-  });
+  // Removed Gemini status endpoint - all AI functionality now uses Azure OpenAI
   
   // Check Azure OpenAI API configuration (authenticated)
   app.get("/api/azure/status", isAuthenticated, (req: Request, res: Response) => {
