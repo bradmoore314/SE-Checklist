@@ -144,6 +144,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       dbConnection: !!process.env.DATABASE_URL
     });
   });
+  
+  // Public Azure OpenAI endpoints (no authentication required)
+  app.get("/api/public/azure/status", (req: Request, res: Response) => {
+    console.log("Public Azure OpenAI status endpoint called");
+    const isConfigured = !!process.env.AZURE_OPENAI_API_KEY;
+    res.json({ 
+      configured: isConfigured,
+      model: isConfigured ? "gpt-4" : null,
+      endpoint: isConfigured ? "https://azuresearchservice2.openai.azure.com/" : null 
+    });
+  });
+
+  app.post("/api/public/azure/test", (req: Request, res: Response) => {
+    console.log("Public Azure OpenAI test endpoint called");
+    proxyTestAzureOpenAI(req, res);
+  });
 
   // Authentication is already set up in index.ts
   
@@ -3669,19 +3685,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
-  // Check Azure OpenAI API configuration
+  // Check Azure OpenAI API configuration (authenticated)
   app.get("/api/azure/status", isAuthenticated, (req: Request, res: Response) => {
-    const isConfigured = !!process.env.AZURE_OPENAI_API_KEY;
-    res.json({ 
-      configured: isConfigured,
-      model: isConfigured ? "gpt-4" : null,
-      endpoint: isConfigured ? "https://azuresearchservice2.openai.azure.com/" : null 
-    });
-  });
-  
-  // Public endpoint to check Azure OpenAI status (no authentication required)
-  app.get("/api/test/azure/status", (req: Request, res: Response) => {
-    console.log("Public Azure OpenAI status endpoint called");
     const isConfigured = !!process.env.AZURE_OPENAI_API_KEY;
     res.json({ 
       configured: isConfigured,
