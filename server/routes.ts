@@ -160,6 +160,41 @@ export function registerPublicRoutes(app: Express): void {
     console.log("Public Azure OpenAI test endpoint called");
     proxyTestAzureOpenAI(req, res);
   });
+  
+  // Public endpoint for testing Azure OpenAI analysis
+  app.post("/api/public/azure/analysis", async (req: Request, res: Response) => {
+    console.log("Public Azure OpenAI analysis endpoint called");
+    try {
+      const { 
+        projectName, 
+        projectDescription, 
+        buildingCount, 
+        accessPointCount, 
+        cameraCount, 
+        clientRequirements, 
+        specialConsiderations 
+      } = req.body;
+      
+      const result = await generateSiteWalkAnalysis(
+        projectName,
+        projectDescription,
+        buildingCount,
+        accessPointCount,
+        cameraCount,
+        clientRequirements,
+        specialConsiderations,
+        'azure' // Force using Azure provider
+      );
+      
+      res.json({ success: true, result });
+    } catch (error) {
+      console.error("Error testing Azure OpenAI analysis:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
