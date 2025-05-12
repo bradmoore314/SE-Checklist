@@ -76,6 +76,14 @@ interface PriceStream {
   quantity: number;
   eventVolume: number;
   patrolsPerWeek: number;
+  // New fields based on reference image
+  cameraType: string;
+  eventMonitoringDetails: string;
+  patrolGroupDetails: string;
+  vehicleLicensePlateAnalysis: string;
+  peopleMovementAnalysis: string;
+  objectDetection: string;
+  audioTalkDown: string;
 }
 
 // FormData interface for all form fields
@@ -631,7 +639,15 @@ const KastleVideoGuardingPage: React.FC = () => {
         {
           quantity: 1,
           eventVolume: 0,
-          patrolsPerWeek: 0
+          patrolsPerWeek: 0,
+          // Initialize new fields with default values
+          cameraType: "Select",
+          eventMonitoringDetails: "Select",
+          patrolGroupDetails: "Select",
+          vehicleLicensePlateAnalysis: "Select",
+          peopleMovementAnalysis: "Select",
+          objectDetection: "Select",
+          audioTalkDown: "Select"
         }
       ]
     }));
@@ -5939,6 +5955,135 @@ const KastleVideoGuardingPage: React.FC = () => {
                               value={stream.patrolsPerWeek}
                               onChange={(e) => handleStreamChange(index, "patrolsPerWeek", parseInt(e.target.value) || 0)}
                             />
+                          </div>
+                          
+                          {/* Camera Type & Information */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_camera_type_${index}`} className="text-sm">Camera Type & Information</Label>
+                            <Select
+                              value={stream.cameraType}
+                              onValueChange={(value) => handleStreamChange(index, "cameraType", value)}
+                            >
+                              <SelectTrigger id={`stream_camera_type_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Fixed Camera">Fixed Camera</SelectItem>
+                                <SelectItem value="PTZ Camera">PTZ Camera</SelectItem>
+                                <SelectItem value="360° Camera">360° Camera</SelectItem>
+                                <SelectItem value="Thermal Camera">Thermal Camera</SelectItem>
+                                <SelectItem value="Other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Event Monitoring Details */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_event_monitoring_${index}`} className="text-sm">Event Monitoring Details</Label>
+                            <Select
+                              value={stream.eventMonitoringDetails}
+                              onValueChange={(value) => handleStreamChange(index, "eventMonitoringDetails", value)}
+                            >
+                              <SelectTrigger id={`stream_event_monitoring_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Patrol Group Details */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_patrol_group_${index}`} className="text-sm">Patrol Group Details</Label>
+                            <Select
+                              value={stream.patrolGroupDetails}
+                              onValueChange={(value) => handleStreamChange(index, "patrolGroupDetails", value)}
+                            >
+                              <SelectTrigger id={`stream_patrol_group_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Vehicle License Plate Analysis */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_license_plate_${index}`} className="text-sm">Vehicle License Plate Analysis</Label>
+                            <Select
+                              value={stream.vehicleLicensePlateAnalysis}
+                              onValueChange={(value) => handleStreamChange(index, "vehicleLicensePlateAnalysis", value)}
+                            >
+                              <SelectTrigger id={`stream_license_plate_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* People Movement Analysis */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_people_movement_${index}`} className="text-sm">People Movement Analysis</Label>
+                            <Select
+                              value={stream.peopleMovementAnalysis}
+                              onValueChange={(value) => handleStreamChange(index, "peopleMovementAnalysis", value)}
+                            >
+                              <SelectTrigger id={`stream_people_movement_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Object Detection */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_object_detection_${index}`} className="text-sm">Object Detection</Label>
+                            <Select
+                              value={stream.objectDetection}
+                              onValueChange={(value) => handleStreamChange(index, "objectDetection", value)}
+                            >
+                              <SelectTrigger id={`stream_object_detection_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Audio Talk Down */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`stream_audio_talk_down_${index}`} className="text-sm">Audio Talk Down</Label>
+                            <Select
+                              value={stream.audioTalkDown}
+                              onValueChange={(value) => handleStreamChange(index, "audioTalkDown", value)}
+                            >
+                              <SelectTrigger id={`stream_audio_talk_down_${index}`} className="w-full">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Select">Select</SelectItem>
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                       </div>
