@@ -2044,7 +2044,6 @@ const KastleVideoGuardingPage: React.FC = () => {
                           <th colSpan={1} className="px-3 py-3 text-center bg-indigo-600 text-white font-semibold">Type</th>
                           <th colSpan={1} className="px-3 py-3 text-center bg-pink-600 text-white font-semibold">Audio</th>
                           <th colSpan={1} className="px-3 py-3 text-center bg-orange-600 text-white font-semibold">Monitoring</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-red-600 text-white font-semibold">Patrol</th>
                           <th colSpan={1} className="px-3 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg">Actions</th>
                         </tr>
                       </thead>
@@ -2092,15 +2091,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                 </div>
                               ) : (stream.eventMonitoring === "Select" ? "-" : "No")}
                             </td>
-                            <td className="px-3 py-3 text-center">
-                              {stream.patrolGroups === "Yes" ? (
-                                <div className="text-xs">
-                                  {stream.patrolStartTime && stream.patrolEndTime ? 
-                                    `${stream.patrolStartTime} - ${stream.patrolEndTime}` : 
-                                    "Yes (no time set)"}
-                                </div>
-                              ) : (stream.patrolGroups === "Select" ? "-" : "No")}
-                            </td>
+                            {/* Patrol column removed as requested */}
                             <td className="px-3 py-3">
                               <div className="flex gap-1 justify-center">
                                 <Button 
