@@ -12,8 +12,12 @@ export async function proxyTestAzureOpenAI(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing required prompt parameter" });
     }
     
+    console.log("Testing Azure OpenAI with prompt:", prompt);
+    
     // Send the prompt to Azure OpenAI API
     const response = await testAzureOpenAI(prompt);
+    
+    console.log("Azure OpenAI response:", response);
     
     // Return the response to the client
     res.json({ response });
