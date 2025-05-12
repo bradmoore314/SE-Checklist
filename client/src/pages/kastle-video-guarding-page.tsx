@@ -784,10 +784,8 @@ const KastleVideoGuardingPage: React.FC = () => {
       // event_monitoring_details field removed (not in database schema)
       monitoring_start_time: stream.monitoringStartTime || '',
       monitoring_end_time: stream.monitoringEndTime || '',
-      patrol_groups: stream.patrolGroups || '',
+      // patrol_groups, patrol_start_time, patrol_end_time removed as requested
       // patrol_group_details removed (not in database schema)
-      patrol_start_time: stream.patrolStartTime || '',
-      patrol_end_time: stream.patrolEndTime || '',
       // vehicle_license_plate_analysis removed (not in database schema)
       // people_movement_analysis removed (not in database schema)
       // object_detection removed (not in database schema)
@@ -987,10 +985,8 @@ const KastleVideoGuardingPage: React.FC = () => {
           // eventMonitoringDetails removed (not in database schema)
           monitoringStartTime: "",
           monitoringEndTime: "",
-          patrolGroups: "Select",
+          // patrolGroups, patrolStartTime, patrolEndTime removed as requested
           // patrolGroupDetails removed (not in database schema)
-          patrolStartTime: "",
-          patrolEndTime: "",
           // These fields don't exist in the database schema
           // vehicleLicensePlateAnalysis: "Select",
           // peopleMovementAnalysis: "Select",
