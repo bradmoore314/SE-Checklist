@@ -80,9 +80,9 @@ interface PriceStream {
   cameraType: string;
   // eventMonitoringDetails field removed (not in database schema)
   // patrolGroupDetails field removed (not in database schema)
-  vehicleLicensePlateAnalysis: string;
-  peopleMovementAnalysis: string;
-  objectDetection: string;
+  // vehicleLicensePlateAnalysis field removed (not in database schema)
+  // peopleMovementAnalysis field removed (not in database schema)
+  // objectDetection field removed (not in database schema)
   audioTalkDown: string;
 }
 
