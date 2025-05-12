@@ -492,12 +492,19 @@ export const kvgStreams = pgTable('kvg_streams', {
   
   // Event Monitoring Details
   eventMonitoring: text('event_monitoring'),
+  eventMonitoringDetails: text('event_monitoring_details'),
   monitoringStartTime: text('monitoring_start_time'),
   monitoringEndTime: text('monitoring_end_time'),
   
   // Patrol Group Details
   patrolGroups: text('patrol_groups'),
+  patrolGroupDetails: text('patrol_group_details'),
   patrolStartTime: text('patrol_start_time'),
+  
+  // Analysis Features - New fields
+  vehicleLicensePlateAnalysis: text('vehicle_license_plate_analysis'),
+  peopleMovementAnalysis: text('people_movement_analysis'),
+  objectDetection: text('object_detection'),
   patrolEndTime: text('patrol_end_time'),
   
   // Schedule fields
