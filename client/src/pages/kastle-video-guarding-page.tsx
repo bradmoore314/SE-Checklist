@@ -1580,13 +1580,20 @@ const KastleVideoGuardingPage: React.FC = () => {
                                         onValueChange={(value) => updateStream(stream.id, "cameraType", value)}
                                       >
                                         <SelectTrigger id={`stream-${stream.id}-camera-type`} className="h-10 rounded-lg">
-                                          <SelectValue placeholder="Type" />
+                                          <SelectValue placeholder="Select Camera Type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="Indoor">Indoor</SelectItem>
-                                          <SelectItem value="Outdoor">Outdoor</SelectItem>
-                                          <SelectItem value="PTZ">PTZ</SelectItem>
-                                          <SelectItem value="Fixed">Fixed</SelectItem>
+                                          <SelectItem value="Indoor Single Lens">Indoor Single Lens</SelectItem>
+                                          <SelectItem value="Outdoor Single Lens">Outdoor Single Lens</SelectItem>
+                                          <SelectItem value="Indoor Multi-Lens">Indoor Multi-Lens</SelectItem>
+                                          <SelectItem value="Outdoor Multi-Lens">Outdoor Multi-Lens</SelectItem>
+                                          <SelectItem value="Indoor Fisheye Pano">Indoor Fisheye Pano</SelectItem>
+                                          <SelectItem value="Outdoor Fisheye Pano">Outdoor Fisheye Pano</SelectItem>
+                                          <SelectItem value="Indoor Fisheye 360">Indoor Fisheye 360</SelectItem>
+                                          <SelectItem value="Outdoor Fisheye 360">Outdoor Fisheye 360</SelectItem>
+                                          <SelectItem value="Outdoor Thermal">Outdoor Thermal</SelectItem>
+                                          <SelectItem value="Outdoor Radiometric">Outdoor Radiometric</SelectItem>
+                                          <SelectItem value="Indoor PTZ">Indoor PTZ</SelectItem>
                                           <SelectItem value="Select">Select</SelectItem>
                                         </SelectContent>
                                       </Select>
