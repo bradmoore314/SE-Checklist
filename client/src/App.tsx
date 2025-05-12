@@ -84,6 +84,7 @@ function Router() {
       <ProtectedRoute path="/feedback" component={FeedbackPage} />
       <ProtectedRoute path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <ProtectedRoute path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      <ProtectedRoute path="/azure-openai-test" component={AzureOpenAITestPage} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
