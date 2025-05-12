@@ -1,12 +1,7 @@
 /**
- * Smart AI service that uses the configured provider (Gemini or Azure OpenAI)
+ * AI service using Azure OpenAI in Kastle's secure Azure environment
  */
 import { AI_CONFIG } from '../config';
-import { 
-  generateSiteWalkAnalysis as generateGeminiSiteWalkAnalysis,
-  generateQuoteReviewAgenda as generateGeminiQuoteReviewAgenda,
-  generateTurnoverCallAgenda as generateGeminiTurnoverCallAgenda
-} from '../utils/gemini';
 import { 
   generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis,
   generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda,
