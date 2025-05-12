@@ -3547,6 +3547,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Add Azure OpenAI endpoint
   app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
+
+  // Public test endpoint for debugging (no authentication required)
+  app.post("/api/test/azure", proxyTestAzureOpenAI);
   
   // AI Analysis endpoints using smart AI service
   app.post("/api/ai/analysis/site-walk", isAuthenticated, async (req: Request, res: Response) => {
