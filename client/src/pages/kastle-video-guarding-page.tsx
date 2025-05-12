@@ -976,7 +976,7 @@ const KastleVideoGuardingPage: React.FC = () => {
       : {
           id: tempId,
           location: "",
-          fovAccessibility: "Select",
+          fovAccessibility: "Select", // Updated with new options in dropdown
           cameraAccessibility: "Select",
           cameraType: "Select",
           environment: "",
