@@ -3,11 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
+// Keep Gemini proxy for backward compatibility
 import { proxyTestGemini } from './gemini-proxy';
+// Use Azure OpenAI proxy for all new AI functionality
 import { proxyTestAzureOpenAI } from './azure-openai-proxy';
-import { generateSiteWalkAnalysis as generateGeminiSiteWalkAnalysis, 
-         generateQuoteReviewAgenda as generateGeminiQuoteReviewAgenda, 
-         generateTurnoverCallAgenda as generateGeminiTurnoverCallAgenda } from './utils/gemini';
+// Use only Azure OpenAI implementation (through the ai-service adapter) for all generation functions
 import { generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis, 
          generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
          generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda } from './utils/azure-openai';
@@ -3744,8 +3744,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check Gemini API configuration
-  // Removed Gemini status endpoint - all AI functionality now uses Azure OpenAI
+  // All AI functionality now uses Azure OpenAI exclusively in Kastle's secure environment
+  // Gemini API has been completely removed from the application
   
   // Check Azure OpenAI API configuration (authenticated)
   app.get("/api/azure/status", isAuthenticated, (req: Request, res: Response) => {
