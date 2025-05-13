@@ -3114,112 +3114,112 @@ const KastleVideoGuardingPage: React.FC = () => {
                     <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
                       <span className="text-lg">⚙️</span> Custom Incident Types
                     </h4>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="flex items-center gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType1Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType1Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType1Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType1Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">🔶 Custom Type 1</span>
+                          <span className="flex items-center gap-1 text-sm">🔶 Custom Type 1</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType1 || ""}
                           onChange={(e) => handleFormChange("customIncidentType1", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType2Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType2Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType2Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType2Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">🔷 Custom Type 2</span>
+                          <span className="flex items-center gap-1 text-sm">🔷 Custom Type 2</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType2 || ""}
                           onChange={(e) => handleFormChange("customIncidentType2", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType3Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType3Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType3Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType3Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">💠 Custom Type 3</span>
+                          <span className="flex items-center gap-1 text-sm">💠 Custom Type 3</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType3 || ""}
                           onChange={(e) => handleFormChange("customIncidentType3", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType4Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType4Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType4Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType4Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">🔷 Custom Type 4</span>
+                          <span className="flex items-center gap-1 text-sm">🔷 Custom Type 4</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType4 || ""}
                           onChange={(e) => handleFormChange("customIncidentType4", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType5Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType5Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType5Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType5Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">🔹 Custom Type 5</span>
+                          <span className="flex items-center gap-1 text-sm">🔹 Custom Type 5</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType5 || ""}
                           onChange={(e) => handleFormChange("customIncidentType5", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType6Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType6Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType6Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType6Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">🔸 Custom Type 6</span>
+                          <span className="flex items-center gap-1 text-sm">🔸 Custom Type 6</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType6 || ""}
                           onChange={(e) => handleFormChange("customIncidentType6", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                       
