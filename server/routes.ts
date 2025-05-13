@@ -3111,10 +3111,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/kvg-streams", isAuthenticated, async (req: Request, res: Response) => {
     try {
+      console.log("Creating KVG stream with data:", JSON.stringify(req.body));
+      
       // Use a more flexible schema to handle additional fields
       const { flexibleKvgStreamSchema } = require('./custom-schemas');
       const result = flexibleKvgStreamSchema.safeParse(req.body);
       if (!result.success) {
+        console.error("KVG stream validation error:", result.error.errors);
         return res.status(400).json({ 
           message: "Invalid KVG stream data", 
           errors: result.error.errors 
@@ -3125,13 +3128,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (result.data.project_id) {
         const project = await storage.getProject(result.data.project_id);
         if (!project) {
+          console.error(`Project not found: ${result.data.project_id}`);
           return res.status(404).json({ message: "Project not found" });
         }
       }
 
-      const stream = await storage.createKvgStream(result.data);
+      // Harmonize field names for database
+      const mappedData = {
+        ...result.data,
+        // Map camelCase frontend props to snake_case database columns if needed
+        fov_accessibility: result.data.fovAccessibility,
+        camera_accessibility: result.data.cameraAccessibility,
+        camera_type: result.data.cameraType,
+        use_case_problem: result.data.useCaseProblem,
+        speaker_association: result.data.speakerAssociation,
+        audio_talk_down: result.data.audioTalkDown,
+        event_monitoring: result.data.eventMonitoring,
+        monitoring_start_time: result.data.monitoringStartTime,
+        monitoring_end_time: result.data.monitoringEndTime,
+      };
+
+      console.log("Mapped KVG stream data:", JSON.stringify(mappedData));
+      const stream = await storage.createKvgStream(mappedData);
       res.status(201).json(stream);
     } catch (error) {
+      console.error("Error creating KVG stream:", error);
       res.status(500).json({ 
         message: "Failed to create KVG stream",
         error: (error as Error).message
