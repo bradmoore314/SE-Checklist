@@ -3113,44 +3113,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Creating KVG stream with data:", JSON.stringify(req.body));
       
-      // Use a more flexible schema to handle additional fields
-      const { flexibleKvgStreamSchema } = require('./custom-schemas');
-      const result = flexibleKvgStreamSchema.safeParse(req.body);
-      if (!result.success) {
-        console.error("KVG stream validation error:", result.error.errors);
-        return res.status(400).json({ 
-          message: "Invalid KVG stream data", 
-          errors: result.error.errors 
-        });
+      // Simplify our approach for debugging - accept all fields from frontend
+      const streamData = req.body;
+      
+      if (!streamData.project_id) {
+        console.error("Missing project_id in KVG stream data");
+        return res.status(400).json({ message: "project_id is required" });
       }
 
-      // Verify project exists if project_id is provided
-      if (result.data.project_id) {
-        const project = await storage.getProject(result.data.project_id);
-        if (!project) {
-          console.error(`Project not found: ${result.data.project_id}`);
-          return res.status(404).json({ message: "Project not found" });
-        }
+      // Verify project exists
+      const project = await storage.getProject(streamData.project_id);
+      if (!project) {
+        console.error(`Project not found: ${streamData.project_id}`);
+        return res.status(404).json({ message: "Project not found" });
       }
-
-      // Harmonize field names for database
-      const mappedData = {
-        ...result.data,
-        // Map camelCase frontend props to snake_case database columns if needed
-        fov_accessibility: result.data.fovAccessibility,
-        camera_accessibility: result.data.cameraAccessibility,
-        camera_type: result.data.cameraType,
-        use_case_problem: result.data.useCaseProblem,
-        speaker_association: result.data.speakerAssociation,
-        audio_talk_down: result.data.audioTalkDown,
-        event_monitoring: result.data.eventMonitoring,
-        monitoring_start_time: result.data.monitoringStartTime,
-        monitoring_end_time: result.data.monitoringEndTime,
+      
+      // Create a minimal valid stream object with only essential fields
+      const minimalStream = {
+        project_id: streamData.project_id,
+        location: streamData.location || null,
+        fov_accessibility: streamData.fovAccessibility || null,
+        camera_accessibility: streamData.cameraAccessibility || null,
+        camera_type: streamData.cameraType || null,
+        environment: streamData.environment || null,
+        use_case_problem: streamData.useCaseProblem || null,
+        speaker_association: streamData.speakerAssociation || null,
+        audio_talk_down: streamData.audioTalkDown || null,
+        event_monitoring: streamData.eventMonitoring || null,
+        monitoring_start_time: streamData.monitoringStartTime || null,
+        monitoring_end_time: streamData.monitoringEndTime || null
       };
 
-      console.log("Mapped KVG stream data:", JSON.stringify(mappedData));
-      const stream = await storage.createKvgStream(mappedData);
-      res.status(201).json(stream);
+      console.log("Minimal KVG stream data:", JSON.stringify(minimalStream));
+      
+      try {
+        // Try to create the stream with minimal data
+        const stream = await storage.createKvgStream(minimalStream);
+        res.status(201).json(stream);
+      } catch (dbError) {
+        console.error("Database error creating KVG stream:", dbError);
+        
+        // Log database schema for debugging
+        try {
+          const { kvgStreams } = require('../shared/schema');
+          console.log("Database columns for kvgStreams:", Object.keys(kvgStreams.columns).join(", "));
+        } catch (schemaError) {
+          console.error("Error accessing schema:", schemaError);
+        }
+        
+        throw dbError;
+      }
     } catch (error) {
       console.error("Error creating KVG stream:", error);
       res.status(500).json({ 
