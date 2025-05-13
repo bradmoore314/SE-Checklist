@@ -2410,25 +2410,70 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
-    const now = new Date();
-    
-    // Extract only known properties from the update schema to prevent database errors
-    const safeValues = Object.keys(kvgStreams.columns).reduce((acc: any, key) => {
-      if (key in updateStream && key !== 'id' && key !== 'created_at') {
-        acc[key] = (updateStream as any)[key];
-      }
-      return acc;
-    }, {});
-    
-    // Always set the updated_at field
-    safeValues.updated_at = now;
-    
-    const [stream] = await db
-      .update(kvgStreams)
-      .set(safeValues)
-      .where(eq(kvgStreams.id, id))
-      .returning();
-    return stream;
+    try {
+      console.log("Updating KVG stream with data:", JSON.stringify(updateStream));
+      const now = new Date();
+      
+      // Map camelCase properties from frontend to snake_case for database
+      const mappedValues: any = {
+        updated_at: now
+      };
+      
+      // Map all possible fields that might be in the update data
+      if (updateStream.project_id !== undefined) mappedValues.project_id = updateStream.project_id;
+      if (updateStream.location !== undefined) mappedValues.location = updateStream.location;
+      
+      // Handle both camelCase and snake_case variants
+      if (updateStream.fovAccessibility !== undefined) mappedValues.fov_accessibility = updateStream.fovAccessibility;
+      else if (updateStream.fov_accessibility !== undefined) mappedValues.fov_accessibility = updateStream.fov_accessibility;
+      
+      if (updateStream.cameraAccessibility !== undefined) mappedValues.camera_accessibility = updateStream.cameraAccessibility;
+      else if (updateStream.camera_accessibility !== undefined) mappedValues.camera_accessibility = updateStream.camera_accessibility;
+      
+      if (updateStream.cameraType !== undefined) mappedValues.camera_type = updateStream.cameraType;
+      else if (updateStream.camera_type !== undefined) mappedValues.camera_type = updateStream.camera_type;
+      
+      if (updateStream.environment !== undefined) mappedValues.environment = updateStream.environment;
+      
+      if (updateStream.useCaseProblem !== undefined) mappedValues.use_case_problem = updateStream.useCaseProblem;
+      else if (updateStream.use_case_problem !== undefined) mappedValues.use_case_problem = updateStream.use_case_problem;
+      
+      if (updateStream.speakerAssociation !== undefined) mappedValues.speaker_association = updateStream.speakerAssociation;
+      else if (updateStream.speaker_association !== undefined) mappedValues.speaker_association = updateStream.speaker_association;
+      
+      if (updateStream.audioTalkDown !== undefined) mappedValues.audio_talk_down = updateStream.audioTalkDown;
+      else if (updateStream.audio_talk_down !== undefined) mappedValues.audio_talk_down = updateStream.audio_talk_down;
+      
+      if (updateStream.eventMonitoring !== undefined) mappedValues.event_monitoring = updateStream.eventMonitoring;
+      else if (updateStream.event_monitoring !== undefined) mappedValues.event_monitoring = updateStream.event_monitoring;
+      
+      if (updateStream.monitoringStartTime !== undefined) mappedValues.monitoring_start_time = updateStream.monitoringStartTime;
+      else if (updateStream.monitoring_start_time !== undefined) mappedValues.monitoring_start_time = updateStream.monitoring_start_time;
+      
+      if (updateStream.monitoringEndTime !== undefined) mappedValues.monitoring_end_time = updateStream.monitoringEndTime;
+      else if (updateStream.monitoring_end_time !== undefined) mappedValues.monitoring_end_time = updateStream.monitoring_end_time;
+      
+      if (updateStream.patrolGroups !== undefined) mappedValues.patrol_groups = updateStream.patrolGroups;
+      else if (updateStream.patrol_groups !== undefined) mappedValues.patrol_groups = updateStream.patrol_groups;
+      
+      if (updateStream.patrolStartTime !== undefined) mappedValues.patrol_start_time = updateStream.patrolStartTime;
+      else if (updateStream.patrol_start_time !== undefined) mappedValues.patrol_start_time = updateStream.patrol_start_time;
+      
+      if (updateStream.patrolEndTime !== undefined) mappedValues.patrol_end_time = updateStream.patrolEndTime;
+      else if (updateStream.patrol_end_time !== undefined) mappedValues.patrol_end_time = updateStream.patrol_end_time;
+      
+      console.log("Mapped values for database update:", JSON.stringify(mappedValues));
+      const [stream] = await db
+        .update(kvgStreams)
+        .set(mappedValues)
+        .where(eq(kvgStreams.id, id))
+        .returning();
+      
+      return stream;
+    } catch (error) {
+      console.error("Database error in updateKvgStream:", error);
+      throw error;
+    }
   }
 
   async deleteKvgStream(id: number): Promise<boolean> {

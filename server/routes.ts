@@ -3152,17 +3152,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      // Use a more flexible schema to handle additional fields
-      const { flexibleKvgStreamSchema } = require('./custom-schemas');
-      const result = flexibleKvgStreamSchema.partial().safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: "Invalid KVG stream data", 
-          errors: result.error.errors 
-        });
-      }
-
-      const stream = await storage.updateKvgStream(streamId, result.data);
+      console.log("Updating KVG stream with ID:", streamId, "Data:", JSON.stringify(req.body));
+      // Pass the data directly to the storage method, which now handles camelCase to snake_case conversion
+      const stream = await storage.updateKvgStream(streamId, req.body);
+      
       if (!stream) {
         return res.status(404).json({ message: "KVG stream not found" });
       }
