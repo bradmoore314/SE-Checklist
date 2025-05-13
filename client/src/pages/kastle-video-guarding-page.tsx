@@ -3295,39 +3295,39 @@ const KastleVideoGuardingPage: React.FC = () => {
                         value={formData.onDemandGuardDispatchDetail || ""}
                         onChange={(e) => handleFormChange("onDemandGuardDispatchDetail", e.target.value)}
                         placeholder="Enter details about on-demand guard dispatch requirements and procedures"
-                        className="min-h-[100px] resize-y bg-white"
+                        className="min-h-[80px] sm:min-h-[100px] resize-y bg-white text-sm p-2 sm:p-3"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <Label className="text-sm font-medium text-green-700 mb-1.5">SGPP Scheduled Guard Patrol Detail:</Label>
+                    <Label className="text-xs sm:text-sm font-medium text-green-700 mb-1 sm:mb-1.5">SGPP Scheduled Guard Patrol Detail:</Label>
                     <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm font-medium">SGPP Scheduled Patrols Per Month:</div>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2">
+                        <div className="text-xs sm:text-sm font-medium">SGPP Scheduled Patrols Per Month:</div>
                         <Input 
                           type="number"
                           value={formData.sgppScheduledPatrolsPerMonth || ''}
                           onChange={(e) => handleFormChange("sgppScheduledPatrolsPerMonth", parseInt(e.target.value) || 0)}
-                          className="bg-white w-24"
+                          className="bg-white w-full sm:w-24 text-sm p-1 sm:p-2 h-8 sm:h-9"
                         />
                       </div>
                       <Textarea 
                         value={formData.sgppScheduledGuardPatrolDetail || ""}
                         onChange={(e) => handleFormChange("sgppScheduledGuardPatrolDetail", e.target.value)}
                         placeholder="Enter details about scheduled guard patrol requirements and procedures"
-                        className="min-h-[100px] resize-y bg-white"
+                        className="min-h-[80px] sm:min-h-[100px] resize-y bg-white text-sm p-2 sm:p-3"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <Label className="text-sm font-medium text-green-700 mb-1.5">SGPP Scheduled Guard Patrols Schedule Detail:</Label>
+                    <Label className="text-xs sm:text-sm font-medium text-green-700 mb-1 sm:mb-1.5">SGPP Scheduled Guard Patrols Schedule Detail:</Label>
                     <Textarea 
                       value={formData.sgppScheduledGuardPatrolsScheduleDetail || ""}
                       onChange={(e) => handleFormChange("sgppScheduledGuardPatrolsScheduleDetail", e.target.value)}
                       placeholder="Enter the specific schedule details for guard patrols (days/times)"
-                      className="min-h-[100px] resize-y bg-white"
+                      className="min-h-[80px] sm:min-h-[100px] resize-y bg-white text-sm p-2 sm:p-3"
                     />
                   </div>
                 </div>
