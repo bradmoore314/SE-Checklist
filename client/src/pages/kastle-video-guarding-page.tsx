@@ -3223,21 +3223,21 @@ const KastleVideoGuardingPage: React.FC = () => {
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <Toggle 
                           pressed={formData.customIncidentType7Selected}
                           onPressedChange={(pressed) => handleFormChange("customIncidentType7Selected", pressed)}
                           variant="outline"
                           size="sm"
-                          className={formData.customIncidentType7Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px]" : "min-w-[120px]"}
+                          className={formData.customIncidentType7Selected ? "bg-amber-100 border-amber-400 text-amber-900 min-w-[120px] justify-start sm:justify-center" : "min-w-[120px] justify-start sm:justify-center"}
                         >
-                          <span className="flex items-center gap-1">💠 Custom Type 7</span>
+                          <span className="flex items-center gap-1 text-sm">💠 Custom Type 7</span>
                         </Toggle>
                         <Input 
                           value={formData.customIncidentType7 || ""}
                           onChange={(e) => handleFormChange("customIncidentType7", e.target.value)}
                           placeholder="Enter custom incident type"
-                          className="flex-1 bg-white"
+                          className="flex-1 bg-white text-sm"
                         />
                       </div>
                     </div>
@@ -3245,50 +3245,50 @@ const KastleVideoGuardingPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Use Case Problem Information */}
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 p-5 rounded-lg shadow-sm border border-red-100 mb-6">
-                <h3 className="text-lg font-semibold mb-4 text-red-800 flex items-center gap-2">
-                  <span className="p-1 bg-red-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              {/* Use Case Problem Information - Mobile Optimized */}
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 p-3 sm:p-5 rounded-lg shadow-sm border border-red-100 mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-red-800 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <span className="p-1 bg-red-500 text-white rounded-md w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs sm:text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                     </svg>
                   </span>
-                  <span className="flex items-center gap-2">🔍 Use Case Problem Information</span>
+                  <span className="flex items-center gap-1 sm:gap-2">🔍 Use Case Problem Information</span>
                 </h3>
                 <div className="relative">
                   <Textarea 
                     value={formData.useCaseResponse || ""}
                     onChange={(e) => handleFormChange("useCaseResponse", e.target.value)}
                     placeholder="Fill in information around the specific issues and problems the customer is having..."
-                    className="min-h-[120px] w-full resize-y bg-white"
+                    className="min-h-[100px] sm:min-h-[120px] w-full resize-y bg-white text-sm p-2 sm:p-3"
                   />
-                  <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                  <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 text-[10px] sm:text-xs text-gray-400">
                     {formData.useCaseResponse?.length || 0} characters
                   </div>
                 </div>
               </div>
               
-              {/* Patrol Details Section */}
-              <div className="bg-gradient-to-br from-green-50 to-teal-50 p-5 rounded-lg shadow-sm border border-green-100 mb-6">
-                <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center gap-2">
-                  <span className="p-1 bg-green-500 text-white rounded-md w-7 h-7 flex items-center justify-center text-sm shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              {/* Patrol Details Section - Mobile Optimized */}
+              <div className="bg-gradient-to-br from-green-50 to-teal-50 p-3 sm:p-5 rounded-lg shadow-sm border border-green-100 mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-green-800 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <span className="p-1 bg-green-500 text-white rounded-md w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs sm:text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
                   </span>
                   Patrol & Guard Dispatch Details
                 </h3>
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-green-700 mb-1.5">On-Demand Guard Dispatch Detail:</Label>
+                    <Label className="text-xs sm:text-sm font-medium text-green-700 mb-1 sm:mb-1.5">On-Demand Guard Dispatch Detail:</Label>
                     <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm font-medium">GDODs Dispatches Per Month:</div>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2">
+                        <div className="text-xs sm:text-sm font-medium">GDODs Dispatches Per Month:</div>
                         <Input 
                           type="number"
                           value={formData.gdodsDispatchesPerMonth || ''}
                           onChange={(e) => handleFormChange("gdodsDispatchesPerMonth", parseInt(e.target.value) || 0)}
-                          className="bg-white w-24"
+                          className="bg-white w-full sm:w-24 text-sm p-1 sm:p-2 h-8 sm:h-9"
                         />
                       </div>
                       <Textarea 
