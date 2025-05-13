@@ -3113,7 +3113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Creating KVG stream with data:", JSON.stringify(req.body));
       
-      // Simplify our approach for debugging - accept all fields from frontend
+      // Accept all fields from frontend
       const streamData = req.body;
       
       if (!streamData.project_id) {
@@ -3128,39 +3128,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
       
-      // Create a minimal valid stream object with only essential fields
-      const minimalStream = {
-        project_id: streamData.project_id,
-        location: streamData.location || null,
-        fov_accessibility: streamData.fovAccessibility || null,
-        camera_accessibility: streamData.cameraAccessibility || null,
-        camera_type: streamData.cameraType || null,
-        environment: streamData.environment || null,
-        use_case_problem: streamData.useCaseProblem || null,
-        speaker_association: streamData.speakerAssociation || null,
-        audio_talk_down: streamData.audioTalkDown || null,
-        event_monitoring: streamData.eventMonitoring || null,
-        monitoring_start_time: streamData.monitoringStartTime || null,
-        monitoring_end_time: streamData.monitoringEndTime || null
-      };
-
-      console.log("Minimal KVG stream data:", JSON.stringify(minimalStream));
-      
+      // Pass the data directly to the storage method, which now handles camelCase to snake_case conversion
       try {
-        // Try to create the stream with minimal data
-        const stream = await storage.createKvgStream(minimalStream);
+        const stream = await storage.createKvgStream(streamData);
         res.status(201).json(stream);
       } catch (dbError) {
         console.error("Database error creating KVG stream:", dbError);
-        
-        // Log database schema for debugging
-        try {
-          const { kvgStreams } = require('../shared/schema');
-          console.log("Database columns for kvgStreams:", Object.keys(kvgStreams.columns).join(", "));
-        } catch (schemaError) {
-          console.error("Error accessing schema:", schemaError);
-        }
-        
         throw dbError;
       }
     } catch (error) {

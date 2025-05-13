@@ -2376,16 +2376,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createKvgStream(insertStream: InsertKvgStream): Promise<KvgStream> {
-    // Extract only known properties from the insert schema to prevent database errors
-    const safeValues = Object.keys(kvgStreams.columns).reduce((acc: any, key) => {
-      if (key in insertStream && key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
-        acc[key] = (insertStream as any)[key];
-      }
-      return acc;
-    }, {});
-    
-    const [stream] = await db.insert(kvgStreams).values(safeValues).returning();
-    return stream;
+    try {
+      console.log("Creating KVG stream with data:", JSON.stringify(insertStream));
+      
+      // Map camelCase properties from frontend to snake_case for database
+      const mappedValues: any = {
+        project_id: insertStream.project_id,
+        location: insertStream.location || null,
+        // Explicitly map all fields with their correct database column names
+        fov_accessibility: insertStream.fovAccessibility || insertStream.fov_accessibility || null,
+        camera_accessibility: insertStream.cameraAccessibility || insertStream.camera_accessibility || null,
+        camera_type: insertStream.cameraType || insertStream.camera_type || null,
+        environment: insertStream.environment || null,
+        use_case_problem: insertStream.useCaseProblem || insertStream.use_case_problem || null,
+        speaker_association: insertStream.speakerAssociation || insertStream.speaker_association || null,
+        audio_talk_down: insertStream.audioTalkDown || insertStream.audio_talk_down || null,
+        event_monitoring: insertStream.eventMonitoring || insertStream.event_monitoring || null,
+        monitoring_start_time: insertStream.monitoringStartTime || insertStream.monitoring_start_time || null,
+        monitoring_end_time: insertStream.monitoringEndTime || insertStream.monitoring_end_time || null,
+        // Optional additional fields depending on frontend data
+        patrol_groups: insertStream.patrolGroups || insertStream.patrol_groups || null,
+        patrol_start_time: insertStream.patrolStartTime || insertStream.patrol_start_time || null,
+        patrol_end_time: insertStream.patrolEndTime || insertStream.patrol_end_time || null
+      };
+      
+      console.log("Mapped values for database insert:", JSON.stringify(mappedValues));
+      const [stream] = await db.insert(kvgStreams).values(mappedValues).returning();
+      return stream;
+    } catch (error) {
+      console.error("Database error in createKvgStream:", error);
+      throw error;
+    }
   }
 
   async updateKvgStream(id: number, updateStream: Partial<InsertKvgStream>): Promise<KvgStream | undefined> {
