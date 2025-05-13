@@ -1434,19 +1434,19 @@ const KastleVideoGuardingPage: React.FC = () => {
               
               {streams.length > 0 ? (
                 viewMode === 'cards' ? (
-                  /* Card-based Layout for Speaker Details */
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                  /* Card-based Layout for Speaker Details - More Mobile Friendly */
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-8">
                     {streams.map((stream) => (
                       <Card key={stream.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <CardHeader className="bg-gradient-to-r from-teal-50 to-teal-100 border-b pb-3">
-                          <div className="flex justify-between items-start">
-                            <CardTitle className="text-lg text-teal-800 flex items-center gap-2">
-                              <span className="p-1 bg-teal-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs shadow-sm">
+                        <CardHeader className="bg-gradient-to-r from-teal-50 to-teal-100 border-b pb-3 px-3 sm:px-6">
+                          <div className="flex justify-between items-start flex-wrap gap-2">
+                            <CardTitle className="text-base sm:text-lg text-teal-800 flex items-center gap-2">
+                              <span className="p-1 bg-teal-500 text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs shadow-sm">
                                 {stream.id}
                               </span>
                               <span className="truncate">Camera Stream</span>
                             </CardTitle>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1 sm:gap-2">
                               <Button 
                                 variant="outline" 
                                 size="sm"
@@ -1477,13 +1477,13 @@ const KastleVideoGuardingPage: React.FC = () => {
                           </div>
                         </CardHeader>
                         
-                        <CardContent className="pt-4 pb-3 px-4">
+                        <CardContent className="pt-3 pb-3 px-3 sm:pt-4 sm:px-4">
                           {/* Main Stream Details */}
-                          <div className="grid gap-3">
+                          <div className="grid gap-2 sm:gap-3">
                             {/* Location/Name */}
                             <div>
-                              <Label htmlFor={`stream-${stream.id}-location`} className="text-sm font-medium text-teal-700 mb-1.5 flex items-center gap-1.5">
-                                <span className="p-0.5 bg-teal-500 text-white rounded w-5 h-5 flex items-center justify-center text-[11px]">📍</span>
+                              <Label htmlFor={`stream-${stream.id}-location`} className="text-xs sm:text-sm font-medium text-teal-700 mb-1 sm:mb-1.5 flex items-center gap-1.5">
+                                <span className="p-0.5 bg-teal-500 text-white rounded w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-[10px] sm:text-[11px]">📍</span>
                                 Camera Location/Name
                               </Label>
                               <div className="relative">
@@ -1491,7 +1491,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                                   id={`stream-${stream.id}-location`}
                                   value={stream.location || ""}
                                   onChange={(e) => updateStream(stream.id, "location", e.target.value)}
-                                  className="min-h-[70px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-sm p-3 rounded-lg"
+                                  className="min-h-[60px] sm:min-h-[70px] resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 bg-white/90 text-xs sm:text-sm p-2 sm:p-3 rounded-lg"
                                   placeholder="Enter the location and naming of the camera video stream"
                                 />
                                 <div className="absolute bottom-2 right-2 text-xs text-gray-400">
@@ -1943,18 +1943,21 @@ const KastleVideoGuardingPage: React.FC = () => {
                   </div>
                 ) : (
                   /* Table/List View for Camera Stream Details */
-                  <div className="overflow-x-auto shadow-md sm:rounded-lg mb-8">
+                  <div className="overflow-x-auto shadow-md sm:rounded-lg mb-8 pb-2">
+                    <div className="block md:hidden bg-blue-50 p-3 text-sm text-blue-600 rounded-t-lg border border-blue-100 mb-2">
+                      <InfoIcon className="inline-block w-4 h-4 mr-1" /> Scroll horizontally to see all stream data
+                    </div>
                     <table className="w-full text-sm">
                       <thead className="text-xs">
                         <tr className="border-b border-gray-300">
-                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold rounded-tl-lg">ID</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold">Location</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold">Images</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-blue-600 text-white font-semibold">FOV</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-indigo-600 text-white font-semibold">Type</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-pink-600 text-white font-semibold">Audio</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-orange-600 text-white font-semibold">Monitoring</th>
-                          <th colSpan={1} className="px-3 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg">Actions</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold rounded-tl-lg whitespace-nowrap">ID</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold whitespace-nowrap">Location</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-teal-600 text-white font-semibold whitespace-nowrap">Images</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-blue-600 text-white font-semibold whitespace-nowrap">FOV</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-indigo-600 text-white font-semibold whitespace-nowrap">Type</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-pink-600 text-white font-semibold whitespace-nowrap">Audio</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-orange-600 text-white font-semibold whitespace-nowrap">Monitoring</th>
+                          <th colSpan={1} className="px-3 py-3 text-center bg-gray-700 text-white font-semibold rounded-tr-lg whitespace-nowrap">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
