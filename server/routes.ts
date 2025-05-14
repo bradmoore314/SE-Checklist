@@ -156,6 +156,35 @@ export function registerPublicRoutes(app: Express): void {
     });
   });
 
+  // Authenticated Azure OpenAI test endpoint
+  app.post("/api/azure/test", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ message: "Missing required prompt parameter" });
+      }
+      
+      console.log("Testing Azure OpenAI with prompt:", prompt);
+      
+      // Send the prompt to Azure OpenAI API
+      const response = await testAzureOpenAI(prompt);
+      
+      console.log("Azure OpenAI response:", response);
+      
+      // Return the response to the client in the format the client expects
+      res.json({ content: response });
+    } catch (error) {
+      console.error("Error calling Azure OpenAI API:", error);
+      
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Unknown error occurred" });
+      }
+    }
+  });
+  
   app.post("/api/public/azure/test", (req: Request, res: Response) => {
     console.log("Public Azure OpenAI test endpoint called");
     proxyTestAzureOpenAI(req, res);
