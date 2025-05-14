@@ -1,6 +1,6 @@
 # Kastle Wizard
 
-A comprehensive web application for digitizing and streamlining security equipment tracking during site assessments. This application replaces traditional Excel-based tracking systems with a modern, intelligent web interface.
+A comprehensive web application for digitizing and streamlining security equipment tracking, site assessments, and Kastle Video Guarding (KVG) configurations. This application replaces traditional Excel-based tracking systems with a modern, intelligent web interface powered by AI analysis.
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -8,28 +8,35 @@ A comprehensive web application for digitizing and streamlining security equipme
 3. [Project Structure](#project-structure)
 4. [Setup Instructions](#setup-instructions)
 5. [Core Features](#core-features)
-6. [Data Model](#data-model)
-7. [Frontend Components](#frontend-components)
-8. [Backend Implementation](#backend-implementation)
-9. [Authentication System](#authentication-system)
-10. [Theme Configuration](#theme-configuration)
-11. [User Interfaces](#user-interfaces)
-12. [Integration Points](#integration-points)
+6. [AI Capabilities](#ai-capabilities)
+7. [Kastle Video Guarding](#kastle-video-guarding)
+8. [Floorplan Management](#floorplan-management)
+9. [Data Model](#data-model)
+10. [Frontend Components](#frontend-components)
+11. [Backend Implementation](#backend-implementation)
+12. [Authentication System](#authentication-system)
+13. [Theme Configuration](#theme-configuration)
+14. [Mobile Responsiveness](#mobile-responsiveness)
+15. [Integration Points](#integration-points)
 
 ## Project Overview
 
-The Kastle Wizard is a specialized application for security professionals to manage and track equipment for security projects. It captures detailed information about various security equipment types (card access points, cameras, elevators, and intercoms) and provides tools for analysis, reporting, and exporting.
+The Kastle Wizard is a specialized application for security professionals to manage and track equipment for security projects. It captures detailed information about various security equipment types (card access points, cameras, elevators, and intercoms), provides advanced floorplan annotation capabilities, and offers comprehensive Kastle Video Guarding (KVG) configuration. The application leverages Microsoft Azure OpenAI services for intelligent analysis, reporting, and insights generation.
 
 ## Technology Stack
 
 - **Frontend**: React + TypeScript with Vite
 - **Backend**: Node.js with Express
-- **Authentication**: Passport.js with local strategy
+- **Database**: PostgreSQL with Drizzle ORM
+- **AI Integration**: Microsoft Azure OpenAI (migrated from Google Gemini)
+- **Authentication**: Passport.js with local strategy and Microsoft authentication
 - **State Management**: React Context API + TanStack Query (React Query)
+- **PDF Processing**: PDF.js for rendering and annotation
 - **Styling**: Tailwind CSS, shadcn/ui components
-- **Storage**: In-memory storage with MemStorage implementation
+- **Storage**: Database storage with PostgreSQL (migrated from in-memory storage)
 - **Form Handling**: react-hook-form with zod validation
 - **Routing**: Wouter for lightweight client-side routing
+- **Mobile Support**: Responsive design optimized for field use
 
 ## Project Structure
 
@@ -173,6 +180,7 @@ The application allows tracking of four key types of security equipment:
 
 - User registration with secure password hashing
 - Login functionality with session management
+- Microsoft account integration for enterprise SSO
 - Protected routes requiring authentication
 - User information display in the top navigation
 
@@ -182,6 +190,85 @@ The application allows tracking of four key types of security equipment:
 - Door schedule report with detailed door information
 - Camera schedule report with detailed camera information
 - Excel/CSV export capabilities
+- PDF export with annotations
+
+## AI Capabilities
+
+### 1. Azure OpenAI Integration
+
+- Secure integration with Microsoft Azure OpenAI services
+- Enhanced security through Kastle's dedicated Azure environment
+- Configured with gpt-4o-mini model for optimal performance
+- Error handling and fallback mechanisms
+- Proper token management and rate limiting
+
+### 2. Intelligent Analysis
+
+- Floorplan analysis for equipment suggestion
+- Security coverage visualization
+- Report generation and summarization
+- Equipment identification from site photos
+- Multi-language translation support for documentation
+
+### 3. Advanced PDF Processing
+
+- Intelligent extraction of floorplan details
+- Automatic equipment placement suggestions
+- Area classification and identification
+- Technical specifications parsing
+- Coverage gap analysis
+
+## Kastle Video Guarding
+
+### 1. Stream Configuration
+
+- Camera Video Stream Details with location, accessibility, and type information
+- Field of View (FOV) Accessibility configuration with security level options
+- Camera Type selection with industry-standard options
+- Environment settings for proper installation planning
+- Numeric input for total camera stream count
+
+### 2. Monitoring Configuration
+
+- Event Monitoring configuration with schedule management
+- Monitoring start and end time selection
+- Audio talk-down configuration options
+- Speaker association settings
+- Custom incident type configuration
+
+### 3. Use Case Documentation
+
+- Detailed use case problem documentation
+- Site scene activity notes
+- Reviewer assignment and tracking
+- Security level classification
+- Integration with other security systems
+
+## Floorplan Management
+
+### 1. PDF Annotation
+
+- Multi-page PDF upload and management
+- High-fidelity PDF rendering
+- Precise equipment marker placement
+- Coordinate system for accurate positioning
+- Zoom and pan navigation controls
+
+### 2. Layer Management
+
+- Toggle visibility of different equipment types
+- Custom layer creation and management
+- Color-coding for different security zones
+- Equipment grouping by type or location
+- Print-ready view options
+
+### 3. Equipment Visualization
+
+- Visual representation of coverage areas
+- Camera field of view visualization
+- Access control zone definition
+- Equipment status indicators
+- Interactive marker information
 
 ## Data Model
 
