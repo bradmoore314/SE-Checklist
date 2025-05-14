@@ -501,63 +501,118 @@ Create a sidebar component (`client/src/components/Sidebar.tsx`) with:
 
 ### Storage Interface
 
-Create a storage interface (`server/storage.ts`) with methods for CRUD operations on:
-- Users
-- Projects (site walks)
-- Access points
-- Cameras
-- Elevators
-- Intercoms
+The application implements a dual storage system with:
 
-Implement in-memory storage using `MemStorage` class with sample data initialization.
+1. **Database Storage**: PostgreSQL with Drizzle ORM for persistent storage
+   - Implements `IStorage` interface for consistent data access
+   - Handles camelCase to snake_case field mapping
+   - Proper error handling and transaction management
+   - Optimized query performance
+
+2. **Memory Storage**: In-memory fallback for development and testing
+   - Sample data initialization for quick setup
+   - Mimics database interface for consistent API
+
+### Database Configuration
+
+The PostgreSQL database is configured with:
+- Connection pooling for efficient resource usage
+- WebSocket support for Neon serverless
+- Proper environment variable handling for database credentials
+- Schema initialization and migration support
 
 ### Authentication System
 
-Implement the authentication system (`server/auth.ts`) with:
-- Passport.js local strategy
-- Password hashing using scrypt
+The authentication system (`server/auth.ts`) implements:
+- Passport.js with multiple strategies
+  - Local strategy with password hashing using scrypt
+  - Microsoft authentication for enterprise SSO
+- Secure token management
 - User serialization and deserialization
+- Session management with secure cookies
 - API endpoints for register, login, logout, and user info
 
 ### API Routes
 
-Implement API routes (`server/routes.ts`) for:
-- User authentication
+Comprehensive API routes (`server/routes.ts`) for:
+- User authentication and management
 - Project (site walk) management
 - Equipment management (access points, cameras, elevators, intercoms)
-- Reports generation
+- Kastle Video Guarding configuration
+- Floorplan and marker management
+- AI integration for analysis and suggestions
+- Reports generation and export
+- File upload and management
+
+### Azure OpenAI Integration
+
+The Azure OpenAI integration provides:
+- Secure communication with Azure endpoints
+- Authentication via API keys stored as environment variables
+- Prompt engineering for specialized security tasks
+- Error handling with appropriate fallbacks
+- Response parsing and formatting
 
 ### Server Setup
 
-Set up the Express server (`server/index.ts`) with necessary middleware and error handling.
+The Express server (`server/index.ts`) includes:
+- Secure middleware configuration
+- CORS and security headers
+- Session management
+- Static file serving
+- Error handling and logging
+- Vite integration for development
 
 ## Authentication System
 
-Implement a comprehensive authentication system:
+The application implements a comprehensive authentication system:
 
-1. **Password hashing**: Use scrypt with salt for secure password storage
-2. **Session management**: Use express-session with memorystore
-3. **Protected routes**: Implement isAuthenticated middleware
-4. **Auth hooks**: Create useAuth hook to manage authentication state
-5. **Authentication UI**: Create login and registration forms
+1. **Password hashing**: Uses scrypt with salt for secure password storage
+2. **Session management**: Uses express-session with secure cookie configuration
+3. **Microsoft Authentication**: Integrates with Microsoft identity platform for SSO
+4. **Authorization**: Role-based access control for different application features
+5. **Session Timeout**: Automatic session expiration after inactivity
 
-### server/auth.ts Implementation
+## Mobile Responsiveness
 
-```typescript
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
-import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
-import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+The application is fully optimized for mobile use:
 
-declare global {
-  namespace Express {
-    interface User extends SelectUser {}
-  }
-}
+### 1. Touch-Friendly Interface
+- Larger touch targets for buttons and controls
+- Swipe gestures for navigation where appropriate
+- Optimized touch input for floorplan annotations
+
+### 2. Responsive Layouts
+- Flexible grid system adapting to screen size
+- Collapsible sections for better content organization
+- Card view mode for data tables on small screens
+- Horizontal scrolling for tables with many columns
+
+### 3. Field-Optimized Features
+- Offline capability for data collection without connectivity
+- Camera integration for on-site photos
+- GPS location tagging for equipment
+- Data compression for limited bandwidth
+
+## Integration Points
+
+The application integrates with several external systems:
+
+### 1. Microsoft Azure
+- Azure OpenAI for intelligent analysis and processing
+- Microsoft Graph API for user authentication
+- Azure Blob Storage for file storage and management
+
+### 2. CRM Systems
+- Integration with customer relationship management systems
+- Project and opportunity data synchronization
+- Client information retrieval
+
+### 3. Export Formats
+- Excel/CSV export for tabular data
+- PDF export with annotations
+- JSON export for system interoperability
+- Custom format exports for specialized systems
 
 const scryptAsync = promisify(scrypt);
 
