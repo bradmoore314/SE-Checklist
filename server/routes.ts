@@ -10,7 +10,8 @@ import { proxyTestAzureOpenAI } from './azure-openai-proxy';
 // Use only Azure OpenAI implementation (through the ai-service adapter) for all generation functions
 import { generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis, 
          generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
-         generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda } from './utils/azure-openai';
+         generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda,
+         testAzureOpenAI } from './utils/azure-openai';
 import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './services/ai-service';
 import { compressImage, createThumbnail } from './utils/image-utils';
 import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
@@ -204,15 +205,14 @@ export function registerPublicRoutes(app: Express): void {
         specialConsiderations 
       } = req.body;
       
-      const result = await generateSiteWalkAnalysis(
+      const result = await generateAzureSiteWalkAnalysis(
         projectName,
         projectDescription,
         buildingCount,
         accessPointCount,
         cameraCount,
         clientRequirements,
-        specialConsiderations,
-        'azure' // Force using Azure provider
+        specialConsiderations
       );
       
       res.json({ success: true, result });
