@@ -245,30 +245,70 @@ export function EquipmentConsistencyCheck({ projectId }: EquipmentConsistencyChe
           <p>There are inconsistencies between floorplan markers and equipment lists:</p>
           <ul className="text-sm space-y-1 pl-4">
             {consistencyDetails.accessPoints.difference > 0 && (
-              <li>
-                Access Points: {consistencyDetails.accessPoints.markers} markers vs{" "}
-                {consistencyDetails.accessPoints.equipment} equipment items
+              <li className="flex flex-col gap-1">
+                <div>
+                  <span className="font-semibold">Access Points:</span> {consistencyDetails.accessPoints.markers} markers /{" "}
+                  {consistencyDetails.accessPoints.equipment} equipment items
+                </div>
+                {consistencyDetails.accessPoints.markers < consistencyDetails.accessPoints.equipment && (
+                  <div className="text-xs text-amber-500 flex items-center ml-2">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>{consistencyDetails.accessPoints.equipment - consistencyDetails.accessPoints.markers} access points need to be placed on floorplans</span>
+                  </div>
+                )}
               </li>
             )}
             {consistencyDetails.cameras.difference > 0 && (
-              <li>
-                Cameras: {consistencyDetails.cameras.markers} markers vs{" "}
-                {consistencyDetails.cameras.equipment} equipment items
+              <li className="flex flex-col gap-1">
+                <div>
+                  <span className="font-semibold">Cameras:</span> {consistencyDetails.cameras.markers} markers /{" "}
+                  {consistencyDetails.cameras.equipment} equipment items
+                </div>
+                {consistencyDetails.cameras.markers < consistencyDetails.cameras.equipment && (
+                  <div className="text-xs text-amber-500 flex items-center ml-2">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>{consistencyDetails.cameras.equipment - consistencyDetails.cameras.markers} cameras need to be placed on floorplans</span>
+                  </div>
+                )}
               </li>
             )}
             {consistencyDetails.elevators.difference > 0 && (
-              <li>
-                Elevators: {consistencyDetails.elevators.markers} markers vs{" "}
-                {consistencyDetails.elevators.equipment} equipment items
+              <li className="flex flex-col gap-1">
+                <div>
+                  <span className="font-semibold">Elevators:</span> {consistencyDetails.elevators.markers} markers /{" "}
+                  {consistencyDetails.elevators.equipment} equipment items
+                </div>
+                {consistencyDetails.elevators.markers < consistencyDetails.elevators.equipment && (
+                  <div className="text-xs text-amber-500 flex items-center ml-2">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>{consistencyDetails.elevators.equipment - consistencyDetails.elevators.markers} elevators need to be placed on floorplans</span>
+                  </div>
+                )}
               </li>
             )}
             {consistencyDetails.intercoms.difference > 0 && (
-              <li>
-                Intercoms: {consistencyDetails.intercoms.markers} markers vs{" "}
-                {consistencyDetails.intercoms.equipment} equipment items
+              <li className="flex flex-col gap-1">
+                <div>
+                  <span className="font-semibold">Intercoms:</span> {consistencyDetails.intercoms.markers} markers /{" "}
+                  {consistencyDetails.intercoms.equipment} equipment items
+                </div>
+                {consistencyDetails.intercoms.markers < consistencyDetails.intercoms.equipment && (
+                  <div className="text-xs text-amber-500 flex items-center ml-2">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>{consistencyDetails.intercoms.equipment - consistencyDetails.intercoms.markers} intercoms need to be placed on floorplans</span>
+                  </div>
+                )}
               </li>
             )}
           </ul>
+          
+          <div className="text-xs text-muted-foreground mt-2">
+            <p>
+              To resolve these issues, please place remaining equipment on floorplans or remove 
+              equipment that should not be in the project.
+            </p>
+          </div>
+          
           <div className="flex items-center gap-2 pt-1">
             <Button 
               size="sm" 
@@ -281,8 +321,19 @@ export function EquipmentConsistencyCheck({ projectId }: EquipmentConsistencyChe
               size="sm" 
               onClick={checkConsistency}
               disabled={isChecking}
+              variant="default"
             >
-              {isChecking ? "Checking..." : "Check Again"}
+              {isChecking ? (
+                <>
+                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                  Checking...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Check Again
+                </>
+              )}
             </Button>
           </div>
         </AlertDescription>
