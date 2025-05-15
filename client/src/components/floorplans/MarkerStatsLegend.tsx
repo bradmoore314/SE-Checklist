@@ -91,7 +91,10 @@ export function MarkerStatsLegend({
               <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
               <span className="text-xs">Card Access</span>
             </div>
-            <Badge variant="outline" className="ml-2 text-xs">{stats.types.access_point.total}</Badge>
+            <div className="flex items-center">
+              <Badge variant="outline" className="ml-2 text-xs">{stats.types.access_point.total} / {stats.types.access_point.equipment_count}</Badge>
+              <span className="text-xs text-muted-foreground ml-1">placed</span>
+            </div>
           </div>
           
           {stats.types.access_point.total > 0 && (
@@ -110,6 +113,22 @@ export function MarkerStatsLegend({
                   <span>{stats.types.access_point.unspecified}</span>
                 </div>
               )}
+              {/* Show placement status */}
+              <div className="mt-1">
+                {stats.types.access_point.total < stats.types.access_point.equipment_count ? (
+                  <div className="text-xs text-amber-500 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>
+                      {stats.types.access_point.equipment_count - stats.types.access_point.total} not placed
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-green-500 flex items-center">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    <span>All placed</span>
+                  </div>
+                )}
+              </div>
               {onToggleLabelVisibility && (
                 <div className="flex items-center justify-between mt-1">
                   <div className="flex items-center space-x-1">
@@ -137,7 +156,10 @@ export function MarkerStatsLegend({
               <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
               <span className="text-xs">Cameras</span>
             </div>
-            <Badge variant="outline" className="ml-2 text-xs">{stats.types.camera.total}</Badge>
+            <div className="flex items-center">
+              <Badge variant="outline" className="ml-2 text-xs">{stats.types.camera.total} / {stats.types.camera.equipment_count}</Badge>
+              <span className="text-xs text-muted-foreground ml-1">placed</span>
+            </div>
           </div>
           
           {stats.types.camera.total > 0 && (
@@ -156,6 +178,22 @@ export function MarkerStatsLegend({
                   <span>{stats.types.camera.unspecified}</span>
                 </div>
               )}
+              {/* Show placement status */}
+              <div className="mt-1">
+                {stats.types.camera.total < stats.types.camera.equipment_count ? (
+                  <div className="text-xs text-amber-500 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>
+                      {stats.types.camera.equipment_count - stats.types.camera.total} not placed
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-green-500 flex items-center">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    <span>All placed</span>
+                  </div>
+                )}
+              </div>
               {onToggleLabelVisibility && (
                 <div className="flex items-center justify-between mt-1">
                   <div className="flex items-center space-x-1">
@@ -183,27 +221,48 @@ export function MarkerStatsLegend({
               <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
               <span className="text-xs">Elevators</span>
             </div>
-            <Badge variant="outline" className="ml-2 text-xs">{stats.types.elevator.total}</Badge>
+            <div className="flex items-center">
+              <Badge variant="outline" className="ml-2 text-xs">{stats.types.elevator.total} / {stats.types.elevator.equipment_count}</Badge>
+              <span className="text-xs text-muted-foreground ml-1">placed</span>
+            </div>
           </div>
           
-          {stats.types.elevator.total > 0 && onToggleLabelVisibility && (
+          {stats.types.elevator.total > 0 && (
             <div className="pl-5 space-y-1">
-              <div className="flex items-center justify-between mt-1">
-                <div className="flex items-center space-x-1">
-                  {visibleLabelTypes['elevator'] ? (
-                    <Eye className="h-3 w-3 text-green-600" />
-                  ) : (
-                    <EyeOff className="h-3 w-3 text-muted-foreground" />
-                  )}
-                  <span className="text-xs">Show labels</span>
-                </div>
-                <Switch
-                  id="elevator-labels"
-                  checked={visibleLabelTypes['elevator'] || false}
-                  onCheckedChange={() => onToggleLabelVisibility('elevator')}
-                  className="data-[state=checked]:bg-green-500 h-4 w-7"
-                />
+              {/* Show placement status */}
+              <div className="mt-1">
+                {stats.types.elevator.total < stats.types.elevator.equipment_count ? (
+                  <div className="text-xs text-amber-500 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>
+                      {stats.types.elevator.equipment_count - stats.types.elevator.total} not placed
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-green-500 flex items-center">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    <span>All placed</span>
+                  </div>
+                )}
               </div>
+              {onToggleLabelVisibility && (
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center space-x-1">
+                    {visibleLabelTypes['elevator'] ? (
+                      <Eye className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    )}
+                    <span className="text-xs">Show labels</span>
+                  </div>
+                  <Switch
+                    id="elevator-labels"
+                    checked={visibleLabelTypes['elevator'] || false}
+                    onCheckedChange={() => onToggleLabelVisibility('elevator')}
+                    className="data-[state=checked]:bg-green-500 h-4 w-7"
+                  />
+                </div>
+              )}
             </div>
           )}
           
@@ -213,27 +272,48 @@ export function MarkerStatsLegend({
               <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
               <span className="text-xs">Intercoms</span>
             </div>
-            <Badge variant="outline" className="ml-2 text-xs">{stats.types.intercom.total}</Badge>
+            <div className="flex items-center">
+              <Badge variant="outline" className="ml-2 text-xs">{stats.types.intercom.total} / {stats.types.intercom.equipment_count}</Badge>
+              <span className="text-xs text-muted-foreground ml-1">placed</span>
+            </div>
           </div>
           
-          {stats.types.intercom.total > 0 && onToggleLabelVisibility && (
+          {stats.types.intercom.total > 0 && (
             <div className="pl-5 space-y-1">
-              <div className="flex items-center justify-between mt-1">
-                <div className="flex items-center space-x-1">
-                  {visibleLabelTypes['intercom'] ? (
-                    <Eye className="h-3 w-3 text-green-600" />
-                  ) : (
-                    <EyeOff className="h-3 w-3 text-muted-foreground" />
-                  )}
-                  <span className="text-xs">Show labels</span>
-                </div>
-                <Switch
-                  id="intercom-labels"
-                  checked={visibleLabelTypes['intercom'] || false}
-                  onCheckedChange={() => onToggleLabelVisibility('intercom')}
-                  className="data-[state=checked]:bg-yellow-500 h-4 w-7"
-                />
+              {/* Show placement status */}
+              <div className="mt-1">
+                {stats.types.intercom.total < stats.types.intercom.equipment_count ? (
+                  <div className="text-xs text-amber-500 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    <span>
+                      {stats.types.intercom.equipment_count - stats.types.intercom.total} not placed
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-green-500 flex items-center">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    <span>All placed</span>
+                  </div>
+                )}
               </div>
+              {onToggleLabelVisibility && (
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center space-x-1">
+                    {visibleLabelTypes['intercom'] ? (
+                      <Eye className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    )}
+                    <span className="text-xs">Show labels</span>
+                  </div>
+                  <Switch
+                    id="intercom-labels"
+                    checked={visibleLabelTypes['intercom'] || false}
+                    onCheckedChange={() => onToggleLabelVisibility('intercom')}
+                    className="data-[state=checked]:bg-yellow-500 h-4 w-7"
+                  />
+                </div>
+              )}
             </div>
           )}
           
