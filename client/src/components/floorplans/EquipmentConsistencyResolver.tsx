@@ -69,9 +69,18 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
         equipmentType, 
         equipmentId
       });
+      
+      // Handle 404 or other errors more gracefully
       if (!res.ok) {
-        throw new Error('Failed to resolve equipment inconsistency');
+        const errorData = await res.json().catch(() => ({}));
+        // If we get a 404, the equipment may have been deleted - treat this as a "success"
+        if (res.status === 404) {
+          console.log(`Equipment not found: ${equipmentType} ID ${equipmentId}. It may have been deleted.`);
+          return { success: true, message: "Equipment not found or already resolved" };
+        }
+        throw new Error(errorData.error || 'Failed to resolve equipment inconsistency');
       }
+      
       return await res.json();
     },
     onSuccess: () => {
@@ -79,14 +88,18 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
       queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'equipment-consistency'] });
       queryClient.invalidateQueries({ queryKey: ['/api/enhanced-floorplan'] });
       
-      // Set temporary success message
-      setShowResolutionSuccessMessage(true);
-      setTimeout(() => {
-        setShowResolutionSuccessMessage(false);
-      }, 3000);
+      // Set temporary success message (only show in non-auto mode)
+      if (!isAutoResolving) {
+        setShowResolutionSuccessMessage(true);
+        setTimeout(() => {
+          setShowResolutionSuccessMessage(false);
+        }, 3000);
+      }
       
-      // Refresh data
-      refetchConsistencyData();
+      // Refresh data with a slight delay to prevent rapid refetching
+      setTimeout(() => {
+        refetchConsistencyData();
+      }, 300);
       
       // Call onResolved callback if provided
       if (onResolved) {
@@ -94,83 +107,91 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
       }
     },
     onError: (error) => {
-      toast({
-        title: "Error resolving equipment inconsistency",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive"
-      });
+      // Don't show toast errors during auto-resolving to avoid spamming the user
+      if (!isAutoResolving) {
+        toast({
+          title: "Error resolving equipment inconsistency",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive"
+        });
+      }
+      
+      console.error("Failed to resolve equipment:", error);
+      
+      // Reset auto-resolving state on error
+      setIsAutoResolving(false);
     }
   });
 
   // Track whether we're currently resolving an issue to prevent loops
   const [isAutoResolving, setIsAutoResolving] = useState(false);
   
+  // Track the last time we performed a resolution to implement debounce
+  const [lastResolutionTime, setLastResolutionTime] = useState(0);
+  
   // Process consistency data when it's loaded
-  // AND automatically resolve any inconsistencies
+  // AND automatically resolve any inconsistencies with debouncing
   useEffect(() => {
-    if (consistencyData && !isAutoResolving && !resolveEquipmentMutation.isPending) {
+    // Skip if data is loading, already resolving, or we're in a pending mutation
+    if (!consistencyData || isAutoResolving || resolveEquipmentMutation.isPending) {
+      return;
+    }
+    
+    // Implement a debounce to prevent too many rapid API calls
+    const now = Date.now();
+    const debounceMs = 1000; // 1 second between auto-resolve attempts
+    
+    if (now - lastResolutionTime < debounceMs) {
+      return; // Skip this update cycle if we resolved recently
+    }
+    
+    try {
       const inconsistentTypes: InconsistentEquipment[] = [];
       let hasUnresolvedItems = false;
       
-      // Check each equipment type for inconsistencies
-      if (consistencyData.access_points.total > consistencyData.access_points.markers) {
-        const unmapped = consistencyData.access_points.unmapped || [];
-        inconsistentTypes.push({
-          equipmentType: 'access_point',
-          totalCount: consistencyData.access_points.total,
-          markerCount: consistencyData.access_points.markers,
-          unmappedEquipment: unmapped
-        });
-        
-        // Found inconsistencies to be resolved
-        if (unmapped.length > 0) {
-          hasUnresolvedItems = true;
+      // Helper function to safely process each equipment type
+      const processEquipmentType = (
+        data: any, 
+        type: 'access_point' | 'camera' | 'elevator' | 'intercom'
+      ) => {
+        // Skip if data is missing or malformed
+        if (!data || typeof data.total !== 'number' || typeof data.markers !== 'number') {
+          return;
         }
+        
+        if (data.total > data.markers) {
+          // Ensure unmapped is an array (even if null/undefined)
+          const unmapped = Array.isArray(data.unmapped) ? data.unmapped : [];
+          
+          inconsistentTypes.push({
+            equipmentType: type,
+            totalCount: data.total,
+            markerCount: data.markers,
+            unmappedEquipment: unmapped
+          });
+          
+          // Found inconsistencies to be resolved
+          if (unmapped.length > 0) {
+            hasUnresolvedItems = true;
+          }
+        }
+      };
+      
+      // Safely process each type (guard against missing properties)
+      if (consistencyData.access_points) {
+        processEquipmentType(consistencyData.access_points, 'access_point');
       }
       
-      if (consistencyData.cameras.total > consistencyData.cameras.markers) {
-        const unmapped = consistencyData.cameras.unmapped || [];
-        inconsistentTypes.push({
-          equipmentType: 'camera',
-          totalCount: consistencyData.cameras.total,
-          markerCount: consistencyData.cameras.markers,
-          unmappedEquipment: unmapped
-        });
-        
-        // Found inconsistencies to be resolved
-        if (unmapped.length > 0) {
-          hasUnresolvedItems = true;
-        }
+      if (consistencyData.cameras) {
+        processEquipmentType(consistencyData.cameras, 'camera');
       }
       
-      if (consistencyData.elevators.total > consistencyData.elevators.markers) {
-        const unmapped = consistencyData.elevators.unmapped || [];
-        inconsistentTypes.push({
-          equipmentType: 'elevator',
-          totalCount: consistencyData.elevators.total,
-          markerCount: consistencyData.elevators.markers,
-          unmappedEquipment: unmapped
-        });
-        
-        // Found inconsistencies to be resolved
-        if (unmapped.length > 0) {
-          hasUnresolvedItems = true;
-        }
+      if (consistencyData.elevators) {
+        processEquipmentType(consistencyData.elevators, 'elevator');
       }
       
-      if (consistencyData.intercoms.total > consistencyData.intercoms.markers) {
-        const unmapped = consistencyData.intercoms.unmapped || [];
-        inconsistentTypes.push({
-          equipmentType: 'intercom',
-          totalCount: consistencyData.intercoms.total,
-          markerCount: consistencyData.intercoms.markers,
-          unmappedEquipment: unmapped
-        });
-        
-        // Found inconsistencies to be resolved
-        if (unmapped.length > 0) {
-          hasUnresolvedItems = true;
-        }
+      if (consistencyData.intercoms) {
+        processEquipmentType(consistencyData.intercoms, 'intercom');
       }
       
       setInconsistencies(inconsistentTypes);
@@ -180,7 +201,12 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
         // Find the first type with unmapped equipment
         for (const type of inconsistentTypes) {
           if (type.unmappedEquipment.length > 0) {
+            // Set the flag to prevent concurrent resolutions
             setIsAutoResolving(true);
+            // Record the time of this resolution attempt for debouncing
+            setLastResolutionTime(now);
+            
+            // Resolve the first unmapped equipment
             resolveEquipmentMutation.mutate({ 
               equipmentType: type.equipmentType, 
               equipmentId: type.unmappedEquipment[0].id 
@@ -189,8 +215,10 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           }
         }
       }
+    } catch (error) {
+      console.error("Error processing equipment consistency data:", error);
     }
-  }, [consistencyData, isAutoResolving, resolveEquipmentMutation.isPending]);
+  }, [consistencyData, isAutoResolving, resolveEquipmentMutation.isPending, lastResolutionTime]);
   
   // Reset auto-resolving flag when mutation completes
   useEffect(() => {
