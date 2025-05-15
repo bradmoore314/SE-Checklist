@@ -1024,9 +1024,7 @@ function EnhancedFloorplansPage() {
             onToggleLabelVisibility={toggleLabelVisibility}
           />
           
-          <div className="mt-4 border-t pt-4">
-            <EquipmentConsistencyResolver projectId={floorplan.project_id} />
-          </div>
+          {/* Removed duplicate EquipmentConsistencyResolver from mobile view to avoid conflicts */}
         </div>
       </div>
     </div>

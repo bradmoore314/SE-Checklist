@@ -102,12 +102,15 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
     }
   });
 
+  // Track whether we're currently resolving an issue to prevent loops
+  const [isAutoResolving, setIsAutoResolving] = useState(false);
+  
   // Process consistency data when it's loaded
   // AND automatically resolve any inconsistencies
   useEffect(() => {
-    if (consistencyData) {
+    if (consistencyData && !isAutoResolving && !resolveEquipmentMutation.isPending) {
       const inconsistentTypes: InconsistentEquipment[] = [];
-      let hasAutoResolved = false;
+      let hasUnresolvedItems = false;
       
       // Check each equipment type for inconsistencies
       if (consistencyData.access_points.total > consistencyData.access_points.markers) {
@@ -119,17 +122,13 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           unmappedEquipment: unmapped
         });
         
-        // Auto-resolve the first unmapped equipment of each type
+        // Found inconsistencies to be resolved
         if (unmapped.length > 0) {
-          resolveEquipmentMutation.mutate({ 
-            equipmentType: 'access_point', 
-            equipmentId: unmapped[0].id 
-          });
-          hasAutoResolved = true;
+          hasUnresolvedItems = true;
         }
       }
       
-      if (consistencyData.cameras.total > consistencyData.cameras.markers && !hasAutoResolved) {
+      if (consistencyData.cameras.total > consistencyData.cameras.markers) {
         const unmapped = consistencyData.cameras.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'camera',
@@ -138,17 +137,13 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           unmappedEquipment: unmapped
         });
         
-        // Auto-resolve the first unmapped equipment of each type
+        // Found inconsistencies to be resolved
         if (unmapped.length > 0) {
-          resolveEquipmentMutation.mutate({ 
-            equipmentType: 'camera', 
-            equipmentId: unmapped[0].id 
-          });
-          hasAutoResolved = true;
+          hasUnresolvedItems = true;
         }
       }
       
-      if (consistencyData.elevators.total > consistencyData.elevators.markers && !hasAutoResolved) {
+      if (consistencyData.elevators.total > consistencyData.elevators.markers) {
         const unmapped = consistencyData.elevators.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'elevator',
@@ -157,17 +152,13 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           unmappedEquipment: unmapped
         });
         
-        // Auto-resolve the first unmapped equipment of each type
+        // Found inconsistencies to be resolved
         if (unmapped.length > 0) {
-          resolveEquipmentMutation.mutate({ 
-            equipmentType: 'elevator', 
-            equipmentId: unmapped[0].id 
-          });
-          hasAutoResolved = true;
+          hasUnresolvedItems = true;
         }
       }
       
-      if (consistencyData.intercoms.total > consistencyData.intercoms.markers && !hasAutoResolved) {
+      if (consistencyData.intercoms.total > consistencyData.intercoms.markers) {
         const unmapped = consistencyData.intercoms.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'intercom',
@@ -176,27 +167,43 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           unmappedEquipment: unmapped
         });
         
-        // Auto-resolve the first unmapped equipment of each type
+        // Found inconsistencies to be resolved
         if (unmapped.length > 0) {
-          resolveEquipmentMutation.mutate({ 
-            equipmentType: 'intercom', 
-            equipmentId: unmapped[0].id 
-          });
-          hasAutoResolved = true;
+          hasUnresolvedItems = true;
         }
       }
       
       setInconsistencies(inconsistentTypes);
       
-      // If any equipment was auto-resolved, set the success message
-      if (hasAutoResolved) {
-        setShowResolutionSuccessMessage(true);
-        setTimeout(() => {
-          setShowResolutionSuccessMessage(false);
-        }, 3000);
+      // If there are unresolved items, auto-resolve the first one
+      if (hasUnresolvedItems) {
+        // Find the first type with unmapped equipment
+        for (const type of inconsistentTypes) {
+          if (type.unmappedEquipment.length > 0) {
+            setIsAutoResolving(true);
+            resolveEquipmentMutation.mutate({ 
+              equipmentType: type.equipmentType, 
+              equipmentId: type.unmappedEquipment[0].id 
+            });
+            break;
+          }
+        }
       }
     }
-  }, [consistencyData, resolveEquipmentMutation]);
+  }, [consistencyData, isAutoResolving, resolveEquipmentMutation.isPending]);
+  
+  // Reset auto-resolving flag when mutation completes
+  useEffect(() => {
+    if (!resolveEquipmentMutation.isPending && isAutoResolving) {
+      setIsAutoResolving(false);
+      
+      // Set success message
+      setShowResolutionSuccessMessage(true);
+      setTimeout(() => {
+        setShowResolutionSuccessMessage(false);
+      }, 3000);
+    }
+  }, [resolveEquipmentMutation.isPending]);
 
   // Handle checking for inconsistencies
   const handleCheckConsistency = () => {
