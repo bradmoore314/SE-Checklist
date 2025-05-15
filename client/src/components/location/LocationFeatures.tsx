@@ -344,7 +344,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     }
   };
 
-  // Handle adding satellite image or custom uploaded file as floorplan
+  // Handle adding custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
     if (!customFloorplanData || !floorplanName) return;
     
@@ -373,74 +373,6 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         toast({
           title: 'Floorplan Created',
           description: successMessage,
-        });
-      }
-        
-        const blob = await response.blob();
-        
-        // First convert the image to base64 for processing
-        const imageBase64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            try {
-              const base64data = reader.result as string;
-              resolve(base64data);
-            } catch (err) {
-              reject(new Error('Failed to process image data'));
-            }
-          };
-          reader.onerror = () => reject(new Error('Error reading file'));
-          reader.readAsDataURL(blob);
-        });
-        
-        // Create an image element to get dimensions
-        const img = new Image();
-        await new Promise<void>((resolve, reject) => {
-          img.onload = () => resolve();
-          img.onerror = () => reject(new Error('Failed to load image for processing'));
-          img.src = imageBase64;
-        });
-        
-        // Import jsPDF dynamically
-        const { jsPDF } = await import('jspdf');
-        
-        // Create a new PDF with the image dimensions (converted from px to mm)
-        // Use a 1:1 ratio for better quality
-        const pdfWidth = img.width * 0.264583; // convert pixels to mm (1 px = 0.264583 mm)
-        const pdfHeight = img.height * 0.264583;
-        
-        // Create PDF document
-        const pdf = new jsPDF({
-          orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
-          unit: 'mm',
-          format: [pdfWidth, pdfHeight]
-        });
-        
-        // Add the image to the PDF
-        pdf.addImage(
-          imageBase64,
-          'PNG',
-          0,
-          0,
-          pdfWidth,
-          pdfHeight
-        );
-        
-        // Convert PDF to base64
-        base64Result = pdf.output('datauristring').split(',')[1];
-        
-        // Create floorplan with the satellite image as PDF
-        await createFloorplanMutation.mutateAsync({
-          project_id: project.id,
-          name: floorplanName,
-          pdf_data: base64Result,
-          page_count: 1
-        });
-        
-        // Show success toast for satellite image
-        toast({
-          title: 'Floorplan Created',
-          description: 'Satellite image has been saved as a floorplan.',
         });
       }
       
@@ -805,15 +737,19 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                   <TabsTrigger value="upload" className="text-xs sm:text-sm">Upload Image</TabsTrigger>
                 </TabsList>
                 <TabsContent value="satellite" className="mt-2 sm:mt-4">
-                  {mapData && (
+                  {coordinates && (
                     <div className="border rounded overflow-hidden">
-                      <img 
-                        src={mapData.url} 
-                        alt="Satellite view preview" 
-                        className="w-full h-auto"
-                      />
+                      <div className="aspect-video relative">
+                        <InteractiveMap 
+                          lat={coordinates.lat} 
+                          lng={coordinates.lng} 
+                          zoom={18}
+                          height="100%"
+                          width="100%"
+                        />
+                      </div>
                       <div className="p-2 bg-gray-50 text-[10px] sm:text-xs text-gray-500">
-                        Satellite image will be saved as a floorplan for this location
+                        Interactive satellite view for this location
                       </div>
                     </div>
                   )}
@@ -916,7 +852,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
               onClick={handleAddToFloorplan}
               disabled={createFloorplanMutation.isPending || !floorplanName || 
-                       (!mapData && !customFloorplanData)}
+                       !customFloorplanData}
             >
               {createFloorplanMutation.isPending ? (
                 <>
