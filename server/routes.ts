@@ -2563,6 +2563,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create the marker with the equipment ID (for newly created equipment)
+      // If the marker is tied to an access point and the label is in the form "Floor X, Y", 
+      // replace it with a proper sequential name
+      if (result.data.marker_type === 'access_point' && result.data.label && result.data.label.startsWith('Floor ')) {
+        // Get current access points to determine next number
+        const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
+        const markedAccessPoints = await storage.getAccessPointMarkersByProject(floorplan.project_id);
+        const nextNumber = markedAccessPoints.length + 1;
+        
+        // Create appropriate sequential name
+        const properName = `Access Point ${nextNumber}`;
+        
+        // Update the equipment's location to this new name too
+        if (equipmentId !== 0 && equipmentId !== -1) {
+          await storage.updateAccessPoint(equipmentId, { location: properName });
+        }
+        
+        // Create marker with proper name
+        const marker = await storage.createFloorplanMarker({
+          ...result.data,
+          equipment_id: equipmentId,
+          label: properName
+        });
+        
+        return res.status(201).json(marker);
+      }
+      
+      // For other marker types or non-Floor labels, proceed normally
       const marker = await storage.createFloorplanMarker({
         ...result.data,
         equipment_id: equipmentId

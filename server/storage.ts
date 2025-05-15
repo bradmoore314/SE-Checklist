@@ -108,6 +108,10 @@ export interface IStorage {
   getFloorplanMarkers(floorplanId: number): Promise<FloorplanMarker[]>;
   getFloorplanMarkersByProjectId(projectId: number): Promise<FloorplanMarker[]>;
   getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined>;
+  // Get markers by project ID and marker type
+  getMarkersByProjectAndType(projectId: number, markerType: string): Promise<FloorplanMarker[]>;
+  // Get access point markers for a project (convenience method)
+  getAccessPointMarkersByProject(projectId: number): Promise<FloorplanMarker[]>;
   createFloorplanMarker(marker: InsertFloorplanMarker): Promise<FloorplanMarker>;
   updateFloorplanMarker(id: number, marker: Partial<InsertFloorplanMarker>): Promise<FloorplanMarker | undefined>;
   deleteFloorplanMarker(id: number): Promise<boolean>;
@@ -922,6 +926,26 @@ export class MemStorage implements IStorage {
     return Array.from(this.floorplanMarkers.values()).filter(
       (marker) => floorplanIds.includes(marker.floorplan_id)
     );
+  }
+  
+  async getMarkersByProjectAndType(projectId: number, markerType: string): Promise<FloorplanMarker[]> {
+    // First, get all floorplans for this project
+    const projectFloorplans = Array.from(this.floorplans.values()).filter(
+      (floorplan) => floorplan.project_id === projectId
+    );
+    
+    // Get all floorplan IDs
+    const floorplanIds = projectFloorplans.map(floorplan => floorplan.id);
+    
+    // Return all markers that belong to these floorplans and are of the specified type
+    return Array.from(this.floorplanMarkers.values()).filter(
+      (marker) => floorplanIds.includes(marker.floorplan_id) && marker.marker_type === markerType
+    );
+  }
+
+  async getAccessPointMarkersByProject(projectId: number): Promise<FloorplanMarker[]> {
+    // Use the generic method with access_point as the marker type
+    return this.getMarkersByProjectAndType(projectId, 'access_point');
   }
 
   async getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined> {
@@ -1964,6 +1988,32 @@ export class DatabaseStorage implements IStorage {
     
     // Return all markers that belong to these floorplans
     return await db.select().from(floorplanMarkers).where(inArray(floorplanMarkers.floorplan_id, floorplanIds));
+  }
+
+  async getMarkersByProjectAndType(projectId: number, markerType: string): Promise<FloorplanMarker[]> {
+    // First, get all floorplans for this project
+    const projectFloorplans = await db.select().from(floorplans).where(eq(floorplans.project_id, projectId));
+    
+    // If no floorplans found, return empty array
+    if (projectFloorplans.length === 0) {
+      return [];
+    }
+    
+    // Get all floorplan IDs
+    const floorplanIds = projectFloorplans.map(floorplan => floorplan.id);
+    
+    // Return all markers that belong to these floorplans and are of the specified type
+    return await db.select().from(floorplanMarkers).where(
+      and(
+        inArray(floorplanMarkers.floorplan_id, floorplanIds),
+        eq(floorplanMarkers.marker_type, markerType)
+      )
+    );
+  }
+
+  async getAccessPointMarkersByProject(projectId: number): Promise<FloorplanMarker[]> {
+    // Use the generic method with access_point as the marker type
+    return this.getMarkersByProjectAndType(projectId, 'access_point');
   }
 
   async getFloorplanMarker(id: number): Promise<FloorplanMarker | undefined> {
