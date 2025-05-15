@@ -9,10 +9,28 @@ import { AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 interface MarkerStats {
   total: number;
   types: {
-    access_point: { total: number; interior: number; perimeter: number };
-    camera: { total: number; indoor: number; outdoor: number };
-    elevator: { total: number };
-    intercom: { total: number };
+    access_point: { 
+      total: number; 
+      interior: number; 
+      perimeter: number; 
+      unspecified: number;
+      equipment_count: number;
+    };
+    camera: { 
+      total: number; 
+      indoor: number; 
+      outdoor: number; 
+      unspecified: number;
+      equipment_count: number;
+    };
+    elevator: { 
+      total: number;
+      equipment_count: number;
+    };
+    intercom: { 
+      total: number;
+      equipment_count: number;
+    };
   };
 }
 
@@ -85,28 +103,63 @@ export function EquipmentConsistencyCheck({ projectId }: EquipmentConsistencyChe
     const stats = markerStats || { 
       total: 0, 
       types: {
-        access_point: { total: 0, interior: 0, perimeter: 0 },
-        camera: { total: 0, indoor: 0, outdoor: 0 },
-        elevator: { total: 0 },
-        intercom: { total: 0 }
+        access_point: { 
+          total: 0, 
+          interior: 0, 
+          perimeter: 0,
+          unspecified: 0,
+          equipment_count: 0
+        },
+        camera: { 
+          total: 0, 
+          indoor: 0, 
+          outdoor: 0,
+          unspecified: 0,
+          equipment_count: 0
+        },
+        elevator: { 
+          total: 0,
+          equipment_count: 0
+        },
+        intercom: { 
+          total: 0,
+          equipment_count: 0
+        }
       }
     };
     
+    // Using the stats directly from the API which now includes equipment counts
     const markerAccessPoints = stats.types.access_point.total;
     const markerCameras = stats.types.camera.total;
     const markerElevators = stats.types.elevator.total;
     const markerIntercoms = stats.types.intercom.total;
     
-    // Get equipment lists safely
+    // Get equipment counts directly from the API
+    const equipmentAccessPoints = stats.types.access_point.equipment_count;
+    const equipmentCameras = stats.types.camera.equipment_count;
+    const equipmentElevators = stats.types.elevator.equipment_count;
+    const equipmentIntercoms = stats.types.intercom.equipment_count;
+    
+    // For logging purposes, also get the equipment lists
     const apList = accessPoints || [];
     const camList = cameras || [];
     const elevList = elevators || [];
     const interList = intercoms || [];
     
-    const equipmentAccessPoints = apList.length;
-    const equipmentCameras = camList.length;
-    const equipmentElevators = elevList.length;
-    const equipmentIntercoms = interList.length;
+    // Verify the counts match what we expect
+    console.log('API equipment counts:', {
+      accessPoints: equipmentAccessPoints,
+      cameras: equipmentCameras,
+      elevators: equipmentElevators,
+      intercoms: equipmentIntercoms
+    });
+    
+    console.log('Actual equipment counts:', {
+      accessPoints: apList.length,
+      cameras: camList.length,
+      elevators: elevList.length,
+      intercoms: interList.length
+    });
     
     // Calculate differences
     const apDiff = Math.abs(markerAccessPoints - equipmentAccessPoints);

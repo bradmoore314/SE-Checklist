@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface MarkerStats {
   total: number;
@@ -15,18 +15,22 @@ interface MarkerStats {
       interior: number;
       perimeter: number;
       unspecified: number;
+      equipment_count: number;
     };
     camera: {
       total: number;
       indoor: number;
       outdoor: number;
       unspecified: number;
+      equipment_count: number;
     };
     elevator: {
       total: number;
+      equipment_count: number;
     };
     intercom: {
       total: number;
+      equipment_count: number;
     };
   };
 }
