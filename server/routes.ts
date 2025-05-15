@@ -2209,36 +2209,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Filter out equipment that already has markers
+      // Create sequential equipment numbering based on type
+      const accessPointsWithMarkers = accessPoints.filter(ap => 
+        markerEquipmentIds.get('access_point')?.has(ap.id)
+      );
+      const camerasWithMarkers = cameras.filter(cam => 
+        markerEquipmentIds.get('camera')?.has(cam.id)
+      );
+      const elevatorsWithMarkers = elevators.filter(elev => 
+        markerEquipmentIds.get('elevator')?.has(elev.id)
+      );
+      const intercomsWithMarkers = intercoms.filter(intercom => 
+        markerEquipmentIds.get('intercom')?.has(intercom.id)
+      );
+      
+      // Map unassigned equipment with sequential numbers
       const unassignedAccessPoints = accessPoints.filter(ap => 
         !markerEquipmentIds.get('access_point')?.has(ap.id)
-      ).map(ap => ({
+      ).map((ap, index) => ({
         id: ap.id,
         type: 'access_point',
-        label: ap.location || `Access Point ${ap.id}`
+        label: ap.location && !ap.location.startsWith('Floor ') 
+          ? ap.location 
+          : `Access Point ${accessPointsWithMarkers.length + index + 1}`
       }));
       
       const unassignedCameras = cameras.filter(cam => 
         !markerEquipmentIds.get('camera')?.has(cam.id)
-      ).map(cam => ({
+      ).map((cam, index) => ({
         id: cam.id,
         type: 'camera',
-        label: cam.location || `Camera ${cam.id}`
+        label: cam.location && !cam.location.startsWith('Floor ') 
+          ? cam.location 
+          : `Camera ${camerasWithMarkers.length + index + 1}`
       }));
       
       const unassignedElevators = elevators.filter(elev => 
         !markerEquipmentIds.get('elevator')?.has(elev.id)
-      ).map(elev => ({
+      ).map((elev, index) => ({
         id: elev.id,
         type: 'elevator',
-        label: elev.location || `Elevator ${elev.id}`
+        label: elev.location && !elev.location.startsWith('Floor ') 
+          ? elev.location 
+          : `Elevator ${elevatorsWithMarkers.length + index + 1}`
       }));
       
       const unassignedIntercoms = intercoms.filter(intercom => 
         !markerEquipmentIds.get('intercom')?.has(intercom.id)
-      ).map(intercom => ({
+      ).map((intercom, index) => ({
         id: intercom.id,
         type: 'intercom',
-        label: intercom.location || `Intercom ${intercom.id}`
+        label: intercom.location && !intercom.location.startsWith('Floor ') 
+          ? intercom.location 
+          : `Intercom ${intercomsWithMarkers.length + index + 1}`
       }));
       
       // Combine all unassigned equipment into a single response
@@ -2420,8 +2443,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
           const nextNumber = accessPoints.length + 1;
           
-          // Create label with sequential number
-          locationName = result.data.label || `Access Point ${nextNumber}`;
+          // Create label with sequential number - don't use coordinates in name
+          locationName = `Access Point ${nextNumber}`;
           
           const newAccessPoint = await storage.createAccessPoint({
             project_id: floorplan.project_id,
@@ -2437,8 +2460,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const cameras = await storage.getCamerasByProject(floorplan.project_id);
           const nextNumber = cameras.length + 1;
           
-          // Create label with sequential number
-          locationName = result.data.label || `Camera ${nextNumber}`;
+          // Create label with sequential number - don't use coordinates in name
+          locationName = `Camera ${nextNumber}`;
           
           const newCamera = await storage.createCamera({
             project_id: floorplan.project_id,
@@ -2451,8 +2474,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const elevators = await storage.getElevatorsByProject(floorplan.project_id);
           const nextNumber = elevators.length + 1;
           
-          // Create label with sequential number
-          locationName = result.data.label || `Elevator ${nextNumber}`;
+          // Create label with sequential number - don't use coordinates in name
+          locationName = `Elevator ${nextNumber}`;
           
           const newElevator = await storage.createElevator({
             project_id: floorplan.project_id,
@@ -2467,8 +2490,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const intercoms = await storage.getIntercomsByProject(floorplan.project_id);
           const nextNumber = intercoms.length + 1;
           
-          // Create label with sequential number
-          locationName = result.data.label || `Intercom ${nextNumber}`;
+          // Create label with sequential number - don't use coordinates in name
+          locationName = `Intercom ${nextNumber}`;
           
           const newIntercom = await storage.createIntercom({
             project_id: floorplan.project_id,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
 import { DoorClosed, Camera, Phone, ArrowUpDown, Loader2 } from 'lucide-react';
 import {
   Select,
@@ -75,14 +76,36 @@ export const UnassignedEquipmentSelect: React.FC<UnassignedEquipmentSelectProps>
     );
     
     if (found) {
+      // Pass the equipment to parent component
       onSelectEquipment(found);
       
-      // Clear the selection and refetch the unassigned equipment list
-      // This ensures the dropdown reflects the most current state
+      // Clear the selection immediately
+      setSelectedEquipment("");
+      
+      // If data exists, create an optimistic update by filtering out the selected item
+      if (data) {
+        // Create a new data object with the selected item removed
+        const updatedData = { ...data };
+        
+        // Remove the selected item from the appropriate array
+        if (equipmentType === 'access_point') {
+          updatedData.access_points = updatedData.access_points.filter(item => item.id !== id);
+        } else if (equipmentType === 'camera') {
+          updatedData.cameras = updatedData.cameras.filter(item => item.id !== id);
+        } else if (equipmentType === 'elevator') {
+          updatedData.elevators = updatedData.elevators.filter(item => item.id !== id);
+        } else if (equipmentType === 'intercom') {
+          updatedData.intercoms = updatedData.intercoms.filter(item => item.id !== id);
+        }
+        
+        // Update the data immediately (this will update the UI right away)
+        queryClient.setQueryData([`/api/projects/${projectId}/unassigned-equipment`], updatedData);
+      }
+      
+      // Refetch to ensure server and client are in sync
       setTimeout(() => {
-        setSelectedEquipment("");
         refetch();
-      }, 500);
+      }, 1000);
     }
   };
   
