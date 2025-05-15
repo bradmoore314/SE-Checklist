@@ -769,7 +769,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/view?key=${process.env.VITE_GOOGLE_MAPS_API_KEY}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite&h=0&t=k&f=3d`}
+                src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite&h=0&t=k&f=3d`}
               ></iframe>
             </div>
           )}
