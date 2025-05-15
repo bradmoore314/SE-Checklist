@@ -632,17 +632,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
-    const accessPointId = parseInt(req.params.id);
-    if (isNaN(accessPointId)) {
-      return res.status(400).json({ message: "Invalid access point ID" });
-    }
+    try {
+      const accessPointId = parseInt(req.params.id);
+      if (isNaN(accessPointId)) {
+        return res.status(400).json({ message: "Invalid access point ID" });
+      }
 
-    const success = await storage.deleteAccessPoint(accessPointId);
-    if (!success) {
-      return res.status(404).json({ message: "Access point not found" });
-    }
+      // Get the access point to check its project ID
+      const accessPoint = await storage.getAccessPoint(accessPointId);
+      if (!accessPoint) {
+        return res.status(404).json({ message: "Access point not found" });
+      }
 
-    res.status(204).end();
+      // Find all floorplan markers of this access point across all floorplans
+      // First get floorplans for this project
+      const floorplans = await storage.getFloorplans(accessPoint.project_id);
+      if (floorplans.length > 0) {
+        for (const floorplan of floorplans) {
+          // Get markers for each floorplan
+          const markers = await storage.getFloorplanMarkers(floorplan.id);
+          // Find and delete markers that reference this access point
+          for (const marker of markers) {
+            if (marker.marker_type === 'access_point' && marker.equipment_id === accessPointId) {
+              await storage.deleteFloorplanMarker(marker.id);
+              console.log(`Deleted marker ${marker.id} referencing access point ${accessPointId}`);
+            }
+          }
+        }
+      }
+
+      // Now delete the access point itself
+      const success = await storage.deleteAccessPoint(accessPointId);
+      if (!success) {
+        return res.status(404).json({ message: "Failed to delete access point" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting access point:", error);
+      res.status(500).json({ 
+        message: "Failed to delete access point and associated markers",
+        error: (error as Error).message
+      });
+    }
   });
 
   // Camera endpoints
@@ -1018,12 +1050,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(403).json({ message: "You don't have permission to delete this camera" });
     }
 
-    const success = await storage.deleteCamera(cameraId);
-    if (!success) {
-      return res.status(404).json({ message: "Camera not found" });
-    }
+    try {
+      // Find all floorplan markers of this camera across all floorplans
+      // First get floorplans for this project
+      const floorplans = await storage.getFloorplans(camera.project_id);
+      if (floorplans.length > 0) {
+        for (const floorplan of floorplans) {
+          // Get markers for each floorplan
+          const markers = await storage.getFloorplanMarkers(floorplan.id);
+          // Find and delete markers that reference this camera
+          for (const marker of markers) {
+            if (marker.marker_type === 'camera' && marker.equipment_id === cameraId) {
+              await storage.deleteFloorplanMarker(marker.id);
+              console.log(`Deleted marker ${marker.id} referencing camera ${cameraId}`);
+            }
+          }
+        }
+      }
 
-    res.status(204).end();
+      // Now delete the camera itself
+      const success = await storage.deleteCamera(cameraId);
+      if (!success) {
+        return res.status(404).json({ message: "Failed to delete camera" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting camera:", error);
+      res.status(500).json({
+        message: "Failed to delete camera and associated markers",
+        error: (error as Error).message
+      });
+    }
   });
 
   // Elevator endpoints
