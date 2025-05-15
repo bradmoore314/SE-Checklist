@@ -193,21 +193,60 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       const { projectId } = req.params;
       const numericProjectId = parseInt(projectId);
       
+      // Fetch all equipment for this project to ensure accurate counts
+      const allAccessPoints = await db
+        .select()
+        .from(accessPoints)
+        .where(eq(accessPoints.project_id, numericProjectId));
+      
+      const allCameras = await db
+        .select()
+        .from(cameras)
+        .where(eq(cameras.project_id, numericProjectId));
+      
+      const allElevators = await db
+        .select()
+        .from(elevators)
+        .where(eq(elevators.project_id, numericProjectId));
+      
+      const allIntercoms = await db
+        .select()
+        .from(intercoms)
+        .where(eq(intercoms.project_id, numericProjectId));
+      
       // First fetch all floorplans for this project
       const projectFloorplans = await db
         .select()
         .from(floorplans)
         .where(eq(floorplans.project_id, numericProjectId));
       
-      // If no floorplans found, return empty stats
+      // If no floorplans found, return empty stats but include equipment counts
       if (!projectFloorplans.length) {
         return res.status(200).json({
           total: 0,
           types: {
-            access_point: { total: 0, interior: 0, perimeter: 0 },
-            camera: { total: 0, indoor: 0, outdoor: 0 },
-            elevator: { total: 0 },
-            intercom: { total: 0 }
+            access_point: { 
+              total: 0, 
+              interior: 0, 
+              perimeter: 0,
+              unspecified: 0,
+              equipment_count: allAccessPoints.length
+            },
+            camera: { 
+              total: 0, 
+              indoor: 0, 
+              outdoor: 0,
+              unspecified: 0,
+              equipment_count: allCameras.length
+            },
+            elevator: { 
+              total: 0,
+              equipment_count: allElevators.length
+            },
+            intercom: { 
+              total: 0,
+              equipment_count: allIntercoms.length
+            }
           }
         });
       }
@@ -227,13 +266,41 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       const elevatorMarkers = markers.filter(m => m.marker_type === 'elevator');
       const intercomMarkers = markers.filter(m => m.marker_type === 'intercom');
       
+      // Verify marker equipment IDs still exist in the equipment tables
+      // Filter out markers that reference non-existent equipment
+      const validAccessPointMarkers = accessPointMarkers.filter(marker => {
+        return allAccessPoints.some(ap => ap.id === marker.equipment_id);
+      });
+      
+      const validCameraMarkers = cameraMarkers.filter(marker => {
+        return allCameras.some(cam => cam.id === marker.equipment_id);
+      });
+      
+      const validElevatorMarkers = elevatorMarkers.filter(marker => {
+        return allElevators.some(elev => elev.id === marker.equipment_id);
+      });
+      
+      const validIntercomMarkers = intercomMarkers.filter(marker => {
+        return allIntercoms.some(intercom => intercom.id === marker.equipment_id);
+      });
+      
+      // Log any inconsistencies that were found and fixed
+      const accessPointDiff = accessPointMarkers.length - validAccessPointMarkers.length;
+      const cameraDiff = cameraMarkers.length - validCameraMarkers.length;
+      const elevatorDiff = elevatorMarkers.length - validElevatorMarkers.length;
+      const intercomDiff = intercomMarkers.length - validIntercomMarkers.length;
+      
+      if (accessPointDiff + cameraDiff + elevatorDiff + intercomDiff > 0) {
+        console.log(`Found and fixed ${accessPointDiff + cameraDiff + elevatorDiff + intercomDiff} invalid markers`);
+      }
+      
       // Fetch equipment details where available to count interior/perimeter access points
       // and indoor/outdoor cameras
-      const accessPointIds = accessPointMarkers
+      const accessPointIds = validAccessPointMarkers
         .filter(m => m.equipment_id && m.equipment_id > 0)
         .map(m => m.equipment_id);
         
-      const cameraIds = cameraMarkers
+      const cameraIds = validCameraMarkers
         .filter(m => m.equipment_id && m.equipment_id > 0)
         .map(m => m.equipment_id);
         
@@ -269,25 +336,30 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
       
       // Compile stats
       const stats = {
-        total: markers.length,
+        total: validAccessPointMarkers.length + validCameraMarkers.length + 
+               validElevatorMarkers.length + validIntercomMarkers.length,
         types: {
           access_point: {
-            total: accessPointMarkers.length,
+            total: validAccessPointMarkers.length,
             interior: interiorAccessPoints,
             perimeter: perimeterAccessPoints,
-            unspecified: accessPointMarkers.length - interiorAccessPoints - perimeterAccessPoints
+            unspecified: validAccessPointMarkers.length - interiorAccessPoints - perimeterAccessPoints,
+            equipment_count: allAccessPoints.length
           },
           camera: {
-            total: cameraMarkers.length,
+            total: validCameraMarkers.length,
             indoor: indoorCameras,
             outdoor: outdoorCameras,
-            unspecified: cameraMarkers.length - indoorCameras - outdoorCameras
+            unspecified: validCameraMarkers.length - indoorCameras - outdoorCameras,
+            equipment_count: allCameras.length
           },
           elevator: {
-            total: elevatorMarkers.length
+            total: validElevatorMarkers.length,
+            equipment_count: allElevators.length
           },
           intercom: {
-            total: intercomMarkers.length
+            total: validIntercomMarkers.length,
+            equipment_count: allIntercoms.length
           }
         }
       };
