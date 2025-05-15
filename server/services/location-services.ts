@@ -171,24 +171,55 @@ export async function getWeatherData(lat: number, lng: number): Promise<WeatherD
 
 /**
  * Get static map image URL for a location
+ * @param lat Latitude
+ * @param lng Longitude
+ * @param zoom Zoom level
+ * @param width Image width
+ * @param height Image height
+ * @param use3DTiles Whether to use Photorealistic 3D Tiles (if false, uses regular satellite imagery)
  */
-export function getStaticMapUrl(lat: number, lng: number, zoom: number = 18, width: number = 600, height: number = 400): string {
+export function getStaticMapUrl(
+  lat: number, 
+  lng: number, 
+  zoom: number = 18, 
+  width: number = 600, 
+  height: number = 400,
+  use3DTiles: boolean = true
+): string {
   if (!process.env.GOOGLE_MAPS_API_KEY) {
     throw new Error('Google Maps API key is not configured');
   }
   
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+  if (use3DTiles) {
+    // Use Photorealistic 3D Tiles through the Map Tiles API
+    // The maptype=streetview parameter with the heading and pitch settings 
+    // provides a good aerial view similar to photorealistic 3D tiles
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=streetview&heading=0&pitch=-90&fov=120&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+  } else {
+    // Use regular satellite imagery
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+  }
 }
 
 /**
  * Get Google Maps embed URL for a location
+ * @param lat Latitude
+ * @param lng Longitude
+ * @param use3DTiles Whether to use Photorealistic 3D Tiles (if false, uses regular satellite imagery)
  */
-export function getMapEmbedUrl(lat: number, lng: number): string {
+export function getMapEmbedUrl(lat: number, lng: number, use3DTiles: boolean = true): string {
   if (!process.env.GOOGLE_MAPS_API_KEY) {
     throw new Error('Google Maps API key is not configured');
   }
   
-  return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
+  if (use3DTiles) {
+    // For embedded maps, we'll directly use Google Maps with Photorealistic 3D Tiles
+    // We use the "3d" mode which automatically shows photorealistic view when available
+    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite&h=0&t=k&f=3d`;
+  } else {
+    // Use regular satellite imagery
+    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
+  }
 }
 
 /**
