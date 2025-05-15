@@ -74,34 +74,77 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     if (!scriptLoaded || !mapRef.current) return;
 
     try {
-      // Create the map instance
+      // Enhanced map options for photorealistic 3D tiles
+      // Safely access Google Maps API
+      const google = window.google;
+      if (!google || !google.maps) {
+        throw new Error("Google Maps API not loaded");
+      }
+      
       const mapOptions = {
         center: { lat, lng },
         zoom,
         mapTypeId: 'satellite',
         tilt: 45, // Enable 45-degree imagery where available
+        heading: 0, // Initial heading (north)
         mapTypeControl: true,
         mapTypeControlOptions: {
-          style: window.google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
           mapTypeIds: ['satellite', 'hybrid', 'roadmap']
         },
+        // Enable all controls for full interaction
         streetViewControl: true,
         rotateControl: true,
         fullscreenControl: true,
         zoomControl: true,
         scaleControl: true,
+        // Enhance default UI for better mobile experience
+        gestureHandling: 'greedy', // Allows one-finger pan on mobile
+        // Add keyboard shortcuts for accessibility
+        keyboardShortcuts: true,
       };
 
-      const map = new window.google.maps.Map(mapRef.current, mapOptions);
+      const map = new google.maps.Map(mapRef.current, mapOptions);
       
-      // Add a marker
-      new window.google.maps.Marker({
+      // Add a marker at the project location
+      const marker = new google.maps.Marker({
         position: { lat, lng },
         map: map,
-        title: "Project Location"
+        title: "Project Location",
+        animation: google.maps.Animation.DROP,
+        draggable: false
       });
 
-      setMapLoaded(true);
+      // Add info window to show coordinates
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<div style="font-size:12px">
+                    <strong>Project Location</strong><br>
+                    Lat: ${lat.toFixed(6)}<br>
+                    Lng: ${lng.toFixed(6)}
+                  </div>`
+      });
+
+      // Show info window when marker is clicked
+      marker.addListener('click', () => {
+        infoWindow.open(map, marker);
+      });
+
+      // Add toggle for tilt
+      map.addListener('dblclick', () => {
+        const currentTilt = map.getTilt();
+        map.setTilt(currentTilt === 0 ? 45 : 0);
+      });
+
+      // Listen for map idle to handle map loaded state
+      map.addListener('idle', () => {
+        setMapLoaded(true);
+      });
+
+      // For enhanced 3D experience - using Photorealistic 3D Tiles where available
+      map.setOptions({
+        mapId: 'aad95e55d454eccc' // Generic Map ID that supports 3D features
+      });
+
     } catch (error) {
       console.error("Error initializing map:", error);
       setMapError("Failed to initialize map");
@@ -120,7 +163,10 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       {!mapLoaded && !mapError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded border">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <p className="text-sm text-gray-500">Loading interactive map...</p>
+          </div>
         </div>
       )}
 
@@ -129,6 +175,19 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
         className="w-full h-full rounded overflow-hidden"
         style={{ display: mapError ? 'none' : 'block' }}
       />
+      
+      {/* Map controls overlay */}
+      {mapLoaded && !mapError && (
+        <div className="absolute bottom-2 left-2 bg-white/80 backdrop-blur-sm rounded px-2 py-1 text-[10px] text-gray-700 pointer-events-none">
+          <div className="flex flex-col gap-1">
+            <span>• Double-click: Toggle 45° view</span>
+            <span>• Drag: Pan map</span>
+            <span>• Scroll: Zoom in/out</span>
+            <span>• Ctrl+Drag: Rotate view</span>
+            <span>• Click marker: Show coordinates</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
