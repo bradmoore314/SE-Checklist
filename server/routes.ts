@@ -2506,7 +2506,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Create the marker with the equipment ID
+      // For existing equipment, use its name/location for the marker label
+      if (equipmentId !== 0 && equipmentId !== -1 && result.data.marker_type !== 'note') {
+        // Get the equipment item to use its actual name
+        let equipmentName = '';
+        
+        if (result.data.marker_type === 'access_point') {
+          const ap = await storage.getAccessPoint(equipmentId);
+          if (ap && ap.location) {
+            equipmentName = ap.location;
+          } else {
+            // Default sequential naming if location is not available
+            const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
+            const index = accessPoints.findIndex(item => item.id === equipmentId);
+            equipmentName = `Access Point ${index !== -1 ? index + 1 : accessPoints.length}`;
+          }
+        } else if (result.data.marker_type === 'camera') {
+          const camera = await storage.getCamera(equipmentId);
+          if (camera && camera.location) {
+            equipmentName = camera.location;
+          } else {
+            // Default sequential naming
+            const cameras = await storage.getCamerasByProject(floorplan.project_id);
+            const index = cameras.findIndex(item => item.id === equipmentId);
+            equipmentName = `Camera ${index !== -1 ? index + 1 : cameras.length}`;
+          }
+        } else if (result.data.marker_type === 'elevator') {
+          const elevator = await storage.getElevator(equipmentId);
+          if (elevator && elevator.location) {
+            equipmentName = elevator.location;
+          } else {
+            // Default sequential naming
+            const elevators = await storage.getElevatorsByProject(floorplan.project_id);
+            const index = elevators.findIndex(item => item.id === equipmentId);
+            equipmentName = `Elevator ${index !== -1 ? index + 1 : elevators.length}`;
+          }
+        } else if (result.data.marker_type === 'intercom') {
+          const intercom = await storage.getIntercom(equipmentId);
+          if (intercom && intercom.location) {
+            equipmentName = intercom.location;
+          } else {
+            // Default sequential naming
+            const intercoms = await storage.getIntercomsByProject(floorplan.project_id);
+            const index = intercoms.findIndex(item => item.id === equipmentId);
+            equipmentName = `Intercom ${index !== -1 ? index + 1 : intercoms.length}`;
+          }
+        }
+        
+        // Create marker with the equipment's proper name
+        const marker = await storage.createFloorplanMarker({
+          ...result.data,
+          equipment_id: equipmentId,
+          label: equipmentName
+        });
+        return res.status(201).json(marker);
+      }
+      
+      // Create the marker with the equipment ID (for newly created equipment)
       const marker = await storage.createFloorplanMarker({
         ...result.data,
         equipment_id: equipmentId
