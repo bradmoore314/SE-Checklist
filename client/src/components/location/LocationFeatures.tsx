@@ -216,7 +216,8 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     enabled: !!coordinates,
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/map-url?lat=${coordinates?.lat}&lng=${coordinates?.lng}&width=600&height=400`);
+        // Request enhanced satellite imagery (use3DTiles=true for higher quality)
+        const response = await fetch(`/api/map-url?lat=${coordinates?.lat}&lng=${coordinates?.lng}&width=600&height=400&use3DTiles=true`);
         
         if (!response.ok) {
           console.warn('Failed to get map URL, generating placeholder URL');
@@ -769,7 +770,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite&h=0&t=k&f=3d`}
+                src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite`}
               ></iframe>
             </div>
           )}

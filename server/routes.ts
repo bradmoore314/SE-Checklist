@@ -3893,13 +3893,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const zoom = parseInt(req.query.zoom as string) || 18;
     const width = parseInt(req.query.width as string) || 600;
     const height = parseInt(req.query.height as string) || 400;
+    // New parameter for 3D tiles, defaults to true
+    const use3DTiles = req.query.use3DTiles !== 'false'; // Default to true unless explicitly set to 'false'
     
     if (isNaN(lat) || isNaN(lng)) {
       return res.status(400).json({ message: "Valid lat and lng coordinates are required" });
     }
 
     try {
-      const mapUrl = getStaticMapUrl(lat, lng, zoom, width, height);
+      // Pass the use3DTiles parameter to get high-quality imagery when true
+      const mapUrl = getStaticMapUrl(lat, lng, zoom, width, height, use3DTiles);
       res.json({ url: mapUrl });
     } catch (error) {
       res.status(500).json({ 
@@ -3937,10 +3940,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Couldn't geocode project address" });
       }
       
-      // Generate a satellite image URL (smaller size for thumbnails)
-      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 300, 200);
+      // Generate a satellite image URL with photorealistic 3D Tiles (smaller size for thumbnails)
+      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 300, 200, true);
       
-      // Return the URL
+      // Return the URL with high-quality photorealistic imagery
       res.json({ url: mapUrl });
     } catch (error) {
       console.error("Error getting satellite image for project", error);
