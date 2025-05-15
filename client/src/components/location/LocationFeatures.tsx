@@ -31,6 +31,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Project } from '@shared/schema';
 import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle, Check, AlertTriangle, AlertOctagon } from 'lucide-react';
+import InteractiveMap from './InteractiveMap';
 
 interface LocationFeaturesProps {
   project: Project;
@@ -206,37 +207,8 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     }
   });
 
-  // Query for static map URL
-  const { 
-    data: mapData,
-    isLoading: isLoadingMap,
-    isError: isErrorMap
-  } = useQuery({
-    queryKey: ['/api/map-url', coordinates?.lat, coordinates?.lng],
-    enabled: !!coordinates,
-    queryFn: async () => {
-      try {
-        // Request enhanced satellite imagery (use3DTiles=true for higher quality)
-        const response = await fetch(`/api/map-url?lat=${coordinates?.lat}&lng=${coordinates?.lng}&width=600&height=400&use3DTiles=true`);
-        
-        if (!response.ok) {
-          console.warn('Failed to get map URL, generating placeholder URL');
-          // Return a placeholder map image URL as fallback
-          return { 
-            url: `https://via.placeholder.com/600x400?text=Map+not+available+(${coordinates?.lat},${coordinates?.lng})` 
-          };
-        }
-        
-        return response.json() as Promise<{ url: string }>;
-      } catch (error) {
-        console.error('Error fetching map URL:', error);
-        // Provide fallback image URL
-        return { 
-          url: `https://via.placeholder.com/600x400?text=Map+not+available+(${coordinates?.lat},${coordinates?.lng})`
-        };
-      }
-    }
-  });
+  // We no longer need to query for static map URL
+  // as we're using the interactive map component directly
 
   // Query for weather data
   const { 
@@ -374,12 +346,12 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
 
   // Handle adding satellite image or custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
-    if ((!mapData?.url && !customFloorplanData) || !floorplanName) return;
+    if (!customFloorplanData || !floorplanName) return;
     
     try {
       let base64Result;
       
-      // Handle based on source - either satellite image or custom upload
+      // Handle custom uploaded file
       if (customFloorplanData) {
         // Custom uploaded file - already processed to base64
         base64Result = customFloorplanData;
@@ -402,13 +374,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           title: 'Floorplan Created',
           description: successMessage,
         });
-      } 
-      else if (mapData?.url) {
-        // Satellite image - need to fetch and process
-        const response = await fetch(mapData.url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-        }
+      }
         
         const blob = await response.blob();
         
@@ -618,15 +584,22 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           )}
           
           {/* Map Section - Mobile Responsive */}
-          {coordinates && mapData && (
+          {coordinates && (
             <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-2">
               <div className="relative aspect-square overflow-hidden">
-                <img 
-                  src={mapData.url} 
-                  alt="Map of site location" 
-                  className="w-full h-full object-cover rounded-md border cursor-pointer" 
+                {/* Interactive Map thumbnail that supports interactions */}
+                <div 
+                  className="w-full h-full rounded-md border cursor-pointer" 
                   onClick={() => setShowMapFullscreen(true)}
-                />
+                >
+                  <InteractiveMap 
+                    lat={coordinates.lat} 
+                    lng={coordinates.lng} 
+                    zoom={17}
+                    height="100%"
+                    width="100%"
+                  />
+                </div>
                 <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 flex space-x-2">
                   <Button 
                     size="sm" 
@@ -763,15 +736,15 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           
           {coordinates && (
             <div className="w-full h-[40vh] sm:h-[60vh] overflow-hidden rounded">
-              <iframe
-                width="100%"
+              {/* Interactive Map with support for zooming, tilting, panning, and rotating */}
+              <InteractiveMap 
+                lat={coordinates.lat} 
+                lng={coordinates.lng} 
+                zoom={18}
                 height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                allowFullScreen
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=${coordinates.lat},${coordinates.lng}&zoom=18&maptype=satellite`}
-              ></iframe>
+                width="100%"
+                className="border rounded"
+              />
             </div>
           )}
           
