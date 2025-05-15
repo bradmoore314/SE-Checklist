@@ -3972,6 +3972,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Google Maps API key endpoint for client-side interactive maps
+  app.get("/api/map-api-key", isAuthenticated, (req: Request, res: Response) => {
+    try {
+      if (!process.env.GOOGLE_MAPS_API_KEY) {
+        return res.status(404).json({ error: 'Google Maps API key not configured' });
+      }
+      
+      // Return the API key for use with Google Maps JavaScript API
+      return res.json({ apiKey: process.env.GOOGLE_MAPS_API_KEY });
+    } catch (error) {
+      console.error('Error providing Maps API key:', error);
+      return res.status(500).json({ error: 'Server error' });
+    }
+  });
 
   // Register enhanced Bluebeam-like PDF annotation routes
   registerEnhancedFloorplanRoutes(app, isAuthenticated);
