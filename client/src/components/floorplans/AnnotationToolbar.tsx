@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import ChatbotButton from './ChatbotButton';
+import SimpleAIButton from './SimpleAIButton';
 
 export type AnnotationTool = 
   | 'select' 
@@ -296,7 +296,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
             <div className="mt-2">
               <h4 className="text-xs font-medium mb-1 text-muted-foreground">AI Assistant</h4>
               <div className="flex">
-                <ChatbotButton className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
+                <SimpleAIButton className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
               </div>
             </div>
           </div>
@@ -720,7 +720,7 @@ export const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
           <Separator orientation="vertical" className="h-8 mx-1" />
           
           {/* AI Assistant Button */}
-          <ChatbotButton className="h-8 w-8 rounded-md bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
+          <SimpleAIButton className="h-8 w-8 rounded-md bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600" />
         </div>
         
         {/* File operations */}
