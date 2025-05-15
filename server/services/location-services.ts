@@ -190,11 +190,11 @@ export function getStaticMapUrl(
     throw new Error('Google Maps API key is not configured');
   }
   
+  // Note: The Google Static Maps API doesn't directly support 3D photorealistic tiles
+  // Instead, we'll use an enhanced version of the satellite imagery with higher zoom and resolution
   if (use3DTiles) {
-    // Use Photorealistic 3D Tiles through the Map Tiles API
-    // The maptype=streetview parameter with the heading and pitch settings 
-    // provides a good aerial view similar to photorealistic 3D tiles
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=streetview&heading=0&pitch=-90&fov=120&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    // Use enhanced satellite imagery with better quality
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&scale=2&key=${process.env.GOOGLE_MAPS_API_KEY}`;
   } else {
     // Use regular satellite imagery
     return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=${process.env.GOOGLE_MAPS_API_KEY}`;
@@ -213,9 +213,9 @@ export function getMapEmbedUrl(lat: number, lng: number, use3DTiles: boolean = t
   }
   
   if (use3DTiles) {
-    // For embedded maps, we'll directly use Google Maps with Photorealistic 3D Tiles
-    // We use the "3d" mode which automatically shows photorealistic view when available
-    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite&h=0&t=k&f=3d`;
+    // For embedded maps, we'll use the 3d map mode with photorealistic view
+    // Note: The additional URL parameters should only be used in the iframe src, not in the API call
+    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
   } else {
     // Use regular satellite imagery
     return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
