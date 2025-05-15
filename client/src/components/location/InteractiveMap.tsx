@@ -31,40 +31,53 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
       return;
     }
 
-    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (!googleMapsApiKey) {
-      setMapError("Google Maps API key is not configured");
-      return;
-    }
+    // First fetch the Google Maps API key from the server
+    const fetchApiKey = async () => {
+      try {
+        const response = await fetch('/api/map-api-key');
+        
+        if (!response.ok) {
+          setMapError("Failed to get Google Maps API key from server");
+          return;
+        }
+        
+        const data = await response.json();
+        
+        if (!data.apiKey) {
+          setMapError("Google Maps API key not available");
+          return;
+        }
+        
+        // Create script element with the retrieved API key
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&callback=initInteractiveMap`;
+        script.async = true;
+        script.defer = true;
+        
+        // Define the callback function
+        window.initInteractiveMap = () => {
+          setScriptLoaded(true);
+        };
 
-    // Create script element
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initInteractiveMap`;
-    script.async = true;
-    script.defer = true;
-    
-    // Define the callback function
-    window.initInteractiveMap = () => {
-      setScriptLoaded(true);
+        // Handle errors
+        script.onerror = () => {
+          setMapError("Failed to load Google Maps API");
+        };
+
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error("Error fetching Google Maps API key:", error);
+        setMapError("Failed to load Google Maps API");
+      }
     };
 
-    // Handle errors
-    script.onerror = () => {
-      setMapError("Failed to load Google Maps API");
-    };
-
-    document.head.appendChild(script);
+    fetchApiKey();
 
     return () => {
       // Cleanup
       if (window.initInteractiveMap) {
         // @ts-ignore - Cleanup the global function
         window.initInteractiveMap = undefined;
-      }
-      
-      // Only remove the script if it's the one we added
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
       }
     };
   }, []);
