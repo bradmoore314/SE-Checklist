@@ -103,50 +103,100 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
   });
 
   // Process consistency data when it's loaded
+  // AND automatically resolve any inconsistencies
   useEffect(() => {
     if (consistencyData) {
       const inconsistentTypes: InconsistentEquipment[] = [];
+      let hasAutoResolved = false;
       
       // Check each equipment type for inconsistencies
       if (consistencyData.access_points.total > consistencyData.access_points.markers) {
+        const unmapped = consistencyData.access_points.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'access_point',
           totalCount: consistencyData.access_points.total,
           markerCount: consistencyData.access_points.markers,
-          unmappedEquipment: consistencyData.access_points.unmapped || []
+          unmappedEquipment: unmapped
         });
+        
+        // Auto-resolve the first unmapped equipment of each type
+        if (unmapped.length > 0) {
+          resolveEquipmentMutation.mutate({ 
+            equipmentType: 'access_point', 
+            equipmentId: unmapped[0].id 
+          });
+          hasAutoResolved = true;
+        }
       }
       
-      if (consistencyData.cameras.total > consistencyData.cameras.markers) {
+      if (consistencyData.cameras.total > consistencyData.cameras.markers && !hasAutoResolved) {
+        const unmapped = consistencyData.cameras.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'camera',
           totalCount: consistencyData.cameras.total,
           markerCount: consistencyData.cameras.markers,
-          unmappedEquipment: consistencyData.cameras.unmapped || []
+          unmappedEquipment: unmapped
         });
+        
+        // Auto-resolve the first unmapped equipment of each type
+        if (unmapped.length > 0) {
+          resolveEquipmentMutation.mutate({ 
+            equipmentType: 'camera', 
+            equipmentId: unmapped[0].id 
+          });
+          hasAutoResolved = true;
+        }
       }
       
-      if (consistencyData.elevators.total > consistencyData.elevators.markers) {
+      if (consistencyData.elevators.total > consistencyData.elevators.markers && !hasAutoResolved) {
+        const unmapped = consistencyData.elevators.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'elevator',
           totalCount: consistencyData.elevators.total,
           markerCount: consistencyData.elevators.markers,
-          unmappedEquipment: consistencyData.elevators.unmapped || []
+          unmappedEquipment: unmapped
         });
+        
+        // Auto-resolve the first unmapped equipment of each type
+        if (unmapped.length > 0) {
+          resolveEquipmentMutation.mutate({ 
+            equipmentType: 'elevator', 
+            equipmentId: unmapped[0].id 
+          });
+          hasAutoResolved = true;
+        }
       }
       
-      if (consistencyData.intercoms.total > consistencyData.intercoms.markers) {
+      if (consistencyData.intercoms.total > consistencyData.intercoms.markers && !hasAutoResolved) {
+        const unmapped = consistencyData.intercoms.unmapped || [];
         inconsistentTypes.push({
           equipmentType: 'intercom',
           totalCount: consistencyData.intercoms.total,
           markerCount: consistencyData.intercoms.markers,
-          unmappedEquipment: consistencyData.intercoms.unmapped || []
+          unmappedEquipment: unmapped
         });
+        
+        // Auto-resolve the first unmapped equipment of each type
+        if (unmapped.length > 0) {
+          resolveEquipmentMutation.mutate({ 
+            equipmentType: 'intercom', 
+            equipmentId: unmapped[0].id 
+          });
+          hasAutoResolved = true;
+        }
       }
       
       setInconsistencies(inconsistentTypes);
+      
+      // If any equipment was auto-resolved, set the success message
+      if (hasAutoResolved) {
+        setShowResolutionSuccessMessage(true);
+        setTimeout(() => {
+          setShowResolutionSuccessMessage(false);
+        }, 3000);
+      }
     }
-  }, [consistencyData]);
+  }, [consistencyData, resolveEquipmentMutation]);
 
   // Handle checking for inconsistencies
   const handleCheckConsistency = () => {
@@ -211,7 +261,7 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
     );
   }
 
-  // If inconsistencies found
+  // If inconsistencies found and being auto-resolved
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -231,57 +281,42 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
         </Button>
       </div>
       
-      <Alert variant="destructive" className="bg-red-50 border-red-200">
-        <AlertTriangle className="h-4 w-4 text-red-500" />
-        <AlertTitle className="text-red-700">Equipment Mismatch Detected</AlertTitle>
-        <AlertDescription className="text-red-600 text-xs">
-          Some equipment is in your tables but not placed on any floorplan.
+      <Alert className="bg-blue-50 border-blue-200">
+        <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+        <AlertTitle className="text-blue-700">Auto-Syncing Equipment</AlertTitle>
+        <AlertDescription className="text-blue-600 text-xs">
+          Automatically syncing unmapped equipment to floorplans...
         </AlertDescription>
       </Alert>
 
-      <Accordion type="single" collapsible className="w-full">
+      <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-xs text-blue-700 mb-2">
+          <span className="font-medium">Auto-syncing equipment</span> - Placing equipment on floorplans automatically
+        </p>
+        
         {inconsistencies.map((item) => (
-          <AccordionItem key={item.equipmentType} value={item.equipmentType}>
-            <AccordionTrigger className="text-sm py-2 hover:no-underline">
-              <div className="flex items-center justify-between w-full pr-2">
-                <span>{equipmentTypeNames[item.equipmentType]}</span>
-                <Badge variant="outline" className="ml-2 text-xs">
-                  {item.totalCount - item.markerCount} unmapped
-                </Badge>
+          <div 
+            key={item.equipmentType} 
+            className="mb-2 last:mb-0"
+          >
+            <div className="flex items-center justify-between py-1">
+              <span className="text-xs font-medium text-blue-900">{equipmentTypeNames[item.equipmentType]}</span>
+              <div className="flex items-center">
+                <span className="text-xs text-blue-700 mr-2">
+                  {item.markerCount}/{item.totalCount} mapped
+                </span>
+                <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />
               </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2 py-1">
-                <p className="text-xs text-muted-foreground mb-2">
-                  {item.totalCount} total, only {item.markerCount} on floorplans
-                </p>
-                
-                {item.unmappedEquipment.map((equipment) => (
-                  <div 
-                    key={`${item.equipmentType}-${equipment.id}`}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md text-xs"
-                  >
-                    <span className="font-medium truncate max-w-[150px]" title={equipment.location}>
-                      {equipment.location}
-                    </span>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="h-7 text-xs"
-                      onClick={() => handleResolveEquipment(item.equipmentType, equipment.id)}
-                      disabled={resolveEquipmentMutation.isPending}
-                    >
-                      {resolveEquipmentMutation.isPending ? (
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      ) : 'Mark as Resolved'}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+            </div>
+            <div className="w-full h-1.5 bg-blue-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-blue-400" 
+                style={{ width: `${Math.floor((item.markerCount / item.totalCount) * 100)}%` }}
+              />
+            </div>
+          </div>
         ))}
-      </Accordion>
+      </div>
     </div>
   );
 }
