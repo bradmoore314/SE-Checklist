@@ -102,10 +102,18 @@ export const UnassignedEquipmentSelect: React.FC<UnassignedEquipmentSelectProps>
         queryClient.setQueryData([`/api/projects/${projectId}/unassigned-equipment`], updatedData);
       }
       
-      // Refetch to ensure server and client are in sync
+      // Invalidate all relevant queries to ensure server and client are in sync
       setTimeout(() => {
-        refetch();
-      }, 1000);
+        // Invalidate the specific project's unassigned equipment query
+        queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/unassigned-equipment`] });
+        
+        // Also invalidate equipment lists and marker stats to keep everything in sync
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'marker-stats'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'access-points'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'cameras'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'elevators'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'intercoms'] });
+      }, 500);
     }
   };
   
