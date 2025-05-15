@@ -2439,9 +2439,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let locationName: string;
         
         if (result.data.marker_type === 'access_point') {
-          // Get current count of access points for sequential numbering
+          // Get access points to determine next number
           const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
-          const nextNumber = accessPoints.length + 1;
+          
+          // Default to 1 if no access points exist yet
+          let nextNumber = 1;
+          
+          // Otherwise find the highest number and add 1
+          if (accessPoints.length > 0) {
+            const numberedAccessPoints = accessPoints
+              .filter(ap => ap.location && ap.location.startsWith('Access Point '))
+              .map(ap => {
+                const match = ap.location.match(/Access Point (\d+)/);
+                return match ? parseInt(match[1], 10) : 0;
+              });
+              
+            if (numberedAccessPoints.length > 0) {
+              nextNumber = Math.max(...numberedAccessPoints) + 1;
+            }
+          }
           
           // Create label with sequential number - don't use coordinates in name
           locationName = `Access Point ${nextNumber}`;
@@ -2456,9 +2472,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           equipmentId = newAccessPoint.id;
         } else if (result.data.marker_type === 'camera') {
-          // Get current count of cameras for sequential numbering
+          // Get cameras to determine next number
           const cameras = await storage.getCamerasByProject(floorplan.project_id);
-          const nextNumber = cameras.length + 1;
+          
+          // Default to 1 if no cameras exist yet
+          let nextNumber = 1;
+          
+          // Otherwise find the highest number and add 1
+          if (cameras.length > 0) {
+            const numberedCameras = cameras
+              .filter(cam => cam.location && cam.location.startsWith('Camera '))
+              .map(cam => {
+                const match = cam.location.match(/Camera (\d+)/);
+                return match ? parseInt(match[1], 10) : 0;
+              });
+              
+            if (numberedCameras.length > 0) {
+              nextNumber = Math.max(...numberedCameras) + 1;
+            }
+          }
           
           // Create label with sequential number - don't use coordinates in name
           locationName = `Camera ${nextNumber}`;
@@ -2563,13 +2595,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create the marker with the equipment ID (for newly created equipment)
-      // If the marker is tied to an access point and the label is in the form "Floor X, Y", 
-      // replace it with a proper sequential name
-      if (result.data.marker_type === 'access_point' && result.data.label && result.data.label.startsWith('Floor ')) {
+      // Always use proper sequential naming for equipment markers
+      if (result.data.marker_type === 'access_point') {
         // Get current access points to determine next number
         const accessPoints = await storage.getAccessPointsByProject(floorplan.project_id);
-        const markedAccessPoints = await storage.getAccessPointMarkersByProject(floorplan.project_id);
-        const nextNumber = markedAccessPoints.length + 1;
+        
+        // Default to 1 if no markers exist yet
+        let nextNumber = 1;
+        
+        // Otherwise find the highest number and add 1
+        if (accessPoints.length > 0) {
+          const numberedAccessPoints = accessPoints
+            .filter(ap => ap.location && ap.location.startsWith('Access Point '))
+            .map(ap => {
+              const match = ap.location.match(/Access Point (\d+)/);
+              return match ? parseInt(match[1], 10) : 0;
+            });
+            
+          if (numberedAccessPoints.length > 0) {
+            nextNumber = Math.max(...numberedAccessPoints) + 1;
+          }
+        }
         
         // Create appropriate sequential name
         const properName = `Access Point ${nextNumber}`;
@@ -2582,8 +2628,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Create marker with proper name
         const marker = await storage.createFloorplanMarker({
           ...result.data,
-          equipment_id: equipmentId,
-          label: properName
+          label: properName, // Use proper name instead of "Floor X, Y"
+          equipment_id: equipmentId
         });
         
         return res.status(201).json(marker);
