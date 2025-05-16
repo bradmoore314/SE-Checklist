@@ -49,12 +49,18 @@ const EquipmentFormDialog = ({
         return null;
       }
       if (!res.ok) throw new Error(`Failed to fetch access point data: ${res.statusText}`);
-      return res.json();
+      const data = await res.json();
+      // Check if we got an empty response or no actual data returned
+      if (!data || Object.keys(data).length === 0) {
+        console.warn(`Access point with ID ${existingEquipmentId} returned empty data. May have been deleted.`);
+        return null;
+      }
+      return data;
     },
     enabled: !!existingEquipmentId && markerType === 'access_point' && isOpen,
     retry: (failureCount, error) => {
       // Don't retry 404 errors
-      if (error.message.includes('404')) return false;
+      if (error && error.message && error.message.includes('404')) return false;
       return failureCount < 3; // retry up to 3 times for other errors
     }
   });
@@ -70,11 +76,17 @@ const EquipmentFormDialog = ({
         return null;
       }
       if (!res.ok) throw new Error(`Failed to fetch camera data: ${res.statusText}`);
-      return res.json();
+      const data = await res.json();
+      // Check if we got an empty response or no actual data returned
+      if (!data || Object.keys(data).length === 0) {
+        console.warn(`Camera with ID ${existingEquipmentId} returned empty data. May have been deleted.`);
+        return null;
+      }
+      return data;
     },
     enabled: !!existingEquipmentId && markerType === 'camera' && isOpen,
     retry: (failureCount, error) => {
-      if (error.message.includes('404')) return false;
+      if (error && error.message && error.message.includes('404')) return false;
       return failureCount < 3;
     }
   });
@@ -90,11 +102,17 @@ const EquipmentFormDialog = ({
         return null;
       }
       if (!res.ok) throw new Error(`Failed to fetch elevator data: ${res.statusText}`);
-      return res.json();
+      const data = await res.json();
+      // Check if we got an empty response or no actual data returned
+      if (!data || Object.keys(data).length === 0) {
+        console.warn(`Elevator with ID ${existingEquipmentId} returned empty data. May have been deleted.`);
+        return null;
+      }
+      return data;
     },
     enabled: !!existingEquipmentId && markerType === 'elevator' && isOpen,
     retry: (failureCount, error) => {
-      if (error.message.includes('404')) return false;
+      if (error && error.message && error.message.includes('404')) return false;
       return failureCount < 3;
     }
   });
@@ -110,15 +128,28 @@ const EquipmentFormDialog = ({
         return null;
       }
       if (!res.ok) throw new Error(`Failed to fetch intercom data: ${res.statusText}`);
-      return res.json();
+      const data = await res.json();
+      // Check if we got an empty response or no actual data returned
+      if (!data || Object.keys(data).length === 0) {
+        console.warn(`Intercom with ID ${existingEquipmentId} returned empty data. May have been deleted.`);
+        return null;
+      }
+      return data;
     },
     enabled: !!existingEquipmentId && markerType === 'intercom' && isOpen,
     retry: (failureCount, error) => {
-      if (error.message.includes('404')) return false;
+      if (error && error.message && error.message.includes('404')) return false;
       return failureCount < 3;
     }
   });
   
+  // Log data for debugging purposes
+  useEffect(() => {
+    if (existingEquipmentId && markerType === 'access_point' && !isLoadingAccessPoint) {
+      console.log('Access Point Data:', accessPointData);
+    }
+  }, [existingEquipmentId, markerType, accessPointData, isLoadingAccessPoint]);
+
   // If any equipment error occurs and it's not a 404, show an error toast
   useEffect(() => {
     const errors = [accessPointError, cameraError, elevatorError, intercomError].filter(Boolean);
@@ -210,7 +241,7 @@ const EquipmentFormDialog = ({
       }
       
       // Handle case where equipment was deleted or not found
-      if (existingEquipmentId && !accessPointData && !isLoadingAccessPoint) {
+      if (existingEquipmentId && accessPointData === null && !isLoadingAccessPoint) {
         return (
           <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent>
@@ -277,7 +308,7 @@ const EquipmentFormDialog = ({
       }
       
       // Handle case where equipment was deleted or not found
-      if (existingEquipmentId && !cameraData && !isLoadingCamera) {
+      if (existingEquipmentId && cameraData === null && !isLoadingCamera) {
         return (
           <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent>
@@ -344,7 +375,7 @@ const EquipmentFormDialog = ({
       }
       
       // Handle case where equipment was deleted or not found
-      if (existingEquipmentId && !elevatorData && !isLoadingElevator) {
+      if (existingEquipmentId && elevatorData === null && !isLoadingElevator) {
         return (
           <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent>
@@ -411,7 +442,7 @@ const EquipmentFormDialog = ({
       }
       
       // Handle case where equipment was deleted or not found
-      if (existingEquipmentId && !intercomData && !isLoadingIntercom) {
+      if (existingEquipmentId && intercomData === null && !isLoadingIntercom) {
         return (
           <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent>
