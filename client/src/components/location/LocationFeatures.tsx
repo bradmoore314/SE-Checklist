@@ -905,7 +905,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
               onClick={handleAddToFloorplan}
               disabled={createFloorplanMutation.isPending || !floorplanName || 
-                       !customFloorplanData}
+                       (!customFloorplanData && !coordinates)}
             >
               {createFloorplanMutation.isPending ? (
                 <>
