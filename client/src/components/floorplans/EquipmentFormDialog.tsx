@@ -359,7 +359,15 @@ const EquipmentFormDialog = ({
       
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && cameraData 
-        ? { ...cameraData, id: existingEquipmentId } 
+        ? { 
+            ...camera,  // Start with default values for all fields
+            ...cameraData, // Override with actual data from database
+            id: existingEquipmentId,
+            // Explicitly ensure critical fields are set
+            camera_type: cameraData.camera_type || 'IP Camera',
+            mounting_type: cameraData.mounting_type || 'Wall Mount',
+            resolution: cameraData.resolution || '4K'
+          } 
         : { ...camera, id: existingEquipmentId || 0 };
       
       return (
@@ -426,7 +434,16 @@ const EquipmentFormDialog = ({
       
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && elevatorData 
-        ? { ...elevatorData, id: existingEquipmentId } 
+        ? { 
+            ...elevator,  // Start with default values for all fields
+            ...elevatorData, // Override with actual data from database
+            id: existingEquipmentId,
+            // Explicitly ensure critical fields are set
+            manufacturer: elevatorData.manufacturer || 'Otis',
+            model: elevatorData.model || 'Gen2',
+            number_of_floors: elevatorData.number_of_floors || 2,
+            control_board_location: elevatorData.control_board_location || 'Machine Room',
+          } 
         : { ...elevator, id: existingEquipmentId || 0 };
       
       return (
@@ -493,7 +510,15 @@ const EquipmentFormDialog = ({
       
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && intercomData 
-        ? { ...intercomData, id: existingEquipmentId } 
+        ? { 
+            ...intercom,  // Start with default values for all fields
+            ...intercomData, // Override with actual data from database
+            id: existingEquipmentId,
+            // Explicitly ensure critical fields are set
+            intercom_type: intercomData.intercom_type || 'Door Station',
+            mounting_type: intercomData.mounting_type || 'Surface Mount',
+            user_count: intercomData.user_count || 1
+          } 
         : { ...intercom, id: existingEquipmentId || 0 };
       
       return (
