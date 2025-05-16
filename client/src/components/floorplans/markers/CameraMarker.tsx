@@ -227,32 +227,19 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
           <circle 
             cx={position.x + range * Math.cos((rotation - fov/2) * Math.PI / 180)} 
             cy={position.y + range * Math.sin((rotation - fov/2) * Math.PI / 180)} 
-            r={8} 
-            fill="rgba(255, 255, 255, 0.8)" 
+            r={6} 
+            fill="white" 
             stroke="#2196F3" 
-            strokeWidth={2.5}
-            className="resize-handle fov-handle-left camera-direction-handle"
+            strokeWidth={2}
+            className="resize-handle fov-handle-left"
             data-handle="fov-left"
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-left');
             }}
             onTouchStart={(e) => {
-              e.preventDefault(); // Prevent default touch behavior
-              e.stopPropagation();
-              
-              // Add visual feedback for touch
-              const target = e.currentTarget as SVGCircleElement;
-              target.setAttribute('r', '12');
-              target.setAttribute('fill', 'rgba(33, 150, 243, 0.5)');
-              
-              // Reset after animation
-              setTimeout(() => {
-                target.setAttribute('r', '8');
-                target.setAttribute('fill', 'rgba(255, 255, 255, 0.8)');
-              }, 300);
-              
               if (onHandleTouchStart) {
+                e.stopPropagation();
                 onHandleTouchStart(e, 'fov-left');
               }
             }}
@@ -261,32 +248,19 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
           <circle 
             cx={position.x + range * Math.cos((rotation + fov/2) * Math.PI / 180)} 
             cy={position.y + range * Math.sin((rotation + fov/2) * Math.PI / 180)} 
-            r={8} 
-            fill="rgba(255, 255, 255, 0.8)" 
+            r={6} 
+            fill="white" 
             stroke="#2196F3" 
-            strokeWidth={2.5}
-            className="resize-handle fov-handle-right camera-direction-handle"
+            strokeWidth={2}
+            className="resize-handle fov-handle-right"
             data-handle="fov-right"
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-right');
             }}
             onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              // Add visual feedback for touch
-              const target = e.currentTarget as SVGCircleElement;
-              target.setAttribute('r', '12');
-              target.setAttribute('fill', 'rgba(33, 150, 243, 0.5)');
-              
-              // Reset after animation
-              setTimeout(() => {
-                target.setAttribute('r', '8');
-                target.setAttribute('fill', 'rgba(255, 255, 255, 0.8)');
-              }, 300);
-              
               if (onHandleTouchStart) {
+                e.stopPropagation();
                 onHandleTouchStart(e, 'fov-right');
               }
             }}
@@ -297,32 +271,19 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
           <circle 
             cx={position.x + range * Math.cos(rotation * Math.PI / 180)} 
             cy={position.y + range * Math.sin(rotation * Math.PI / 180)} 
-            r={8} 
-            fill="rgba(255, 255, 255, 0.8)" 
+            r={6} 
+            fill="white" 
             stroke="#2196F3" 
-            strokeWidth={2.5}
-            className="resize-handle range-handle camera-fov-handle"
+            strokeWidth={2}
+            className="resize-handle range-handle"
             data-handle="range"
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'range');
             }}
             onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              // Add visual feedback for touch
-              const target = e.currentTarget as SVGCircleElement;
-              target.setAttribute('r', '12');
-              target.setAttribute('fill', 'rgba(33, 150, 243, 0.5)');
-              
-              // Reset after animation
-              setTimeout(() => {
-                target.setAttribute('r', '8');
-                target.setAttribute('fill', 'rgba(255, 255, 255, 0.8)');
-              }, 300);
-              
               if (onHandleTouchStart) {
+                e.stopPropagation();
                 onHandleTouchStart(e, 'range');
               }
             }}
@@ -344,32 +305,19 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
           <circle 
             cx={position.x + (range/2) * Math.cos(rotation * Math.PI / 180)} 
             cy={position.y + (range/2) * Math.sin(rotation * Math.PI / 180)} 
-            r={8} 
-            fill="rgba(255, 255, 255, 0.8)" 
+            r={6} 
+            fill="white" 
             stroke="#2196F3" 
-            strokeWidth={2.5}
-            className="resize-handle rotation-handle camera-direction-handle"
+            strokeWidth={2}
+            className="resize-handle rotation-handle"
             data-handle="rotation"
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'rotation');
             }}
             onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              // Add visual feedback for touch
-              const target = e.currentTarget as SVGCircleElement;
-              target.setAttribute('r', '12');
-              target.setAttribute('fill', 'rgba(33, 150, 243, 0.5)');
-              
-              // Reset after animation
-              setTimeout(() => {
-                target.setAttribute('r', '8');
-                target.setAttribute('fill', 'rgba(255, 255, 255, 0.8)');
-              }, 300);
-              
               if (onHandleTouchStart) {
+                e.stopPropagation();
                 onHandleTouchStart(e, 'rotation');
               }
             }}
