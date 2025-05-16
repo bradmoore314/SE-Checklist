@@ -12,7 +12,9 @@ interface CameraMarkerProps {
   onClick?: (e: React.MouseEvent) => void;
   onRightClick?: (e: React.MouseEvent) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
   onHandleMouseDown?: (e: React.MouseEvent, handleType: string) => void;
+  onHandleTouchStart?: (e: React.TouchEvent, handleType: string) => void;
 }
 
 export const CameraMarker: React.FC<CameraMarkerProps> = ({
@@ -26,7 +28,9 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
   onClick,
   onRightClick,
   onMouseDown,
+  onTouchStart,
   onHandleMouseDown,
+  onHandleTouchStart,
 }) => {
   // Camera marker dimensions
   const CAMERA_WIDTH = 16;
@@ -158,6 +162,7 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
       onClick={onClick}
       onContextMenu={onRightClick}
       onMouseDown={onMouseDown}
+      onTouchStart={onTouchStart}
     >
       {/* FOV area */}
       <path
@@ -232,6 +237,12 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-left');
             }}
+            onTouchStart={(e) => {
+              if (onHandleTouchStart) {
+                e.stopPropagation();
+                onHandleTouchStart(e, 'fov-left');
+              }
+            }}
             style={{ cursor: 'ew-resize' }}
           />
           <circle 
@@ -246,6 +257,12 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'fov-right');
+            }}
+            onTouchStart={(e) => {
+              if (onHandleTouchStart) {
+                e.stopPropagation();
+                onHandleTouchStart(e, 'fov-right');
+              }
             }}
             style={{ cursor: 'ew-resize' }}
           />
@@ -263,6 +280,12 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'range');
+            }}
+            onTouchStart={(e) => {
+              if (onHandleTouchStart) {
+                e.stopPropagation();
+                onHandleTouchStart(e, 'range');
+              }
             }}
             style={{ cursor: 'nesw-resize' }}
           />
@@ -291,6 +314,12 @@ export const CameraMarker: React.FC<CameraMarkerProps> = ({
             onMouseDown={(e) => {
               e.stopPropagation();
               onHandleMouseDown(e, 'rotation');
+            }}
+            onTouchStart={(e) => {
+              if (onHandleTouchStart) {
+                e.stopPropagation();
+                onHandleTouchStart(e, 'rotation');
+              }
             }}
             style={{ cursor: 'crosshair' }}
           />
