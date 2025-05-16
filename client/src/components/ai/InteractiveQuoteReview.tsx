@@ -608,15 +608,26 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
                         ))}
                       </ul>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setActiveTab("questions")}
-                        className="flex items-center"
-                      >
-                        <PenLine className="mr-2 h-4 w-4" />
-                        Revise Answers
-                      </Button>
+                    <CardFooter className="flex flex-wrap gap-2 justify-between">
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setActiveTab("questions")}
+                          className="flex items-center"
+                        >
+                          <PenLine className="mr-2 h-4 w-4" />
+                          Revise Answers
+                        </Button>
+                        
+                        <Button 
+                          variant="outline"
+                          onClick={generatePdfReport}
+                          className="flex items-center text-blue-700 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Export PDF Report
+                        </Button>
+                      </div>
                       
                       <Button 
                         onClick={generateAnalysis} 
