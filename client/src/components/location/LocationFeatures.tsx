@@ -344,17 +344,54 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     }
   };
 
-  // Handle adding custom uploaded file as floorplan
+  // Handle adding satellite view or custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
-    if (!customFloorplanData || !floorplanName) return;
+    // For satellite view from the "Save to Floorplans" button, we may not have customFloorplanData
+    // but we need to have a floorplan name
+    if (!floorplanName) return;
     
     try {
-      let base64Result;
-      
-      // Handle custom uploaded file
-      if (customFloorplanData) {
+      // Check if we're saving from the satellite view (called from the Save to Floorplans button)
+      // or from the upload dialog
+      if (!customFloorplanData && coordinates) {
+        // We're saving a satellite view screenshot directly
+        
+        // Fetch the satellite image data from the server
+        const response = await fetch(`/api/projects/${project.id}/satellite-image`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch satellite image');
+        }
+        
+        const imageData = await response.json();
+        
+        if (!imageData || !imageData.base64) {
+          throw new Error('No satellite image data available');
+        }
+        
+        // Extract the base64 data
+        const base64Result = imageData.base64.split(',')[1] || imageData.base64;
+        
+        // Create floorplan with the satellite image
+        await createFloorplanMutation.mutateAsync({
+          project_id: project.id,
+          name: floorplanName,
+          pdf_data: base64Result,
+          page_count: 1,
+          is_satellite_image: true, // Mark this as a satellite image for proper handling
+          content_type: 'image/jpeg' // Explicitly set the content type for proper rendering
+        });
+        
+        // Show success toast
+        toast({
+          title: 'Satellite View Saved',
+          description: 'Satellite view saved as floorplan successfully.',
+        });
+      } 
+      // Handle custom uploaded file from the upload dialog
+      else if (customFloorplanData) {
         // Custom uploaded file - already processed to base64
-        base64Result = customFloorplanData;
+        const base64Result = customFloorplanData;
         
         // Create success message with file type
         const successMessage = customFloorplanType 
@@ -366,7 +403,8 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           project_id: project.id,
           name: floorplanName,
           pdf_data: base64Result,
-          page_count: 1
+          page_count: 1,
+          content_type: customFloorplanType || 'application/pdf'
         });
         
         // Show success toast with specific message
