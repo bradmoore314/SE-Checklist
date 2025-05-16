@@ -193,7 +193,7 @@ export default function Dashboard() {
             <TabsList>
               <TabsTrigger value="overview">Project Overview</TabsTrigger>
               <TabsTrigger value="scope">Scope Info</TabsTrigger>
-              <TabsTrigger value="projects">All Projects</TabsTrigger>
+              <TabsTrigger value="projects">All Opportunities</TabsTrigger>
             </TabsList>
             <Button 
               onClick={() => setLocation("/projects")}
