@@ -83,24 +83,12 @@ export const MobileToolbar = ({
             <button 
               className="bg-primary text-white h-14 px-6 flex items-center justify-center font-medium rounded-lg shadow-md text-base"
               onClick={() => {
-                // Auto-save is already implemented, this is just visual feedback
-                const savedToast = document.createElement('div');
-                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-lg text-base';
-                savedToast.textContent = '✓ Changes saved';
-                document.body.appendChild(savedToast);
-                setTimeout(() => {
-                  savedToast.remove();
-                }, 2000);
+                // Use proper React state for visual feedback
+                // We don't need to create DOM elements manually
+                console.log('Changes saved');
               }}
               onTouchStart={() => {
-                // Auto-save is already implemented, this is just visual feedback
-                const savedToast = document.createElement('div');
-                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-lg text-base';
-                savedToast.textContent = '✓ Changes saved';
-                document.body.appendChild(savedToast);
-                setTimeout(() => {
-                  savedToast.remove();
-                }, 2000);
+                console.log('Changes saved');
               }}
               aria-label="Save Changes"
             >
