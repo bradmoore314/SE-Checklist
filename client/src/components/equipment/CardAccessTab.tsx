@@ -166,104 +166,87 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     }
     
     try {
-      // Use the template-based export function
-      const templateUrl = '/assets/DoorScheduleTemplate.xlsx';
-      
-      // Create a new workbook (will use template if available)
+      // Create a new workbook for the template format requested
       const wb = XLSX.utils.book_new();
-      let worksheet;
-      let hasTemplate = false;
       
-      try {
-        // Try to fetch the template file
-        const response = await fetch(templateUrl);
-        if (response.ok) {
-          const templateArrayBuffer = await response.arrayBuffer();
-          const templateWorkbook = XLSX.read(templateArrayBuffer, { type: 'array' });
-          
-          // Get the first sheet in the workbook (Door Schedule)
-          const sheetName = templateWorkbook.SheetNames[0];
-          worksheet = templateWorkbook.Sheets[sheetName];
-          hasTemplate = true;
-        }
-      } catch (templateError) {
-        console.warn("Template not found, using default export format:", templateError);
+      // Create a new worksheet with template header
+      // Header row matches exactly the template requested
+      const header = [
+        "Door Number", "Door Name", "Floor", "Door Type", "Install Type", "Reader", "Card Reader", "Lock Type", 
+        "Door Contact", "REX", "Push To Exit", "Intercom-Buzzer in", "Door Detail", "HUB Location", "Module Location", 
+        "Associated Camera", "Notes"
+      ];
+      
+      const data = [header];
+      
+      // Add data rows for each access point
+      accessPoints.forEach((ap, index) => {
+        // Initialize all cells as empty to match template format with empty checkboxes
+        const row = Array(17).fill(""); // 17 columns
+        
+        // Fill in the data we have
+        row[0] = (index + 1).toString(); // Door Number (sequential)
+        row[1] = ap.location || ""; // Door Name
+        row[2] = "1"; // Floor (default to 1)
+        row[3] = ap.lock_type || ""; // Door Type
+        row[4] = ap.takeover === 'Yes' ? 'Takeover' : 'New Install'; // Install Type
+        row[5] = mapReaderType(ap.reader_type); // Reader
+        // Card Reader - column 6 - leave empty for checkbox
+        row[7] = mapLockType(ap.lock_type); // Lock Type
+        // Checkboxes for Door Contact, REX, Push To Exit, Intercom - columns 8-11 - leave empty
+        // Door Detail, HUB Location, Module Location - columns 12-14 - leave empty
+        row[15] = ""; // Associated Camera
+        row[16] = ap.notes || ""; // Notes
+        
+        data.push(row);
+      });
+      
+      // Create worksheet with exact template layout
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      
+      // Add title row above the header
+      XLSX.utils.sheet_add_aoa(worksheet, [["Kastle Security Door Information"]], { origin: "A1" });
+      
+      // Merge cells for title
+      if (!worksheet['!merges']) worksheet['!merges'] = [];
+      worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }); // Merge A1:H1 for title
+      
+      // Style formatting for heading
+      const title_cell = worksheet.A1;
+      if (title_cell) {
+        title_cell.s = {
+          font: { bold: true, sz: 14 },
+          alignment: { horizontal: "center" }
+        };
       }
       
-      if (hasTemplate) {
-        // Template-based approach - Fill in template rows
-        accessPoints.forEach((ap, index) => {
-          // Start from row 2 (index 1) since row 1 is the header
-          const rowIndex = index + 1;
-          
-          // Door Number (column A) - ID
-          worksheet[`A${rowIndex + 1}`] = { t: 'n', v: ap.id };
-          
-          // Door Name/Location (column B)
-          worksheet[`B${rowIndex + 1}`] = { t: 's', v: ap.location || '' };
-          
-          // Floor (column C) - Default to 1 if not specified
-          worksheet[`C${rowIndex + 1}`] = { t: 's', v: '1' };
-          
-          // Monitoring Type (column D)
-          const monitoringType = mapMonitoringType(ap.monitoring_type);
-          worksheet[`D${rowIndex + 1}`] = { t: 's', v: monitoringType };
-          
-          // Install Type (column E) - Based on takeover status
-          const installType = ap.takeover === 'Yes' ? 'Takeover' : 'New Install';
-          worksheet[`E${rowIndex + 1}`] = { t: 's', v: installType };
-          
-          // Reader Type (column F)
-          const readerType = mapReaderType(ap.reader_type);
-          worksheet[`F${rowIndex + 1}`] = { t: 's', v: readerType };
-          
-          // Lock Type (column I)
-          const lockType = mapLockType(ap.lock_type);
-          worksheet[`I${rowIndex + 1}`] = { t: 's', v: lockType };
-          
-          // Lock Provider (column J)
-          worksheet[`J${rowIndex + 1}`] = { t: 's', v: ap.lock_provider || '' };
-          
-          // Interior/Perimeter (column K)
-          worksheet[`K${rowIndex + 1}`] = { t: 's', v: ap.interior_perimeter || '' };
-          
-          // Notes (column Q)
-          worksheet[`Q${rowIndex + 1}`] = { t: 's', v: ap.notes || '' };
-        });
-        
-        // Add to workbook
-        XLSX.utils.book_append_sheet(wb, worksheet, "Door Schedule");
-      } else {
-        // Fallback to standard format if template not available
-        const doorData = accessPoints.map((ap, index) => ({
-          "ID": ap.id,
-          "Location": ap.location || "",
-          "Door Type": ap.lock_type || "",
-          "Reader Type": ap.reader_type || "",
-          "Lock Type": ap.lock_type || "",
-          "Security Level": ap.monitoring_type || "",
-          "Lock Provider": ap.lock_provider || "",
-          "Interior/Perimeter": ap.interior_perimeter || "",
-          "Takeover": ap.takeover || "No",
-          "Noisy Prop": ap.noisy_prop || "No",
-          "Crashbars": ap.crashbars || "No",
-          "Real Lock Type": ap.real_lock_type || "",
-          "Notes": ap.notes || ""
-        }));
-        
-        // Create worksheet from data
-        worksheet = XLSX.utils.json_to_sheet(doorData);
-        
-        // Add header with project information
-        XLSX.utils.sheet_add_aoa(worksheet, [
-          [`Door Schedule: ${project.name}`],
-          [`Client: ${project.client}`],
-          [""],
-        ], { origin: "A1" });
-        
-        // Add worksheet to workbook
-        XLSX.utils.book_append_sheet(wb, worksheet, "Door Schedule");
-      }
+      // Set column widths to make it look nice
+      const cols = [
+        { wch: 10 }, // Door Number
+        { wch: 25 }, // Door Name
+        { wch: 8 },  // Floor
+        { wch: 15 }, // Door Type
+        { wch: 12 }, // Install Type
+        { wch: 15 }, // Reader
+        { wch: 15 }, // Card Reader
+        { wch: 15 }, // Lock Type
+        { wch: 12 }, // Door Contact
+        { wch: 8 },  // REX
+        { wch: 12 }, // Push To Exit
+        { wch: 16 }, // Intercom-Buzzer
+        { wch: 12 }, // Door Detail
+        { wch: 15 }, // HUB Location
+        { wch: 15 }, // Module Location
+        { wch: 18 }, // Associated Camera
+        { wch: 25 }  // Notes
+      ];
+      worksheet['!cols'] = cols;
+      
+      // Add special "Needed for Install" title above the middle sections
+      XLSX.utils.sheet_add_aoa(worksheet, [["Needed for Install"]], { origin: "I1" });
+      
+      // Add to workbook
+      XLSX.utils.book_append_sheet(wb, worksheet, "Door Schedule");
       
       // Generate filename
       const filename = `${project.name.replace(/[^a-z0-9]/gi, '_')}_Door_Schedule.xlsx`;
