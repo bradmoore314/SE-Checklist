@@ -1042,19 +1042,23 @@ export const EnhancedFloorplanViewer = ({
 
   // State for combined camera configuration is now declared at the top with other state variables
   
-  // Mouse handling for pan/zoom and marker placement
-  const handleMouseDown = (e: React.MouseEvent) => {
-    // Only process mouse events if no dialogs or context menus are open
+  // Mouse and touch handling for pan/zoom and marker placement
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    // Only process events if no dialogs or context menus are open
     if (isEquipmentFormOpen || isCameraConfigOpen || isCalibrationDialogOpen || isLayerManagerOpen || contextMenuOpen) {
       return; // Exit early when dialogs are open
     }
     
-    // Get mouse position and ensure we have a valid container reference
+    // Get mouse/touch position and ensure we have a valid container reference
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     
-    const x = e.clientX;
-    const y = e.clientY;
+    // Get clientX and clientY from either mouse or touch event
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    const x = clientX;
+    const y = clientY;
     
     // Ensure any existing drag operations are properly canceled
     if (isDragging || isDraggingMarker || isResizingMarker) {
@@ -1063,7 +1067,8 @@ export const EnhancedFloorplanViewer = ({
       setIsResizingMarker(false);
     }
     
-    if (e.button === 0) { // Left click
+    // Check for left click (or any touch)
+    if (('button' in e && e.button === 0) || 'touches' in e) {
       if (toolMode === 'pan') { // Pan tool
         setIsDragging(true);
         setDragStart({ x, y });
@@ -2137,12 +2142,16 @@ export const EnhancedFloorplanViewer = ({
                           <circle 
                             cx={0} 
                             cy={0} 
-                            r={6} 
+                            r={10} /* Increased size for better touch targets */
                             fill="#ffffff" 
                             stroke="#000000" 
                             strokeWidth={1}
                             className="cursor-move"
                             onMouseDown={(e) => {
+                              e.stopPropagation();
+                              startMarkerDrag(e, marker);
+                            }}
+                            onTouchStart={(e) => {
                               e.stopPropagation();
                               startMarkerDrag(e, marker);
                             }}
