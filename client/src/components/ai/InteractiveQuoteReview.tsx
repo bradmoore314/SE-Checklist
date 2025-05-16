@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertCircle, FileText, Clock, Settings, ChevronRight, HelpCircle, Sparkles, BanknoteIcon, RefreshCw, PenLine, Check, X } from "lucide-react";
 import { Loader2 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -27,6 +25,7 @@ interface ProjectQuestion {
   answerSource: string;
   userAnswer?: string;
   answered?: boolean;
+  skipped?: boolean;
 }
 
 interface AIAnalysisResult {
@@ -39,80 +38,31 @@ interface AIAnalysisResult {
 
 const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ projectId }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
-  const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [unansweredQuestions, setUnansweredQuestions] = useState<ProjectQuestion[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [completionPercentage, setCompletionPercentage] = useState(0);
   
   // Fetch initial project questions and analysis
-  const { data: initialQuestions, isLoading: isLoadingQuestions } = useQuery({
-    queryKey: [`/api/projects/${projectId}/ai-analysis/questions`],
+  const { data: questionData, isLoading: isLoadingQuestions } = useQuery({
+    queryKey: [`/api/projects/${projectId}/interactive-questions`],
+    queryFn: getQueryFn(),
     enabled: !!projectId,
   });
 
-  useEffect(() => {
-    if (initialQuestions?.questions) {
-      // Filter to include only unanswered questions
-      const unanswered = initialQuestions.questions.filter(
-        (q: ProjectQuestion) => q.answerSource !== "existing data" && !q.answered
-      );
-      setUnansweredQuestions(unanswered);
-      
-      // Calculate initial completion percentage
-      const total = initialQuestions.questions.length;
-      const answered = initialQuestions.questions.filter(
-        (q: ProjectQuestion) => q.answerSource === "existing data" || q.answered
-      ).length;
-      setCompletionPercentage(Math.round((answered / total) * 100));
-    }
-  }, [initialQuestions]);
-
-  // Handle user answer input
-  const handleAnswerChange = (questionId: number, answer: string) => {
-    setUserAnswers({
-      ...userAnswers,
-      [questionId]: answer
-    });
-  };
-
-  // Set a question as skipped
-  const handleSkipQuestion = (questionId: number) => {
-    setUnansweredQuestions(prev => 
-      prev.map(q => q.id === questionId ? {...q, skipped: true} : q)
-    );
-    toast({
-      title: "Question Skipped",
-      description: "You can come back to this question later.",
-    });
-  };
-
-  // Generate or regenerate analysis with user answers
-  const generateAnalysis = async () => {
-    setLoading(true);
-    try {
-      // Prepare data to send to the API
-      const questionsWithAnswers = unansweredQuestions.map(q => ({
-        ...q,
-        userAnswer: userAnswers[q.id] || null,
-        answered: !!userAnswers[q.id]
-      }));
-      
-      // Make API request to generate analysis
-      const res = await apiRequest("POST", `/api/projects/${projectId}/interactive-quote-review`, {
-        userAnsweredQuestions: questionsWithAnswers
+  // Set up mutation for generating analysis with user answers
+  const analysisMutation = useMutation({
+    mutationFn: async (answeredQuestions: ProjectQuestion[]) => {
+      const response = await apiRequest("POST", `/api/projects/${projectId}/interactive-quote-review`, {
+        userAnsweredQuestions: answeredQuestions
       });
-      
-      const data = await res.json();
-      
+      return response.json();
+    },
+    onSuccess: (data) => {
       if (data.success && data.analysis) {
         setAnalysisResult(data.analysis);
-        
-        // Update completion percentage after user answers
-        const total = unansweredQuestions.length;
-        const answered = Object.keys(userAnswers).length;
-        setCompletionPercentage(Math.round((answered / total) * 100));
         
         toast({
           title: "Analysis Generated",
@@ -120,20 +70,70 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
         });
         
         // Switch to overview tab to show results
-        setActiveTab("overview");
+        setActiveTab("analysis");
       } else {
         throw new Error(data.error || "Failed to generate analysis");
       }
-    } catch (error) {
+    },
+    onError: (error: Error) => {
       console.error("Error generating analysis:", error);
       toast({
         title: "Error",
-        description: `Failed to generate analysis: ${(error as Error).message}`,
+        description: `Failed to generate analysis: ${error.message}`,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
+  });
+
+  useEffect(() => {
+    if (questionData?.success && questionData?.questions) {
+      // Set the unanswered questions
+      setUnansweredQuestions(questionData.questions);
+      
+      // Calculate initial completion percentage
+      const total = questionData.questions.length;
+      const answered = Object.keys(userAnswers).length;
+      setCompletionPercentage(Math.round((answered / total) * 100));
+    }
+  }, [questionData, userAnswers]);
+
+  // Handle user answer input
+  const handleAnswerChange = (questionId: number, answer: string) => {
+    setUserAnswers({
+      ...userAnswers,
+      [questionId]: answer
+    });
+    
+    // Update completion percentage after user answers
+    const total = unansweredQuestions.length;
+    const answered = Object.keys({...userAnswers, [questionId]: answer}).length;
+    setCompletionPercentage(Math.round((answered / total) * 100));
+  };
+
+  // Skip a question
+  const handleSkipQuestion = (questionId: number) => {
+    const updatedQuestions = unansweredQuestions.map(q => 
+      q.id === questionId ? {...q, skipped: true} : q
+    );
+    setUnansweredQuestions(updatedQuestions);
+    
+    toast({
+      title: "Question Skipped",
+      description: "You can come back to this question later.",
+    });
+  };
+
+  // Generate or regenerate analysis with user answers
+  const generateAnalysis = () => {
+    // Prepare data to send to the API
+    const questionsWithAnswers = unansweredQuestions.map(q => ({
+      ...q,
+      userAnswer: userAnswers[q.id] || null,
+      answered: !!userAnswers[q.id]
+    }));
+    
+    // Submit the mutation
+    analysisMutation.mutate(questionsWithAnswers);
   };
 
   // Group questions by category for better organization
@@ -340,107 +340,154 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
                               </div>
                             ))}
                           </div>
+                          
+                          <div className="mt-6 flex justify-end">
+                            <Button
+                              onClick={generateAnalysis}
+                              disabled={Object.keys(userAnswers).length === 0 || analysisMutation.isPending}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              {analysisMutation.isPending ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="mr-2 h-4 w-4" />
+                                  Generate Analysis with Answers
+                                </>
+                              )}
+                            </Button>
+                          </div>
                         </AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
                 )}
-              </div>
-              
-              <div className="flex justify-end">
-                <Button 
-                  onClick={generateAnalysis}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                  disabled={loading || Object.keys(userAnswers).length === 0}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating Analysis...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Generate Analysis with Answers
-                    </>
+                
+                <div className="mt-6 flex justify-end">
+                  {Object.keys(userAnswers).length > 0 && (
+                    <Button
+                      onClick={generateAnalysis}
+                      disabled={analysisMutation.isPending}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {analysisMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Generate Analysis
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
+                </div>
               </div>
             </TabsContent>
 
             {/* Analysis Tab */}
-            <TabsContent value="analysis" className="space-y-4">
-              {analysisResult ? (
-                <div className="space-y-6">
-                  <div className="border rounded-lg p-6 bg-gradient-to-br from-white to-blue-50">
-                    <h3 className="text-xl font-semibold mb-4 text-blue-700">Introduction</h3>
-                    <p className="whitespace-pre-line">{analysisResult.introduction}</p>
-                  </div>
-                  
-                  <div className="border rounded-lg p-6 bg-gradient-to-br from-white to-purple-50">
-                    <h3 className="text-xl font-semibold mb-4 text-purple-700">Assessment</h3>
-                    <p className="whitespace-pre-line">{analysisResult.initialAssessment}</p>
-                  </div>
-                  
-                  <div className="border rounded-lg p-6 bg-gradient-to-br from-white to-green-50">
-                    <h3 className="text-xl font-semibold mb-4 text-green-700">Recommendations</h3>
-                    <ul className="list-disc pl-5 space-y-2">
-                      {analysisResult.recommendations.map((item, index) => (
-                        <li key={index} className="text-green-900">{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div className="border rounded-lg p-6 bg-gradient-to-br from-white to-amber-50">
-                    <h3 className="text-xl font-semibold mb-4 text-amber-700">Next Steps</h3>
-                    <ul className="list-disc pl-5 space-y-2">
-                      {analysisResult.nextSteps.map((item, index) => (
-                        <li key={index} className="text-amber-900">{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div className="flex justify-end space-x-4">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setActiveTab("questions")}
-                      className="border-blue-500 text-blue-700 hover:bg-blue-50"
-                    >
-                      <PenLine className="mr-2 h-4 w-4" />
-                      Edit Answers
-                    </Button>
-                    <Button 
-                      onClick={generateAnalysis}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Regenerating...
-                        </>
-                      ) : (
-                        <>
-                          <RefreshCw className="mr-2 h-4 w-4" />
-                          Regenerate Analysis
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
+            <TabsContent value="analysis" className="space-y-6">
+              {!analysisResult ? (
                 <div className="text-center py-12">
-                  <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-700 mb-2">No Analysis Generated Yet</h3>
-                  <p className="text-gray-500 mb-4">Please answer questions and generate an analysis first.</p>
+                  <AlertCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-700 mb-2">No Analysis Available</h3>
+                  <p className="text-gray-500 mb-4">Answer some questions and generate an analysis first.</p>
                   <Button 
                     onClick={() => setActiveTab("questions")}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    <PenLine className="mr-2 h-4 w-4" />
+                    <HelpCircle className="mr-2 h-4 w-4" />
                     Go to Questions
                   </Button>
                 </div>
+              ) : (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Introduction</CardTitle>
+                      <CardDescription>Personalized introduction for your project</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-line">{analysisResult.introduction}</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Initial Assessment</CardTitle>
+                      <CardDescription>Overview of your project's scope and requirements</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-line">{analysisResult.initialAssessment}</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recommendations</CardTitle>
+                      <CardDescription>Tailored recommendations based on your answers</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2 list-disc list-inside">
+                        {analysisResult.recommendations.map((recommendation, index) => (
+                          <li key={index} className="text-gray-700">{recommendation}</li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Next Steps</CardTitle>
+                      <CardDescription>Suggested actions to move forward</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {analysisResult.nextSteps.map((step, index) => (
+                          <li key={index} className="flex items-start">
+                            <div className="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
+                              <span className="text-blue-600 text-sm font-semibold">{index + 1}</span>
+                            </div>
+                            <span className="text-gray-700">{step}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setActiveTab("questions")}
+                        className="flex items-center"
+                      >
+                        <PenLine className="mr-2 h-4 w-4" />
+                        Revise Answers
+                      </Button>
+                      
+                      <Button 
+                        onClick={generateAnalysis} 
+                        disabled={analysisMutation.isPending}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {analysisMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Regenerate Analysis
+                          </>
+                        )}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </>
               )}
             </TabsContent>
           </Tabs>
