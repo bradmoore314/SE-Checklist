@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useOpportunity } from "@/contexts/OpportunityContext";
+import { CustomLabor, CustomPart } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -449,7 +450,7 @@ export default function MiscPage() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        customPartsItems.map((item) => (
+                        customPartsItems.map((item: CustomPart) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.part_number}</TableCell>
                             <TableCell>{item.description}</TableCell>
