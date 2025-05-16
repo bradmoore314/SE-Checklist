@@ -1,0 +1,609 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Running in development mode
+ Fetch GET /api/projects/39/floorplans
+ Fetch GET /api/projects/39/satellite-image
+ Fetch finished loading: GET /api/projects/39/satellite-image
+ Fetch finished loading: GET /api/projects/39/floorplans
+ Fetch GET /api/projects/39/collaborators
+ Fetch GET /api/projects/39/permission
+ Fetch finished loading: GET /api/projects/39/permission
+ Fetch finished loading: GET /api/projects/39/collaborators
+ Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+rga @ js:277
+ As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
+_.kl @ js:192
+ API equipment counts: Object
+ Actual equipment counts: Object
+ Fetch GET /api/floorplans/42
+ Fetch finished loading: GET /api/floorplans/42
+ Fetch GET /api/floorplans/42/markers?page=1
+ Fetch GET /api/floorplans/42/calibration?page=1
+ Fetch GET /api/projects/39/marker-stats
+ Fetch GET /api/projects/39/equipment-consistency
+ Calculating fit scale: PDF width=449.9994330708662px, Container width=1919px, Scale=4.05
+ Auto-scaling PDF to fit width: scale = 4.05
+ Rendering cancelled as expected
+ Fetch finished loading: GET /api/floorplans/42/calibration?page=1
+ Fetch finished loading: GET /api/floorplans/42/markers?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/floorplans/42/calibration?page=1
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/floorplans/42/calibration?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch GET /api/images/access_point/121
+ Fetch finished loading: GET /api/images/access_point/121
+ Fetch GET /api/images/access_point/122
+ Fetch finished loading: GET /api/images/access_point/122
+ Fetch GET /api/floorplans/41
+ Fetch finished loading: GET /api/floorplans/41
+ Fetch GET /api/floorplans/41/markers?page=1
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Calculating fit scale: PDF width=792px, Container width=1919px, Scale=2.30
+ Auto-scaling PDF to fit width: scale = 2.30
+ Rendering cancelled as expected
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/floorplans/41/markers?page=1
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 2.53
+ ZOOM: Scale 2.30 → 2.53, Mouse PDF (255, 153)
+ Zooming: scale changed to 2.79
+ Zooming: scale changed to 3.06
+ Zooming: scale changed to 3.37
+ Zooming: scale changed to 3.71
+ Zooming: scale changed to 4.08
+ ZOOM: Scale 3.71 → 4.08, Mouse PDF (254, 152)
+ Zooming: scale changed to 3.67
+ Zooming: scale changed to 3.30
+ Zooming: scale changed to 2.97
+ Zooming: scale changed to 2.68
+ ZOOM: Scale 2.97 → 2.68, Mouse PDF (254, 153)
+ Zooming: scale changed to 2.41
+ ZOOM: Scale 2.68 → 2.41, Mouse PDF (254, 154)
+ COORDINATE SYSTEM UPDATED: Scale=2.41, Translate=(-27, -16), Viewport=2118.9696127969064x1637.3856098885185
+ COORDINATE SYSTEM UPDATED: Scale=2.41, Translate=(-27, -16), Viewport=1907.0726515172157x1473.6470488996667
+ Zooming: scale changed to 2.17
+ Zooming: scale changed to 1.95
+ ZOOM: Scale 2.17 → 1.95, Mouse PDF (254, 157)
+ Zooming: scale changed to 1.76
+ Zooming: scale changed to 1.58
+ ZOOM: Scale 1.76 → 1.58, Mouse PDF (294, 169)
+ Zooming: scale changed to 1.42
+ COORDINATE SYSTEM UPDATED: Scale=1.42, Translate=(237, 143), Viewport=1251.230366660445x966.8598287830713
+ COORDINATE SYSTEM UPDATED: Scale=1.42, Translate=(237, 143), Viewport=1126.1073299944007x870.1738459047641
+ Zooming: scale changed to 1.28
+ ZOOM: Scale 1.42 → 1.28, Mouse PDF (295, 169)
+ Zooming: scale changed to 1.15
+ Zooming: scale changed to 1.04
+ COORDINATE SYSTEM UPDATED: Scale=1.04, Translate=(350, 208), Viewport=912.1469372954646x704.8408151828589
+ COORDINATE SYSTEM UPDATED: Scale=1.04, Translate=(350, 208), Viewport=820.932243565918x634.3567336645731
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Calculating fit scale: PDF width=792px, Container width=1919px, Scale=2.30
+ Auto-scaling PDF to fit width: scale = 2.30
+ Rendering cancelled as expected
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 2.53
+ Zooming: scale changed to 2.79
+ Zooming: scale changed to 3.06
+ Zooming: scale changed to 3.37
+ Zooming: scale changed to 3.71
+ Zooming: scale changed to 3.34
+ Zooming: scale changed to 3.00
+ COORDINATE SYSTEM UPDATED: Scale=3.00, Translate=(-310, -68), Viewport=2642.436229950001x2041.8825413250006
+ COORDINATE SYSTEM UPDATED: Scale=3.00, Translate=(-310, -68), Viewport=2378.192606955001x1837.6942871925007
+ Zooming: scale changed to 2.70
+ ZOOM: Scale 3.00 → 2.70, Mouse PDF (443, 97)
+ Zooming: scale changed to 2.43
+ COORDINATE SYSTEM UPDATED: Scale=2.43, Translate=(-58, -12), Viewport=2140.373346259501x1653.9248584732507
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ COORDINATE SYSTEM UPDATED: Scale=2.43, Translate=(-58, -12), Viewport=1926.3360116335507x1488.5323726259255
+ Zooming: scale changed to 2.19
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Zooming: scale changed to 1.97
+ Zooming: scale changed to 1.77
+ ZOOM: Scale 1.97 → 1.77, Mouse PDF (443, 103)
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Zooming: scale changed to 1.60
+ Zooming: scale changed to 1.44
+ COORDINATE SYSTEM UPDATED: Scale=1.44, Translate=(383, 89), Viewport=1263.8690572327728x976.6260896798699
+ COORDINATE SYSTEM UPDATED: Scale=1.44, Translate=(383, 89), Viewport=1137.4821515094957x878.963480711883
+ Zooming: scale changed to 1.29
+ ZOOM: Scale 1.44 → 1.29, Mouse PDF (441, 103)
+ Zooming: scale changed to 1.16
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 1.05
+ COORDINATE SYSTEM UPDATED: Scale=1.05, Translate=(555, 129), Viewport=921.3605427226917x711.9604193766254
+ COORDINATE SYSTEM UPDATED: Scale=1.05, Translate=(555, 129), Viewport=829.2244884504224x640.7643774389628
+ Zooming: scale changed to 0.94
+ Zooming: scale changed to 0.85
+ COORDINATE SYSTEM UPDATED: Scale=0.85, Translate=(643, 150), Viewport=746.3020396053802x576.6879396950666
+ COORDINATE SYSTEM UPDATED: Scale=0.85, Translate=(643, 150), Viewport=671.6718356448422x519.0191457255598
+ Zooming: scale changed to 0.76
+ Zooming: scale changed to 0.69
+ Zooming: scale changed to 0.62
+ COORDINATE SYSTEM UPDATED: Scale=0.62, Translate=(744, 175), Viewport=544.0541868723221x420.4055080377035
+ COORDINATE SYSTEM UPDATED: Scale=0.62, Translate=(744, 175), Viewport=489.64876818509x378.3649572339331
+ Zooming: scale changed to 0.56
+ ZOOM: Scale 0.62 → 0.56, Mouse PDF (436, 104)
+ Zooming: scale changed to 0.50
+ Zooming: scale changed to 0.45
+ Zooming: scale changed to 0.41
+ COORDINATE SYSTEM UPDATED: Scale=0.41, Translate=(837, 197), Viewport=356.9539520069306x275.8280538235373
+ COORDINATE SYSTEM UPDATED: Scale=0.41, Translate=(837, 197), Viewport=321.25855680623755x248.24524844118355
+ Zooming: scale changed to 0.45
+ COORDINATE SYSTEM UPDATED: Scale=0.45, Translate=(819, 192), Viewport=321.25855680623755x248.24524844118355
+ COORDINATE SYSTEM UPDATED: Scale=0.45, Translate=(819, 192), Viewport=353.3844124868613x273.06977328530195
+ Zooming: scale changed to 0.49
+ Zooming: scale changed to 0.54
+ Zooming: scale changed to 0.59
+ Zooming: scale changed to 0.65
+ Zooming: scale changed to 0.72
+ ZOOM: Scale 0.65 → 0.72, Mouse PDF (434, 81)
+ Zooming: scale changed to 0.79
+ ZOOM: Scale 0.72 → 0.79, Mouse PDF (434, 81)
+ Zooming: scale changed to 0.87
+ Fetch POST /api/access-points with data
+ Fetch finished loading: POST /api/access-points
+ Fetch GET /api/images/access_point/123?t=1747357323891
+ Processing 0 images for access_point 123
+ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js:338
+ Fetch finished loading: GET /api/images/access_point/123?t=1747357323891
+ Fetched 0 images at timestamp 1747357323891
+ Processing 0 images for access_point 123
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Calculating fit scale: PDF width=792px, Container width=1919px, Scale=2.30
+ Auto-scaling PDF to fit width: scale = 2.30
+ Rendering cancelled as expected
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 2.53
+ Zooming: scale changed to 2.79
+ Zooming: scale changed to 3.06
+ Fetch GET /api/projects/39/marker-stats
+ Zooming: scale changed to 2.76
+ Zooming: scale changed to 2.48
+ Zooming: scale changed to 2.23
+ COORDINATE SYSTEM UPDATED: Scale=2.23, Translate=(22, 9), Viewport=1965.4484355000004x1518.7556092500004
+ COORDINATE SYSTEM UPDATED: Scale=2.23, Translate=(22, 9), Viewport=1768.9035919500002x1366.8800483250002
+ Zooming: scale changed to 2.01
+ COORDINATE SYSTEM UPDATED: Scale=2.01, Translate=(95, 39), Viewport=1768.9035919500002x1366.8800483250002
+ COORDINATE SYSTEM UPDATED: Scale=2.01, Translate=(95, 39), Viewport=1592.0132327550004x1230.1920434925003
+ Zooming: scale changed to 1.81
+ COORDINATE SYSTEM UPDATED: Scale=1.81, Translate=(161, 67), Viewport=1592.0132327550004x1230.1920434925003
+ COORDINATE SYSTEM UPDATED: Scale=1.81, Translate=(161, 67), Viewport=1432.8119094795004x1107.1728391432503
+ Zooming: scale changed to 1.63
+ ZOOM: Scale 1.81 → 1.63, Mouse PDF (327, 140)
+ COORDINATE SYSTEM UPDATED: Scale=1.63, Translate=(220, 92), Viewport=1432.8119094795004x1107.1728391432503
+ COORDINATE SYSTEM UPDATED: Scale=1.63, Translate=(220, 92), Viewport=1289.5307185315505x996.4555552289254
+ Zooming: scale changed to 1.47
+ Zooming: scale changed to 1.32
+ Zooming: scale changed to 1.19
+ ZOOM: Scale 1.32 → 1.19, Mouse PDF (329, 141)
+ Zooming: scale changed to 1.07
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Zooming: scale changed to 0.96
+ Zooming: scale changed to 0.87
+ ZOOM: Scale 0.96 → 0.87, Mouse PDF (338, 167)
+ Zooming: scale changed to 0.78
+ ZOOM: Scale 0.87 → 0.78, Mouse PDF (338, 167)
+ === ADDING NEW MARKER AT CENTER ===
+ PDF dimensions: 792 x 612
+ Center PDF position: (396.00, 306.00)
+ Current transform: scale=0.78, translate=(502, 219)
+ Using selected equipment for marker: Object
+ Using selected equipment for marker - skipping form dialog: Object
+ Added access_point marker with selected equipment ID 123
+ Fetch POST /api/floorplan-markers with data
+ Fetch finished loading: POST /api/floorplan-markers
+ Fetch GET /api/floorplans/41/markers?page=1
+ Fetch GET /api/projects/39/marker-stats
+ Marker added successfully, updating UI
+ Fetch GET /api/projects/39/marker-stats
+ Changes auto-saved to floorplan
+ Fetch finished loading: GET /api/floorplans/41/markers?page=1
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Fetch GET /api/projects/39/access-points
+ Fetch finished loading: GET /api/projects/39/access-points
+ Fetch GET /api/projects/39/cameras
+ [SCALING-AWARE] Starting drag of marker #161:
+  - Mouse screen pos: (1035, 700)
+  - Marker screen pos: (1107.25, 748.19)
+  - Marker PDF pos: (396.00, 306.00)
+  - Screen offset: (-72.25, -48.19)
+  - Current scale: 0.78
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Screen(1034, 697) → Container(737.00, 406.00) → PDF(301.9454, 240.2632) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1031, 695) → Container(734.00, 404.00) → PDF(298.0932, 237.6950) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1026, 690) → Container(729.00, 399.00) → PDF(291.6727, 231.2746) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1020, 685) → Container(723.00, 394.00) → PDF(283.9682, 224.8541) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1013, 679) → Container(716.00, 388.00) → PDF(274.9795, 217.1496) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1008, 676) → Container(711.00, 385.00) → PDF(268.5591, 213.2973) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(1000, 671) → Container(703.00, 380.00) → PDF(258.2863, 206.8768) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(990, 666) → Container(693.00, 375.00) → PDF(245.4454, 200.4564) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Selected marker #161 (access_point): PDF pos (396.0, 306.0), scale=0.78
+ Screen(977, 661) → Container(680.00, 370.00) → PDF(228.7522, 194.0359) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(968, 658) → Container(671.00, 367.00) → PDF(217.1954, 190.1836) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(952, 653) → Container(655.00, 362.00) → PDF(196.6500, 183.7632) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(909, 643) → Container(612.00, 352.00) → PDF(141.4340, 170.9223) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(885, 641) → Container(588.00, 350.00) → PDF(110.6158, 168.3541) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(877, 641) → Container(580.00, 350.00) → PDF(100.3431, 168.3541) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ [SCALING-AWARE] Marker drag move calculation:
+  - Original mouse pos: (1035, 700)
+  - Current mouse pos: (877, 641)
+  - Mouse delta screen: (-158.00, -59.00)
+  - Mouse delta PDF: (-202.89, -75.77)
+  - Original marker pos: (396.00, 306.00)
+  - New marker pos: (193.11, 230.23)
+  - Current scale: 0.78
+ Screen(872, 640) → Container(575.00, 349.00) → PDF(93.9226, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(870, 640) → Container(573.00, 349.00) → PDF(91.3545, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(868, 640) → Container(571.00, 349.00) → PDF(88.7863, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(868, 640) → Container(571.00, 349.00) → PDF(88.7863, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(868, 640) → Container(571.00, 349.00) → PDF(88.7863, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Selected marker #161 (access_point): PDF pos (396.0, 306.0), scale=0.78
+ Screen(867, 640) → Container(570.00, 349.00) → PDF(87.5022, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(867, 640) → Container(570.00, 349.00) → PDF(87.5022, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(867, 640) → Container(570.00, 349.00) → PDF(87.5022, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Fetch finished loading: GET /api/projects/39/cameras
+ Fetch GET /api/projects/39/elevators
+ Screen(866, 640) → Container(569.00, 349.00) → PDF(86.2181, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(866, 640) → Container(569.00, 349.00) → PDF(86.2181, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(866, 640) → Container(569.00, 349.00) → PDF(86.2181, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(865, 640) → Container(568.00, 349.00) → PDF(84.9340, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(865, 640) → Container(568.00, 349.00) → PDF(84.9340, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(865, 640) → Container(568.00, 349.00) → PDF(84.9340, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Screen(866, 640) → Container(569.00, 349.00) → PDF(86.2181, 167.0700) @ scale 0.7788
+ Screen(1035, 700) → Container(738.00, 409.00) → PDF(303.2295, 244.1155) @ scale 0.7788
+ Selected marker #161 (access_point): PDF pos (396.0, 306.0), scale=0.78
+ === DRAG END ===
+ Marker ID: 161
+ Final position: (178.99, 228.95)
+ Current scale: 0.7787607893035521
+ Changes auto-saved to floorplan
+ Fetch PUT /api/floorplan-markers/161 with data
+ Fetch finished loading: GET /api/projects/39/elevators
+ Fetch GET /api/projects/39/intercoms
+ Fetch finished loading: PUT /api/floorplan-markers/161
+ Fetch GET /api/floorplans/41/markers?page=1
+ Fetch GET /api/projects/39/marker-stats
+ Marker updated successfully, updating UI
+ Fetch GET /api/projects/39/marker-stats
+ Changes auto-saved to floorplan
+ Fetch finished loading: GET /api/floorplans/41/markers?page=1
+ Fetch finished loading: GET /api/projects/39/intercoms
+ Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:22
+ Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:32
+ Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:33
+ Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:34
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Fetch GET /api/projects/39/access-points
+ Fetch finished loading: GET /api/projects/39/access-points
+ Fetch GET /api/projects/39/cameras
+ [SCALING-AWARE] Starting drag of marker #161:
+  - Mouse screen pos: (906, 648)
+  - Marker screen pos: (938.25, 688.19)
+  - Marker PDF pos: (178.99, 228.95)
+  - Screen offset: (-32.25, -40.19)
+  - Current scale: 0.78
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Screen(906, 647) → Container(609.00, 356.00) → PDF(137.5817, 176.0586) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Drag precision calculation:
+          - Start PDF point: (137.5800, 177.3400)
+          - Current PDF point: (137.5800, 176.0600)
+          - PDF delta: (0.0000, -1.2800)
+          - Scale: 0.78
+        
+ Screen(905, 647) → Container(608.00, 356.00) → PDF(136.2977, 176.0586) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(905, 647) → Container(608.00, 356.00) → PDF(136.2977, 176.0586) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(901, 646) → Container(604.00, 355.00) → PDF(131.1613, 174.7745) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(901, 646) → Container(604.00, 355.00) → PDF(131.1613, 174.7745) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(900, 646) → Container(603.00, 355.00) → PDF(129.8772, 174.7745) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(899, 645) → Container(602.00, 354.00) → PDF(128.5931, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(898, 645) → Container(601.00, 354.00) → PDF(127.3090, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(897, 645) → Container(600.00, 354.00) → PDF(126.0249, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(897, 645) → Container(600.00, 354.00) → PDF(126.0249, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(897, 645) → Container(600.00, 354.00) → PDF(126.0249, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Selected marker #161 (access_point): PDF pos (179.0, 228.9), scale=0.78
+ Screen(896, 645) → Container(599.00, 354.00) → PDF(124.7408, 173.4905) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(896, 644) → Container(599.00, 353.00) → PDF(124.7408, 172.2064) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(895, 644) → Container(598.00, 353.00) → PDF(123.4567, 172.2064) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(895, 644) → Container(598.00, 353.00) → PDF(123.4567, 172.2064) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(895, 644) → Container(598.00, 353.00) → PDF(123.4567, 172.2064) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+ Screen(894, 643) → Container(597.00, 352.00) → PDF(122.1727, 170.9223) @ scale 0.7788
+ Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(894, 643) → Container(597.00, 352.00) → PDF(122.1727, 170.9223) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(894, 643) → Container(597.00, 352.00) → PDF(122.1727, 170.9223) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:1140 [SCALING-AWARE] Marker drag move calculation:
+EnhancedFloorplanViewer.tsx:1141  - Original mouse pos: (906, 648)
+EnhancedFloorplanViewer.tsx:1142  - Current mouse pos: (894, 643)
+EnhancedFloorplanViewer.tsx:1143  - Mouse delta screen: (-12.00, -5.00)
+EnhancedFloorplanViewer.tsx:1144  - Mouse delta PDF: (-15.41, -6.42)
+EnhancedFloorplanViewer.tsx:1145  - Original marker pos: (178.99, 228.95)
+EnhancedFloorplanViewer.tsx:1146  - New marker pos: (163.58, 222.53)
+EnhancedFloorplanViewer.tsx:1147  - Current scale: 0.78
+EnhancedFloorplanViewer.tsx:277 Screen(893, 643) → Container(596.00, 352.00) → PDF(120.8886, 170.9223) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (179.0, 228.9), scale=0.78
+EnhancedFloorplanViewer.tsx:277 Screen(893, 643) → Container(596.00, 352.00) → PDF(120.8886, 170.9223) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(892, 642) → Container(595.00, 351.00) → PDF(119.6045, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(892, 642) → Container(595.00, 351.00) → PDF(119.6045, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (179.0, 228.9), scale=0.78
+EnhancedFloorplanViewer.tsx:277 Screen(892, 642) → Container(595.00, 351.00) → PDF(119.6045, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+EnhancedFloorplanViewer.tsx:277 Screen(892, 642) → Container(595.00, 351.00) → PDF(119.6045, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (179.0, 228.9), scale=0.78
+EnhancedFloorplanViewer.tsx:277 Screen(892, 642) → Container(595.00, 351.00) → PDF(119.6045, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(891, 642) → Container(594.00, 351.00) → PDF(118.3204, 169.6382) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:277 Screen(906, 648) → Container(609.00, 357.00) → PDF(137.5817, 177.3427) @ scale 0.7788
+EnhancedFloorplanViewer.tsx:1414 === DRAG END ===
+EnhancedFloorplanViewer.tsx:1415 Marker ID: 161
+EnhancedFloorplanViewer.tsx:1416 Final position: (159.73, 221.25)
+EnhancedFloorplanViewer.tsx:1417 Current scale: 0.7787607893035521
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:36 Fetch PUT /api/floorplan-markers/161 with data
+queryClient.ts:53 Fetch finished loading: PUT /api/floorplan-markers/161
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:701 Marker updated successfully, updating UI
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.78
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+equipmentConsistencyCheck.ts:76 Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+equipmentConsistencyCheck.ts:77 Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 161
+      - Type: access_point
+      - Label: dsafasdf (Copy) (Copy)
+      - Position: (159.73, 221.25)
+    
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.78
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.78
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/access-points
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/access-points
+queryClient.ts:36 Fetch GET /api/projects/39/cameras
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #161
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+equipmentConsistencyCheck.ts:76 Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+equipmentConsistencyCheck.ts:77 Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+EquipmentFormDialog.tsx:149 Access Point Data: undefined
+queryClient.ts:36 Fetch GET /api/images/access_point/123?t=1747357350524
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
+queryClient.ts:53 Fetch finished loading: GET /api/images/access_point/123?t=1747357350524
+ImageUploadSection.tsx:54 Fetched 0 images at timestamp 1747357350524
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.78
+EnhancedFloorplanViewer.tsx:312 Calculating fit scale: PDF width=792px, Container width=1364px, Scale=1.64
+EnhancedFloorplanViewer.tsx:342 Auto-scaling PDF to fit width: scale = 1.64
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.64, Translate=(502, 219), Viewport=1295.8x1001.3
+EnhancedFloorplanViewer.tsx:393 Rendering cancelled as expected
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.64, Translate=(502, 219), Viewport=1295.8x1001.3
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.80
+EnhancedFloorplanViewer.tsx:1550 ZOOM: Scale 1.64 → 1.80, Mouse PDF (261, 65)
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.80
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.98
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.98
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 2.18
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.96
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.76
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.59
+EnhancedFloorplanViewer.tsx:1550 ZOOM: Scale 1.76 → 1.59, Mouse PDF (261, 67)
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.43
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.43
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.43, Translate=(556, 233), Viewport=1257.3134442000003x971.5603887000001
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.43, Translate=(556, 233), Viewport=1131.5820997800001x874.4043498300001
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.29
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.16
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.16
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 1.04
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.04
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.04, Translate=(656, 259), Viewport=916.5815008218002x708.2675233623002
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.04, Translate=(656, 259), Viewport=824.9233507396202x637.4407710260703
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 0.94
+EnhancedFloorplanViewer.tsx:885 Zooming: scale changed to 0.84
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=0.84, Translate=(706, 269), Viewport=742.4310156656583x573.6966939234632
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=0.84, Translate=(706, 269), Viewport=668.1879140990925x516.3270245311169
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.84
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=0.84
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 161
+      - Type: access_point
+      - Label: dsafasdf (Copy) (Copy)
+      - Position: (159.73, 221.25)
+    
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #161
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+EquipmentFormDialog.tsx:149 Access Point Data: undefined
+queryClient.ts:36 Fetch GET /api/images/access_point/123?t=1747357374428
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+start @ @tanstack_react-query.js?v=c6e437e2:536
+fetch @ @tanstack_react-query.js?v=c6e437e2:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e437e2:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e437e2:1898
+subscribe @ @tanstack_react-query.js?v=c6e437e2:24
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3022
+subscribeToStore @ chunk-XQLYTHWV.js?v=c6e437e2:11984
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
+queryClient.ts:53 Fetch finished loading: GET /api/images/access_point/123?t=1747357374428
+ImageUploadSection.tsx:54 Fetched 0 images at timestamp 1747357374428
+ImageUploadSection.tsx:67 Processing 0 images for access_point 123
