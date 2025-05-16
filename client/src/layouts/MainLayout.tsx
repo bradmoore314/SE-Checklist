@@ -48,13 +48,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         ></div>
       )}
       
-      {/* Responsive sidebar - fixed on mobile, static on desktop */}
-      <div className={`
-        ${sidebarCollapsed ? 'hidden' : 'fixed'} 
-        z-50 h-full md:static md:block
-        ${sidebarCollapsed ? 'md:w-16' : 'md:w-64'}
-      `}>
-        <Sidebar collapsed={sidebarCollapsed} />
+      {/* Responsive sidebar - always visible on all devices */}
+      <div className="fixed z-50 h-full md:static md:block md:w-64">
+        <Sidebar collapsed={false} />
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
