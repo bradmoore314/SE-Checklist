@@ -116,7 +116,14 @@ export default function EditCameraModal({
         });
         
         // Call onSave to refresh the parent component
-        onSave(camera.id, { ...camera, ...values });
+        // Ensure notes field is properly updated when empty
+      const updatedCamera = { 
+        ...camera, 
+        ...values,
+        // Explicitly handle empty notes to ensure they're properly saved as empty
+        notes: values.notes
+      };
+      onSave(camera.id, updatedCamera);
       }
     } catch (error) {
       console.error("Error saving camera:", error);
