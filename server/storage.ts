@@ -1647,6 +1647,13 @@ export class DatabaseStorage implements IStorage {
       inputData.quick_config = 'Standard';
     }
     
+    // Important fix: Handle empty notes to prevent them from disappearing later
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    console.log(`Creating access point with notes: ${JSON.stringify(inputData.notes)}`);
+    
     const [accessPoint] = await db.insert(accessPoints).values(inputData).returning();
     return accessPoint;
   }
@@ -1661,6 +1668,14 @@ export class DatabaseStorage implements IStorage {
       // If empty string is provided, use a default to satisfy NOT NULL constraint
       inputData.quick_config = 'Standard';
     }
+    
+    // Handle empty string in notes - convert to null instead of empty string to prevent notes disappearing
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    // Log the notes value for debugging
+    console.log(`Updating access point ${id} with notes: ${JSON.stringify(inputData.notes)}`);
     
     const [accessPoint] = await db
       .update(accessPoints)
