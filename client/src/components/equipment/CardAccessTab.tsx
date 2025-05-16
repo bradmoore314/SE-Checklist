@@ -455,6 +455,17 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium text-gray-700">Card Access Points</h3>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            size="sm"
+            onClick={handleExportToTemplate}
+            disabled={filteredAccessPoints.length === 0}
+          >
+            <FileDown className="h-4 w-4 mr-1" />
+            Export to Excel
+          </Button>
+          
           <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
           
           {viewMode === 'table' && (
