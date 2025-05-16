@@ -166,6 +166,23 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <div>
+          <Link href="/misc">
+            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
+              isActive("/misc") 
+                ? "border-r-4 nav-item active" 
+                : "nav-item hover:bg-gray-100"
+            } cursor-pointer`}
+               style={isActive("/misc") ? { 
+                 backgroundColor: 'var(--red-accent)', 
+                 borderColor: 'var(--red-accent)' 
+               } : {}}>
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/misc") ? "text-white" : "text-gray-600"}`}>inventory_2</span>
+              {!collapsed && <span className={isActive("/misc") ? "text-white" : "text-gray-800 font-medium"}>Miscellaneous</span>}
+            </div>
+          </Link>
+        </div>
+        
+        <div>
           <Link href="/kastle-video-guarding">
             <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
               isActive("/kastle-video-guarding") 
@@ -219,23 +236,6 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         {/* Door Schedules and Camera Schedules removed - export functionality moved to equipment tabs */}
-        
-        <div>
-          <Link href="/misc">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-              isActive("/misc") 
-                ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-gray-100"
-            } cursor-pointer`}
-               style={isActive("/misc") ? { 
-                 backgroundColor: 'var(--red-accent)', 
-                 borderColor: 'var(--red-accent)' 
-               } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/misc") ? "text-white" : "text-gray-600"}`}>inventory_2</span>
-              {!collapsed && <span className={isActive("/misc") ? "text-white" : "text-gray-800 font-medium"}>Miscellaneous</span>}
-            </div>
-          </Link>
-        </div>
         
         <div>
           <Link href="/project-summary">
