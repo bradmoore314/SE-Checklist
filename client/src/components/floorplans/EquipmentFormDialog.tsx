@@ -276,6 +276,36 @@ const EquipmentFormDialog = ({
         );
       }
       
+      // Handle case where equipment was deleted or not found
+      if (existingEquipmentId && !cameraData && !isLoadingCamera) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Equipment Not Found</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <p>This camera (ID: {existingEquipmentId}) no longer exists in the database. It may have been deleted.</p>
+                <p>Would you like to create a new camera or remove this marker?</p>
+                
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => {
+                    // Clear the existing ID and create a new one
+                    onEquipmentCreated(0, `Camera ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
+                    onClose();
+                  }}>
+                    Create New
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && cameraData 
         ? { ...cameraData, id: existingEquipmentId } 
@@ -313,6 +343,36 @@ const EquipmentFormDialog = ({
         );
       }
       
+      // Handle case where equipment was deleted or not found
+      if (existingEquipmentId && !elevatorData && !isLoadingElevator) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Equipment Not Found</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <p>This elevator (ID: {existingEquipmentId}) no longer exists in the database. It may have been deleted.</p>
+                <p>Would you like to create a new elevator or remove this marker?</p>
+                
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => {
+                    // Clear the existing ID and create a new one
+                    onEquipmentCreated(0, `Elevator ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
+                    onClose();
+                  }}>
+                    Create New
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && elevatorData 
         ? { ...elevatorData, id: existingEquipmentId } 
@@ -344,6 +404,36 @@ const EquipmentFormDialog = ({
               </DialogHeader>
               <div className="flex justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
+      // Handle case where equipment was deleted or not found
+      if (existingEquipmentId && !intercomData && !isLoadingIntercom) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Equipment Not Found</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <p>This intercom (ID: {existingEquipmentId}) no longer exists in the database. It may have been deleted.</p>
+                <p>Would you like to create a new intercom or remove this marker?</p>
+                
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => {
+                    // Clear the existing ID and create a new one
+                    onEquipmentCreated(0, `Intercom ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
+                    onClose();
+                  }}>
+                    Create New
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
