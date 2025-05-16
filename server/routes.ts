@@ -4279,18 +4279,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate a satellite image URL with photorealistic 3D Tiles (higher resolution for saving as floorplan)
       const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 800, 600, true);
       
-      // For now, just hardcode a sample base64 image
-      // This is a small transparent image that will allow the client-side code to continue working
-      // but will need a real implementation for production
-      const placeholderBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7q34QAAAABJRU5ErkJggg==";
+      // Import axios to fetch the image
+      const axios = require('axios');
       
-      // Return both the URL and a placeholder base64 data
-      res.json({ 
-        url: mapUrl,
-        base64: placeholderBase64,
-        // Include a message to indicate this is a workaround
-        message: "Preview only - save to floorplan to see full image"
-      });
+      try {
+        // Fetch the image from Google Maps Static API
+        const response = await axios.get(mapUrl, { responseType: 'arraybuffer' });
+        
+        // Convert the image to base64
+        const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+        const base64Data = `data:image/jpeg;base64,${base64Image}`;
+        
+        // Return both the URL and the actual base64 data
+        res.json({ 
+          url: mapUrl,
+          base64: base64Data
+        });
+      } catch (imgError) {
+        console.error("Error fetching satellite image:", imgError);
+        res.status(500).json({ 
+          message: "Failed to fetch satellite image",
+          error: (imgError as Error).message 
+        });
+      }
     } catch (error) {
       console.error("Error getting satellite image for project", error);
       res.status(500).json({ 
