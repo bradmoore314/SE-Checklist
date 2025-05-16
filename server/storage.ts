@@ -1780,7 +1780,17 @@ export class DatabaseStorage implements IStorage {
 
   async createCamera(insertCamera: InsertCamera): Promise<Camera> {
     try {
-      const [camera] = await db.insert(cameras).values(insertCamera).returning();
+      // Create a copy of the input data
+      const inputData = { ...insertCamera };
+      
+      // Handle empty string notes - convert to null to prevent notes disappearing
+      if (inputData.notes === '') {
+        inputData.notes = null;
+      }
+      
+      console.log(`Creating camera with notes: ${JSON.stringify(inputData.notes)}`);
+      
+      const [camera] = await db.insert(cameras).values(inputData).returning();
       return camera;
     } catch (error) {
       console.error("Error creating camera with new schema, falling back to minimal insert:", error);
@@ -1803,9 +1813,21 @@ export class DatabaseStorage implements IStorage {
   async updateCamera(id: number, updateCamera: Partial<InsertCamera>): Promise<Camera | undefined> {
     try {
       const now = new Date();
+      
+      // Create a copy of the input data
+      const inputData = { ...updateCamera };
+      
+      // Handle empty string notes - convert to null to prevent notes disappearing
+      if (inputData.notes === '') {
+        inputData.notes = null;
+      }
+      
+      // Log the notes value for debugging
+      console.log(`Updating camera ${id} with notes: ${JSON.stringify(inputData.notes)}`);
+      
       const [camera] = await db
         .update(cameras)
-        .set({ ...updateCamera, updated_at: now })
+        .set({ ...inputData, updated_at: now })
         .where(eq(cameras.id, id))
         .returning();
       
