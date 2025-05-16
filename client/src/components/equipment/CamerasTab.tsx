@@ -29,43 +29,160 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   const [, setLocation] = useLocation();
   
   // Function to export cameras to Excel
-  const handleExportToTemplate = () => {
-    if (filteredCameras.length === 0) return;
+  const handleExportToTemplate = async () => {
+    if (filteredCameras.length === 0) {
+      toast({
+        title: "Export Failed",
+        description: "No cameras available to export.",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    // Create workbook and worksheet
-    const wb = XLSX.utils.book_new();
-    
-    // Format data for Excel
-    const excelData = filteredCameras.map((camera: Camera) => ({
-      'Location': camera.location || '',
-      'Camera Type': camera.camera_type || '',
-      'Mounting Type': camera.mounting_type || '',
-      'FOV Area Type': camera.fov_area_type || '',
-      'FOV Area Access': camera.fov_area_accessibility || '',
-      'IP Address': camera.ip_address || '',
-      'MAC Address': camera.mac_address || '',
-      'Stream URL': camera.stream_url || '',
-      'Resolution': camera.resolution || '',
-      'Notes': camera.notes || '',
-    }));
-    
-    // Convert to worksheet
-    const ws = XLSX.utils.json_to_sheet(excelData);
-    
-    // Add to workbook
-    XLSX.utils.book_append_sheet(wb, ws, 'Camera Schedule');
-    
-    // Generate filename
-    const fileName = `Camera_Schedule_${project.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
-    
-    // Save file
-    XLSX.writeFile(wb, fileName);
-    
-    toast({
-      title: "Export Successful",
-      description: `Cameras exported to ${fileName}`,
-    });
+    try {
+      // Use the template-based export function
+      const templateUrl = '/assets/CameraScheduleTemplate.xlsx';
+      
+      // Create a new workbook (will use template if available)
+      const wb = XLSX.utils.book_new();
+      let worksheet;
+      let hasTemplate = false;
+      
+      try {
+        // Try to fetch the template file
+        const response = await fetch(templateUrl);
+        if (response.ok) {
+          const templateArrayBuffer = await response.arrayBuffer();
+          const templateWorkbook = XLSX.read(templateArrayBuffer, { type: 'array' });
+          
+          // Get the first sheet in the workbook
+          const sheetName = templateWorkbook.SheetNames[0];
+          worksheet = templateWorkbook.Sheets[sheetName];
+          hasTemplate = true;
+        }
+      } catch (templateError) {
+        console.warn("Template not found, using default export format:", templateError);
+      }
+      
+      if (hasTemplate) {
+        // Template-based approach - Fill in template rows
+        filteredCameras.forEach((camera, index) => {
+          // Start from row 2 (index 1) since row 1 is the header
+          const rowIndex = index + 1;
+          
+          // Camera ID (column A)
+          worksheet[`A${rowIndex + 1}`] = { t: 'n', v: camera.id };
+          
+          // Camera Location (column B)
+          worksheet[`B${rowIndex + 1}`] = { t: 's', v: camera.location || '' };
+          
+          // Camera Type (column C)
+          const cameraType = mapCameraType(camera.camera_type);
+          worksheet[`C${rowIndex + 1}`] = { t: 's', v: cameraType };
+          
+          // Mounting Type (column D)
+          worksheet[`D${rowIndex + 1}`] = { t: 's', v: camera.mounting_type || '' };
+          
+          // FOV Area Type (column E)
+          worksheet[`E${rowIndex + 1}`] = { t: 's', v: camera.fov_area_type || '' };
+          
+          // FOV Area Accessibility (column F)
+          const accessLevel = mapAccessibilityLevel(camera.fov_area_accessibility);
+          worksheet[`F${rowIndex + 1}`] = { t: 's', v: accessLevel };
+          
+          // IP Address (column G)
+          worksheet[`G${rowIndex + 1}`] = { t: 's', v: camera.ip_address || '' };
+          
+          // MAC Address (column H)
+          worksheet[`H${rowIndex + 1}`] = { t: 's', v: camera.mac_address || '' };
+          
+          // Stream URL (column I)
+          worksheet[`I${rowIndex + 1}`] = { t: 's', v: camera.stream_url || '' };
+          
+          // Resolution (column J)
+          worksheet[`J${rowIndex + 1}`] = { t: 's', v: camera.resolution || '' };
+          
+          // Notes (column K)
+          worksheet[`K${rowIndex + 1}`] = { t: 's', v: camera.notes || '' };
+        });
+        
+        // Add to workbook
+        XLSX.utils.book_append_sheet(wb, worksheet, "Camera Schedule");
+      } else {
+        // Fallback to standard format if template not available
+        const excelData = filteredCameras.map((camera: Camera) => ({
+          'ID': camera.id,
+          'Location': camera.location || '',
+          'Camera Type': camera.camera_type || '',
+          'Mounting Type': camera.mounting_type || '',
+          'FOV Area Type': camera.fov_area_type || '',
+          'FOV Area Access': camera.fov_area_accessibility || '',
+          'IP Address': camera.ip_address || '',
+          'MAC Address': camera.mac_address || '',
+          'Stream URL': camera.stream_url || '',
+          'Resolution': camera.resolution || '',
+          'Notes': camera.notes || '',
+        }));
+        
+        // Convert to worksheet
+        worksheet = XLSX.utils.json_to_sheet(excelData);
+        
+        // Add header with project information
+        XLSX.utils.sheet_add_aoa(worksheet, [
+          [`Camera Schedule: ${project.name}`],
+          [`Client: ${project.client}`],
+          [""],
+        ], { origin: "A1" });
+        
+        // Add to workbook
+        XLSX.utils.book_append_sheet(wb, worksheet, "Camera Schedule");
+      }
+      
+      // Generate filename
+      const fileName = `${project.name.replace(/[^a-z0-9]/gi, '_')}_Camera_Schedule.xlsx`;
+      
+      // Save file
+      XLSX.writeFile(wb, fileName);
+      
+      toast({
+        title: "Export Successful",
+        description: `Camera schedule exported to ${fileName}`,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export Failed",
+        description: (error as Error).message || "Failed to export camera schedule",
+        variant: "destructive"
+      });
+    }
   };
+  
+  // Helper mapping functions to convert our terms to template-specific terms
+  function mapCameraType(type: string | null): string {
+    if (!type) return '';
+    
+    switch (type) {
+      case 'Indoor Single Lens': return 'Indoor Fixed';
+      case 'Outdoor Single Lens': return 'Outdoor Fixed';
+      case 'Indoor Multi-Lens': return 'Indoor Panoramic';
+      case 'Outdoor Multi-Lens': return 'Outdoor Panoramic';
+      case 'PTZ': return 'PTZ';
+      default: return type;
+    }
+  }
+  
+  function mapAccessibilityLevel(level: string | null): string {
+    if (!level) return '';
+    
+    switch (level) {
+      case 'Secure - Locked Down Indoor': return 'Level 1 - Restricted';
+      case 'Secure - Building Entrance': return 'Level 2 - Controlled';
+      case 'Public Area - Indoor': return 'Level 3 - Public Indoor';
+      case 'Public Area - Outdoor': return 'Level 4 - Public Outdoor';
+      default: return level;
+    }
+  }
 
   // Fetch cameras
   const { data: cameras = [], isLoading, isError } = useQuery({
