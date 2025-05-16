@@ -380,6 +380,37 @@ export type Intercom = typeof intercoms.$inferSelect;
 export const insertIntercomSchema = createInsertSchema(intercoms).omit({ id: true, created_at: true, updated_at: true });
 export type InsertIntercom = z.infer<typeof insertIntercomSchema>;
 
+// Custom Labor table
+export const customLabor = pgTable('custom_labor', {
+  id: serial('id').primaryKey(),
+  project_id: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  description: text('description').notNull(),
+  hours: real('hours').notNull(),
+  rate: real('rate').notNull(),
+  notes: text('notes'),
+  created_at: timestamp('created_at').defaultNow()
+});
+
+export type CustomLabor = typeof customLabor.$inferSelect;
+export const insertCustomLaborSchema = createInsertSchema(customLabor).omit({ id: true, created_at: true });
+export type InsertCustomLabor = z.infer<typeof insertCustomLaborSchema>;
+
+// Custom Parts table
+export const customParts = pgTable('custom_parts', {
+  id: serial('id').primaryKey(),
+  project_id: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  part_number: text('part_number'),
+  description: text('description').notNull(),
+  quantity: integer('quantity').notNull(),
+  price: real('price').notNull(),
+  notes: text('notes'),
+  created_at: timestamp('created_at').defaultNow()
+});
+
+export type CustomPart = typeof customParts.$inferSelect;
+export const insertCustomPartSchema = createInsertSchema(customParts).omit({ id: true, created_at: true });
+export type InsertCustomPart = z.infer<typeof insertCustomPartSchema>;
+
 // Reports
 export const reports = pgTable("reports", {
   id: serial("id").primaryKey(),
