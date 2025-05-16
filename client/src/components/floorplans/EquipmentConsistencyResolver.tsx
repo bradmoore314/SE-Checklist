@@ -278,7 +278,7 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
           </Button>
         </div>
         
-        {showResolutionSuccessMessage ? (
+        {showResolutionSuccessMessage && (
           <Alert className="bg-green-50 border-green-200">
             <Check className="h-4 w-4 text-green-500" />
             <AlertTitle className="text-green-700">Success</AlertTitle>
@@ -286,11 +286,6 @@ export function EquipmentConsistencyResolver({ projectId, onResolved }: Equipmen
               Equipment inconsistency resolved successfully.
             </AlertDescription>
           </Alert>
-        ) : (
-          <div className="flex items-center p-2 rounded-md bg-green-50 border border-green-200">
-            <Check className="h-4 w-4 text-green-500 mr-2" />
-            <p className="text-xs text-green-700">All equipment is properly mapped to floorplans.</p>
-          </div>
         )}
       </div>
     );
