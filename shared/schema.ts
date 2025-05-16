@@ -124,8 +124,10 @@ export const floorplans = pgTable("floorplans", {
   id: serial("id").primaryKey(),
   project_id: integer("project_id").notNull(),
   name: text("name").notNull(),
-  pdf_data: text("pdf_data").notNull(),  // Base64 encoded PDF
+  pdf_data: text("pdf_data").notNull(),  // Base64 encoded PDF or image
   page_count: integer("page_count").notNull(),
+  content_type: text("content_type").default("application/pdf"),  // Type of content (PDF, image/jpeg, etc.)
+  is_satellite_image: boolean("is_satellite_image").default(false),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
