@@ -506,28 +506,32 @@ export const EnhancedFloorplanViewer = ({
   }, [contextMenuOpen]);
   
   // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
-  const startMarkerDrag = (e: React.MouseEvent, marker: MarkerData) => {
+  const startMarkerDrag = (e: React.MouseEvent | React.TouchEvent, marker: MarkerData) => {
     e.stopPropagation();
     
     if (!containerRef.current) return;
     
-    // Store the initial marker position and mouse position for relative movement
+    // Handle both mouse and touch events
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    // Store the initial marker position and mouse/touch position for relative movement
     const rect = containerRef.current.getBoundingClientRect();
-    const mouseScreenX = e.clientX;
-    const mouseScreenY = e.clientY;
+    const mouseScreenX = clientX;
+    const mouseScreenY = clientY;
     
     // Store initial marker screen position (where the marker appears on screen)
     const markerScreenX = marker.position_x * scale + translateX + rect.left;
     const markerScreenY = marker.position_y * scale + translateY + rect.top;
     
-    // Calculate mouse offset from the marker's visual position
+    // Calculate mouse/touch offset from the marker's visual position
     const offset = {
       screenX: mouseScreenX - markerScreenX,
       screenY: mouseScreenY - markerScreenY,
       // Also store original marker position for relative movement calculation
       markerStartX: marker.position_x,
       markerStartY: marker.position_y,
-      // Store initial mouse position for calculating deltas
+      // Store initial mouse/touch position for calculating deltas
       mouseStartX: mouseScreenX,
       mouseStartY: mouseScreenY,
       // Add camera properties to prevent TypeScript errors
@@ -1586,6 +1590,44 @@ export const EnhancedFloorplanViewer = ({
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchStart={(e) => {
+        // Handle touch start similar to mouse down
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          // Convert touch event to a format similar to mouse event
+          const touchEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            stopPropagation: () => e.stopPropagation(),
+            preventDefault: () => e.preventDefault()
+          } as any;
+          handleMouseDown(touchEvent);
+        }
+      }}
+      onTouchMove={(e) => {
+        // Handle touch move similar to mouse move
+        if (e.touches.length === 1 && (isDragging || isDraggingMarker || isResizingMarker)) {
+          e.preventDefault(); // Prevent scrolling while dragging
+          const touch = e.touches[0];
+          // Convert touch event to a format similar to mouse event
+          const touchEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            stopPropagation: () => e.stopPropagation(),
+            preventDefault: () => e.preventDefault()
+          } as any;
+          handleMouseMove(touchEvent);
+        }
+      }}
+      onTouchEnd={(e) => {
+        // Handle touch end similar to mouse up
+        const touchEvent = {
+          stopPropagation: () => e.stopPropagation(),
+          preventDefault: () => e.preventDefault(),
+          target: e.target
+        } as any;
+        handleMouseUp(touchEvent);
+      }}
       onMouseLeave={() => {
         // Reset cursor and all dragging states when mouse leaves the container entirely
         if (containerRef.current) {
