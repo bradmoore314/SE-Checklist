@@ -1176,26 +1176,43 @@ export const EnhancedFloorplanViewer = ({
     }
   };
   
-  const handleMouseMove = (e: React.MouseEvent) => {
+  // Enhanced to handle both mouse and touch events for better iPad compatibility
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!containerRef.current) return;
+    
+    // Get client coordinates from either mouse or touch event
+    let clientX: number, clientY: number;
+    
+    if ('touches' in e && e.touches.length > 0) {
+      // Touch event
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if ('clientX' in e) {
+      // Mouse event
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else {
+      // If we can't get coordinates, exit
+      return;
+    }
     
     if (isDragging && toolMode === 'pan') {
       // Panning the view
-      const deltaX = e.clientX - dragStart.x;
-      const deltaY = e.clientY - dragStart.y;
+      const deltaX = clientX - dragStart.x;
+      const deltaY = clientY - dragStart.y;
       
       setTranslateX(prev => prev + deltaX);
       setTranslateY(prev => prev + deltaY);
-      setDragStart({ x: e.clientX, y: e.clientY });
+      setDragStart({ x: clientX, y: clientY });
       
       // Set cursor for panning
       containerRef.current.style.cursor = 'grabbing';
     } else if (isDraggingMarker && selectedMarker) {
       // Moving a selected marker - IMPROVED SCALING-AWARE IMPLEMENTATION
       
-      // Calculate mouse delta in screen coordinates (how far the mouse has moved since drag start)
-      const mouseScreenX = e.clientX;
-      const mouseScreenY = e.clientY;
+      // Calculate mouse/touch delta in screen coordinates (how far it has moved since drag start)
+      const mouseScreenX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const mouseScreenY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       const mouseDeltaX = mouseScreenX - markerDragOffset.mouseStartX;
       const mouseDeltaY = mouseScreenY - markerDragOffset.mouseStartY;
       
