@@ -37,29 +37,32 @@ export function ExpandableEquipmentCard({
     <Card className={cn("overflow-hidden transition-all", expanded ? "border-primary" : "", className)}>
       <CardHeader className="p-4 pb-3 flex flex-row items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center">
+          <div className="flex items-start justify-between w-full">
+            <div className="flex items-center">
+              <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-medium mr-2">
+                {number}
+              </div>
+              <div>
+                <h3 className="text-lg font-medium">{title}</h3>
+                {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+              </div>
+            </div>
+            
+            {/* Thumbnail on the right side */}
             {thumbnailImage ? (
-              <div className="mr-3 rounded-md overflow-hidden h-12 w-12 flex-shrink-0">
+              <div className="ml-4 rounded-md overflow-hidden h-28 w-36 flex-shrink-0 border border-gray-200">
                 <img 
                   src={thumbnailImage} 
                   alt={`${title} thumbnail`} 
                   className="h-full w-full object-cover"
                 />
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-medium mr-2">
-                {number}
-              </div>
-            )}
-            <div>
-              <h3 className="text-lg font-medium">{title}</h3>
-              {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
-            </div>
+            ) : null}
           </div>
           {headerContent && <div className="mt-2">{headerContent}</div>}
         </div>
         
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 ml-2">
           <Button
             variant="ghost"
             size="icon"
