@@ -6,7 +6,11 @@ const isProduction = import.meta.env.PROD;
 // Log the auth state
 console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
 
-// Authentication bypass removed for production readiness
+// Enable auth bypass for development testing
+const bypassAuth = !isProduction;
+if (bypassAuth) {
+  console.log('Auth bypass enabled, allowing authenticated routes');
+}
 
 // Custom error handler to make error messages more user-friendly
 async function handleApiError(res: Response): Promise<void> {
@@ -38,6 +42,8 @@ export async function apiRequest(
   // Base headers
   const headers: Record<string, string> = {
     ...(data ? { "Content-Type": "application/json" } : {}),
+    // Add auth bypass header for development
+    ...(bypassAuth ? { "X-Bypass-Auth": "true" } : {}),
     // Include any custom headers
     ...(customHeaders || {})
   };
