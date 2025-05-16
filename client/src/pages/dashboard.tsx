@@ -4,6 +4,7 @@ import { useOpportunity } from "@/contexts/OpportunityContext";
 import { Project } from "@shared/schema";
 import ProjectDashboard from "@/components/project/ProjectDashboard";
 import ProjectConfiguration from "@/components/project/ProjectConfiguration";
+import ScopeTab from "@/components/project/ScopeTab";
 import EquipmentTabs from "@/components/equipment/EquipmentTabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -191,6 +192,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <TabsList>
               <TabsTrigger value="overview">Project Overview</TabsTrigger>
+              <TabsTrigger value="scope">Scope Info</TabsTrigger>
               <TabsTrigger value="projects">All Projects</TabsTrigger>
             </TabsList>
             <Button 
