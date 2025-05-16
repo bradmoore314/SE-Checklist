@@ -1671,6 +1671,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAccessPoint(id: number): Promise<boolean> {
+    // First delete any markers associated with this access point
+    await db.delete(floorplanMarkers)
+      .where(
+        and(
+          eq(floorplanMarkers.marker_type, 'access_point'),
+          eq(floorplanMarkers.equipment_id, id)
+        )
+      );
+    
+    // Then delete the access point itself
     await db.delete(accessPoints).where(eq(accessPoints.id, id));
     return true;
   }
@@ -1811,6 +1821,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCamera(id: number): Promise<boolean> {
+    // First delete any markers associated with this camera
+    await db.delete(floorplanMarkers)
+      .where(
+        and(
+          eq(floorplanMarkers.marker_type, 'camera'),
+          eq(floorplanMarkers.equipment_id, id)
+        )
+      );
+    
+    // Then delete the camera itself
     await db.delete(cameras).where(eq(cameras.id, id));
     return true;
   }
