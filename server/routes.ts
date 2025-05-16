@@ -505,6 +505,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const accessPoints = await storage.getAccessPoints(projectId);
     res.json(accessPoints);
   });
+  
+  // Get a specific access point within a project
+  app.get("/api/projects/:projectId/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const projectId = parseInt(req.params.projectId);
+    const accessPointId = parseInt(req.params.id);
+    
+    if (isNaN(projectId) || isNaN(accessPointId)) {
+      return res.status(400).json({ message: "Invalid ID parameters" });
+    }
+
+    console.log(`Fetching access point ${accessPointId} for project ${projectId}`);
+    
+    // Get list of projects the user has access to
+    const userProjects = await storage.getProjectsForUser(req.user.id);
+    const userProjectIds = userProjects.map(p => p.id);
+    
+    // Check if user has access to this project
+    if (!userProjectIds.includes(projectId)) {
+      return res.status(403).json({ message: "You don't have permission to access this project" });
+    }
+
+    const accessPoint = await storage.getAccessPoint(accessPointId);
+    
+    if (!accessPoint) {
+      console.log(`Access point ${accessPointId} not found`);
+      return res.status(404).json({ message: "Access point not found" });
+    }
+    
+    // Verify this access point belongs to the requested project
+    if (accessPoint.project_id !== projectId) {
+      console.log(`Access point ${accessPointId} does not belong to project ${projectId}, actual project: ${accessPoint.project_id}`);
+      return res.status(404).json({ message: "Access point not found in this project" });
+    }
+
+    console.log(`Successfully found access point: ${JSON.stringify(accessPoint)}`);
+    res.json(accessPoint);
+  });
 
   app.get("/api/access-points/:id", isAuthenticated, async (req: Request, res: Response) => {
     const accessPointId = parseInt(req.params.id);
