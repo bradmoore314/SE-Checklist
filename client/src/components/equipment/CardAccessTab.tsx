@@ -8,7 +8,7 @@ import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
 import ImageGallery from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit, Copy } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit, Copy, FileDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ViewModeToggle, type ViewMode } from "@/components/ViewModeToggle";
 import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import * as XLSX from 'xlsx';
 
 interface CardAccessTabProps {
   project: Project;
@@ -150,6 +151,71 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           variant: "destructive",
         });
       }
+    }
+  };
+  
+  // Export access points to Excel template
+  const handleExportToTemplate = () => {
+    if (!accessPoints.length) {
+      toast({
+        title: "Export Failed",
+        description: "No access points available to export.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      // Create a new workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Format data for Door Schedule
+      const doorData = accessPoints.map((ap, index) => ({
+        "ID": ap.id,
+        "Location": ap.location || "",
+        "Door Type": ap.lock_type || "",
+        "Reader Type": ap.reader_type || "",
+        "Lock Type": ap.lock_type || "",
+        "Security Level": ap.monitoring_type || "",
+        "Lock Provider": ap.lock_provider || "",
+        "Interior/Perimeter": ap.interior_perimeter || "",
+        "Takeover": ap.takeover || "No",
+        "Noisy Prop": ap.noisy_prop || "No",
+        "Crashbars": ap.crashbars || "No",
+        "Real Lock Type": ap.real_lock_type || "",
+        "Notes": ap.notes || ""
+      }));
+      
+      // Create worksheet from data
+      const ws = XLSX.utils.json_to_sheet(doorData);
+      
+      // Add header with project information
+      XLSX.utils.sheet_add_aoa(ws, [
+        [`Door Schedule: ${project.name}`],
+        [`Client: ${project.client}`],
+        [""],
+      ], { origin: "A1" });
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Door Schedule");
+      
+      // Generate filename
+      const filename = `${project.name.replace(/[^a-z0-9]/gi, '_')}_Door_Schedule.xlsx`;
+      
+      // Write and download the file
+      XLSX.writeFile(wb, filename);
+      
+      toast({
+        title: "Export Successful",
+        description: `Door schedule exported to ${filename}`,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export Failed",
+        description: (error as Error).message || "Failed to export door schedule",
+        variant: "destructive"
+      });
     }
   };
 
