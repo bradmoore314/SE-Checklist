@@ -86,28 +86,34 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
     enabled: !!projectId
   });
   
-  // Fetch AI Analysis
-  const { data: aiAnalysis } = useQuery({
+  // Fetch AI Analysis with error handling
+  const { data: aiAnalysis, isError: isAiAnalysisError } = useQuery({
     queryKey: [`/api/projects/${projectId}/ai-analysis`],
-    enabled: !!projectId
+    enabled: !!projectId,
+    retry: 1,
+    meta: { suppressErrorToast: true } // Prevent default error toast
   });
   
   // Fetch KVG data
   const { data: kvgFormData } = useQuery({
     queryKey: [`/api/projects/${projectId}/kvg-form-data`],
-    enabled: !!projectId
+    enabled: !!projectId,
+    meta: { suppressErrorToast: true }
   });
 
   // Fetch KVG streams
   const { data: kvgStreams } = useQuery({
     queryKey: [`/api/projects/${projectId}/kvg-streams`],
-    enabled: !!projectId
+    enabled: !!projectId,
+    meta: { suppressErrorToast: true }
   });
   
-  // Fetch Gateway Calculator data
-  const { data: gatewayData } = useQuery({
+  // Fetch Gateway Calculator data with error handling
+  const { data: gatewayData, isError: isGatewayDataError } = useQuery({
     queryKey: [`/api/projects/${projectId}/gateway-calculator`],
-    enabled: !!projectId
+    enabled: !!projectId,
+    retry: 1,
+    meta: { suppressErrorToast: true } // Prevent default error toast
   });
   
   // Toggle section selection
@@ -218,10 +224,16 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
         if (summary?.equipment?.intercoms?.length) tocItems.push('Intercoms');
       }
       if (sections.floorplans && floorplans?.length) tocItems.push('Floorplans');
-      if (sections.aiAnalysis && aiAnalysis) tocItems.push('AI Analysis');
+      
+      // Only include AI Analysis if enabled and not in error state
+      if (sections.aiAnalysis && aiAnalysis && !isAiAnalysisError) tocItems.push('AI Analysis');
+      
       if (sections.meetingAgenda) tocItems.push('Meeting Agendas');
+      
       if (sections.kvgDetails && (kvgFormData || kvgStreams?.length)) tocItems.push('Kastle Video Guarding');
-      if (sections.gatewayCalculator && gatewayData) tocItems.push('Gateway Configuration');
+      
+      // Only include Gateway Calculator if enabled and not in error state
+      if (sections.gatewayCalculator && gatewayData && !isGatewayDataError) tocItems.push('Gateway Configuration');
       
       doc.setFontSize(12);
       tocItems.forEach((item, i) => {
@@ -855,7 +867,7 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- AI ANALYSIS SECTION ---------
-      if (sections.aiAnalysis) {
+      if (sections.aiAnalysis && !isAiAnalysisError) {
         try {
           // Only proceed if we have valid AI analysis data
           if (aiAnalysis && typeof aiAnalysis === 'object') {
@@ -1161,7 +1173,7 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- GATEWAY CALCULATOR SECTION ---------
-      if (sections.gatewayCalculator) {
+      if (sections.gatewayCalculator && !isGatewayDataError) {
         try {
           // Only proceed if we have valid gateway data
           if (gatewayData && typeof gatewayData === 'object') {
