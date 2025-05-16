@@ -224,9 +224,12 @@ export default function EditAccessPointModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]" aria-describedby="access-point-form-description">
         <DialogHeader>
           <DialogTitle>Edit Access Point</DialogTitle>
+          <p id="access-point-form-description" className="text-sm text-muted-foreground">
+            Configure the access point settings below.
+          </p>
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">

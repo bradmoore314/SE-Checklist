@@ -1,0 +1,326 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Running in development mode
+ Fetch GET /api/projects/39/floorplans
+ Fetch GET /api/projects/39/satellite-image
+ Fetch finished loading: GET /api/projects/39/satellite-image
+ Fetch finished loading: GET /api/projects/39/floorplans
+ Fetch GET /api/images/access_point/121
+ Fetch finished loading: GET /api/images/access_point/121
+ Fetch GET /api/images/access_point/122
+ Fetch finished loading: GET /api/images/access_point/122
+ Fetch GET /api/images/access_point/123
+ Fetch finished loading: GET /api/images/access_point/123
+ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js:338
+ Fetch GET /api/floorplans/41
+ Fetch finished loading: GET /api/floorplans/41
+ Fetch GET /api/floorplans/41/markers?page=1
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch GET /api/projects/39/marker-stats
+ Fetch GET /api/projects/39/equipment-consistency
+ Calculating fit scale: PDF width=792px, Container width=1919px, Scale=2.30
+ Auto-scaling PDF to fit width: scale = 2.30
+ Rendering cancelled as expected
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Fetch finished loading: GET /api/floorplans/41/markers?page=1
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+ Fetch finished loading: GET /api/projects/39/marker-stats
+ Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+ Fetch GET /api/projects/39/equipment-consistency
+ Fetch GET /api/floorplans/41/calibration?page=1
+ Fetch GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 2.53
+ Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+ Zooming: scale changed to 2.79
+ Rendering cancelled as expected
+ Zooming: scale changed to 3.06
+ Zooming: scale changed to 3.37
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 3.03
+ COORDINATE SYSTEM UPDATED: Scale=3.03, Translate=(-429, -182), Viewport=2669.1275050000004x2062.5076175000004
+ COORDINATE SYSTEM UPDATED: Scale=3.03, Translate=(-429, -182), Viewport=2402.2147545000007x1856.2568557500003
+ Zooming: scale changed to 2.73
+ Fetch finished loading: GET /api/projects/39/equipment-consistency
+ Zooming: scale changed to 2.46
+ Zooming: scale changed to 2.21
+ COORDINATE SYSTEM UPDATED: Scale=2.21, Translate=(-53, -67), Viewport=1945.7939511450004x1503.5680531575003
+ COORDINATE SYSTEM UPDATED: Scale=2.21, Translate=(-53, -67), Viewport=1751.2145560305003x1353.2112478417503
+ Zooming: scale changed to 1.99
+ Zooming: scale changed to 1.79
+ ZOOM: Scale 1.99 → 1.79, Mouse PDF (457, 146)
+ Zooming: scale changed to 1.61
+ COORDINATE SYSTEM UPDATED: Scale=1.61, Translate=(221, 20), Viewport=1418.4837903847053x1096.1011107518177
+ COORDINATE SYSTEM UPDATED: Scale=1.61, Translate=(221, 20), Viewport=1276.6354113462348x986.490999676636
+ Zooming: scale changed to 1.45
+ Zooming: scale changed to 1.31
+ Zooming: scale changed to 1.18
+ === ADDING NEW MARKER AT CENTER ===
+ PDF dimensions: 792 x 612
+ Center PDF position: (396.00, 306.00)
+ Current transform: scale=1.18, translate=(421, 85)
+ Processing 0 images for access_point 0
+ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js:338
+ Processing 0 images for access_point 0
+ Processing 0 images for access_point 0
+ [SCALING-AWARE] Starting drag of marker #161:
+  - Mouse screen pos: (939, 701)
+  - Marker screen pos: (905.29, 650.56)
+  - Marker PDF pos: (159.73, 221.25)
+  - Screen offset: (33.71, 50.44)
+  - Current scale: 1.18
+ === DRAG END ===
+ Marker ID: 161
+EnhancedFloorplanViewer.tsx:1416 Final position: (159.73, 221.25)
+EnhancedFloorplanViewer.tsx:1417 Current scale: 1.1750848672618752
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:36 Fetch PUT /api/floorplan-markers/161 with data
+queryClient.ts:53 Fetch finished loading: PUT /api/floorplan-markers/161
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:701 Marker updated successfully, updating UI
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/access-points
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/access-points
+queryClient.ts:36 Fetch GET /api/projects/39/cameras
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+equipmentConsistencyCheck.ts:76 Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+equipmentConsistencyCheck.ts:77 Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+EnhancedFloorplanViewer.tsx:540 [SCALING-AWARE] Starting drag of marker #159:
+EnhancedFloorplanViewer.tsx:541  - Mouse screen pos: (1043, 515)
+EnhancedFloorplanViewer.tsx:542  - Marker screen pos: (1000.21, 498.30)
+EnhancedFloorplanViewer.tsx:543  - Marker PDF pos: (240.51, 91.68)
+EnhancedFloorplanViewer.tsx:544  - Screen offset: (42.79, 16.70)
+EnhancedFloorplanViewer.tsx:545  - Current scale: 1.18
+EnhancedFloorplanViewer.tsx:1414 === DRAG END ===
+EnhancedFloorplanViewer.tsx:1415 Marker ID: 159
+EnhancedFloorplanViewer.tsx:1416 Final position: (240.51, 91.68)
+EnhancedFloorplanViewer.tsx:1417 Current scale: 1.1750848672618752
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+EnhancedFloorplanViewer.tsx:1659 Selected marker #159 (access_point): PDF pos (240.5, 91.7), scale=1.18
+queryClient.ts:36 Fetch PUT /api/floorplan-markers/159 with data
+queryClient.ts:53 Fetch finished loading: PUT /api/floorplan-markers/159
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:701 Marker updated successfully, updating UI
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+EnhancedFloorplanViewer.tsx:999 === ADDING NEW MARKER AT CENTER ===
+EnhancedFloorplanViewer.tsx:1000 PDF dimensions: 792 x 612
+EnhancedFloorplanViewer.tsx:1001 Center PDF position: (396.00, 306.00)
+EnhancedFloorplanViewer.tsx:1002 Current transform: scale=1.18, translate=(421, 85)
+ImageUploadSection.tsx:67 Processing 0 images for access_point 0
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+ImageUploadSection.tsx:67 Processing 0 images for access_point 0
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/access-points
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/access-points
+queryClient.ts:36 Fetch GET /api/projects/39/cameras
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+equipmentConsistencyCheck.ts:76 Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+equipmentConsistencyCheck.ts:77 Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+EnhancedFloorplanViewer.tsx:540 [SCALING-AWARE] Starting drag of marker #160:
+EnhancedFloorplanViewer.tsx:541  - Mouse screen pos: (1513, 477)
+EnhancedFloorplanViewer.tsx:542  - Marker screen pos: (1387.37, 466.81)
+EnhancedFloorplanViewer.tsx:543  - Marker PDF pos: (569.98, 64.88)
+EnhancedFloorplanViewer.tsx:544  - Screen offset: (125.63, 10.19)
+EnhancedFloorplanViewer.tsx:545  - Current scale: 1.18
+EnhancedFloorplanViewer.tsx:1659 Selected marker #160 (access_point): PDF pos (570.0, 64.9), scale=1.18
+EnhancedFloorplanViewer.tsx:1414 === DRAG END ===
+EnhancedFloorplanViewer.tsx:1415 Marker ID: 160
+EnhancedFloorplanViewer.tsx:1416 Final position: (569.98, 64.88)
+EnhancedFloorplanViewer.tsx:1417 Current scale: 1.1750848672618752
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:36 Fetch PUT /api/floorplan-markers/160 with data
+queryClient.ts:53 Fetch finished loading: PUT /api/floorplan-markers/160
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:701 Marker updated successfully, updating UI
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+EnhancedFloorplanViewer.tsx:999 === ADDING NEW MARKER AT CENTER ===
+EnhancedFloorplanViewer.tsx:1000 PDF dimensions: 792 x 612
+EnhancedFloorplanViewer.tsx:1001 Center PDF position: (396.00, 306.00)
+EnhancedFloorplanViewer.tsx:1002 Current transform: scale=1.18, translate=(421, 85)
+ImageUploadSection.tsx:67 Processing 0 images for access_point 0
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+ImageUploadSection.tsx:67 Processing 0 images for access_point 0
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+ImageUploadSection.tsx:67 Processing 0 images for access_point 0
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/access-points
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/access-points
+queryClient.ts:36 Fetch GET /api/projects/39/cameras
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:1659 Selected marker #160 (access_point): PDF pos (570.0, 64.9), scale=1.18
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+equipmentConsistencyCheck.ts:76 Marker stats: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+equipmentConsistencyCheck.ts:77 Equipment counts: Object
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 161
+      - Type: access_point
+      - Label: dsafasdf (Copy) (Copy)
+      - Position: (159.73, 221.25)
+    
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.18
+EnhancedFloorplanViewer.tsx:1659 Selected marker #161 (access_point): PDF pos (159.7, 221.3), scale=1.18
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #161
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 159
+      - Type: access_point
+      - Label: dsafasdf
+      - Position: (240.51, 91.68)
+    
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #159
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 160
+      - Type: access_point
+      - Label: dsafasdf (Copy)
+      - Position: (569.98, 64.88)
+    
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #160
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+EnhancedFloorplanViewer.tsx:1659 Selected marker #160 (access_point): PDF pos (570.0, 64.9), scale=1.18
+EnhancedFloorplanViewer.tsx:312 Calculating fit scale: PDF width=792px, Container width=1364px, Scale=1.64
+EnhancedFloorplanViewer.tsx:342 Auto-scaling PDF to fit width: scale = 1.64
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.64, Translate=(421, 85), Viewport=1295.8x1001.3
+EnhancedFloorplanViewer.tsx:393 Rendering cancelled as expected
+EnhancedFloorplanViewer.tsx:249 COORDINATE SYSTEM UPDATED: Scale=1.64, Translate=(421, 85), Viewport=1295.8x1001.3
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 159
+      - Type: access_point
+      - Label: dsafasdf
+      - Position: (240.51, 91.68)
+    
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 159
+      - Type: access_point
+      - Label: dsafasdf
+      - Position: (240.51, 91.68)
+    
+EnhancedFloorplanViewer.tsx:2322 Opening access point settings for marker #159
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+EquipmentFormDialog.tsx:149 Access Point Data: undefined
+queryClient.ts:36 Fetch GET /api/images/access_point/121?t=1747357673269
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+start @ @tanstack_react-query.js?v=c6e437e2:536
+fetch @ @tanstack_react-query.js?v=c6e437e2:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e437e2:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e437e2:1898
+subscribe @ @tanstack_react-query.js?v=c6e437e2:24
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3022
+subscribeToStore @ chunk-XQLYTHWV.js?v=c6e437e2:11984
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+queryClient.ts:53 Fetch finished loading: GET /api/images/access_point/121?t=1747357673269
+ImageUploadSection.tsx:54 Fetched 0 images at timestamp 1747357673269
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
