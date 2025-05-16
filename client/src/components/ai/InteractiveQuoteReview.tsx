@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertCircle, FileText, Clock, Settings, ChevronRight, HelpCircle, Sparkles, BanknoteIcon, RefreshCw, PenLine, Check, X } from "lucide-react";
+import { AlertCircle, FileText, Clock, Settings, ChevronRight, HelpCircle, Sparkles, BanknoteIcon, RefreshCw, PenLine, Check, X, Download, Printer } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 interface InteractiveQuoteReviewProps {
   projectId: number;
@@ -34,6 +36,22 @@ interface AIAnalysisResult {
   recommendations: string[];
   questions: ProjectQuestion[];
   nextSteps: string[];
+  budgetEstimate?: {
+    rangeLow: string;
+    rangeHigh: string;
+    factors: string[];
+  };
+  timeline?: {
+    estimatedWeeks: number;
+    phases: Array<{name: string, duration: string}>;
+  };
+  riskAssessment?: Array<{
+    risk: string;
+    impact: string;
+    mitigation: string;
+    severity: "low" | "medium" | "high";
+  }>;
+  competitiveAdvantages?: string[];
 }
 
 const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ projectId }) => {
@@ -433,13 +451,143 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
                       <CardDescription>Tailored recommendations based on your answers</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <ul className="space-y-2 list-disc list-inside">
+                      <ul className="space-y-3 list-disc pl-4">
                         {analysisResult.recommendations.map((recommendation, index) => (
-                          <li key={index} className="text-gray-700">{recommendation}</li>
+                          <li key={index} className="text-gray-700 pl-2">
+                            <p className="font-medium text-blue-800">{recommendation.split(":")[0]}</p>
+                            <p>{recommendation.split(":").slice(1).join(":")}</p>
+                          </li>
                         ))}
                       </ul>
                     </CardContent>
                   </Card>
+                  
+                  {analysisResult.budgetEstimate && (
+                    <Card className="bg-gradient-to-br from-white to-blue-50">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <BanknoteIcon className="h-5 w-5 mr-2 text-green-600" />
+                          Budget Estimate
+                        </CardTitle>
+                        <CardDescription>Approximate cost range and factors affecting pricing</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-white p-4 rounded-lg border border-blue-100 mb-4">
+                          <div className="flex justify-between items-center">
+                            <div className="text-lg font-semibold text-gray-700">Estimated Range:</div>
+                            <div className="text-xl font-bold text-green-700">
+                              {analysisResult.budgetEstimate.rangeLow} - {analysisResult.budgetEstimate.rangeHigh}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="mb-2 text-gray-700 font-medium">Key Factors Affecting Pricing:</div>
+                        <ul className="space-y-1 list-disc list-inside">
+                          {analysisResult.budgetEstimate.factors.map((factor, index) => (
+                            <li key={index} className="text-gray-600">{factor}</li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {analysisResult.timeline && (
+                    <Card className="bg-gradient-to-br from-white to-purple-50">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <Clock className="h-5 w-5 mr-2 text-purple-600" />
+                          Implementation Timeline
+                        </CardTitle>
+                        <CardDescription>Estimated duration and project phases</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-white p-4 rounded-lg border border-purple-100 mb-4">
+                          <div className="flex justify-between items-center">
+                            <div className="text-lg font-semibold text-gray-700">Total Duration:</div>
+                            <div className="text-xl font-bold text-purple-700">
+                              {analysisResult.timeline.estimatedWeeks} weeks
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {analysisResult.timeline.phases.map((phase, index) => (
+                            <div key={index} className="flex items-start">
+                              <div className="flex-shrink-0 h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                <span className="text-purple-600 font-semibold">{index + 1}</span>
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex justify-between">
+                                  <h4 className="text-md font-medium text-purple-800">{phase.name}</h4>
+                                  <span className="text-sm font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                                    {phase.duration}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {analysisResult.riskAssessment && (
+                    <Card className="bg-gradient-to-br from-white to-amber-50">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <AlertCircle className="h-5 w-5 mr-2 text-amber-600" />
+                          Risk Assessment
+                        </CardTitle>
+                        <CardDescription>Potential challenges and mitigation strategies</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {analysisResult.riskAssessment.map((risk, index) => (
+                            <div key={index} className="bg-white p-4 rounded-lg border border-amber-100">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-md font-medium text-gray-800">{risk.risk}</h4>
+                                <Badge className={
+                                  risk.severity === "high" ? "bg-red-100 text-red-800" :
+                                  risk.severity === "medium" ? "bg-amber-100 text-amber-800" :
+                                  "bg-green-100 text-green-800"
+                                }>
+                                  {risk.severity.charAt(0).toUpperCase() + risk.severity.slice(1)} Risk
+                                </Badge>
+                              </div>
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600"><span className="font-medium">Impact:</span> {risk.impact}</p>
+                                <p className="text-sm text-gray-600 mt-1"><span className="font-medium">Mitigation:</span> {risk.mitigation}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {analysisResult.competitiveAdvantages && (
+                    <Card className="bg-gradient-to-br from-white to-green-50">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <Settings className="h-5 w-5 mr-2 text-green-600" />
+                          Kastle's Competitive Advantages
+                        </CardTitle>
+                        <CardDescription>Why Kastle is the best choice for this project</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2">
+                          {analysisResult.competitiveAdvantages.map((advantage, index) => (
+                            <li key={index} className="flex items-start">
+                              <div className="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center mr-3 mt-0.5">
+                                <Check className="h-3 w-3 text-green-600" />
+                              </div>
+                              <span className="text-gray-700">{advantage}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
                   
                   <Card>
                     <CardHeader>
@@ -447,13 +595,15 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
                       <CardDescription>Suggested actions to move forward</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {analysisResult.nextSteps.map((step, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
+                            <div className="flex-shrink-0 h-7 w-7 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
                               <span className="text-blue-600 text-sm font-semibold">{index + 1}</span>
                             </div>
-                            <span className="text-gray-700">{step}</span>
+                            <div className="bg-blue-50 p-3 rounded-lg flex-1">
+                              <span className="text-gray-800">{step}</span>
+                            </div>
                           </li>
                         ))}
                       </ul>

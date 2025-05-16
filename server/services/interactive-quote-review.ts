@@ -31,6 +31,22 @@ interface AIAnalysisResult {
   recommendations: string[];
   questions: ProjectQuestion[];
   nextSteps: string[];
+  budgetEstimate?: {
+    rangeLow: string;
+    rangeHigh: string;
+    factors: string[];
+  };
+  timeline?: {
+    estimatedWeeks: number;
+    phases: Array<{name: string, duration: string}>;
+  };
+  riskAssessment?: Array<{
+    risk: string;
+    impact: string;
+    mitigation: string;
+    severity: "low" | "medium" | "high";
+  }>;
+  competitiveAdvantages?: string[];
 }
 
 /**
@@ -148,23 +164,35 @@ PROJECT INFORMATION:
 ADDITIONAL INFORMATION PROVIDED BY THE USER:
 ${userAnswersContext}
 
-Based on this information, generate a comprehensive quote review analysis. Include:
-1. A warm, personalized introduction that mentions the client by name
-2. An initial assessment of the project's scope and complexity
-3. Specific recommendations tailored to the information provided
-4. Next steps for moving the project forward
+Based on this information, generate a comprehensive quote review analysis that will really impress the client. Your analysis should demonstrate Kastle's expertise and commitment to professional security solutions.
+
+Include the following elements:
+
+1. A warm, personalized introduction that mentions the client by name and shows understanding of their specific needs
+2. An initial assessment of the project's scope and complexity that demonstrates your expertise
+3. Specific, detailed recommendations tailored to the information provided 
+4. A realistic budget estimate with price range and key factors affecting pricing
+5. A project timeline with key implementation phases and their durations
+6. A risk assessment identifying potential challenges and mitigation strategies
+7. Competitive advantages that Kastle offers for this specific project
+8. Clear next steps for moving the project forward
 
 Your response should be specifically tailored to the user's answers and the project data. 
-Make direct references to the specific details that were provided in the user's answers when making recommendations.
-Focus on providing actionable insights and recommendations that will help improve the final quote.
+Make direct references to the specific details that were provided in the user's answers.
+Focus on providing actionable insights that demonstrate value and expertise.
+Use industry-standard terminology and show understanding of security best practices.
 
 Format your response as a JSON object with the following keys:
 - introduction: A warm, personalized introduction paragraph
 - initialAssessment: A concise assessment of the project
-- recommendations: An array of recommendation strings
-- nextSteps: An array of next steps strings
+- recommendations: An array of recommendation strings (at least 4-6 detailed recommendations)
+- budgetEstimate: An object with keys: rangeLow (string), rangeHigh (string), factors (array of strings)
+- timeline: An object with keys: estimatedWeeks (number), phases (array of objects with name and duration)
+- riskAssessment: Array of objects with risk, impact, mitigation, and severity (low/medium/high)
+- competitiveAdvantages: Array of strings describing Kastle's advantages for this project
+- nextSteps: An array of clear next steps strings
 
-The output must be valid JSON.
+The output must be valid JSON. Make the analysis comprehensive and impressive.
 `;
 
   try {
