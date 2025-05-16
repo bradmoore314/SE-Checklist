@@ -153,6 +153,272 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
     // Submit the mutation
     analysisMutation.mutate(questionsWithAnswers);
   };
+  
+  // Fetch project details for context
+  const { data: projectDetails = {} } = useQuery({
+    queryKey: [`/api/projects/${projectId}`],
+    queryFn: getQueryFn(),
+    enabled: !!projectId,
+  });
+  
+  // Fetch equipment data for this project
+  const { data: equipmentData = {} } = useQuery({
+    queryKey: [`/api/projects/${projectId}/equipment-summary`],
+    queryFn: getQueryFn(),
+    enabled: !!projectId,
+  });
+  
+  // Function to generate and download a PDF report
+  const generatePdfReport = () => {
+    if (!analysisResult || !projectDetails) return;
+    
+    try {
+      // Create a new PDF document
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 20;
+      const textWidth = pageWidth - (margin * 2);
+      
+      // Add Kastle logo and header
+      doc.setFillColor(0, 51, 102);
+      doc.rect(0, 0, pageWidth, 30, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.text('Kastle Systems Quote Review', margin, 20);
+      
+      // Project details
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.text(`Project: ${projectDetails.name || 'N/A'}`, margin, 40);
+      doc.setFontSize(12);
+      doc.text(`Client: ${projectDetails.client || 'N/A'}`, margin, 48);
+      doc.text(`Address: ${projectDetails.site_address || 'N/A'}`, margin, 56);
+      
+      // Equipment summary
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Equipment Summary', margin, 70);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      
+      const equipmentSummary = [
+        ['Access Points', equipmentData?.accessPointsCount || 0],
+        ['Cameras', equipmentData?.camerasCount || 0],
+        ['Elevators', equipmentData?.elevatorsCount || 0],
+        ['Intercoms', equipmentData?.intercomsCount || 0],
+        ['Total Equipment', equipmentData?.totalEquipment || 0]
+      ];
+      
+      doc.autoTable({
+        startY: 75,
+        head: [['Equipment Type', 'Count']],
+        body: equipmentSummary,
+        margin: { left: margin },
+        headStyles: { fillColor: [0, 51, 102] },
+        alternateRowStyles: { fillColor: [240, 240, 240] }
+      });
+      
+      // Introduction
+      let yPos = (doc as any).lastAutoTable.finalY + 15;
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Introduction', margin, yPos);
+      yPos += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      
+      const introLines = doc.splitTextToSize(analysisResult.introduction, textWidth);
+      doc.text(introLines, margin, yPos);
+      yPos += (introLines.length * 7) + 10;
+      
+      // Initial Assessment
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Initial Assessment', margin, yPos);
+      yPos += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      
+      const assessmentLines = doc.splitTextToSize(analysisResult.initialAssessment, textWidth);
+      doc.text(assessmentLines, margin, yPos);
+      yPos += (assessmentLines.length * 7) + 10;
+      
+      // Recommendations
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Recommendations', margin, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      
+      analysisResult.recommendations.forEach((rec, index) => {
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        const recLines = doc.splitTextToSize(`${index + 1}. ${rec}`, textWidth - 5);
+        doc.text(recLines, margin, yPos);
+        yPos += (recLines.length * 7) + 5;
+      });
+      
+      // Budget Estimate
+      if (analysisResult.budgetEstimate) {
+        if (yPos > 220) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Budget Estimate', margin, yPos);
+        yPos += 10;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        
+        doc.text(`Estimated Range: ${analysisResult.budgetEstimate.rangeLow} - ${analysisResult.budgetEstimate.rangeHigh}`, margin, yPos);
+        yPos += 10;
+        
+        doc.text('Key Factors Affecting Pricing:', margin, yPos);
+        yPos += 8;
+        
+        analysisResult.budgetEstimate.factors.forEach((factor, index) => {
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+          
+          const factorLines = doc.splitTextToSize(`• ${factor}`, textWidth - 5);
+          doc.text(factorLines, margin, yPos);
+          yPos += (factorLines.length * 7) + 3;
+        });
+      }
+      
+      // Timeline
+      if (analysisResult.timeline) {
+        if (yPos > 220) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Implementation Timeline', margin, yPos);
+        yPos += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        
+        doc.text(`Total Duration: ${analysisResult.timeline.estimatedWeeks} weeks`, margin, yPos);
+        yPos += 12;
+        
+        const timelineData = analysisResult.timeline.phases.map((phase, index) => [
+          `Phase ${index + 1}: ${phase.name}`, phase.duration
+        ]);
+        
+        doc.autoTable({
+          startY: yPos,
+          head: [['Phase', 'Duration']],
+          body: timelineData,
+          margin: { left: margin },
+          headStyles: { fillColor: [0, 51, 102] }
+        });
+        
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+      
+      // Risk Assessment
+      if (analysisResult.riskAssessment && analysisResult.riskAssessment.length > 0) {
+        if (yPos > 220) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Risk Assessment', margin, yPos);
+        yPos += 8;
+        
+        const riskData = analysisResult.riskAssessment.map(risk => [
+          risk.risk,
+          risk.severity.toUpperCase(),
+          risk.impact,
+          risk.mitigation
+        ]);
+        
+        doc.autoTable({
+          startY: yPos,
+          head: [['Risk', 'Severity', 'Impact', 'Mitigation']],
+          body: riskData,
+          margin: { left: margin },
+          headStyles: { fillColor: [0, 51, 102] }
+        });
+        
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+      
+      // Next Steps
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Next Steps', margin, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      
+      analysisResult.nextSteps.forEach((step, index) => {
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        const stepLines = doc.splitTextToSize(`${index + 1}. ${step}`, textWidth - 5);
+        doc.text(stepLines, margin, yPos);
+        yPos += (stepLines.length * 7) + 5;
+      });
+      
+      // Footer on all pages
+      const pageCount = doc.internal.getNumberOfPages();
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.text(`Kastle Systems Interactive Quote Review - Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 295, { align: 'center' });
+      }
+      
+      // Save the PDF
+      doc.save(`Kastle_Quote_Review_${projectDetails.name || 'Project'}.pdf`);
+      
+      toast({
+        title: "PDF Generated",
+        description: "Your quote review report has been downloaded.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF report. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Group questions by category for better organization
   const questionsByCategory = React.useMemo(() => {
