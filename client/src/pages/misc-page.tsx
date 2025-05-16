@@ -51,8 +51,17 @@ export default function MiscPage() {
     notes: ""
   });
 
+  // Define interface for incidental items
+  interface IncidentalItem {
+    id: number;
+    category: string;
+    name: string;
+    unit: string;
+    price: number;
+  }
+
   // Sample incidental items
-  const incidentalItems = [
+  const incidentalItems: IncidentalItem[] = [
     { id: 1, category: "Cables", name: "Cat6 Plenum Cable", unit: "ft", price: 0.85 },
     { id: 2, category: "Cables", name: "18/4 Conductor", unit: "ft", price: 0.65 },
     { id: 3, category: "Cables", name: "22/4 Conductor", unit: "ft", price: 0.45 },
@@ -303,7 +312,7 @@ export default function MiscPage() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        customLaborItems.map((item) => (
+                        customLaborItems.map((item: CustomLabor) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.description}</TableCell>
                             <TableCell>{item.hours}</TableCell>

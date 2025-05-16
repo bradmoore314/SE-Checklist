@@ -95,6 +95,7 @@ import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services
 import crmRoutes from "./routes/crm-routes";
 import { dataverseIntegration } from "./services/dataverse-integration";
 import { setupAIRoutes } from "./routes/ai-routes";
+import miscRoutes from "./routes/misc-routes";
 
 // Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -229,6 +230,7 @@ export function registerPublicRoutes(app: Express): void {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Use auto-detection routes
   app.use('/api', autoDetectionRoutes);
+  app.use('/api', miscRoutes);
 
   // Authentication is already set up in index.ts
   

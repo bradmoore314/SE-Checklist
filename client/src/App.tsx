@@ -23,6 +23,7 @@ import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import CameraStreamGateway from "@/pages/camera-stream-gateway";
 import QuoteReviewPage from "@/pages/quote-review-page";
+import MiscPage from "@/pages/misc-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
@@ -78,6 +79,7 @@ function Router() {
       
       {/* Settings */}
       <ProtectedRoute path="/settings" component={Settings} />
+      <ProtectedRoute path="/misc" component={MiscPage} />
       
       {/* Documentation and Feedback */}
       <ProtectedRoute path="/documentation" component={DocumentationPage} />
