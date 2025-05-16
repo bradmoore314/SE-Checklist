@@ -50,39 +50,42 @@ export const MobileToolbar = ({
           </div>
         </div>
         
-        {/* Bottom controls - Enhanced for iPad */}
+        {/* Bottom controls - Enhanced for iPad with larger touch targets */}
         <div className="mt-2 px-3 flex items-center justify-between">
           <div className="flex space-x-4">
             <button 
               onClick={onZoomIn}
-              className="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow"
+              className="h-14 w-14 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md"
               onTouchStart={onZoomIn}
+              aria-label="Zoom In"
             >
-              <ZoomIn className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <ZoomIn className="h-7 w-7 text-gray-700 dark:text-gray-300" />
             </button>
             <button 
               onClick={onZoomOut}
-              className="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow"
+              className="h-14 w-14 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md"
               onTouchStart={onZoomOut}
+              aria-label="Zoom Out"
             >
-              <ZoomOut className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <ZoomOut className="h-7 w-7 text-gray-700 dark:text-gray-300" />
             </button>
             <button
               onClick={onReset}
-              className="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow"
+              className="h-14 w-14 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md"
               onTouchStart={onReset}
+              aria-label="Reset View"
             >
-              <RotateCcw className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <RotateCcw className="h-7 w-7 text-gray-700 dark:text-gray-300" />
             </button>
           </div>
           
           <div className="flex">
             <button 
-              className="bg-primary text-white h-12 px-5 flex items-center justify-center font-medium rounded-md shadow-md text-base"
+              className="bg-primary text-white h-14 px-6 flex items-center justify-center font-medium rounded-lg shadow-md text-base"
               onClick={() => {
                 // Auto-save is already implemented, this is just visual feedback
                 const savedToast = document.createElement('div');
-                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-md text-sm';
+                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-lg text-base';
                 savedToast.textContent = '✓ Changes saved';
                 document.body.appendChild(savedToast);
                 setTimeout(() => {
@@ -92,15 +95,21 @@ export const MobileToolbar = ({
               onTouchStart={() => {
                 // Auto-save is already implemented, this is just visual feedback
                 const savedToast = document.createElement('div');
-                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-md text-sm';
+                savedToast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-lg text-base';
                 savedToast.textContent = '✓ Changes saved';
                 document.body.appendChild(savedToast);
                 setTimeout(() => {
                   savedToast.remove();
                 }, 2000);
               }}
+              aria-label="Save Changes"
             >
-              Auto-Saved
+              <span className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Auto-Saved
+              </span>
             </button>
           </div>
         </div>
