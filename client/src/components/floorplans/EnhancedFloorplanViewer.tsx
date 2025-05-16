@@ -1705,7 +1705,7 @@ export const EnhancedFloorplanViewer = ({
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden bg-gray-100"
+      className={`relative w-full h-full overflow-hidden bg-gray-100 pdf-viewer-container ${pinchData.active ? 'pinch-zooming' : ''}`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
