@@ -57,27 +57,28 @@ export default function MiscPage() {
     id: number;
     category: string;
     name: string;
+    kpn: string; // Kastle Part Number
     unit: string;
     price: number;
   }
 
   // Sample incidental items
   const incidentalItems: IncidentalItem[] = [
-    { id: 1, category: "Cables", name: "Cat6 Plenum Cable", unit: "ft", price: 0.85 },
-    { id: 2, category: "Cables", name: "18/4 Conductor", unit: "ft", price: 0.65 },
-    { id: 3, category: "Cables", name: "22/4 Conductor", unit: "ft", price: 0.45 },
-    { id: 4, category: "Cables", name: "22/6 Conductor", unit: "ft", price: 0.55 },
-    { id: 5, category: "Connectors", name: "RJ45 Connector", unit: "each", price: 1.25 },
-    { id: 6, category: "Connectors", name: "BNC Connector", unit: "each", price: 2.50 },
-    { id: 7, category: "Hardware", name: "Door Strike Mounting Plate", unit: "each", price: 15.00 },
-    { id: 8, category: "Hardware", name: "Door Magnet Spacer", unit: "each", price: 8.00 },
-    { id: 9, category: "Hardware", name: "Surface Mount Box", unit: "each", price: 12.99 },
-    { id: 10, category: "Hardware", name: "Wall Mount Bracket", unit: "each", price: 18.50 },
-    { id: 11, category: "Adapters", name: "Power Adapter 12V", unit: "each", price: 22.00 },
-    { id: 12, category: "Adapters", name: "Power Adapter 24V", unit: "each", price: 28.00 },
-    { id: 13, category: "Consumables", name: "Wire Nuts", unit: "pack", price: 5.99 },
-    { id: 14, category: "Consumables", name: "Cable Ties", unit: "pack", price: 7.50 },
-    { id: 15, category: "Consumables", name: "Electrical Tape", unit: "roll", price: 3.99 },
+    { id: 1, category: "Cables", name: "Cat6 Plenum Cable", kpn: "KPN-CA-C6P", unit: "ft", price: 0.85 },
+    { id: 2, category: "Cables", name: "18/4 Conductor", kpn: "KPN-CA-184", unit: "ft", price: 0.65 },
+    { id: 3, category: "Cables", name: "22/4 Conductor", kpn: "KPN-CA-224", unit: "ft", price: 0.45 },
+    { id: 4, category: "Cables", name: "22/6 Conductor", kpn: "KPN-CA-226", unit: "ft", price: 0.55 },
+    { id: 5, category: "Connectors", name: "RJ45 Connector", kpn: "KPN-CN-RJ45", unit: "each", price: 1.25 },
+    { id: 6, category: "Connectors", name: "BNC Connector", kpn: "KPN-CN-BNC", unit: "each", price: 2.50 },
+    { id: 7, category: "Hardware", name: "Door Strike Mounting Plate", kpn: "KPN-HW-DSMP", unit: "each", price: 15.00 },
+    { id: 8, category: "Hardware", name: "Door Magnet Spacer", kpn: "KPN-HW-DMS", unit: "each", price: 8.00 },
+    { id: 9, category: "Hardware", name: "Surface Mount Box", kpn: "KPN-HW-SMB", unit: "each", price: 12.99 },
+    { id: 10, category: "Hardware", name: "Wall Mount Bracket", kpn: "KPN-HW-WMB", unit: "each", price: 18.50 },
+    { id: 11, category: "Adapters", name: "Power Adapter 12V", kpn: "KPN-AD-12V", unit: "each", price: 22.00 },
+    { id: 12, category: "Adapters", name: "Power Adapter 24V", kpn: "KPN-AD-24V", unit: "each", price: 28.00 },
+    { id: 13, category: "Consumables", name: "Wire Nuts", kpn: "KPN-CS-WN", unit: "pack", price: 5.99 },
+    { id: 14, category: "Consumables", name: "Cable Ties", kpn: "KPN-CS-CT", unit: "pack", price: 7.50 },
+    { id: 15, category: "Consumables", name: "Electrical Tape", kpn: "KPN-CS-ET", unit: "roll", price: 3.99 },
   ];
 
   // Fetch custom labor items for the current project
@@ -507,6 +508,7 @@ export default function MiscPage() {
                     <TableRow>
                       <TableHead>Category</TableHead>
                       <TableHead>Item Name</TableHead>
+                      <TableHead>KPN</TableHead>
                       <TableHead>Unit</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Add to Project</TableHead>
@@ -515,7 +517,7 @@ export default function MiscPage() {
                   <TableBody>
                     {filteredIncidentals.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-4 text-gray-500">
+                        <TableCell colSpan={6} className="text-center py-4 text-gray-500">
                           No matching incidental items found.
                         </TableCell>
                       </TableRow>
@@ -524,6 +526,7 @@ export default function MiscPage() {
                         <TableRow key={item.id}>
                           <TableCell>{item.category}</TableCell>
                           <TableCell>{item.name}</TableCell>
+                          <TableCell>{item.kpn}</TableCell>
                           <TableCell>{item.unit}</TableCell>
                           <TableCell>${item.price.toFixed(2)}</TableCell>
                           <TableCell>
