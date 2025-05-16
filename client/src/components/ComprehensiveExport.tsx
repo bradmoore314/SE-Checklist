@@ -892,9 +892,9 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       // --------- AI ANALYSIS SECTION ---------
       if (sections.aiAnalysis) {
         try {
-          // Only proceed if we have valid AI analysis data
-          console.log('AI Analysis section - attempting to render with data:', aiAnalysis);
-          if (aiAnalysis && typeof aiAnalysis === 'object') {
+          // Use the safe version that was checked earlier
+          console.log('AI Analysis section - attempting to render with data:', safeAiAnalysis);
+          if (safeAiAnalysis && typeof safeAiAnalysis === 'object') {
             doc.addPage();
             doc.setFontSize(20);
             doc.setTextColor(33, 33, 33);
@@ -1197,10 +1197,11 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- GATEWAY CALCULATOR SECTION ---------
-      if (sections.gatewayCalculator && !isGatewayDataError) {
+      if (sections.gatewayCalculator) {
         try {
-          // Only proceed if we have valid gateway data
-          if (gatewayData && typeof gatewayData === 'object') {
+          // Use the safe version that was checked earlier
+          console.log('Gateway Calculator section - attempting to render with data:', safeGatewayData);
+          if (safeGatewayData && typeof safeGatewayData === 'object') {
             doc.addPage();
             doc.setFontSize(20);
             doc.setTextColor(33, 33, 33);
