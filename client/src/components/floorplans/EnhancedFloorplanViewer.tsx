@@ -213,6 +213,21 @@ export const EnhancedFloorplanViewer = ({
     cameraStartRange: 60
   });
   
+  // Add touch pinch-to-zoom support for iPad compatibility
+  const [pinchData, setPinchData] = useState<{
+    active: boolean;
+    initialDistance: number;
+    initialScale: number;
+    centerX: number;
+    centerY: number;
+  }>({
+    active: false,
+    initialDistance: 0,
+    initialScale: 1,
+    centerX: 0,
+    centerY: 0
+  });
+  
   // Camera edit dialog state
   const [isCameraEditDialogOpen, setIsCameraEditDialogOpen] = useState<boolean>(false);
 
@@ -1695,8 +1710,9 @@ export const EnhancedFloorplanViewer = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onTouchStart={(e) => {
-        // Handle touch start similar to mouse down
+        // Enhanced touch handling for iPad compatibility
         if (e.touches.length === 1) {
+          // Single touch - normal interaction
           const touch = e.touches[0];
           // Convert touch event to a format similar to mouse event
           const touchEvent = {
@@ -1706,10 +1722,38 @@ export const EnhancedFloorplanViewer = ({
             preventDefault: () => e.preventDefault()
           } as any;
           handleMouseDown(touchEvent);
+        } 
+        else if (e.touches.length === 2) {
+          // Two finger touch - start pinch-to-zoom
+          e.preventDefault(); // Prevent default behaviors
+          
+          const touch1 = e.touches[0];
+          const touch2 = e.touches[1];
+          
+          // Calculate center point between touches
+          const centerX = (touch1.clientX + touch2.clientX) / 2;
+          const centerY = (touch1.clientY + touch2.clientY) / 2;
+          
+          // Calculate initial distance between fingers
+          const initialDistance = Math.hypot(
+            touch1.clientX - touch2.clientX,
+            touch1.clientY - touch2.clientY
+          );
+          
+          // Store pinch data for use during move
+          setPinchData({
+            active: true,
+            initialDistance,
+            initialScale: scale,
+            centerX,
+            centerY
+          });
+          
+          console.log(`Pinch gesture started: initial distance=${initialDistance.toFixed(2)}`);
         }
       }}
       onTouchMove={(e) => {
-        // Handle touch move similar to mouse move
+        // Handle touch move with enhanced pinch-to-zoom support
         if (e.touches.length === 1 && (isDragging || isDraggingMarker || isResizingMarker)) {
           e.preventDefault(); // Prevent scrolling while dragging
           const touch = e.touches[0];
@@ -1722,8 +1766,79 @@ export const EnhancedFloorplanViewer = ({
           } as any;
           handleMouseMove(touchEvent);
         }
+        else if (e.touches.length === 2 && pinchData.active) {
+          // Handle pinch-to-zoom
+          e.preventDefault(); // Prevent default behaviors
+          
+          const touch1 = e.touches[0];
+          const touch2 = e.touches[1];
+          
+          // Calculate current distance between fingers
+          const currentDistance = Math.hypot(
+            touch1.clientX - touch2.clientX,
+            touch1.clientY - touch2.clientY
+          );
+          
+          // Calculate scale ratio based on finger distance change
+          const scaleRatio = currentDistance / pinchData.initialDistance;
+          
+          // Calculate new scale with limits
+          const newScale = Math.max(0.1, Math.min(10, pinchData.initialScale * scaleRatio));
+          
+          // Calculate center point between current touch positions
+          const centerX = (touch1.clientX + touch2.clientX) / 2;
+          const centerY = (touch1.clientY + touch2.clientY) / 2;
+          
+          // Get container bounds
+          const rect = containerRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          
+          // Convert to container coordinates
+          const containerX = centerX - rect.left;
+          const containerY = centerY - rect.top;
+          
+          // Use coordinate system to calculate proper transform
+          const newTransform = coordSystem.calculateZoomTransform(
+            containerX,
+            containerY,
+            newScale
+          );
+          
+          // Update state
+          setScale(newScale);
+          setTranslateX(newTransform.translateX);
+          setTranslateY(newTransform.translateY);
+          
+          // Show zoom indicator
+          setShowZoomIndicator(true);
+          
+          // Clear any existing timeout
+          if (zoomIndicatorTimeout) {
+            clearTimeout(zoomIndicatorTimeout);
+          }
+          
+          // Set a new timeout to hide the indicator
+          const timeout = setTimeout(() => {
+            setShowZoomIndicator(false);
+          }, 1500);
+          
+          setZoomIndicatorTimeout(timeout);
+        }
       }}
       onTouchEnd={(e) => {
+        // Handle touch end for both regular touch and pinch-to-zoom
+        // Reset pinch data when touch ends
+        if (pinchData.active) {
+          setPinchData({
+            active: false,
+            initialDistance: 0,
+            initialScale: 1,
+            centerX: 0,
+            centerY: 0
+          });
+          console.log("Pinch gesture ended");
+        }
+        
         // Handle touch end similar to mouse up
         const touchEvent = {
           stopPropagation: () => e.stopPropagation(),
