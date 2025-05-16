@@ -356,6 +356,63 @@
     touch-action: none;
   }
   
+  /* Enhanced iPad touch interaction feedback */
+  .touch-interaction-active {
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Larger touch targets for iPad users */
+  @media (pointer: coarse) {
+    .zoom-controls button,
+    .scale-button,
+    .layer-button,
+    .export-button {
+      min-height: 48px; /* Bigger buttons for touch devices */
+      min-width: 48px;
+      padding: 10px;
+    }
+    
+    /* Increase marker touch area */
+    .marker-group {
+      transform: scale(1.2);
+    }
+    
+    /* Make modal controls bigger for touch */
+    .dialog button {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 10px 16px;
+    }
+  }
+  
+  /* Visual feedback during pinch gesture */
+  .pinch-zooming {
+    outline: 2px dashed rgba(59, 130, 246, 0.5);
+    transition: outline 0.2s ease;
+  }
+  
+  /* Touch marker placement ripple effect */
+  @keyframes ripple-effect {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  
+  .touch-marker-placement-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(228, 30, 49, 0.3);
+    pointer-events: none;
+    z-index: 100;
+  }
+  
   /* Prevent text selection on SVG elements */
   svg text {
     user-select: none;
