@@ -673,10 +673,13 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
             return res.status(404).json({ error: 'Access point not found' });
           }
           
-          // Update status or create an optional "resolved" flag field
+          // Mark as resolved without modifying notes
           await db
             .update(accessPoints)
-            .set({ notes: accessPoint.notes ? `${accessPoint.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .set({ 
+              // Preserve existing notes without adding any tags
+              resolved_from_ui: true 
+            })
             .where(eq(accessPoints.id, numericEquipmentId));
           break;
           
@@ -696,10 +699,13 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
             return res.status(404).json({ error: 'Camera not found' });
           }
           
-          // Update status or create an optional "resolved" flag field
+          // Mark as resolved without modifying notes
           await db
             .update(cameras)
-            .set({ notes: camera.notes ? `${camera.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .set({ 
+              // Preserve existing notes without adding any tags
+              resolved_from_ui: true 
+            })
             .where(eq(cameras.id, numericEquipmentId));
           break;
           
@@ -719,10 +725,13 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
             return res.status(404).json({ error: 'Elevator not found' });
           }
           
-          // Update status or create an optional "resolved" flag field
+          // Mark as resolved without modifying notes
           await db
             .update(elevators)
-            .set({ notes: elevator.notes ? `${elevator.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .set({ 
+              // Preserve existing notes without adding any tags
+              resolved_from_ui: true 
+            })
             .where(eq(elevators.id, numericEquipmentId));
           break;
           
@@ -742,10 +751,13 @@ export function registerEnhancedFloorplanRoutes(app: Express, isAuthenticated: (
             return res.status(404).json({ error: 'Intercom not found' });
           }
           
-          // Update status or create an optional "resolved" flag field
+          // Mark as resolved without modifying notes
           await db
             .update(intercoms)
-            .set({ notes: intercom.notes ? `${intercom.notes} [RESOLVED FROM UI]` : '[RESOLVED FROM UI]' })
+            .set({ 
+              // Preserve existing notes without adding any tags
+              resolved_from_ui: true 
+            })
             .where(eq(intercoms.id, numericEquipmentId));
           break;
       }
