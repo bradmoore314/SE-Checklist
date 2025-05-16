@@ -173,8 +173,16 @@ const EquipmentFormDialog = ({
           console.log(`Re-fetching access point data for ID ${existingEquipmentId}...`);
           fetch(`/api/projects/${projectId}/access-points/${existingEquipmentId}`)
             .then(res => {
-              if (res.ok) return res.json();
-              throw new Error(`Failed to fetch: ${res.status}`);
+              if (!res.ok) {
+                throw new Error(`Failed to fetch: ${res.status}`);
+              }
+              
+              const contentType = res.headers.get('content-type');
+              if (!contentType || !contentType.includes('application/json')) {
+                throw new Error(`Invalid content type: ${contentType}`);
+              }
+              
+              return res.json();
             })
             .then(data => {
               console.log('Direct fetch result:', data);
