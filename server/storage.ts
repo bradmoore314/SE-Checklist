@@ -1866,8 +1866,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteElevator(id: number): Promise<boolean> {
+    // First delete any markers associated with this elevator
+    await db.delete(floorplanMarkers)
+      .where(
+        and(
+          eq(floorplanMarkers.marker_type, 'elevator'),
+          eq(floorplanMarkers.equipment_id, id)
+        )
+      );
+    
+    // Then delete the elevator itself
     const result = await db.delete(elevators).where(eq(elevators.id, id));
-    return result.count > 0;
+    return result.rowCount ? result.rowCount > 0 : result.count > 0;
   }
 
   // Intercoms
@@ -1901,8 +1911,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteIntercom(id: number): Promise<boolean> {
+    // First delete any markers associated with this intercom
+    await db.delete(floorplanMarkers)
+      .where(
+        and(
+          eq(floorplanMarkers.marker_type, 'intercom'),
+          eq(floorplanMarkers.equipment_id, id)
+        )
+      );
+    
+    // Then delete the intercom itself
     const result = await db.delete(intercoms).where(eq(intercoms.id, id));
-    return result.count > 0;
+    return result.rowCount ? result.rowCount > 0 : result.count > 0;
   }
 
   // Images
