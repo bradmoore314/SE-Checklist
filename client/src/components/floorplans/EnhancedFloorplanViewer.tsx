@@ -811,31 +811,113 @@ export const EnhancedFloorplanViewer = ({
     }
   });
 
-  // Load and render PDF document
+  // Load and render floorplan (PDF or image)
   useEffect(() => {
     if (!floorplan?.pdf_data) return;
     
     // Show loading state
     setIsLoading(true);
     
-    // Convert base64 to byte array
-    const pdfData = atob(floorplan.pdf_data);
-    const pdfBytes = new Uint8Array(pdfData.length);
-    for (let i = 0; i < pdfData.length; i++) {
-      pdfBytes[i] = pdfData.charCodeAt(i);
-    }
+    // Check if this is a satellite image or regular PDF
+    const isSatelliteImage = floorplan.is_satellite_image || 
+                            (floorplan.content_type && floorplan.content_type.startsWith('image/'));
     
-    // Load PDF document
-    pdfjsLib.getDocument({ data: pdfBytes }).promise.then((pdf) => {
-      setPdfDocument(pdf);
-      setIsLoading(false);
-      renderPage(currentPage);
-    }).catch(error => {
-      console.error('Error loading PDF:', error);
-      setIsLoading(false);
-      // Keep this error message in the console for debugging
-      console.error('Could not load the floorplan PDF. Please try again.');
-    });
+    if (isSatelliteImage) {
+      // This is an image, not a PDF
+      // Create an image element to render the image
+      const img = new Image();
+      
+      // Extract the base64 data (handle data URL format if present)
+      let imageData = floorplan.pdf_data;
+      if (!imageData.startsWith('data:')) {
+        // Add the data URL prefix if not present
+        imageData = `data:image/jpeg;base64,${imageData}`;
+      }
+      
+      img.onload = () => {
+        // Once the image is loaded, render it to the canvas
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+          
+          if (ctx) {
+            // Set canvas size to match image dimensions
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // Update viewport dimensions for markers
+            setViewportDimensions({ width: img.width, height: img.height });
+            
+            // Store actual image dimensions
+            setPdfDimensions({ width: img.width, height: img.height });
+            
+            // Clear canvas and draw image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            // Create a dummy PDF document structure to maintain compatibility
+            // This allows us to still use the PDF viewer UI elements
+            setPdfDocument({
+              numPages: 1,
+              getPage: () => Promise.resolve({
+                getViewport: ({ scale = 1 }) => ({
+                  width: img.width * scale,
+                  height: img.height * scale
+                }),
+                render: () => ({
+                  promise: Promise.resolve()
+                })
+              })
+            } as any);
+            
+            setIsLoading(false);
+            
+            // Auto-scale to fit width on initial load or reset
+            if (scale === 1 && translateX === 0 && translateY === 0) {
+              // Calculate the scale to fit the image
+              const containerWidth = pageContainerRef.current?.clientWidth || img.width;
+              const newScale = (containerWidth * 0.95) / img.width;
+              setScale(Math.min(Math.max(newScale, 0.1), 5.0));
+            }
+          }
+        }
+      };
+      
+      img.onerror = (error) => {
+        console.error('Error loading satellite image:', error);
+        setIsLoading(false);
+        console.error('Could not load the satellite image. Please try again.');
+      };
+      
+      // Set source to load the image
+      img.src = imageData;
+    } else {
+      // This is a PDF document, handle it normally
+      // Convert base64 to byte array
+      try {
+        const pdfData = atob(floorplan.pdf_data);
+        const pdfBytes = new Uint8Array(pdfData.length);
+        for (let i = 0; i < pdfData.length; i++) {
+          pdfBytes[i] = pdfData.charCodeAt(i);
+        }
+        
+        // Load PDF document
+        pdfjsLib.getDocument({ data: pdfBytes }).promise.then((pdf) => {
+          setPdfDocument(pdf);
+          setIsLoading(false);
+          renderPage(currentPage);
+        }).catch(error => {
+          console.error('Error loading PDF:', error);
+          setIsLoading(false);
+          // Keep this error message in the console for debugging
+          console.error('Could not load the floorplan PDF. Please try again.');
+        });
+      } catch (error) {
+        console.error('Error decoding PDF base64 data:', error);
+        setIsLoading(false);
+        console.error('Invalid PDF data format. The file may be corrupted.');
+      }
+    }
   }, [floorplan, toast, currentPage]);
 
   // Render current page when it changes
