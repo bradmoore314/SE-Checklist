@@ -691,6 +691,17 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
                 </div>
               ) : (
                 <>
+                  <div className="flex justify-end mb-4">
+                    <Button 
+                      variant="outline" 
+                      className="flex gap-2 items-center"
+                      onClick={generatePdfReport}
+                    >
+                      <Download size={16} />
+                      Export PDF Report
+                    </Button>
+                  </div>
+
                   <Card>
                     <CardHeader>
                       <CardTitle>Introduction</CardTitle>
