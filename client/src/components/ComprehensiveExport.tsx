@@ -855,96 +855,132 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- AI ANALYSIS SECTION ---------
-      if (sections.aiAnalysis && aiAnalysis) {
-        doc.addPage();
-        doc.setFontSize(20);
-        doc.setTextColor(33, 33, 33);
-        doc.text('AI ANALYSIS', 20, 30);
-        
-        doc.setFontSize(12);
-        doc.setTextColor(80, 80, 80);
-        doc.text(
-          'AI-powered insights from your site walk data to enhance technical planning and streamline installation.',
-          20, 42, { maxWidth: doc.internal.pageSize.getWidth() - 40 }
-        );
-        
-        // Executive Summary
-        if (aiAnalysis.summary) {
-          doc.setFontSize(16);
-          doc.setTextColor(41, 65, 171);
-          doc.text('Executive Summary', 20, 60);
-          
-          doc.setFontSize(11);
-          doc.setTextColor(33, 33, 33);
-          
-          // Split summary text into paragraphs
-          const summaryParagraphs = aiAnalysis.summary.split('\\n\\n');
-          let y = 70;
-          
-          for (const paragraph of summaryParagraphs) {
-            // Check if we need to add a new page
-            if (y > 250) {
-              addPageNumber(doc, pageNumber);
-              pageNumber++;
-              doc.addPage();
-              y = 40;
+      if (sections.aiAnalysis) {
+        try {
+          // Only proceed if we have valid AI analysis data
+          if (aiAnalysis && typeof aiAnalysis === 'object') {
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(33, 33, 33);
+            doc.text('AI ANALYSIS', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(80, 80, 80);
+            doc.text(
+              'AI-powered insights from your site walk data to enhance technical planning and streamline installation.',
+              20, 42, { maxWidth: doc.internal.pageSize.getWidth() - 40 }
+            );
+            
+            // Executive Summary
+            if (aiAnalysis.summary && typeof aiAnalysis.summary === 'string') {
+              doc.setFontSize(16);
+              doc.setTextColor(41, 65, 171);
+              doc.text('Executive Summary', 20, 60);
+              
+              doc.setFontSize(11);
+              doc.setTextColor(33, 33, 33);
+              
+              try {
+                // Split summary text into paragraphs
+                const summaryParagraphs = aiAnalysis.summary.split('\n\n');
+                let y = 70;
+                
+                for (const paragraph of summaryParagraphs) {
+                  // Check if we need to add a new page
+                  if (y > 250) {
+                    addPageNumber(doc, pageNumber);
+                    pageNumber++;
+                    doc.addPage();
+                    y = 40;
+                  }
+                  
+                  doc.text(paragraph, 20, y, { 
+                    maxWidth: doc.internal.pageSize.getWidth() - 40,
+                    align: 'left'
+                  });
+                  
+                  // Calculate text height
+                  const textHeight = doc.getTextDimensions(paragraph, {
+                    maxWidth: doc.internal.pageSize.getWidth() - 40
+                  }).h;
+                  
+                  y += textHeight + 10;
+                }
+              } catch (err) {
+                // Fallback if splitting fails
+                doc.text('Summary not available in the correct format', 20, 70);
+                console.error('Error formatting AI summary:', err);
+              }
+            } else {
+              doc.setFontSize(16);
+              doc.setTextColor(41, 65, 171);
+              doc.text('Executive Summary', 20, 60);
+              
+              doc.setFontSize(11);
+              doc.setTextColor(33, 33, 33);
+              doc.text('No summary available for this project.', 20, 70);
             }
             
-            doc.text(paragraph, 20, y, { 
-              maxWidth: doc.internal.pageSize.getWidth() - 40,
-              align: 'left'
-            });
+            // Recommendations
+            if (aiAnalysis.recommendations && Array.isArray(aiAnalysis.recommendations) && aiAnalysis.recommendations.length > 0) {
+              // Check if we need to add a new page
+              if (doc.internal.getCurrentPageInfo().pageNumber !== pageNumber) {
+                addPageNumber(doc, pageNumber);
+                pageNumber++;
+                doc.addPage();
+              }
+              
+              doc.setFontSize(16);
+              doc.setTextColor(41, 65, 171);
+              doc.text('Key Recommendations', 20, 170);
+              
+              doc.setFontSize(11);
+              doc.setTextColor(33, 33, 33);
+              
+              let y = 180;
+              aiAnalysis.recommendations.forEach((recommendation, index) => {
+                if (typeof recommendation !== 'string') return;
+                
+                // Check if we need to add a new page
+                if (y > 250) {
+                  addPageNumber(doc, pageNumber);
+                  pageNumber++;
+                  doc.addPage();
+                  y = 40;
+                }
+                
+                doc.text(`${index + 1}. ${recommendation}`, 20, y, { 
+                  maxWidth: doc.internal.pageSize.getWidth() - 40 
+                });
+                
+                // Calculate text height
+                const textHeight = doc.getTextDimensions(recommendation, {
+                  maxWidth: doc.internal.pageSize.getWidth() - 40
+                }).h;
+                
+                y += textHeight + 10;
+              });
+            } else {
+              // If no recommendations are available
+              doc.setFontSize(16);
+              doc.setTextColor(41, 65, 171);
+              doc.text('Key Recommendations', 20, 170);
+              
+              doc.setFontSize(11);
+              doc.setTextColor(33, 33, 33);
+              doc.text('No recommendations available for this project.', 20, 180);
+            }
             
-            // Calculate text height
-            const textHeight = doc.getTextDimensions(paragraph, {
-              maxWidth: doc.internal.pageSize.getWidth() - 40
-            }).h;
-            
-            y += textHeight + 10;
-          }
-        }
-        
-        // Recommendations
-        if (aiAnalysis.recommendations && aiAnalysis.recommendations.length > 0) {
-          // Check if we need to add a new page
-          if (doc.internal.getCurrentPageInfo().pageNumber !== pageNumber) {
             addPageNumber(doc, pageNumber);
             pageNumber++;
-            doc.addPage();
+          } else {
+            // Skip this section if no data available
+            console.log('Skipping AI Analysis section - no data available');
           }
-          
-          doc.setFontSize(16);
-          doc.setTextColor(41, 65, 171);
-          doc.text('Key Recommendations', 20, 170);
-          
-          doc.setFontSize(11);
-          doc.setTextColor(33, 33, 33);
-          
-          let y = 180;
-          aiAnalysis.recommendations.forEach((recommendation, index) => {
-            // Check if we need to add a new page
-            if (y > 250) {
-              addPageNumber(doc, pageNumber);
-              pageNumber++;
-              doc.addPage();
-              y = 40;
-            }
-            
-            doc.text(`${index + 1}. ${recommendation}`, 20, y, { 
-              maxWidth: doc.internal.pageSize.getWidth() - 40 
-            });
-            
-            // Calculate text height
-            const textHeight = doc.getTextDimensions(recommendation, {
-              maxWidth: doc.internal.pageSize.getWidth() - 40
-            }).h;
-            
-            y += textHeight + 10;
-          });
+        } catch (err) {
+          console.error('Error rendering AI Analysis section:', err);
+          // Continue with the export instead of failing
         }
-        
-        addPageNumber(doc, pageNumber);
-        pageNumber++;
       }
       
       // --------- MEETING AGENDA SECTION ---------
@@ -1125,98 +1161,137 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- GATEWAY CALCULATOR SECTION ---------
-      if (sections.gatewayCalculator && gatewayData) {
-        doc.addPage();
-        doc.setFontSize(20);
-        doc.setTextColor(33, 33, 33);
-        doc.text('GATEWAY CALCULATOR', 20, 30);
+      if (sections.gatewayCalculator) {
+        try {
+          // Only proceed if we have valid gateway data
+          if (gatewayData && typeof gatewayData === 'object') {
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(33, 33, 33);
+            doc.text('GATEWAY CALCULATOR', 20, 30);
+            
+            doc.setFontSize(16);
+            doc.setTextColor(41, 65, 171);
+            doc.text('Gateway Configuration Summary', 20, 50);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(33, 33, 33);
+            doc.text('Camera Stream Requirements', 20, 70);
+            
+            // Safely extract values with proper type checking
+            const totalStreams = typeof gatewayData.totalStreams === 'number' ? 
+              gatewayData.totalStreams.toString() : '0';
+            const totalThroughput = typeof gatewayData.totalThroughput === 'number' ? 
+              gatewayData.totalThroughput.toString() : '0';
+            const totalStorage = typeof gatewayData.totalStorage === 'number' ? 
+              gatewayData.totalStorage.toString() : '0';
+            
+            // Camera stream requirements table
+            (doc as any).autoTable({
+              startY: 80,
+              head: [['Metric', 'Value']],
+              body: [
+                ['Total Camera Streams', totalStreams],
+                ['Total Throughput (Mbps)', totalThroughput],
+                ['Total Storage (TB)', totalStorage]
+              ],
+              theme: 'grid',
+              headStyles: {
+                fillColor: [41, 65, 171],
+                textColor: [255, 255, 255]
+              },
+              columnStyles: {
+                0: { cellWidth: 100 },
+                1: { cellWidth: 80 }
+              }
+            });
         
-        // In a real implementation, we'd include detailed gateway configuration
-        // For now, let's add a placeholder with sample gateway data
-        
-        doc.setFontSize(16);
-        doc.setTextColor(41, 65, 171);
-        doc.text('Gateway Configuration Summary', 20, 50);
-        
-        doc.setFontSize(12);
-        doc.setTextColor(33, 33, 33);
-        doc.text('Camera Stream Requirements', 20, 70);
-        
-        // Camera stream requirements table
-        (doc as any).autoTable({
-          startY: 80,
-          head: [['Metric', 'Value']],
-          body: [
-            ['Total Camera Streams', gatewayData.totalStreams?.toString() || '0'],
-            ['Total Throughput (Mbps)', gatewayData.totalThroughput?.toString() || '0'],
-            ['Total Storage (TB)', gatewayData.totalStorage?.toString() || '0']
-          ],
-          theme: 'grid',
-          headStyles: {
-            fillColor: [41, 65, 171],
-            textColor: [255, 255, 255]
-          },
-          columnStyles: {
-            0: { cellWidth: 100 },
-            1: { cellWidth: 80 }
-          }
-        });
-        
-        doc.setFontSize(12);
-        doc.setTextColor(33, 33, 33);
-        doc.text('Recommended Gateway Solution', 20, 130);
-        
-        // Gateway solution table
-        (doc as any).autoTable({
-          startY: 140,
-          head: [['Gateway Type', 'Quantity', 'Max Streams', 'Max Throughput', 'Max Storage']],
-          body: [
-            [
-              gatewayData.gatewayType || '16ch',
-              gatewayData.gatewayCount?.toString() || '1',
-              gatewayData.gatewayType === '8ch' ? '8' : '16',
-              gatewayData.gatewayType === '8ch' ? '320 Mbps' : '640 Mbps',
-              gatewayData.gatewayType === '8ch' ? '6 TB' : '12 TB'
-            ]
-          ],
-          theme: 'grid',
-          headStyles: {
-            fillColor: [41, 65, 171],
-            textColor: [255, 255, 255]
-          }
-        });
-        
-        // Camera details (simplified for this example)
-        if (gatewayData.cameras && gatewayData.cameras.length > 0) {
-          doc.setFontSize(12);
-          doc.setTextColor(33, 33, 33);
-          doc.text('Camera Details', 20, 180);
-          
-          (doc as any).autoTable({
-            startY: 190,
-            head: [['Camera', 'Resolution', 'Frame Rate', 'Storage (GB)']],
-            body: gatewayData.cameras.map((camera: any) => [
-              camera.name || 'Camera',
-              camera.resolution || '1080p',
-              camera.frameRate?.toString() || '15',
-              camera.storage?.toString() || '250'
-            ]),
-            theme: 'grid',
-            headStyles: {
-              fillColor: [41, 65, 171],
-              textColor: [255, 255, 255]
-            },
-            columnStyles: {
-              0: { cellWidth: 60 },
-              1: { cellWidth: 50 },
-              2: { cellWidth: 40 },
-              3: { cellWidth: 40 }
+            doc.setFontSize(12);
+            doc.setTextColor(33, 33, 33);
+            doc.text('Recommended Gateway Solution', 20, 130);
+            
+            // Safely extract gateway type and count
+            const gatewayType = typeof gatewayData.gatewayType === 'string' ? 
+              gatewayData.gatewayType : '16ch';
+            const gatewayCount = typeof gatewayData.gatewayCount === 'number' ? 
+              gatewayData.gatewayCount.toString() : '1';
+              
+            // Gateway solution table
+            (doc as any).autoTable({
+              startY: 140,
+              head: [['Gateway Type', 'Quantity', 'Max Streams', 'Max Throughput', 'Max Storage']],
+              body: [
+                [
+                  gatewayType,
+                  gatewayCount,
+                  gatewayType === '8ch' ? '8' : '16',
+                  gatewayType === '8ch' ? '320 Mbps' : '640 Mbps',
+                  gatewayType === '8ch' ? '6 TB' : '12 TB'
+                ]
+              ],
+              theme: 'grid',
+              headStyles: {
+                fillColor: [41, 65, 171],
+                textColor: [255, 255, 255]
+              }
+            });
+            
+            // Camera details with improved error handling
+            if (gatewayData.cameras && Array.isArray(gatewayData.cameras) && gatewayData.cameras.length > 0) {
+              doc.setFontSize(12);
+              doc.setTextColor(33, 33, 33);
+              doc.text('Camera Details', 20, 180);
+              
+              try {
+                const cameraRows = gatewayData.cameras.map((camera: any) => {
+                  if (!camera || typeof camera !== 'object') {
+                    return ['Unknown Camera', '1080p', '15', '250'];
+                  }
+                  
+                  return [
+                    typeof camera.name === 'string' ? camera.name : 'Camera',
+                    typeof camera.resolution === 'string' ? camera.resolution : '1080p',
+                    typeof camera.frameRate === 'number' ? camera.frameRate.toString() : '15',
+                    typeof camera.storage === 'number' ? camera.storage.toString() : '250'
+                  ];
+                });
+                
+                (doc as any).autoTable({
+                  startY: 190,
+                  head: [['Camera', 'Resolution', 'Frame Rate', 'Storage (GB)']],
+                  body: cameraRows,
+                  theme: 'grid',
+                  headStyles: {
+                    fillColor: [41, 65, 171],
+                    textColor: [255, 255, 255]
+                  },
+                  columnStyles: {
+                    0: { cellWidth: 60 },
+                    1: { cellWidth: 50 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 40 }
+                  }
+                });
+              } catch (err) {
+                console.error('Error rendering camera details table:', err);
+                doc.text('Camera details could not be processed', 20, 190);
+              }
+            } else {
+              doc.setFontSize(12);
+              doc.setTextColor(33, 33, 33);
+              doc.text('No camera details available', 20, 180);
             }
-          });
+            
+            addPageNumber(doc, pageNumber);
+            pageNumber++;
+          } else {
+            // Skip this section if data is missing
+            console.log('Skipping Gateway Calculator section - no valid data available');
+          }
+        } catch (err) {
+          console.error('Error rendering Gateway Calculator section:', err);
+          // Continue with other sections instead of failing the entire export
         }
-        
-        addPageNumber(doc, pageNumber);
-        pageNumber++;
       }
       
       // Replace total page count placeholder with actual value
