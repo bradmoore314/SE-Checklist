@@ -9,6 +9,7 @@ interface ElevatorMarkerProps {
   onClick?: (e: React.MouseEvent) => void;
   onRightClick?: (e: React.MouseEvent) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
 }
 
 export const ElevatorMarker: React.FC<ElevatorMarkerProps> = ({
@@ -19,6 +20,7 @@ export const ElevatorMarker: React.FC<ElevatorMarkerProps> = ({
   onClick,
   onRightClick,
   onMouseDown,
+  onTouchStart,
 }) => {
   // Elevator marker dimensions
   const WIDTH = 20;
@@ -30,6 +32,7 @@ export const ElevatorMarker: React.FC<ElevatorMarkerProps> = ({
       onClick={onClick}
       onContextMenu={onRightClick}
       onMouseDown={onMouseDown}
+      onTouchStart={onTouchStart}
     >
       {/* Elevator square */}
       <rect
