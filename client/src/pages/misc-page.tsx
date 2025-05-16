@@ -36,6 +36,9 @@ export default function MiscPage() {
   const [activeTab, setActiveTab] = useState("custom-labor");
   const [customLaborDialogOpen, setCustomLaborDialogOpen] = useState(false);
   const [customPartsDialogOpen, setCustomPartsDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const itemsPerPage = 20;
   
   // Form state for new items
   const [newCustomLabor, setNewCustomLabor] = useState({
@@ -284,11 +287,31 @@ export default function MiscPage() {
     }
   };
 
-  // Filter incidentals based on search term
-  const filteredIncidentals = incidentalItems.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get unique categories for filter dropdown
+  const uniqueCategories = ["All", ...Array.from(new Set(incidentalItems.map(item => item.category)))].sort();
+  
+  // Filter incidentals based on search term and category
+  const filteredIncidentals = incidentalItems.filter(item => {
+    const matchesSearch = 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      item.kpn.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter === "All" || item.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredIncidentals.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredIncidentals.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Change page
+  const goToPage = (pageNumber: number) => {
+    setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -583,6 +606,17 @@ export default function MiscPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
+                <select 
+                  className="border p-2 rounded"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                >
+                  {uniqueCategories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Download size={16} />
                   Export
@@ -610,7 +644,7 @@ export default function MiscPage() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredIncidentals.map((item) => (
+                      currentItems.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell>{item.category}</TableCell>
                           <TableCell>{item.name}</TableCell>
@@ -628,6 +662,64 @@ export default function MiscPage() {
                   </TableBody>
                 </Table>
               </ScrollArea>
+              
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center space-x-2 mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      // Show current page and 2 pages before and after
+                      let pageToShow;
+                      if (totalPages <= 5) {
+                        // If 5 or fewer pages, show all
+                        pageToShow = i + 1;
+                      } else if (currentPage <= 3) {
+                        // If near the start, show first 5 pages
+                        pageToShow = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        // If near the end, show last 5 pages
+                        pageToShow = totalPages - 4 + i;
+                      } else {
+                        // Otherwise show current page and 2 pages before and after
+                        pageToShow = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageToShow}
+                          variant={currentPage === pageToShow ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => goToPage(pageToShow)}
+                        >
+                          {pageToShow}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="text-sm text-gray-500 ml-2">
+                    Page {currentPage} of {totalPages} ({filteredIncidentals.length} items)
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
