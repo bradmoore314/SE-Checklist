@@ -691,12 +691,27 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
             <Button 
               className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-auto sm:h-9"
               onClick={() => {
+                // Close fullscreen dialog and capture satellite view directly
                 setShowMapFullscreen(false);
-                setShowAddToFloorplanDialog(true);
+                
+                // Auto-generate a name for the floorplan
+                const defaultName = "Satellite View";
+                setFloorplanName(defaultName);
+                
+                // Handle saving the satellite view directly
+                if (coordinates) {
+                  handleAddToFloorplan();
+                } else {
+                  toast({
+                    title: "Error",
+                    description: "Couldn't get location coordinates",
+                    variant: "destructive"
+                  });
+                }
               }}
             >
               <PlusCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-              Add to Floorplans
+              Save to Floorplans
             </Button>
           </DialogFooter>
         </DialogContent>
