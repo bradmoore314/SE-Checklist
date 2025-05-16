@@ -72,11 +72,12 @@ export default function ScopeTab({ project, onProjectUpdate }: ScopeTabProps) {
         onProjectUpdate(updatedProject);
       }
       
-      // Show success toast for significant changes
-      if (updatedProject.building_count !== undefined) {
+      // Show success toast for building count changes
+      const updatedBuildingCount = updatedProject.building_count;
+      if (updatedBuildingCount && updatedBuildingCount !== project.building_count) {
         toast({
           title: "Building Count Updated",
-          description: `Building count set to ${updatedProject.building_count}`,
+          description: `Building count set to ${updatedBuildingCount}`,
         });
       }
       

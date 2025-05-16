@@ -213,14 +213,17 @@ export default function Dashboard() {
                 setCurrentProject(updated);
               }} 
             />
-            <ProjectConfiguration 
+            <EquipmentTabs project={currentOpportunity} />
+          </TabsContent>
+
+          <TabsContent value="scope" className="m-0">
+            <ScopeTab
               project={currentOpportunity}
               onProjectUpdate={(updated) => {
                 setCurrentOpportunity(updated);
                 setCurrentProject(updated);
               }}
             />
-            <EquipmentTabs project={currentOpportunity} />
           </TabsContent>
 
           <TabsContent value="projects" className="m-0">
