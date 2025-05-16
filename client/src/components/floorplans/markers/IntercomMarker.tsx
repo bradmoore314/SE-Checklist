@@ -9,6 +9,7 @@ interface IntercomMarkerProps {
   onClick?: (e: React.MouseEvent) => void;
   onRightClick?: (e: React.MouseEvent) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
 }
 
 export const IntercomMarker: React.FC<IntercomMarkerProps> = ({
@@ -19,6 +20,7 @@ export const IntercomMarker: React.FC<IntercomMarkerProps> = ({
   onClick,
   onRightClick,
   onMouseDown,
+  onTouchStart,
 }) => {
   // Intercom marker dimensions
   const WIDTH = 18;
@@ -30,6 +32,7 @@ export const IntercomMarker: React.FC<IntercomMarkerProps> = ({
       onClick={onClick}
       onContextMenu={onRightClick}
       onMouseDown={onMouseDown}
+      onTouchStart={onTouchStart}
     >
       {/* Intercom circle with speaker symbol */}
       <circle
