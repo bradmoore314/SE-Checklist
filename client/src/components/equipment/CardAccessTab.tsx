@@ -155,7 +155,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
   };
   
   // Export access points to Excel template
-  const handleExportToTemplate = () => {
+  const handleExportToTemplate = async () => {
     if (!accessPoints.length) {
       toast({
         title: "Export Failed",
@@ -166,38 +166,104 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
     }
     
     try {
-      // Create a new workbook
+      // Use the template-based export function
+      const templateUrl = '/assets/DoorScheduleTemplate.xlsx';
+      
+      // Create a new workbook (will use template if available)
       const wb = XLSX.utils.book_new();
+      let worksheet;
+      let hasTemplate = false;
       
-      // Format data for Door Schedule
-      const doorData = accessPoints.map((ap, index) => ({
-        "ID": ap.id,
-        "Location": ap.location || "",
-        "Door Type": ap.lock_type || "",
-        "Reader Type": ap.reader_type || "",
-        "Lock Type": ap.lock_type || "",
-        "Security Level": ap.monitoring_type || "",
-        "Lock Provider": ap.lock_provider || "",
-        "Interior/Perimeter": ap.interior_perimeter || "",
-        "Takeover": ap.takeover || "No",
-        "Noisy Prop": ap.noisy_prop || "No",
-        "Crashbars": ap.crashbars || "No",
-        "Real Lock Type": ap.real_lock_type || "",
-        "Notes": ap.notes || ""
-      }));
+      try {
+        // Try to fetch the template file
+        const response = await fetch(templateUrl);
+        if (response.ok) {
+          const templateArrayBuffer = await response.arrayBuffer();
+          const templateWorkbook = XLSX.read(templateArrayBuffer, { type: 'array' });
+          
+          // Get the first sheet in the workbook (Door Schedule)
+          const sheetName = templateWorkbook.SheetNames[0];
+          worksheet = templateWorkbook.Sheets[sheetName];
+          hasTemplate = true;
+        }
+      } catch (templateError) {
+        console.warn("Template not found, using default export format:", templateError);
+      }
       
-      // Create worksheet from data
-      const ws = XLSX.utils.json_to_sheet(doorData);
-      
-      // Add header with project information
-      XLSX.utils.sheet_add_aoa(ws, [
-        [`Door Schedule: ${project.name}`],
-        [`Client: ${project.client}`],
-        [""],
-      ], { origin: "A1" });
-      
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(wb, ws, "Door Schedule");
+      if (hasTemplate) {
+        // Template-based approach - Fill in template rows
+        accessPoints.forEach((ap, index) => {
+          // Start from row 2 (index 1) since row 1 is the header
+          const rowIndex = index + 1;
+          
+          // Door Number (column A) - ID
+          worksheet[`A${rowIndex + 1}`] = { t: 'n', v: ap.id };
+          
+          // Door Name/Location (column B)
+          worksheet[`B${rowIndex + 1}`] = { t: 's', v: ap.location || '' };
+          
+          // Floor (column C) - Default to 1 if not specified
+          worksheet[`C${rowIndex + 1}`] = { t: 's', v: '1' };
+          
+          // Monitoring Type (column D)
+          const monitoringType = mapMonitoringType(ap.monitoring_type);
+          worksheet[`D${rowIndex + 1}`] = { t: 's', v: monitoringType };
+          
+          // Install Type (column E) - Based on takeover status
+          const installType = ap.takeover === 'Yes' ? 'Takeover' : 'New Install';
+          worksheet[`E${rowIndex + 1}`] = { t: 's', v: installType };
+          
+          // Reader Type (column F)
+          const readerType = mapReaderType(ap.reader_type);
+          worksheet[`F${rowIndex + 1}`] = { t: 's', v: readerType };
+          
+          // Lock Type (column I)
+          const lockType = mapLockType(ap.lock_type);
+          worksheet[`I${rowIndex + 1}`] = { t: 's', v: lockType };
+          
+          // Lock Provider (column J)
+          worksheet[`J${rowIndex + 1}`] = { t: 's', v: ap.lock_provider || '' };
+          
+          // Interior/Perimeter (column K)
+          worksheet[`K${rowIndex + 1}`] = { t: 's', v: ap.interior_perimeter || '' };
+          
+          // Notes (column Q)
+          worksheet[`Q${rowIndex + 1}`] = { t: 's', v: ap.notes || '' };
+        });
+        
+        // Add to workbook
+        XLSX.utils.book_append_sheet(wb, worksheet, "Door Schedule");
+      } else {
+        // Fallback to standard format if template not available
+        const doorData = accessPoints.map((ap, index) => ({
+          "ID": ap.id,
+          "Location": ap.location || "",
+          "Door Type": ap.lock_type || "",
+          "Reader Type": ap.reader_type || "",
+          "Lock Type": ap.lock_type || "",
+          "Security Level": ap.monitoring_type || "",
+          "Lock Provider": ap.lock_provider || "",
+          "Interior/Perimeter": ap.interior_perimeter || "",
+          "Takeover": ap.takeover || "No",
+          "Noisy Prop": ap.noisy_prop || "No",
+          "Crashbars": ap.crashbars || "No",
+          "Real Lock Type": ap.real_lock_type || "",
+          "Notes": ap.notes || ""
+        }));
+        
+        // Create worksheet from data
+        worksheet = XLSX.utils.json_to_sheet(doorData);
+        
+        // Add header with project information
+        XLSX.utils.sheet_add_aoa(worksheet, [
+          [`Door Schedule: ${project.name}`],
+          [`Client: ${project.client}`],
+          [""],
+        ], { origin: "A1" });
+        
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, worksheet, "Door Schedule");
+      }
       
       // Generate filename
       const filename = `${project.name.replace(/[^a-z0-9]/gi, '_')}_Door_Schedule.xlsx`;
@@ -218,6 +284,34 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       });
     }
   };
+  
+  // Helper mapping functions to convert our terms to Kastle template terms
+  function mapMonitoringType(type: string): string {
+    switch (type) {
+      case 'Monitored': return 'Alarm';
+      case 'Request to Exit': return 'Prop';
+      case 'None': return '';
+      default: return type || '';
+    }
+  }
+  
+  function mapReaderType(type: string): string {
+    switch (type) {
+      case 'Standard HID Reader': return 'KR-100';
+      case 'Mullion Reader': return 'KR-100M';
+      case 'Keypad': return 'KR-100K';
+      default: return type || '';
+    }
+  }
+  
+  function mapLockType(type: string): string {
+    switch (type) {
+      case 'Mag Lock': return 'Single Mag';
+      case 'Electric Strike': return 'Single Standard';
+      case 'Electric Mortise': return 'Single Mortise';
+      default: return type || '';
+    }
+  }
 
   // Handle save from Add modal
   const handleAddSave = (id: number, newData: AccessPoint) => {
