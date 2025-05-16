@@ -1,0 +1,44 @@
+[vite] connecting...
+[vite] connected.
+Running in development mode
+Auth bypass enabled, allowing authenticated routes
+Auth required for /api/projects
+Query error for /api/projects: 
+Error {}
+
+Auth required for /api/user
+Auth required for /api/auth/microsoft/status
+Query error for /api/auth/microsoft/status: 
+Error {}
+
+Auth required for /api/auth/microsoft/status
+Query error for /api/auth/microsoft/status: 
+Error {}
+
+Auth required for /api/projects
+Query error for /api/projects: 
+Error {}
+
+Fetch POST /api/login with data
+Fetch finished loading: POST /api/login
+Fetch GET /api/projects/39/floorplans
+Fetch GET /api/projects/39/satellite-image
+Fetch finished loading: GET /api/projects/39/floorplans
+Fetch finished loading: GET /api/projects/39/satellite-image
+Fetch GET /api/projects/39/collaborators
+Fetch GET /api/projects/39/permission
+Fetch finished loading: GET /api/projects/39/permission
+Fetch finished loading: GET /api/projects/39/collaborators
+Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
+API equipment counts: 
+Object {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Actual equipment counts: 
+Object {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Query error for /api/projects/39/ai-analysis: 
+SyntaxError {}
+
+at t.value (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

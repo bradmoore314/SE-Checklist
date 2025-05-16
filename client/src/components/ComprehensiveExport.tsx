@@ -155,7 +155,30 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
   // Generate the PDF export
   const generateComprehensiveExport = async () => {
     try {
+      console.log('Starting PDF generation...');
       setIsExporting(true);
+      
+      // Debug log available data
+      console.log('Summary data available:', !!summary);
+      console.log('Project data available:', !!project);
+      
+      // Handle AI Analysis data safely
+      let safeAiAnalysis = null;
+      if (!isAiAnalysisError && aiAnalysis) {
+        safeAiAnalysis = aiAnalysis;
+        console.log('AI Analysis data loaded successfully');
+      } else {
+        console.log('AI Analysis data not available', isAiAnalysisError);
+      }
+      
+      // Handle Gateway Calculator data safely
+      let safeGatewayData = null;
+      if (!isGatewayDataError && gatewayData) {
+        safeGatewayData = gatewayData;
+        console.log('Gateway Calculator data loaded successfully');
+      } else {
+        console.log('Gateway Calculator data not available', isGatewayDataError);
+      }
       
       // Create a new PDF document
       const doc = new jsPDF({
@@ -867,9 +890,10 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
       }
       
       // --------- AI ANALYSIS SECTION ---------
-      if (sections.aiAnalysis && !isAiAnalysisError) {
+      if (sections.aiAnalysis) {
         try {
           // Only proceed if we have valid AI analysis data
+          console.log('AI Analysis section - attempting to render with data:', aiAnalysis);
           if (aiAnalysis && typeof aiAnalysis === 'object') {
             doc.addPage();
             doc.setFontSize(20);
@@ -1328,11 +1352,15 @@ const ComprehensiveExport: React.FC<ComprehensiveExportProps> = ({
         description: 'Your comprehensive site walk report has been generated.'
       });
     } catch (error) {
-      console.error('Failed to generate comprehensive export:', error);
+      console.error('EXPORT ERROR:', error);
+      
+      // If there's a specific error message, display it
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
       toast({
         variant: 'destructive',
         title: 'Export Failed',
-        description: 'There was an error generating the comprehensive report.'
+        description: `There was an error generating the report: ${errorMessage}`
       });
     } finally {
       setIsExporting(false);
