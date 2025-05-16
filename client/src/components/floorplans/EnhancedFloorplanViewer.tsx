@@ -1033,23 +1033,47 @@ export const EnhancedFloorplanViewer = ({
           setDrawingPoints([{ x: centerX, y: centerY }]);
         } else if (['access_point', 'camera', 'elevator', 'intercom'].includes(toolMode)) {
           // For equipment markers that need configuration
-          setTempMarker(newMarker);
-          
-          // For both camera and other equipment markers, place at center and open the appropriate form
-          if (toolMode === 'camera') {
-            setTempMarker({
+          // If we have selected equipment from unassigned list, use it directly
+          if (selectedEquipment && selectedEquipment.type === toolMode) {
+            console.log("Using selected equipment for marker - skipping form dialog:", selectedEquipment);
+            // Add the marker directly with the equipment info
+            const markerWithEquipment = {
               ...newMarker,
-              // Set default values for camera visualization
-              position_x: pdfCenterX,
-              position_y: pdfCenterY,
-              fov: 90,
-              range: 60,
-              rotation: 0,
-              label: `Camera at center`
-            });
-            setCameraConfigOpen(true);
-          } else {
-            setIsEquipmentFormOpen(true);
+              equipment_id: selectedEquipment.id,
+              label: selectedEquipment.label
+            };
+            
+            // For cameras, add default camera properties
+            if (toolMode === 'camera') {
+              markerWithEquipment.fov = 90;
+              markerWithEquipment.range = 60;
+              markerWithEquipment.rotation = 0;
+            }
+            
+            // Add the marker directly
+            addMarkerMutation.mutate(markerWithEquipment);
+            console.log(`Added ${toolMode} marker with selected equipment ID ${selectedEquipment.id}`);
+          } 
+          // Otherwise open configuration form
+          else {
+            setTempMarker(newMarker);
+            
+            // For both camera and other equipment markers, place at center and open the appropriate form
+            if (toolMode === 'camera') {
+              setTempMarker({
+                ...newMarker,
+                // Set default values for camera visualization
+                position_x: pdfCenterX,
+                position_y: pdfCenterY,
+                fov: 90,
+                range: 60,
+                rotation: 0,
+                label: `Camera at center`
+              });
+              setCameraConfigOpen(true);
+            } else {
+              setIsEquipmentFormOpen(true);
+            }
           }
         } else {
           // For other point markers that don't need sizing or configuration
