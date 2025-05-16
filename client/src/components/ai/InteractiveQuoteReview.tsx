@@ -66,7 +66,7 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
   // Fetch initial project questions and analysis
   const { data: questionData, isLoading: isLoadingQuestions } = useQuery({
     queryKey: [`/api/projects/${projectId}/interactive-questions`],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     enabled: !!projectId,
   });
 
@@ -157,14 +157,14 @@ const InteractiveQuoteReview: React.FC<InteractiveQuoteReviewProps> = ({ project
   // Fetch project details for context
   const { data: projectDetails = {} } = useQuery({
     queryKey: [`/api/projects/${projectId}`],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     enabled: !!projectId,
   });
   
   // Fetch equipment data for this project
   const { data: equipmentData = {} } = useQuery({
     queryKey: [`/api/projects/${projectId}/equipment-summary`],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     enabled: !!projectId,
   });
   
