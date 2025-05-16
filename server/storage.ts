@@ -1888,15 +1888,36 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createElevator(insertElevator: InsertElevator): Promise<Elevator> {
-    const [elevator] = await db.insert(elevators).values(insertElevator).returning();
+    // Create a copy of the input data
+    const inputData = { ...insertElevator };
+    
+    // Handle empty string notes - convert to null to prevent notes disappearing
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    console.log(`Creating elevator with notes: ${JSON.stringify(inputData.notes)}`);
+    
+    const [elevator] = await db.insert(elevators).values(inputData).returning();
     return elevator;
   }
 
   async updateElevator(id: number, updateElevator: Partial<InsertElevator>): Promise<Elevator | undefined> {
     const now = new Date();
+    
+    // Create a copy of the input data
+    const inputData = { ...updateElevator };
+    
+    // Handle empty string notes - convert to null to prevent notes disappearing
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    console.log(`Updating elevator ${id} with notes: ${JSON.stringify(inputData.notes)}`);
+    
     const [elevator] = await db
       .update(elevators)
-      .set({ ...updateElevator, updated_at: now })
+      .set({ ...inputData, updated_at: now })
       .where(eq(elevators.id, id))
       .returning();
     return elevator;
@@ -1933,15 +1954,36 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createIntercom(insertIntercom: InsertIntercom): Promise<Intercom> {
-    const [intercom] = await db.insert(intercoms).values(insertIntercom).returning();
+    // Create a copy of the input data
+    const inputData = { ...insertIntercom };
+    
+    // Handle empty string notes - convert to null to prevent notes disappearing
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    console.log(`Creating intercom with notes: ${JSON.stringify(inputData.notes)}`);
+    
+    const [intercom] = await db.insert(intercoms).values(inputData).returning();
     return intercom;
   }
 
   async updateIntercom(id: number, updateIntercom: Partial<InsertIntercom>): Promise<Intercom | undefined> {
     const now = new Date();
+    
+    // Create a copy of the input data
+    const inputData = { ...updateIntercom };
+    
+    // Handle empty string notes - convert to null to prevent notes disappearing
+    if (inputData.notes === '') {
+      inputData.notes = null;
+    }
+    
+    console.log(`Updating intercom ${id} with notes: ${JSON.stringify(inputData.notes)}`);
+    
     const [intercom] = await db
       .update(intercoms)
-      .set({ ...updateIntercom, updated_at: now })
+      .set({ ...inputData, updated_at: now })
       .where(eq(intercoms.id, id))
       .returning();
     return intercom;
