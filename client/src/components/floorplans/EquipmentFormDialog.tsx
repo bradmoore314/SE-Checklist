@@ -218,11 +218,11 @@ const EquipmentFormDialog = ({
       project_id: projectId,
       location: `Floor ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`,
       quick_config: 'Standard', // Required legacy field
-      reader_type: 'AIO', // First option in reader_type dropdown
+      reader_type: 'KR-100', // Default to KR-100 instead of AIO
       lock_type: 'Standard', // First option in lock_type dropdown
       monitoring_type: 'Prop', // First option in monitoring_type dropdown
       lock_provider: 'Kastle', // First option in lock_provider dropdown
-      takeover: 'Yes', // First option in takeover dropdown
+      takeover: 'No', // Default to No
       interior_perimeter: 'Interior', // First option in interior_perimeter dropdown
       exst_panel_location: '',
       exst_panel_type: '',
