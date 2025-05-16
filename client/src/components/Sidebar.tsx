@@ -218,39 +218,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           {collapsed ? "" : "REPORTS"}
         </div>
         
-        <div>
-          <Link href="/door-schedules">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-              isActive("/door-schedules") 
-                ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-gray-100"
-            } cursor-pointer`}
-               style={isActive("/door-schedules") ? { 
-                 backgroundColor: 'var(--red-accent)', 
-                 borderColor: 'var(--red-accent)' 
-               } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/door-schedules") ? "text-white" : "text-gray-600"}`}>assessment</span>
-              {!collapsed && <span className={isActive("/door-schedules") ? "text-white" : "text-gray-800 font-medium"}>Door Schedules</span>}
-            </div>
-          </Link>
-        </div>
-        
-        <div>
-          <Link href="/camera-schedules">
-            <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-              isActive("/camera-schedules") 
-                ? "border-r-4 nav-item active" 
-                : "nav-item hover:bg-gray-100"
-            } cursor-pointer`}
-               style={isActive("/camera-schedules") ? { 
-                 backgroundColor: 'var(--red-accent)', 
-                 borderColor: 'var(--red-accent)' 
-               } : {}}>
-              <span className={`material-icons ${collapsed ? "" : "mr-3"} ${isActive("/camera-schedules") ? "text-white" : "text-gray-600"}`}>bar_chart</span>
-              {!collapsed && <span className={isActive("/camera-schedules") ? "text-white" : "text-gray-800 font-medium"}>Camera Schedules</span>}
-            </div>
-          </Link>
-        </div>
+        {/* Door Schedules and Camera Schedules removed - export functionality moved to equipment tabs */}
         
         <div>
           <Link href="/project-summary">

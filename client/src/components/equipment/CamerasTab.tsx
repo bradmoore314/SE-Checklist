@@ -10,7 +10,8 @@ import CombinedCameraConfigForm from "../floorplans/CombinedCameraConfigForm";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Plus, Search, Video, Edit, Copy, Trash } from "lucide-react";
+import { Plus, Search, Video, Edit, Copy, Trash, FileDown } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 interface CamerasTabProps {
   project: Project;
@@ -26,6 +27,45 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  
+  // Function to export cameras to Excel
+  const handleExportToTemplate = () => {
+    if (filteredCameras.length === 0) return;
+    
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    
+    // Format data for Excel
+    const excelData = filteredCameras.map((camera: Camera) => ({
+      'Location': camera.location || '',
+      'Camera Type': camera.camera_type || '',
+      'Mounting Type': camera.mounting_type || '',
+      'FOV Area Type': camera.fov_area_type || '',
+      'FOV Area Access': camera.fov_area_accessibility || '',
+      'IP Address': camera.ip_address || '',
+      'MAC Address': camera.mac_address || '',
+      'Stream URL': camera.stream_url || '',
+      'Resolution': camera.resolution || '',
+      'Notes': camera.notes || '',
+    }));
+    
+    // Convert to worksheet
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    
+    // Add to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Camera Schedule');
+    
+    // Generate filename
+    const fileName = `Camera_Schedule_${project.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    
+    // Save file
+    XLSX.writeFile(wb, fileName);
+    
+    toast({
+      title: "Export Successful",
+      description: `Cameras exported to ${fileName}`,
+    });
+  };
 
   // Fetch cameras
   const { data: cameras = [], isLoading, isError } = useQuery({
@@ -320,6 +360,15 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             />
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           </div>
+          <Button 
+            variant="outline"
+            className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            onClick={handleExportToTemplate}
+            disabled={filteredCameras.length === 0}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Export to Excel
+          </Button>
           <Button 
             className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
             onClick={() => setLocation("/camera-stream-gateway")}
