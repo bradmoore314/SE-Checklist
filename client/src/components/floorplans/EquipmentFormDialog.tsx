@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import EditAccessPointModal from '../modals/EditAccessPointModal'; 
 import EditCameraModal from '../modals/EditCameraModal';
 import EditElevatorModal from '../modals/EditElevatorModal';
@@ -35,6 +36,103 @@ const EquipmentFormDialog = ({
 }: EquipmentFormDialogProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Fetch existing access point data if we have an ID
+  const { data: accessPointData, isLoading: isLoadingAccessPoint, error: accessPointError } = useQuery({
+    queryKey: [`/api/projects/${projectId}/access-points/${existingEquipmentId}`],
+    queryFn: async () => {
+      if (!existingEquipmentId || markerType !== 'access_point') return null;
+      const res = await fetch(`/api/projects/${projectId}/access-points/${existingEquipmentId}`);
+      if (res.status === 404) {
+        // Equipment not found in database, might have been deleted
+        console.warn(`Access point with ID ${existingEquipmentId} not found. May have been deleted.`);
+        return null;
+      }
+      if (!res.ok) throw new Error(`Failed to fetch access point data: ${res.statusText}`);
+      return res.json();
+    },
+    enabled: !!existingEquipmentId && markerType === 'access_point' && isOpen,
+    retry: (failureCount, error) => {
+      // Don't retry 404 errors
+      if (error.message.includes('404')) return false;
+      return failureCount < 3; // retry up to 3 times for other errors
+    }
+  });
+  
+  // Fetch existing camera data if we have an ID
+  const { data: cameraData, isLoading: isLoadingCamera, error: cameraError } = useQuery({
+    queryKey: [`/api/projects/${projectId}/cameras/${existingEquipmentId}`],
+    queryFn: async () => {
+      if (!existingEquipmentId || markerType !== 'camera') return null;
+      const res = await fetch(`/api/projects/${projectId}/cameras/${existingEquipmentId}`);
+      if (res.status === 404) {
+        console.warn(`Camera with ID ${existingEquipmentId} not found. May have been deleted.`);
+        return null;
+      }
+      if (!res.ok) throw new Error(`Failed to fetch camera data: ${res.statusText}`);
+      return res.json();
+    },
+    enabled: !!existingEquipmentId && markerType === 'camera' && isOpen,
+    retry: (failureCount, error) => {
+      if (error.message.includes('404')) return false;
+      return failureCount < 3;
+    }
+  });
+  
+  // Fetch existing elevator data if we have an ID
+  const { data: elevatorData, isLoading: isLoadingElevator, error: elevatorError } = useQuery({
+    queryKey: [`/api/projects/${projectId}/elevators/${existingEquipmentId}`],
+    queryFn: async () => {
+      if (!existingEquipmentId || markerType !== 'elevator') return null;
+      const res = await fetch(`/api/projects/${projectId}/elevators/${existingEquipmentId}`);
+      if (res.status === 404) {
+        console.warn(`Elevator with ID ${existingEquipmentId} not found. May have been deleted.`);
+        return null;
+      }
+      if (!res.ok) throw new Error(`Failed to fetch elevator data: ${res.statusText}`);
+      return res.json();
+    },
+    enabled: !!existingEquipmentId && markerType === 'elevator' && isOpen,
+    retry: (failureCount, error) => {
+      if (error.message.includes('404')) return false;
+      return failureCount < 3;
+    }
+  });
+  
+  // Fetch existing intercom data if we have an ID
+  const { data: intercomData, isLoading: isLoadingIntercom, error: intercomError } = useQuery({
+    queryKey: [`/api/projects/${projectId}/intercoms/${existingEquipmentId}`],
+    queryFn: async () => {
+      if (!existingEquipmentId || markerType !== 'intercom') return null;
+      const res = await fetch(`/api/projects/${projectId}/intercoms/${existingEquipmentId}`);
+      if (res.status === 404) {
+        console.warn(`Intercom with ID ${existingEquipmentId} not found. May have been deleted.`);
+        return null;
+      }
+      if (!res.ok) throw new Error(`Failed to fetch intercom data: ${res.statusText}`);
+      return res.json();
+    },
+    enabled: !!existingEquipmentId && markerType === 'intercom' && isOpen,
+    retry: (failureCount, error) => {
+      if (error.message.includes('404')) return false;
+      return failureCount < 3;
+    }
+  });
+  
+  // If any equipment error occurs and it's not a 404, show an error toast
+  useEffect(() => {
+    const errors = [accessPointError, cameraError, elevatorError, intercomError].filter(Boolean);
+    
+    for (const error of errors) {
+      if (error && !error.message.includes('404')) {
+        toast({
+          title: "Error Loading Equipment Data",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    }
+  }, [accessPointError, cameraError, elevatorError, intercomError, toast]);
 
   // Determine which form to show based on marker type
   const getEquipmentFormModal = () => {
@@ -95,15 +193,61 @@ const EquipmentFormDialog = ({
 
     // Handle access point form
     if (markerType === 'access_point') {
-      // Set the id field if we have an existing equipment ID
-      if (existingEquipmentId) {
-        accessPoint.id = existingEquipmentId;
+      // Show loading state when fetching existing data
+      if (existingEquipmentId && isLoadingAccessPoint) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Loading Access Point Data</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
       }
+      
+      // Handle case where equipment was deleted or not found
+      if (existingEquipmentId && !accessPointData && !isLoadingAccessPoint) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Equipment Not Found</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <p>This access point (ID: {existingEquipmentId}) no longer exists in the database. It may have been deleted.</p>
+                <p>Would you like to create a new access point or remove this marker?</p>
+                
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => {
+                    // Clear the existing ID and create a new one
+                    onEquipmentCreated(0, `Access Point ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
+                    onClose();
+                  }}>
+                    Create New
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
+      // Use fetched data if available, otherwise use default
+      const formData = existingEquipmentId && accessPointData 
+        ? { ...accessPointData, id: existingEquipmentId } 
+        : { ...accessPoint, id: existingEquipmentId || 0 };
       
       return (
         <EditAccessPointModal
           isOpen={isOpen}
-          accessPoint={accessPoint}
+          accessPoint={formData}
           onClose={onClose}
           onSave={async (id, data) => {
             onEquipmentCreated(id, data.location);
@@ -116,48 +260,111 @@ const EquipmentFormDialog = ({
 
     // Handle camera form
     if (markerType === 'camera') {
+      // Show loading state when fetching existing data
+      if (existingEquipmentId && isLoadingCamera) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Loading Camera Data</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
+      // Use fetched data if available, otherwise use default
+      const formData = existingEquipmentId && cameraData 
+        ? { ...cameraData, id: existingEquipmentId } 
+        : { ...camera, id: existingEquipmentId || 0 };
+      
       return (
         <EditCameraModal
           isOpen={isOpen}
-          camera={camera}
+          camera={formData}
           onClose={onClose}
           onSave={async (id, data) => {
             onEquipmentCreated(id, data.location);
           }}
           fromFloorplan={true}
-          isNewCamera={true}
+          isNewCamera={!existingEquipmentId} // Only new if no ID provided
         />
       );
     }
 
     // Handle elevator form
     if (markerType === 'elevator') {
+      // Show loading state when fetching existing data
+      if (existingEquipmentId && isLoadingElevator) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Loading Elevator Data</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
+      // Use fetched data if available, otherwise use default
+      const formData = existingEquipmentId && elevatorData 
+        ? { ...elevatorData, id: existingEquipmentId } 
+        : { ...elevator, id: existingEquipmentId || 0 };
+      
       return (
         <EditElevatorModal
           isOpen={isOpen}
-          elevator={elevator}
+          elevator={formData}
           onClose={onClose}
           onSave={async (id, data) => {
             onEquipmentCreated(id, data.location);
           }}
           fromFloorplan={true}
-          isNewElevator={true}
+          isNewElevator={!existingEquipmentId} // Only new if no ID provided
         />
       );
     }
 
     // Handle intercom form
     if (markerType === 'intercom') {
+      // Show loading state when fetching existing data
+      if (existingEquipmentId && isLoadingIntercom) {
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Loading Intercom Data</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      }
+      
+      // Use fetched data if available, otherwise use default
+      const formData = existingEquipmentId && intercomData 
+        ? { ...intercomData, id: existingEquipmentId } 
+        : { ...intercom, id: existingEquipmentId || 0 };
+      
       return (
         <EditIntercomModal
           isOpen={isOpen}
-          intercom={intercom}
+          intercom={formData}
           onClose={onClose}
           onSave={async (id, data) => {
             onEquipmentCreated(id, data.location);
           }}
           fromFloorplan={true}
-          isNewIntercom={true}
+          isNewIntercom={!existingEquipmentId} // Only new if no ID provided
         />
       );
     }
