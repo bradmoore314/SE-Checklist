@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, Download } from "lucide-react";
+import { Loader2, ArrowLeft, Download, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import ProjectQuestionsAnalysis from "@/components/reports/ProjectQuestionsAnalysis";
+import InteractiveQuoteReview from "@/components/ai/InteractiveQuoteReview";
 import { getQueryFn } from "@/lib/queryClient";
 
 const QuoteReviewPage: React.FC = () => {
@@ -86,8 +87,12 @@ const QuoteReviewPage: React.FC = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+        <TabsList className="grid w-full grid-cols-3 md:w-[600px]">
           <TabsTrigger value="overview">Project Overview</TabsTrigger>
+          <TabsTrigger value="interactive">
+            <Sparkles className="mr-2 h-4 w-4" />
+            Interactive Review
+          </TabsTrigger>
           <TabsTrigger value="questions">Questions Analysis</TabsTrigger>
         </TabsList>
         
@@ -201,6 +206,17 @@ const QuoteReviewPage: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+        
+        <TabsContent value="interactive" className="mt-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold">Interactive Quote Review</h2>
+            <p className="text-gray-600">
+              Answer questions about the project to get a more detailed and personalized quote review analysis.
+              The AI will use your answers to provide better recommendations.
+            </p>
+          </div>
+          <InteractiveQuoteReview projectId={parseInt(projectId)} />
         </TabsContent>
         
         <TabsContent value="questions" className="mt-6">

@@ -1952,6 +1952,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Interactive Quote Review endpoints
+  app.get("/api/projects/:projectId/interactive-questions", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Get project data for context
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Get questions that need user input from the service
+      const { generateQuoteReviewQuestions } = require('./services/interactive-quote-review');
+      const questions = generateQuoteReviewQuestions();
+      
+      // Return the questions
+      res.json({
+        success: true,
+        project: {
+          id: project.id,
+          name: project.name,
+          client: project.client
+        },
+        questions
+      });
+    } catch (error) {
+      console.error("Error fetching questions for interactive review:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch questions for interactive review",
+        error: (error as Error).message
+      });
+    }
+  });
+  
+  app.post("/api/projects/:projectId/interactive-quote-review", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      // Get user-answered questions from request body
+      const { userAnsweredQuestions } = req.body;
+      if (!userAnsweredQuestions) {
+        return res.status(400).json({ message: "Missing user answered questions" });
+      }
+
+      // Get project data
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Get equipment data
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+
+      // Prepare data for AI analysis
+      const projectData = {
+        project,
+        equipment: {
+          accessPoints,
+          cameras,
+          elevators,
+          intercoms
+        }
+      };
+
+      // Import and call the interactive quote review service
+      const { generateInteractiveQuoteReview } = require('./services/interactive-quote-review');
+      
+      try {
+        const analysis = await generateInteractiveQuoteReview(projectData, userAnsweredQuestions);
+        
+        console.log("Interactive Quote Review Analysis generated successfully");
+
+        res.json({
+          success: true,
+          analysis,
+          secureAI: true,
+          aiProvider: "Azure OpenAI in Kastle's secure environment"
+        });
+      } catch (aiError) {
+        console.error("Error calling AI for interactive quote review:", aiError);
+        res.status(500).json({
+          success: false,
+          message: "Failed to generate interactive quote review analysis",
+          error: (aiError as Error).message
+        });
+      }
+    } catch (error) {
+      console.error("Error in interactive quote review endpoint:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate interactive quote review analysis",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Turnover Call Agenda endpoint
   app.post("/api/projects/:projectId/turnover-call-agenda", isAuthenticated, async (req: Request, res: Response) => {
     try {
