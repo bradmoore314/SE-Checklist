@@ -4251,6 +4251,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get satellite image thumbnail for a project
   app.get("/api/projects/:projectId/satellite-image", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
+    // Import the image fetcher utility
+    const { fetchImageAsBase64 } = require('./utils/image-fetcher');
     
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Valid project ID is required" });
@@ -4276,15 +4278,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Couldn't geocode project address" });
       }
       
-      // Generate a satellite image URL with photorealistic 3D Tiles (smaller size for thumbnails)
-      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 300, 200, true);
+      // Generate a satellite image URL with photorealistic 3D Tiles (higher resolution for saving as floorplan)
+      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 800, 600, true);
       
-      // Return the URL with high-quality photorealistic imagery
-      res.json({ url: mapUrl });
+      try {
+        // Fetch the actual image data as base64
+        const base64ImageData = await fetchImageAsBase64(mapUrl);
+        
+        // Return both the URL and base64 data for the image
+        res.json({ 
+          url: mapUrl,
+          base64: base64ImageData
+        });
+      } catch (fetchError) {
+        console.error("Error converting satellite image to base64:", fetchError);
+        // Fall back to just returning the URL if fetching fails
+        res.json({ url: mapUrl });
+      }
     } catch (error) {
       console.error("Error getting satellite image for project", error);
       res.status(500).json({ 
-        message: "Failed to generate satellite image URL",
+        message: "Failed to generate satellite image",
         error: (error as Error).message
       });
     }
