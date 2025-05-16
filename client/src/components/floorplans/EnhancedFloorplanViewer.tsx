@@ -1889,6 +1889,15 @@ export const EnhancedFloorplanViewer = ({
                           startMarkerDrag(e, marker);
                         }
                       }}
+                      onTouchStart={(e: React.TouchEvent) => {
+                        if (!isAddingMarker && 
+                            !isDrawing && 
+                            !['polyline', 'polygon'].includes(toolMode) && 
+                            toolMode !== 'delete') {
+                          e.stopPropagation();
+                          startMarkerDrag(e, marker);
+                        }
+                      }}
                     />
                   </g>
                 );
