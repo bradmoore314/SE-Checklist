@@ -38,11 +38,12 @@ const EquipmentFormDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   
   // Fetch existing access point data if we have an ID
+  const accessPointQueryKey = ['access-point', projectId, existingEquipmentId, isOpen];
   const { data: accessPointData, isLoading: isLoadingAccessPoint, error: accessPointError } = useQuery({
-    queryKey: [existingEquipmentId && markerType === 'access_point' ? `/api/projects/${projectId}/access-points/${existingEquipmentId}` : 'access-point-null'],
+    queryKey: accessPointQueryKey,
     queryFn: async () => {
       if (!existingEquipmentId || markerType !== 'access_point') return null;
-      console.log(`Fetching access point: projectId=${projectId}, equipmentId=${existingEquipmentId}`);
+      console.log(`Fetching access point: projectId=${projectId}, equipmentId=${existingEquipmentId}, timestamp=${Date.now()}`);
       const res = await fetch(`/api/projects/${projectId}/access-points/${existingEquipmentId}`);
       if (res.status === 404) {
         // Equipment not found in database, might have been deleted
@@ -67,11 +68,12 @@ const EquipmentFormDialog = ({
   });
   
   // Fetch existing camera data if we have an ID
+  const cameraQueryKey = ['camera', projectId, existingEquipmentId, isOpen];
   const { data: cameraData, isLoading: isLoadingCamera, error: cameraError } = useQuery({
-    queryKey: [existingEquipmentId && markerType === 'camera' ? `/api/projects/${projectId}/cameras/${existingEquipmentId}` : 'camera-null'],
+    queryKey: cameraQueryKey,
     queryFn: async () => {
       if (!existingEquipmentId || markerType !== 'camera') return null;
-      console.log(`Fetching camera: projectId=${projectId}, equipmentId=${existingEquipmentId}`);
+      console.log(`Fetching camera: projectId=${projectId}, equipmentId=${existingEquipmentId}, timestamp=${Date.now()}`);
       const res = await fetch(`/api/projects/${projectId}/cameras/${existingEquipmentId}`);
       if (res.status === 404) {
         console.warn(`Camera with ID ${existingEquipmentId} not found. May have been deleted.`);
@@ -94,11 +96,12 @@ const EquipmentFormDialog = ({
   });
   
   // Fetch existing elevator data if we have an ID
+  const elevatorQueryKey = ['elevator', projectId, existingEquipmentId, isOpen];
   const { data: elevatorData, isLoading: isLoadingElevator, error: elevatorError } = useQuery({
-    queryKey: [existingEquipmentId && markerType === 'elevator' ? `/api/projects/${projectId}/elevators/${existingEquipmentId}` : 'elevator-null'],
+    queryKey: elevatorQueryKey,
     queryFn: async () => {
       if (!existingEquipmentId || markerType !== 'elevator') return null;
-      console.log(`Fetching elevator: projectId=${projectId}, equipmentId=${existingEquipmentId}`);
+      console.log(`Fetching elevator: projectId=${projectId}, equipmentId=${existingEquipmentId}, timestamp=${Date.now()}`);
       const res = await fetch(`/api/projects/${projectId}/elevators/${existingEquipmentId}`);
       if (res.status === 404) {
         console.warn(`Elevator with ID ${existingEquipmentId} not found. May have been deleted.`);
@@ -121,11 +124,12 @@ const EquipmentFormDialog = ({
   });
   
   // Fetch existing intercom data if we have an ID
+  const intercomQueryKey = ['intercom', projectId, existingEquipmentId, isOpen];
   const { data: intercomData, isLoading: isLoadingIntercom, error: intercomError } = useQuery({
-    queryKey: [existingEquipmentId && markerType === 'intercom' ? `/api/projects/${projectId}/intercoms/${existingEquipmentId}` : 'intercom-null'],
+    queryKey: intercomQueryKey,
     queryFn: async () => {
       if (!existingEquipmentId || markerType !== 'intercom') return null;
-      console.log(`Fetching intercom: projectId=${projectId}, equipmentId=${existingEquipmentId}`);
+      console.log(`Fetching intercom: projectId=${projectId}, equipmentId=${existingEquipmentId}, timestamp=${Date.now()}`);
       const res = await fetch(`/api/projects/${projectId}/intercoms/${existingEquipmentId}`);
       if (res.status === 404) {
         console.warn(`Intercom with ID ${existingEquipmentId} not found. May have been deleted.`);
@@ -161,9 +165,27 @@ const EquipmentFormDialog = ({
         console.log('- Lock Type:', accessPointData.lock_type);
         console.log('- Monitoring Type:', accessPointData.monitoring_type);
         console.log('- Quick Config:', accessPointData.quick_config);
+      } else {
+        console.warn(`Access point data is ${accessPointData === null ? 'null' : 'undefined'} for ID ${existingEquipmentId}`);
+        
+        // Attempt to force a re-fetch when data is missing
+        if (isOpen && existingEquipmentId) {
+          console.log(`Re-fetching access point data for ID ${existingEquipmentId}...`);
+          fetch(`/api/projects/${projectId}/access-points/${existingEquipmentId}`)
+            .then(res => {
+              if (res.ok) return res.json();
+              throw new Error(`Failed to fetch: ${res.status}`);
+            })
+            .then(data => {
+              console.log('Direct fetch result:', data);
+            })
+            .catch(err => {
+              console.error('Direct fetch error:', err);
+            });
+        }
       }
     }
-  }, [existingEquipmentId, markerType, accessPointData, isLoadingAccessPoint]);
+  }, [existingEquipmentId, markerType, accessPointData, isLoadingAccessPoint, isOpen, projectId]);
 
   // If any equipment error occurs and it's not a 404, show an error toast
   useEffect(() => {
