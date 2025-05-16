@@ -1,0 +1,502 @@
+chunk-XQLYTHWV.js?v=c6e437e2:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+queryClient.ts:7 Running in development mode
+queryClient.ts:36 Fetch GET /api/projects/39/floorplans
+queryClient.ts:36 Fetch GET /api/projects/39/satellite-image
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/satellite-image
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/floorplans
+queryClient.ts:36 Fetch GET /api/projects/39/collaborators
+queryClient.ts:36 Fetch GET /api/projects/39/permission
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/permission
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/collaborators
+js?key=AIzaSyClhn5pui6ab0JO9dEtR43HNJ5vQosIVDw&callback=initInteractiveMap:277 Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+rga @ js?key=AIzaSyClhn5pui6ab0JO9dEtR43HNJ5vQosIVDw&callback=initInteractiveMap:277
+js?key=AIzaSyClhn5pui6ab0JO9dEtR43HNJ5vQosIVDw&callback=initInteractiveMap:192 As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
+_.kl @ js?key=AIzaSyClhn5pui6ab0JO9dEtR43HNJ5vQosIVDw&callback=initInteractiveMap:192
+EquipmentConsistencyCheck.tsx:150 API equipment counts: Object
+EquipmentConsistencyCheck.tsx:157 Actual equipment counts: Object
+queryClient.ts:36 Fetch GET /api/floorplans/41
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/floorplans/41/calibration?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/equipment-consistency
+EnhancedFloorplanViewer.tsx:312 Calculating fit scale: PDF width=792px, Container width=1919px, Scale=2.30
+EnhancedFloorplanViewer.tsx:342 Auto-scaling PDF to fit width: scale = 2.30
+EnhancedFloorplanViewer.tsx:393 Rendering cancelled as expected
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/equipment-consistency
+queryClient.ts:36 Fetch POST /api/enhanced-floorplan/resolve-equipment with data
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: POST /api/enhanced-floorplan/resolve-equipment
+queryClient.ts:36 Fetch GET /api/projects/39/equipment-consistency
+queryClient.ts:36 Fetch GET /api/floorplans/41/calibration?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/equipment-consistency
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 159
+      - Type: access_point
+      - Label: dsafasdf
+      - Position: (240.51, 91.68)
+    
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/calibration?page=1
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/equipment-consistency
+EnhancedFloorplanViewer.tsx:2382 Opening access point settings for marker #159
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359828775
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/equipment-consistency
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359829995
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359832214
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359836455
+EnhancedFloorplanViewer.tsx:312 Calculating fit scale: PDF width=792px, Container width=1823px, Scale=2.19
+EnhancedFloorplanViewer.tsx:342 Auto-scaling PDF to fit width: scale = 2.19
+EnhancedFloorplanViewer.tsx:1701 Selected marker #159 (access_point): PDF pos (240.5, 91.7), scale=2.19
+EnhancedFloorplanViewer.tsx:393 Rendering cancelled as expected
+EnhancedFloorplanViewer.tsx:1701 Selected marker #159 (access_point): PDF pos (240.5, 91.7), scale=2.19
+EquipmentFormDialog.tsx:157 Access Point Data: undefined
+EquipmentFormDialog.tsx:169 Access point data is undefined for ID 121
+(anonymous) @ EquipmentFormDialog.tsx:169
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+EquipmentFormDialog.tsx:173 Re-fetching access point data for ID 121...
+queryClient.ts:36 Fetch GET /api/images/access_point/121?t=1747359836925
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+Node cannot be found in the current page.
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+queryClient.ts:53 Fetch finished loading: GET /api/images/access_point/121?t=1747359836925
+ImageUploadSection.tsx:54 Fetched 0 images at timestamp 1747359836925
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+EquipmentFormDialog.tsx:183 Direct fetch error: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ EquipmentFormDialog.tsx:183
+Promise.catch
+(anonymous) @ EquipmentFormDialog.tsx:182
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+EnhancedFloorplanViewer.tsx:1701 Selected marker #159 (access_point): PDF pos (240.5, 91.7), scale=2.19
+EnhancedFloorplanViewer.tsx:544 [SCALING-AWARE] Starting drag of marker #159:
+EnhancedFloorplanViewer.tsx:545  - Mouse screen pos: (1449, 749)
+EnhancedFloorplanViewer.tsx:546  - Marker screen pos: (822.92, 506.47)
+EnhancedFloorplanViewer.tsx:547  - Marker PDF pos: (240.51, 91.68)
+EnhancedFloorplanViewer.tsx:548  - Screen offset: (626.08, 242.53)
+EnhancedFloorplanViewer.tsx:549  - Current scale: 2.19
+EnhancedFloorplanViewer.tsx:277 Screen(1449, 748) → Container(1152.00, 442.00) → PDF(526.8262, 202.1330) @ scale 2.1867
+EnhancedFloorplanViewer.tsx:277 Screen(1449, 749) → Container(1152.00, 443.00) → PDF(526.8262, 202.5903) @ scale 2.1867
+EnhancedFloorplanViewer.tsx:277 Screen(1450, 748) → Container(1153.00, 442.00) → PDF(527.2835, 202.1330) @ scale 2.1867
+EnhancedFloorplanViewer.tsx:277 Screen(1449, 749) → Container(1152.00, 443.00) → PDF(526.8262, 202.5903) @ scale 2.1867
+EnhancedFloorplanViewer.tsx:1418 === DRAG END ===
+EnhancedFloorplanViewer.tsx:1419 Marker ID: 159
+EnhancedFloorplanViewer.tsx:1420 Final position: (240.97, 91.22)
+EnhancedFloorplanViewer.tsx:1421 Current scale: 2.1866792929292926
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:36 Fetch PUT /api/floorplan-markers/159 with data
+queryClient.ts:53 Fetch finished loading: PUT /api/floorplan-markers/159
+queryClient.ts:36 Fetch GET /api/floorplans/41/markers?page=1
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:705 Marker updated successfully, updating UI
+queryClient.ts:36 Fetch GET /api/projects/39/marker-stats
+EnhancedFloorplanViewer.tsx:452 Changes auto-saved to floorplan
+queryClient.ts:53 Fetch finished loading: GET /api/floorplans/41/markers?page=1
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:36 Fetch GET /api/projects/39/access-points
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/access-points
+queryClient.ts:36 Fetch GET /api/projects/39/cameras
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/marker-stats
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/cameras
+queryClient.ts:36 Fetch GET /api/projects/39/elevators
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/elevators
+queryClient.ts:36 Fetch GET /api/projects/39/intercoms
+EnhancedFloorplanViewer.tsx:483 Context menu opened for marker:
+      - ID: 159
+      - Type: access_point
+      - Label: dsafasdf
+      - Position: (240.97, 91.22)
+    
+EnhancedFloorplanViewer.tsx:1701 Selected marker #159 (access_point): PDF pos (241.0, 91.2), scale=2.19
+queryClient.ts:53 Fetch finished loading: GET /api/projects/39/intercoms
+equipmentConsistencyCheck.ts:57 Consistency error: Access point count mismatch. Marker stats: 3, Equipment list: 4
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:57
+await in checkEquipmentConsistency
+validateAndRefreshData @ equipmentConsistencyCheck.ts:96
+onSuccess @ EnhancedFloorplanViewer.tsx:703
+execute @ @tanstack_react-query.js?v=c6e437e2:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e437e2:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3295
+handleMouseUp @ EnhancedFloorplanViewer.tsx:1424
+callCallback2 @ chunk-XQLYTHWV.js?v=c6e437e2:3674
+invokeGuardedCallbackDev @ chunk-XQLYTHWV.js?v=c6e437e2:3699
+invokeGuardedCallback @ chunk-XQLYTHWV.js?v=c6e437e2:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-XQLYTHWV.js?v=c6e437e2:3736
+executeDispatch @ chunk-XQLYTHWV.js?v=c6e437e2:7014
+processDispatchQueueItemsInOrder @ chunk-XQLYTHWV.js?v=c6e437e2:7034
+processDispatchQueue @ chunk-XQLYTHWV.js?v=c6e437e2:7043
+dispatchEventsForPlugins @ chunk-XQLYTHWV.js?v=c6e437e2:7051
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:7174
+batchedUpdates$1 @ chunk-XQLYTHWV.js?v=c6e437e2:18913
+batchedUpdates @ chunk-XQLYTHWV.js?v=c6e437e2:3579
+dispatchEventForPluginEventSystem @ chunk-XQLYTHWV.js?v=c6e437e2:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-XQLYTHWV.js?v=c6e437e2:5478
+dispatchEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5472
+dispatchDiscreteEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5449
+equipmentConsistencyCheck.ts:61 Consistency error: Camera count mismatch. Marker stats: 0, Equipment list: 1
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:61
+await in checkEquipmentConsistency
+validateAndRefreshData @ equipmentConsistencyCheck.ts:96
+onSuccess @ EnhancedFloorplanViewer.tsx:703
+execute @ @tanstack_react-query.js?v=c6e437e2:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e437e2:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3295
+handleMouseUp @ EnhancedFloorplanViewer.tsx:1424
+callCallback2 @ chunk-XQLYTHWV.js?v=c6e437e2:3674
+invokeGuardedCallbackDev @ chunk-XQLYTHWV.js?v=c6e437e2:3699
+invokeGuardedCallback @ chunk-XQLYTHWV.js?v=c6e437e2:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-XQLYTHWV.js?v=c6e437e2:3736
+executeDispatch @ chunk-XQLYTHWV.js?v=c6e437e2:7014
+processDispatchQueueItemsInOrder @ chunk-XQLYTHWV.js?v=c6e437e2:7034
+processDispatchQueue @ chunk-XQLYTHWV.js?v=c6e437e2:7043
+dispatchEventsForPlugins @ chunk-XQLYTHWV.js?v=c6e437e2:7051
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:7174
+batchedUpdates$1 @ chunk-XQLYTHWV.js?v=c6e437e2:18913
+batchedUpdates @ chunk-XQLYTHWV.js?v=c6e437e2:3579
+dispatchEventForPluginEventSystem @ chunk-XQLYTHWV.js?v=c6e437e2:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-XQLYTHWV.js?v=c6e437e2:5478
+dispatchEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5472
+dispatchDiscreteEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5449
+equipmentConsistencyCheck.ts:75 Total equipment count inconsistencies: 2
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:75
+await in checkEquipmentConsistency
+validateAndRefreshData @ equipmentConsistencyCheck.ts:96
+onSuccess @ EnhancedFloorplanViewer.tsx:703
+execute @ @tanstack_react-query.js?v=c6e437e2:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e437e2:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3295
+handleMouseUp @ EnhancedFloorplanViewer.tsx:1424
+callCallback2 @ chunk-XQLYTHWV.js?v=c6e437e2:3674
+invokeGuardedCallbackDev @ chunk-XQLYTHWV.js?v=c6e437e2:3699
+invokeGuardedCallback @ chunk-XQLYTHWV.js?v=c6e437e2:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-XQLYTHWV.js?v=c6e437e2:3736
+executeDispatch @ chunk-XQLYTHWV.js?v=c6e437e2:7014
+processDispatchQueueItemsInOrder @ chunk-XQLYTHWV.js?v=c6e437e2:7034
+processDispatchQueue @ chunk-XQLYTHWV.js?v=c6e437e2:7043
+dispatchEventsForPlugins @ chunk-XQLYTHWV.js?v=c6e437e2:7051
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:7174
+batchedUpdates$1 @ chunk-XQLYTHWV.js?v=c6e437e2:18913
+batchedUpdates @ chunk-XQLYTHWV.js?v=c6e437e2:3579
+dispatchEventForPluginEventSystem @ chunk-XQLYTHWV.js?v=c6e437e2:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-XQLYTHWV.js?v=c6e437e2:5478
+dispatchEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5472
+dispatchDiscreteEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5449
+equipmentConsistencyCheck.ts:76 Marker stats: {total: 3, types: {…}}
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:76
+await in checkEquipmentConsistency
+validateAndRefreshData @ equipmentConsistencyCheck.ts:96
+onSuccess @ EnhancedFloorplanViewer.tsx:703
+execute @ @tanstack_react-query.js?v=c6e437e2:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e437e2:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3295
+handleMouseUp @ EnhancedFloorplanViewer.tsx:1424
+callCallback2 @ chunk-XQLYTHWV.js?v=c6e437e2:3674
+invokeGuardedCallbackDev @ chunk-XQLYTHWV.js?v=c6e437e2:3699
+invokeGuardedCallback @ chunk-XQLYTHWV.js?v=c6e437e2:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-XQLYTHWV.js?v=c6e437e2:3736
+executeDispatch @ chunk-XQLYTHWV.js?v=c6e437e2:7014
+processDispatchQueueItemsInOrder @ chunk-XQLYTHWV.js?v=c6e437e2:7034
+processDispatchQueue @ chunk-XQLYTHWV.js?v=c6e437e2:7043
+dispatchEventsForPlugins @ chunk-XQLYTHWV.js?v=c6e437e2:7051
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:7174
+batchedUpdates$1 @ chunk-XQLYTHWV.js?v=c6e437e2:18913
+batchedUpdates @ chunk-XQLYTHWV.js?v=c6e437e2:3579
+dispatchEventForPluginEventSystem @ chunk-XQLYTHWV.js?v=c6e437e2:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-XQLYTHWV.js?v=c6e437e2:5478
+dispatchEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5472
+dispatchDiscreteEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5449
+equipmentConsistencyCheck.ts:77 Equipment counts: {accessPoints: 4, cameras: 1, elevators: 0, intercoms: 0}
+checkEquipmentConsistency @ equipmentConsistencyCheck.ts:77
+await in checkEquipmentConsistency
+validateAndRefreshData @ equipmentConsistencyCheck.ts:96
+onSuccess @ EnhancedFloorplanViewer.tsx:703
+execute @ @tanstack_react-query.js?v=c6e437e2:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=c6e437e2:2630
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3295
+handleMouseUp @ EnhancedFloorplanViewer.tsx:1424
+callCallback2 @ chunk-XQLYTHWV.js?v=c6e437e2:3674
+invokeGuardedCallbackDev @ chunk-XQLYTHWV.js?v=c6e437e2:3699
+invokeGuardedCallback @ chunk-XQLYTHWV.js?v=c6e437e2:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-XQLYTHWV.js?v=c6e437e2:3736
+executeDispatch @ chunk-XQLYTHWV.js?v=c6e437e2:7014
+processDispatchQueueItemsInOrder @ chunk-XQLYTHWV.js?v=c6e437e2:7034
+processDispatchQueue @ chunk-XQLYTHWV.js?v=c6e437e2:7043
+dispatchEventsForPlugins @ chunk-XQLYTHWV.js?v=c6e437e2:7051
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:7174
+batchedUpdates$1 @ chunk-XQLYTHWV.js?v=c6e437e2:18913
+batchedUpdates @ chunk-XQLYTHWV.js?v=c6e437e2:3579
+dispatchEventForPluginEventSystem @ chunk-XQLYTHWV.js?v=c6e437e2:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-XQLYTHWV.js?v=c6e437e2:5478
+dispatchEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5472
+dispatchDiscreteEvent @ chunk-XQLYTHWV.js?v=c6e437e2:5449
+EnhancedFloorplanViewer.tsx:2382 Opening access point settings for marker #159
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359844040
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359845266
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359847484
+EquipmentFormDialog.tsx:46 Fetching access point: projectId=39, equipmentId=121, timestamp=1747359851718
+EquipmentFormDialog.tsx:157 Access Point Data: undefined
+EquipmentFormDialog.tsx:169 Access point data is undefined for ID 121
+(anonymous) @ EquipmentFormDialog.tsx:169
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+start @ @tanstack_react-query.js?v=c6e437e2:536
+fetch @ @tanstack_react-query.js?v=c6e437e2:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e437e2:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e437e2:1898
+subscribe @ @tanstack_react-query.js?v=c6e437e2:24
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3022
+subscribeToStore @ chunk-XQLYTHWV.js?v=c6e437e2:11984
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+EquipmentFormDialog.tsx:173 Re-fetching access point data for ID 121...
+queryClient.ts:36 Fetch GET /api/images/access_point/121?t=1747359851958
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+chunk-IDERHJWA.js?v=c6e437e2:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-IDERHJWA.js?v=c6e437e2:338
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+start @ @tanstack_react-query.js?v=c6e437e2:536
+fetch @ @tanstack_react-query.js?v=c6e437e2:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e437e2:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e437e2:1898
+subscribe @ @tanstack_react-query.js?v=c6e437e2:24
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3022
+subscribeToStore @ chunk-XQLYTHWV.js?v=c6e437e2:11984
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
+EquipmentFormDialog.tsx:183 Direct fetch error: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ EquipmentFormDialog.tsx:183
+Promise.catch
+(anonymous) @ EquipmentFormDialog.tsx:182
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=c6e437e2:555
+flush @ @tanstack_react-query.js?v=c6e437e2:569
+batch @ @tanstack_react-query.js?v=c6e437e2:587
+dispatch_fn @ @tanstack_react-query.js?v=c6e437e2:996
+onError @ @tanstack_react-query.js?v=c6e437e2:861
+reject @ @tanstack_react-query.js?v=c6e437e2:465
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:508
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:515
+Promise.catch
+run @ @tanstack_react-query.js?v=c6e437e2:498
+start @ @tanstack_react-query.js?v=c6e437e2:536
+fetch @ @tanstack_react-query.js?v=c6e437e2:926
+executeFetch_fn @ @tanstack_react-query.js?v=c6e437e2:2211
+onSubscribe @ @tanstack_react-query.js?v=c6e437e2:1898
+subscribe @ @tanstack_react-query.js?v=c6e437e2:24
+(anonymous) @ @tanstack_react-query.js?v=c6e437e2:3022
+subscribeToStore @ chunk-XQLYTHWV.js?v=c6e437e2:11984
+commitHookEffectListMount @ chunk-XQLYTHWV.js?v=c6e437e2:16915
+commitPassiveMountOnFiber @ chunk-XQLYTHWV.js?v=c6e437e2:18156
+commitPassiveMountEffects_complete @ chunk-XQLYTHWV.js?v=c6e437e2:18129
+commitPassiveMountEffects_begin @ chunk-XQLYTHWV.js?v=c6e437e2:18119
+commitPassiveMountEffects @ chunk-XQLYTHWV.js?v=c6e437e2:18109
+flushPassiveEffectsImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19490
+flushPassiveEffects @ chunk-XQLYTHWV.js?v=c6e437e2:19447
+commitRootImpl @ chunk-XQLYTHWV.js?v=c6e437e2:19416
+commitRoot @ chunk-XQLYTHWV.js?v=c6e437e2:19277
+performSyncWorkOnRoot @ chunk-XQLYTHWV.js?v=c6e437e2:18895
+flushSyncCallbacks @ chunk-XQLYTHWV.js?v=c6e437e2:9119
+(anonymous) @ chunk-XQLYTHWV.js?v=c6e437e2:18627
+queryClient.ts:53 Fetch finished loading: GET /api/images/access_point/121?t=1747359851958
+ImageUploadSection.tsx:54 Fetched 0 images at timestamp 1747359851958
+ImageUploadSection.tsx:67 Processing 0 images for access_point 121
