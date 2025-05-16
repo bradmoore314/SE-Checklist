@@ -143,10 +143,21 @@ const EquipmentFormDialog = ({
     }
   });
   
-  // Log data for debugging purposes
+  // Enhanced logging for debugging configuration issues
   useEffect(() => {
     if (existingEquipmentId && markerType === 'access_point' && !isLoadingAccessPoint) {
       console.log('Access Point Data:', accessPointData);
+      
+      // Detailed logging to help diagnose configuration issues
+      if (accessPointData) {
+        console.log('Access Point Configuration Details:');
+        console.log('- ID:', accessPointData.id);
+        console.log('- Location:', accessPointData.location);
+        console.log('- Reader Type:', accessPointData.reader_type);
+        console.log('- Lock Type:', accessPointData.lock_type);
+        console.log('- Monitoring Type:', accessPointData.monitoring_type);
+        console.log('- Quick Config:', accessPointData.quick_config);
+      }
     }
   }, [existingEquipmentId, markerType, accessPointData, isLoadingAccessPoint]);
 
@@ -272,7 +283,16 @@ const EquipmentFormDialog = ({
       
       // Use fetched data if available, otherwise use default
       const formData = existingEquipmentId && accessPointData 
-        ? { ...accessPointData, id: existingEquipmentId } 
+        ? { 
+            ...accessPoint,  // Start with default values for all fields
+            ...accessPointData, // Override with actual data from database
+            id: existingEquipmentId,
+            // Explicitly ensure critical fields are set
+            quick_config: accessPointData.quick_config || 'Standard',
+            reader_type: accessPointData.reader_type || 'AIO',
+            lock_type: accessPointData.lock_type || 'Standard',
+            monitoring_type: accessPointData.monitoring_type || 'Prop',
+          } 
         : { ...accessPoint, id: existingEquipmentId || 0 };
       
       return (
