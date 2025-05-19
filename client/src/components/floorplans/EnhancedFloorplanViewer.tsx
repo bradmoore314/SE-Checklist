@@ -2338,133 +2338,75 @@ export const EnhancedFloorplanViewer = ({
         </div>
       )}
       
-      {/* Mobile Touch Edit Mode Toggle - Only shown on touch devices */}
-      {isMobileDevice && (
-        <div className="absolute top-4 left-4 z-10">
-          <button
-            onClick={() => setTouchEditMode(!touchEditMode)}
-            className={`px-3 py-2 rounded-md shadow-md flex items-center ${
-              touchEditMode 
-                ? 'bg-red-600 text-white' 
-                : 'bg-white text-gray-800'
-            }`}
+      {/* Simple Mobile Edit Controls - Only shown when a marker is selected */}
+      {isMobileDevice && selectedMarker && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 flex items-center space-x-2 z-50">
+          <button 
+            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
+            onClick={() => {
+              // Move marker left
+              const updatedMarker = {
+                ...selectedMarker,
+                position_x: selectedMarker.position_x - 5
+              };
+              updateMarkerMutation.mutate(updatedMarker);
+            }}
           >
-            <span className="material-icons mr-1">{touchEditMode ? 'touch_app' : 'pan_tool'}</span>
-            <span>{touchEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}</span>
+            <span className="material-icons">arrow_back</span>
           </button>
-        </div>
-      )}
-      
-      {/* Mobile Marker Edit Controls - Only shown when a marker is selected in touch edit mode */}
-      {isMobileDevice && touchEditMode && selectedMarker && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 flex flex-col items-center z-50">
-          <div className="text-sm font-medium mb-2">Editing {selectedMarker.marker_type}</div>
           
-          <div className="grid grid-cols-3 gap-3">
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Move marker up
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_y: selectedMarker.position_y - 10 / scale
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <span className="material-icons">arrow_upward</span>
-              <span className="text-xs">Up</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Rotate marker (if applicable)
-                if (selectedMarker.marker_type === 'camera' && selectedMarker.rotation !== undefined) {
-                  const updatedMarker = {
-                    ...selectedMarker,
-                    rotation: ((selectedMarker.rotation || 0) + 15) % 360
-                  };
-                  updateMarkerMutation.mutate(updatedMarker);
-                }
-              }}
-            >
-              <span className="material-icons">rotate_right</span>
-              <span className="text-xs">Rotate</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Delete marker
-                deleteMarkerMutation.mutate(selectedMarker.id);
-                setSelectedMarker(null);
-              }}
-            >
-              <span className="material-icons text-red-500">delete</span>
-              <span className="text-xs">Delete</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Move marker left
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_x: selectedMarker.position_x - 10 / scale
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <span className="material-icons">arrow_back</span>
-              <span className="text-xs">Left</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Duplicate marker
-                const markerCopy = { ...selectedMarker };
-                delete markerCopy.id; // Remove ID to create new marker
-                markerCopy.position_x += 20 / scale; // Offset slightly
-                markerCopy.position_y += 20 / scale;
-                duplicateMarkerMutation.mutate(selectedMarker);
-              }}
-            >
-              <span className="material-icons">content_copy</span>
-              <span className="text-xs">Copy</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center"
-              onClick={() => {
-                // Move marker right
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_x: selectedMarker.position_x + 10 / scale
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <span className="material-icons">arrow_forward</span>
-              <span className="text-xs">Right</span>
-            </button>
-            
-            <button 
-              className="p-2 bg-gray-100 rounded flex flex-col items-center justify-center col-span-3"
-              onClick={() => {
-                // Move marker down
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_y: selectedMarker.position_y + 10 / scale
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <span className="material-icons">arrow_downward</span>
-              <span className="text-xs">Down</span>
-            </button>
-          </div>
+          <button 
+            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
+            onClick={() => {
+              // Move marker up
+              const updatedMarker = {
+                ...selectedMarker,
+                position_y: selectedMarker.position_y - 5
+              };
+              updateMarkerMutation.mutate(updatedMarker);
+            }}
+          >
+            <span className="material-icons">arrow_upward</span>
+          </button>
+          
+          <button 
+            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
+            onClick={() => {
+              // Move marker down
+              const updatedMarker = {
+                ...selectedMarker,
+                position_y: selectedMarker.position_y + 5
+              };
+              updateMarkerMutation.mutate(updatedMarker);
+            }}
+          >
+            <span className="material-icons">arrow_downward</span>
+          </button>
+          
+          <button 
+            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
+            onClick={() => {
+              // Move marker right
+              const updatedMarker = {
+                ...selectedMarker,
+                position_x: selectedMarker.position_x + 5
+              };
+              updateMarkerMutation.mutate(updatedMarker);
+            }}
+          >
+            <span className="material-icons">arrow_forward</span>
+          </button>
+          
+          <button 
+            className="p-2 bg-red-100 rounded-full flex items-center justify-center"
+            onClick={() => {
+              // Delete marker
+              deleteMarkerMutation.mutate(selectedMarker.id);
+              setSelectedMarker(null);
+            }}
+          >
+            <span className="material-icons text-red-500">delete</span>
+          </button>
         </div>
       )}
       
