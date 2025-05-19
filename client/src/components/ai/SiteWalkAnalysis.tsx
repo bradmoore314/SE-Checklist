@@ -185,7 +185,7 @@ export function SiteWalkAnalysis({ projectId }: OpportunityAnalysisProps) {
           <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-1.5 rounded-lg shadow">
             <Brain className="h-5 w-5 text-white" />
           </div>
-          Gemini AI Site Analysis
+          Azure OpenAI Secure Analysis
         </CardTitle>
         <CardDescription className="text-slate-700">
           Generate AI-powered insights from your site walk data to enhance technical planning and streamline installation
