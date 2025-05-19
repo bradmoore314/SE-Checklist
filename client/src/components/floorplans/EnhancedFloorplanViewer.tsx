@@ -2338,75 +2338,100 @@ export const EnhancedFloorplanViewer = ({
         </div>
       )}
       
-      {/* Simple Mobile Edit Controls - Only shown when a marker is selected */}
+      {/* Enhanced iPad/Mobile Control Panel - Only shown when a marker is selected */}
       {isMobileDevice && selectedMarker && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 flex items-center space-x-2 z-50">
-          <button 
-            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
-            onClick={() => {
-              // Move marker left
-              const updatedMarker = {
-                ...selectedMarker,
-                position_x: selectedMarker.position_x - 5
-              };
-              updateMarkerMutation.mutate(updatedMarker);
-            }}
-          >
-            <span className="material-icons">arrow_back</span>
-          </button>
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 flex flex-col items-center space-y-4 z-50">
+          <div className="text-sm font-medium">Marker Controls</div>
           
-          <button 
-            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
-            onClick={() => {
-              // Move marker up
-              const updatedMarker = {
-                ...selectedMarker,
-                position_y: selectedMarker.position_y - 5
-              };
-              updateMarkerMutation.mutate(updatedMarker);
-            }}
-          >
-            <span className="material-icons">arrow_upward</span>
-          </button>
+          <div className="grid grid-cols-3 gap-3">
+            {/* First row - Up, Delete */}
+            <div></div>
+            <button 
+              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center" 
+              onClick={() => {
+                const updatedMarker = {
+                  ...selectedMarker,
+                  position_y: selectedMarker.position_y - 5
+                };
+                updateMarkerMutation.mutate(updatedMarker);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <div></div>
+            
+            {/* Second row - Left, Right */}
+            <button 
+              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
+              onClick={() => {
+                const updatedMarker = {
+                  ...selectedMarker,
+                  position_x: selectedMarker.position_x - 5
+                };
+                updateMarkerMutation.mutate(updatedMarker);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button 
+              className="w-14 h-14 bg-red-100 rounded-lg flex items-center justify-center"
+              onClick={() => {
+                deleteMarkerMutation.mutate(selectedMarker.id);
+                setSelectedMarker(null);
+                toast({
+                  title: "Marker Deleted",
+                  description: "The marker has been removed from the floorplan",
+                  duration: 2000
+                });
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            
+            <button 
+              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
+              onClick={() => {
+                const updatedMarker = {
+                  ...selectedMarker,
+                  position_x: selectedMarker.position_x + 5
+                };
+                updateMarkerMutation.mutate(updatedMarker);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            {/* Third row - Down */}
+            <div></div>
+            <button 
+              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
+              onClick={() => {
+                const updatedMarker = {
+                  ...selectedMarker,
+                  position_y: selectedMarker.position_y + 5
+                };
+                updateMarkerMutation.mutate(updatedMarker);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div></div>
+          </div>
           
-          <button 
-            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
-            onClick={() => {
-              // Move marker down
-              const updatedMarker = {
-                ...selectedMarker,
-                position_y: selectedMarker.position_y + 5
-              };
-              updateMarkerMutation.mutate(updatedMarker);
-            }}
-          >
-            <span className="material-icons">arrow_downward</span>
-          </button>
-          
-          <button 
-            className="p-2 bg-gray-100 rounded-full flex items-center justify-center"
-            onClick={() => {
-              // Move marker right
-              const updatedMarker = {
-                ...selectedMarker,
-                position_x: selectedMarker.position_x + 5
-              };
-              updateMarkerMutation.mutate(updatedMarker);
-            }}
-          >
-            <span className="material-icons">arrow_forward</span>
-          </button>
-          
-          <button 
-            className="p-2 bg-red-100 rounded-full flex items-center justify-center"
-            onClick={() => {
-              // Delete marker
-              deleteMarkerMutation.mutate(selectedMarker.id);
-              setSelectedMarker(null);
-            }}
-          >
-            <span className="material-icons text-red-500">delete</span>
-          </button>
+          <div className="text-xs text-gray-500 mt-2">
+            Tap arrows to move the marker
+          </div>
         </div>
       )}
       
