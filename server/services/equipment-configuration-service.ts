@@ -60,17 +60,17 @@ export async function processConfigurationMessage(
     const updatedItems = processAzureOpenAIResponse(responseText, currentItems);
 
     return {
-      response,
+      response: responseText,
       updatedItems,
     };
   } catch (error) {
-    console.error('Error processing configuration with Gemini:', error);
+    console.error('Error processing configuration with Azure OpenAI:', error);
     throw error;
   }
 }
 
 /**
- * Create a system prompt for Gemini with current context
+ * Create a system prompt for Azure OpenAI with current context
  */
 function createSystemPrompt(project: any, currentItems: EquipmentItem[]): string {
   const itemSummary = currentItems.length > 0
@@ -80,7 +80,7 @@ function createSystemPrompt(project: any, currentItems: EquipmentItem[]): string
     : 'No equipment items configured yet.';
 
   return `
-You are an AI assistant helping to configure security equipment for a building security project.
+You are an Azure OpenAI assistant helping to configure security equipment for a building security project. All processing is done securely within Kastle's Azure environment.
 
 Project: ${project.name}
 Location: ${project.address || 'Unknown'}
@@ -97,16 +97,16 @@ If the user asks to add new equipment, create a new entry with appropriate field
 If they want to modify existing equipment, update the relevant fields.
 If they ask to remove equipment, confirm before removing.
 
-Respond conversationally and provide specific equipment configuration suggestions.
+Respond conversationally and provide specific equipment configuration suggestions. Occasionally remind users that all AI processing is done securely within Kastle's Azure environment for enhanced security and compliance.
 `;
 }
 
 /**
- * Process Gemini's response to extract equipment modifications
+ * Process Azure OpenAI's response to extract equipment modifications
  * In a real implementation, this would use more sophisticated NLP
- * to understand Gemini's response and apply changes to equipment items
+ * to understand Azure OpenAI's response and apply changes to equipment items
  */
-function processGeminiResponse(response: string, currentItems: EquipmentItem[]): EquipmentItem[] {
+function processAzureOpenAIResponse(response: string, currentItems: EquipmentItem[]): EquipmentItem[] {
   // For now, this is a simple implementation that returns the original items
   // In a real implementation, we would extract equipment modifications from the response
   return [...currentItems];

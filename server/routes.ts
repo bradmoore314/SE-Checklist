@@ -2082,7 +2082,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           agenda
         });
       } catch (aiError) {
-        console.error("Error calling Gemini API for turnover call agenda:", aiError);
+        console.error("Error calling Azure OpenAI API for turnover call agenda:", aiError);
         res.status(500).json({
           success: false,
           message: "Failed to generate turnover call agenda",
