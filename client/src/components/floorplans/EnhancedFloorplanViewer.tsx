@@ -28,6 +28,7 @@ import IntercomMarker from './markers/IntercomMarker';
 import ElevatorMarker from './markers/ElevatorMarker';
 import CameraMarkerEditDialog from './markers/CameraMarkerEditDialog';
 import CombinedCameraConfigForm from './CombinedCameraConfigForm';
+import { MobileMarkerControls } from './MobileMarkerControls';
 import EditIntercomModal from '../modals/EditIntercomModal';
 import EditElevatorModal from '../modals/EditElevatorModal';
 
@@ -2358,26 +2359,32 @@ export const EnhancedFloorplanViewer = ({
         </div>
       )}
       
-      {/* Simple Delete Button for Selected Marker */}
+      {/* Mobile Marker Controls - more precise positioning for iPad users */}
       {isMobileDevice && selectedMarker && (
-        <div className="fixed bottom-8 right-8 z-50">
-          <button 
-            className="p-3 bg-red-500 text-white rounded-full shadow-lg flex items-center justify-center"
-            onClick={() => {
-              deleteMarkerMutation.mutate(selectedMarker.id);
-              setSelectedMarker(null);
-              toast({
-                title: "Marker Deleted",
-                description: "The marker has been removed from the floorplan",
-                duration: 2000
-              });
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        </div>
+        <MobileMarkerControls
+          marker={selectedMarker}
+          onDelete={(markerId) => {
+            deleteMarkerMutation.mutate(markerId);
+            setSelectedMarker(null);
+          }}
+          onMove={(markerId, deltaX, deltaY) => {
+            // Create updated marker with adjusted position
+            const updatedMarker = {
+              ...selectedMarker,
+              position_x: selectedMarker.position_x + deltaX / scale,
+              position_y: selectedMarker.position_y + deltaY / scale
+            };
+            
+            // Update locally first for immediate feedback
+            setSelectedMarker(updatedMarker);
+            
+            // Then update on server
+            updateMarkerMutation.mutate(updatedMarker);
+          }}
+          onDone={() => {
+            setSelectedMarker(null);
+          }}
+        />
       )}
       
       {/* Page Controls */}
