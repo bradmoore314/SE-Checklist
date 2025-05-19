@@ -166,6 +166,11 @@ export const EnhancedFloorplanViewer = ({
   const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [isAddingMarker, setIsAddingMarker] = useState<boolean>(false);
   const [tempMarker, setTempMarker] = useState<Partial<MarkerData> | null>(null);
+  
+  // Touch-and-hold state and references
+  const [touchHoldMarker, setTouchHoldMarker] = useState<MarkerData | null>(null);
+  const touchHoldTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const touchPositionRef = useRef<{x: number, y: number} | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [isCalibrationDialogOpen, setIsCalibrationDialogOpen] = useState<boolean>(false);
   const [calibrationStep, setCalibrationStep] = useState<'start' | 'end' | 'distance'>('start');
@@ -504,6 +509,67 @@ export const EnhancedFloorplanViewer = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [contextMenuOpen]);
+  
+  // Handle touch start on marker
+  const handleMarkerTouchStart = (e: React.TouchEvent, marker: MarkerData) => {
+    e.stopPropagation();
+    
+    // Store the marker for potential dragging
+    setTouchHoldMarker(marker);
+    
+    // Store touch position
+    if (e.touches.length === 1) {
+      touchPositionRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+      
+      // Clear any existing timeout
+      if (touchHoldTimeoutRef.current) {
+        clearTimeout(touchHoldTimeoutRef.current);
+      }
+      
+      // Set a timeout for 800ms (standard touch-and-hold duration)
+      touchHoldTimeoutRef.current = setTimeout(() => {
+        // If the touch is still active after timeout, start dragging
+        if (touchHoldMarker && touchPositionRef.current) {
+          // Give visual feedback
+          if (containerRef.current) {
+            containerRef.current.style.cursor = 'grabbing';
+          }
+          
+          // Create synthetic event for drag start
+          const touchEvent = {
+            touches: [{ clientX: touchPositionRef.current.x, clientY: touchPositionRef.current.y }],
+            stopPropagation: () => {},
+            preventDefault: () => {}
+          } as React.TouchEvent;
+          
+          // Start the drag operation
+          startMarkerDrag(touchEvent, marker);
+          
+          // Visual feedback for user that drag mode is active
+          toast({
+            title: "Marker Drag Mode",
+            description: "Move your finger to reposition the marker",
+          });
+        }
+      }, 800);
+    }
+  };
+  
+  // Handle touch end to clear timeouts
+  const handleMarkerTouchEnd = (e: React.TouchEvent) => {
+    // Clear the hold timeout
+    if (touchHoldTimeoutRef.current) {
+      clearTimeout(touchHoldTimeoutRef.current);
+      touchHoldTimeoutRef.current = null;
+    }
+    
+    // Clear the touch position
+    touchPositionRef.current = null;
+    setTouchHoldMarker(null);
+  };
   
   // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
   const startMarkerDrag = (e: React.MouseEvent | React.TouchEvent, marker: MarkerData) => {
