@@ -26,6 +26,20 @@ export default function MainLayout({ children }: MainLayoutProps) {
       setCurrentProject(currentOpportunity);
     }
   }, [currentProject, currentOpportunity, setCurrentProject, setCurrentOpportunity]);
+  
+  // Listen for the custom event to toggle sidebar from the button in the sidebar
+  useEffect(() => {
+    const handleToggleSidebar = () => {
+      setSidebarCollapsed(prev => !prev);
+    };
+    
+    window.addEventListener('toggle-sidebar', handleToggleSidebar);
+    
+    // Clean up the event listener when component unmounts
+    return () => {
+      window.removeEventListener('toggle-sidebar', handleToggleSidebar);
+    };
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);

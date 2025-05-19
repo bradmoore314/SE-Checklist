@@ -18,9 +18,10 @@ interface TopNavProps {
   project: Project | null;
   onToggleSidebar: () => void;
   user: User | null;
+  sidebarCollapsed?: boolean;
 }
 
-export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) {
+export default function TopNav({ project, onToggleSidebar, user, sidebarCollapsed = false }: TopNavProps) {
   const { logoutMutation } = useAuth();
 
   const handleLogout = async () => {
@@ -48,8 +49,10 @@ export default function TopNav({ project, onToggleSidebar, user }: TopNavProps) 
           size="icon" 
           onClick={onToggleSidebar} 
           className="mr-2 sm:mr-4 text-gray-600 hover:text-gray-900"
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <span className="material-icons">menu</span>
+          <span className="material-icons">{sidebarCollapsed ? "menu_open" : "menu"}</span>
         </Button>
         
         {/* Kastle Logo - Hidden on smallest screens */}

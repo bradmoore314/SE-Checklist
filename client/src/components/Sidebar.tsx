@@ -23,7 +23,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
   };
 
   return (
-    <div className={`${collapsed ? "w-16" : "w-64"} transition-width shadow-md flex flex-col h-full sidebar bg-white border-r`}>
+    <div className={`${collapsed ? "w-16" : "w-64"} transition-all duration-300 shadow-md flex flex-col h-full sidebar bg-white border-r`}>
       {/* App Logo */}
       <div className="p-4 border-b flex items-center" style={{ borderColor: 'var(--medium-grey)' }}>
         <div className="w-8 h-8 flex items-center justify-center overflow-hidden">
@@ -33,7 +33,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
             className="w-full h-full object-contain"
           />
         </div>
-        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900">Checklist Wizard</span>}
+        {!collapsed && <span className="ml-2 text-xl font-semibold text-gray-900 whitespace-nowrap overflow-hidden">Checklist Wizard</span>}
       </div>
       
       {/* User Info */}
@@ -264,6 +264,30 @@ export default function Sidebar({ collapsed }: SidebarProps) {
               {!collapsed && <span className="text-gray-800 font-medium">Settings</span>}
             </div>
           </Link>
+          
+          {/* A visual separator for the collapse button */}
+          <div className="my-2 border-t" style={{ borderColor: 'var(--light-grey)' }}></div>
+          
+          {/* Sidebar collapse/expand button */}
+          <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between"} cursor-pointer hover:bg-gray-100 rounded px-2 py-1`} 
+               onClick={(e) => {
+                 // Stop propagation to prevent link clicks
+                 e.preventDefault();
+                 e.stopPropagation();
+                 
+                 // Find the closest parent with a toggleSidebar function
+                 // This is a hacky way to access the function without proper context passing
+                 // In a real app, you'd use context or props
+                 const event = new CustomEvent('toggle-sidebar');
+                 window.dispatchEvent(event);
+               }}>
+            <div className="flex items-center">
+              <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>
+                {collapsed ? "chevron_right" : "chevron_left"}
+              </span>
+              {!collapsed && <span className="text-gray-800 font-medium">Collapse sidebar</span>}
+            </div>
+          </div>
         </div>
       </div>
     </div>
