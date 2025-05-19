@@ -48,9 +48,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         ></div>
       )}
       
-      {/* Responsive sidebar - always visible on all devices */}
-      <div className="fixed z-50 h-full md:static md:block md:w-64">
-        <Sidebar collapsed={false} />
+      {/* Responsive sidebar with collapse/expand functionality */}
+      <div className={`transition-all duration-300 ease-in-out fixed z-50 h-full md:static ${sidebarCollapsed ? 'w-16' : 'md:w-64'}`}>
+        <Sidebar collapsed={sidebarCollapsed} />
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -58,6 +58,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           project={currentOpportunity} 
           onToggleSidebar={toggleSidebar} 
           user={user}
+          sidebarCollapsed={sidebarCollapsed}
         />
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 bg-gray-50">
           {children}
