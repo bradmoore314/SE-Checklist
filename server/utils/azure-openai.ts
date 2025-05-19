@@ -61,9 +61,12 @@ interface AnalysisResult {
 
 interface QuoteReviewAgendaResult {
   introduction: string;
-  agenda: string[];
-  questions: string[];
+  scopeReview: string;
+  pricingBreakdown: string[];
+  technicalConsiderations: string[];
+  timeline: string;
   nextSteps: string[];
+  questionsToAsk: string[];
 }
 
 interface TurnoverCallAgendaResult {
