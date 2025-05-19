@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, X, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Trash2 } from 'lucide-react';
+import { Check, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MarkerData } from './types/MarkerTypes';
 
@@ -18,7 +18,8 @@ export function MobileMarkerControls({
   onDone
 }: MobileMarkerControlsProps) {
   const { toast } = useToast();
-  const moveStep = 5; // How many units to move the marker for each arrow press
+  // Smaller move steps for more precise positioning
+  const moveStep = 3; 
   
   // Handle delete confirmation
   const handleDelete = () => {
@@ -32,17 +33,18 @@ export function MobileMarkerControls({
   };
   
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 flex flex-col items-center space-y-4">
-      <div className="text-sm font-medium text-center">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 z-50 flex flex-col items-center space-y-2">
+      <div className="text-sm font-medium text-center mb-1">
         {marker.label || `${marker.marker_type} marker`}
       </div>
       
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         {/* First row - Up arrow */}
         <div></div>
         <Button 
           variant="outline" 
-          size="icon"
+          size="sm"
+          className="h-10 w-10"
           onClick={() => onMove(marker.id, 0, -moveStep)}
         >
           <ArrowUp className="h-4 w-4" />
@@ -52,7 +54,8 @@ export function MobileMarkerControls({
         {/* Second row - Left, Delete, Right */}
         <Button 
           variant="outline" 
-          size="icon"
+          size="sm"
+          className="h-10 w-10"
           onClick={() => onMove(marker.id, -moveStep, 0)}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -60,7 +63,8 @@ export function MobileMarkerControls({
         
         <Button 
           variant="destructive" 
-          size="icon"
+          size="sm"
+          className="h-10 w-10"
           onClick={handleDelete}
         >
           <Trash2 className="h-4 w-4" />
@@ -68,7 +72,8 @@ export function MobileMarkerControls({
         
         <Button 
           variant="outline" 
-          size="icon"
+          size="sm"
+          className="h-10 w-10"
           onClick={() => onMove(marker.id, moveStep, 0)}
         >
           <ArrowRight className="h-4 w-4" />
@@ -78,7 +83,8 @@ export function MobileMarkerControls({
         <div></div>
         <Button 
           variant="outline" 
-          size="icon"
+          size="sm"
+          className="h-10 w-10"
           onClick={() => onMove(marker.id, 0, moveStep)}
         >
           <ArrowDown className="h-4 w-4" />
@@ -86,18 +92,20 @@ export function MobileMarkerControls({
         <div></div>
       </div>
       
-      <Button 
-        variant="secondary"
-        size="sm"
-        className="mt-2"
-        onClick={onDone}
-      >
-        <Check className="h-4 w-4 mr-2" />
-        Done
-      </Button>
+      <div className="flex justify-center mt-1">
+        <Button 
+          variant="secondary"
+          size="sm"
+          className="mt-1"
+          onClick={onDone}
+        >
+          <Check className="h-4 w-4 mr-1" />
+          Done
+        </Button>
+      </div>
       
-      <div className="text-xs text-gray-500 mt-1">
-        Use arrows to precisely position the marker
+      <div className="text-xs text-gray-500 text-center mt-1 px-1">
+        Use arrows to adjust position or drag marker directly
       </div>
     </div>
   );
