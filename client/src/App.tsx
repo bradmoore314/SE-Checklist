@@ -14,8 +14,6 @@ import Intercoms from "@/pages/intercoms";
 import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
-import DebugLoginPage from "@/pages/debug-login-page";
-import DebugFloorplanTest from "@/pages/debug-floorplan-test";
 import FloorplansPage from "@/pages/floorplans-page";
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
@@ -27,7 +25,7 @@ import MiscPage from "@/pages/misc-page";
 import CrmSettingsPage from "@/pages/crm-settings-page";
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
-import AzureOpenAITestPage from "@/pages/azure-openai-test-page";
+
 import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration-workspace-page";
 import MainLayout from "@/layouts/MainLayout";
 import { OpportunityProvider } from "@/contexts/OpportunityContext";
@@ -44,8 +42,6 @@ function Router() {
     <Switch>
       {/* Public routes */}
       <Route path="/auth" component={AuthPage} />
-      <Route path="/debug-login" component={DebugLoginPage} />
-      <Route path="/debug-floorplan" component={DebugFloorplanTest} />
       
       {/* Protected routes - Redirect root to Opportunities page */}
       <ProtectedRoute path="/" component={Projects} />
@@ -86,8 +82,6 @@ function Router() {
       <ProtectedRoute path="/feedback" component={FeedbackPage} />
       <ProtectedRoute path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <ProtectedRoute path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
-      <ProtectedRoute path="/azure-openai-test" component={AzureOpenAITestPage} />
-      
       {/* 404 fallback */}
       <Route component={NotFound} />
     </Switch>
