@@ -14,7 +14,7 @@ import Intercoms from "@/pages/intercoms";
 import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
-import FloorplansPage from "@/pages/floorplans-page";
+
 import ModernFloorplansPage from "@/pages/modern-floorplans-page";
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
 import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
@@ -63,7 +63,7 @@ function Router() {
       <ProtectedRoute path="/project-summary" component={Summary} />
       
       {/* Floorplans */}
-      <ProtectedRoute path="/projects/:projectId/floorplans" component={FloorplansPage} />
+      <ProtectedRoute path="/projects/:projectId/floorplans" component={EnhancedFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
