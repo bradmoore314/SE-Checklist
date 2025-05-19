@@ -5,8 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Projects from "@/pages/projects";
-import DoorSchedules from "@/pages/door-schedules";
-import CameraSchedules from "@/pages/camera-schedules";
+
 import CardAccess from "@/pages/card-access";
 import Cameras from "@/pages/cameras";
 import Elevators from "@/pages/elevators";
@@ -58,8 +57,6 @@ function Router() {
       <ProtectedRoute path="/camera-stream-gateway" component={CameraStreamGateway} />
       
       {/* Report routes */}
-      <ProtectedRoute path="/door-schedules" component={DoorSchedules} />
-      <ProtectedRoute path="/camera-schedules" component={CameraSchedules} />
       <ProtectedRoute path="/project-summary" component={Summary} />
       
       {/* Floorplans */}
