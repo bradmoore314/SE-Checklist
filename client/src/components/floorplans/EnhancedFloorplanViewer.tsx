@@ -16,7 +16,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { DeltaDragTest } from './fixes/delta-drag-test';
+// Enhanced touch support for iPad/mobile
 import { v4 as uuidv4 } from 'uuid';
 import { AnnotationTool } from './AnnotationToolbar';
 import { CalibrationDialog } from './CalibrationDialog';
@@ -521,17 +521,16 @@ export const EnhancedFloorplanViewer = ({
     };
   }, [contextMenuOpen]);
   
-  // Improved iPad/touch handling for marker manipulation
+  // Simplified iPad/touch handling for marker manipulation
   const handleMarkerTouchStart = (e: React.TouchEvent, marker: MarkerData) => {
     e.stopPropagation();
-    e.preventDefault(); // Prevent default touch behaviors
+    // Don't prevent default here for iPad compatibility
     
     // Immediately set selected marker
     setSelectedMarker(marker);
     
     // Store the marker for dragging
     setTouchHoldMarker(marker);
-    setActiveMarker(marker);
     
     // Save initial touch position
     if (e.touches.length === 1) {
@@ -540,26 +539,47 @@ export const EnhancedFloorplanViewer = ({
         y: e.touches[0].clientY
       };
       
-      // Start marker drag immediately - this is what users expect on iPad
-      startMarkerDrag(e, marker);
+      // Start drag immediately for iPad
+      setIsDragging(true);
       
-      // Give visual feedback to user
+      // Small feedback to user
       toast({
         title: "Marker Selected",
         description: "Drag to reposition",
-        duration: 1500
+        duration: 800
       });
     }
   };
   
-  // Handle touch move for direct manipulation
-  const handleMarkerTouchMove = (e: React.TouchEvent) => {
-    e.stopPropagation();
+  // Handle marker movement via touch events - optimized for iPad
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging || !selectedMarker || !containerRef.current) return;
+    
+    // Prevent default behaviors like scrolling
     e.preventDefault();
     
-    // Continue drag operation if we have active touch
-    if (isDragging && e.touches.length === 1 && touchHoldMarker) {
-      moveActiveMarker(e);
+    // Get the current touch position
+    const touch = e.touches[0];
+    const rect = containerRef.current.getBoundingClientRect();
+    
+    // Convert screen touch position to PDF coordinates
+    const touchPdfX = (touch.clientX - rect.left - translateX) / scale;
+    const touchPdfY = (touch.clientY - rect.top - translateY) / scale;
+    
+    // Update the marker with new position
+    const updatedMarker = {
+      ...selectedMarker,
+      position_x: touchPdfX,
+      position_y: touchPdfY
+    };
+    
+    // Update marker locally first for smoother experience
+    setSelectedMarker(updatedMarker);
+    
+    // Use the mutation to persist the change - throttled to avoid overwhelming the server
+    if (!lastTouchUpdateRef.current || Date.now() - lastTouchUpdateRef.current > 100) {
+      updateMarkerMutation.mutate(updatedMarker);
+      lastTouchUpdateRef.current = Date.now();
     }
   };
   
@@ -571,11 +591,6 @@ export const EnhancedFloorplanViewer = ({
     if (touchHoldTimeoutRef.current) {
       clearTimeout(touchHoldTimeoutRef.current);
       touchHoldTimeoutRef.current = null;
-    }
-    
-    // If we were dragging, finalize the marker position
-    if (isDragging && draggingMarkerRef.current) {
-      finalizeMarkerPosition();
     }
     
     // Clear touch position reference
@@ -2339,100 +2354,25 @@ export const EnhancedFloorplanViewer = ({
         </div>
       )}
       
-      {/* Enhanced iPad/Mobile Control Panel - Only shown when a marker is selected */}
+      {/* Simple Delete Button for Selected Marker */}
       {isMobileDevice && selectedMarker && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 flex flex-col items-center space-y-4 z-50">
-          <div className="text-sm font-medium">Marker Controls</div>
-          
-          <div className="grid grid-cols-3 gap-3">
-            {/* First row - Up, Delete */}
-            <div></div>
-            <button 
-              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center" 
-              onClick={() => {
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_y: selectedMarker.position_y - 5
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
-            <div></div>
-            
-            {/* Second row - Left, Right */}
-            <button 
-              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
-              onClick={() => {
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_x: selectedMarker.position_x - 5
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            
-            <button 
-              className="w-14 h-14 bg-red-100 rounded-lg flex items-center justify-center"
-              onClick={() => {
-                deleteMarkerMutation.mutate(selectedMarker.id);
-                setSelectedMarker(null);
-                toast({
-                  title: "Marker Deleted",
-                  description: "The marker has been removed from the floorplan",
-                  duration: 2000
-                });
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-            
-            <button 
-              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
-              onClick={() => {
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_x: selectedMarker.position_x + 5
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            
-            {/* Third row - Down */}
-            <div></div>
-            <button 
-              className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center"
-              onClick={() => {
-                const updatedMarker = {
-                  ...selectedMarker,
-                  position_y: selectedMarker.position_y + 5
-                };
-                updateMarkerMutation.mutate(updatedMarker);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div></div>
-          </div>
-          
-          <div className="text-xs text-gray-500 mt-2">
-            Tap arrows to move the marker
-          </div>
+        <div className="fixed bottom-8 right-8 z-50">
+          <button 
+            className="p-3 bg-red-500 text-white rounded-full shadow-lg flex items-center justify-center"
+            onClick={() => {
+              deleteMarkerMutation.mutate(selectedMarker.id);
+              setSelectedMarker(null);
+              toast({
+                title: "Marker Deleted",
+                description: "The marker has been removed from the floorplan",
+                duration: 2000
+              });
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
         </div>
       )}
       
