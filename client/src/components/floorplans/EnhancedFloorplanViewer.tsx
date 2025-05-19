@@ -538,15 +538,15 @@ export const EnhancedFloorplanViewer = ({
             containerRef.current.style.cursor = 'grabbing';
           }
           
-          // Create synthetic event for drag start
-          const touchEvent = {
+          // Create a safe way to pass the touch position to the drag start function
+          const syntheticEvent = {
             touches: [{ clientX: touchPositionRef.current.x, clientY: touchPositionRef.current.y }],
             stopPropagation: () => {},
             preventDefault: () => {}
-          } as React.TouchEvent;
+          } as unknown as React.TouchEvent;
           
           // Start the drag operation
-          startMarkerDrag(touchEvent, marker);
+          startMarkerDrag(syntheticEvent, marker);
           
           // Visual feedback for user that drag mode is active
           toast({
@@ -1875,6 +1875,17 @@ export const EnhancedFloorplanViewer = ({
                   e.stopPropagation();
                   startMarkerDrag(e, marker);
                 }
+              },
+              // Add touch event handlers for mobile/tablet devices
+              onTouchStart: (e: React.TouchEvent) => {
+                // Handle touch start for touch-and-hold functionality
+                e.stopPropagation();
+                handleMarkerTouchStart(e, marker);
+              },
+              onTouchEnd: (e: React.TouchEvent) => {
+                // Handle touch end to clear timeouts and state
+                e.stopPropagation();
+                handleMarkerTouchEnd(e);
               },
               onMouseEnter: (e: React.MouseEvent) => {
                 // Show grab cursor when hovering over a marker that can be dragged
