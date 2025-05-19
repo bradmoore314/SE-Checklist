@@ -21,7 +21,7 @@ import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import CameraStreamGateway from "@/pages/camera-stream-gateway";
 import QuoteReviewPage from "@/pages/quote-review-page";
 import MiscPage from "@/pages/misc-page";
-import CrmSettingsPage from "@/pages/crm-settings-page";
+
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
 
