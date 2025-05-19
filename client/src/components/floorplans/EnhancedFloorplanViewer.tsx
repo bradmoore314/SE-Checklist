@@ -171,6 +171,7 @@ export const EnhancedFloorplanViewer = ({
   const [isMobileDevice, setIsMobileDevice] = useState<boolean>(false);
   const [touchEditMode, setTouchEditMode] = useState<boolean>(false);
   const [touchDragActive, setTouchDragActive] = useState<boolean>(false);
+  const lastTouchUpdateRef = useRef<number | null>(null);
   
   // Detect if using a touch device on component mount
   useEffect(() => {
@@ -551,35 +552,38 @@ export const EnhancedFloorplanViewer = ({
     }
   };
   
-  // Handle marker movement via touch events - optimized for iPad
-  const handleTouchMove = (e: TouchEvent) => {
-    if (!isDragging || !selectedMarker || !containerRef.current) return;
+  // Handle floorplan touch move for marker dragging
+  const handleMarkerTouchMove = (e: React.TouchEvent) => {
+    // Only proceed if we're in dragging mode with a selected marker
+    if (!isDraggingMarker || !selectedMarker || !containerRef.current) return;
     
-    // Prevent default behaviors like scrolling
+    // Prevent scrolling and other default behaviors
     e.preventDefault();
+    e.stopPropagation();
     
-    // Get the current touch position
+    // Get touch position
     const touch = e.touches[0];
     const rect = containerRef.current.getBoundingClientRect();
     
-    // Convert screen touch position to PDF coordinates
+    // Calculate new marker position in PDF coordinates
     const touchPdfX = (touch.clientX - rect.left - translateX) / scale;
     const touchPdfY = (touch.clientY - rect.top - translateY) / scale;
     
-    // Update the marker with new position
+    // Create updated marker with new position
     const updatedMarker = {
       ...selectedMarker,
       position_x: touchPdfX,
       position_y: touchPdfY
     };
     
-    // Update marker locally first for smoother experience
+    // Update UI immediately for smooth dragging
     setSelectedMarker(updatedMarker);
     
-    // Use the mutation to persist the change - throttled to avoid overwhelming the server
-    if (!lastTouchUpdateRef.current || Date.now() - lastTouchUpdateRef.current > 100) {
+    // Throttle server updates to reduce load (50ms = 20 updates per second max)
+    const now = Date.now();
+    if (!lastTouchUpdateRef.current || now - lastTouchUpdateRef.current > 50) {
       updateMarkerMutation.mutate(updatedMarker);
-      lastTouchUpdateRef.current = Date.now();
+      lastTouchUpdateRef.current = now;
     }
   };
   
