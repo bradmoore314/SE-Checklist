@@ -90,7 +90,7 @@ const insertStreamImageSchema = z.object({
 });
 type InsertStreamImage = z.infer<typeof insertStreamImageSchema>;
 import { setupAuth } from "./auth";
-import { translateText } from "./services/gemini-translation";
+// Using Azure OpenAI for translation
 import { linkProjectToCrm, getCrmSystem } from "./services/crm-integration";
 import { isSharePointConfigured, areAzureCredentialsAvailable } from "./services/microsoft-graph";
 import crmRoutes from "./routes/crm-routes";
@@ -3946,7 +3946,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gemini AI API Proxy
   // Test endpoint for Gemini API
   // Keep Gemini endpoint for backward compatibility
-
+  app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
   
   // Add Azure OpenAI endpoint
   app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
