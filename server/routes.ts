@@ -13,7 +13,10 @@ import { generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis,
          generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
          generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda,
          testAzureOpenAI } from './utils/azure-openai';
-import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './services/ai-service';
+// import old AI service functions (deprecated)
+// import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './services/ai-service';
+// Import the new Azure OpenAI-based quote review agenda service
+import { generateQuoteReviewAgenda } from './services/quote-review-agenda-service';
 import { compressImage, createThumbnail } from './utils/image-utils';
 import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
 import { 
