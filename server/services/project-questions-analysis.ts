@@ -1,8 +1,7 @@
 import { AccessPoint, Camera, Elevator, Intercom, Project } from "@shared/schema";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getAzureOpenAIClient, createChatMessage } from "../utils/azure-openai";
 
-// Configure the Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Use Azure OpenAI in Kastle's secure environment for all AI operations
 
 // Define the categories of questions from the project information file
 export const projectQuestionCategories = {
@@ -791,7 +790,7 @@ async function generateAiSummary(
   unansweredQuestions: ProjectQuestion[]
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const openai = getAzureOpenAIClient();
     
     // Format the project information and questions for the AI prompt
     const projectInfo = JSON.stringify(project, null, 2);
@@ -831,9 +830,14 @@ async function generateAiSummary(
     Make the summaries clear, concise, and actionable.
     `;
     
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    // Process through Kastle's secure Azure OpenAI environment
+    const response = await openai.chat.completions.create({
+      model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+      messages: [createChatMessage("user", prompt)],
+      temperature: 0.7
+    });
+    
+    const text = response.choices[0].message.content || "No response generated.";
     
     return text;
   } catch (error) {
