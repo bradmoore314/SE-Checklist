@@ -15,7 +15,7 @@ import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 
-import ModernFloorplansPage from "@/pages/modern-floorplans-page";
+
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
 import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
@@ -64,7 +64,7 @@ function Router() {
       
       {/* Floorplans */}
       <ProtectedRoute path="/projects/:projectId/floorplans" component={EnhancedFloorplansPage} />
-      <ProtectedRoute path="/projects/:projectId/modern-floorplans" component={ModernFloorplansPage} />
+
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
       <ProtectedRoute path="/projects/:projectId/pdf-editor" component={ProfessionalPdfEditorPage} />
