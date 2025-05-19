@@ -496,7 +496,7 @@ const DocumentationPage = () => {
     },
     {
       question: 'What AI capabilities does the application offer?',
-      answer: 'Checklist Wizard integrates with Google\'s Gemini AI 2.0 to provide intelligent features including: a conversational chatbot for equipment configuration with voice interaction, image analysis for equipment identification, AI-generated documentation (SOW, technical guides, executive summaries), multi-language translation of technical documents, and security system analysis with coverage evaluation and equipment recommendations.'
+      answer: 'Checklist Wizard integrates with Microsoft\'s Azure OpenAI in Kastle\'s secure environment to provide intelligent features including: a conversational chatbot for equipment configuration with voice interaction, image analysis for equipment identification, AI-generated documentation (SOW, technical guides, executive summaries), multi-language translation of technical documents, and security system analysis with coverage evaluation and equipment recommendations. All AI processing happens within Kastle\'s secure Azure environment, ensuring the highest levels of data security and compliance.'
     },
     {
       question: 'How does the camera gateway calculator work?',

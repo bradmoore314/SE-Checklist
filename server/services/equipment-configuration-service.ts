@@ -1,4 +1,4 @@
-import { getGeminiProModel } from '../utils/gemini';
+import { getAzureOpenAIClient } from '../utils/azure-openai';
 import { storage } from '../storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,13 +27,10 @@ export async function processConfigurationMessage(
   projectId: number,
   currentItems: EquipmentItem[]
 ): Promise<{ response: string; updatedItems: EquipmentItem[] }> {
-  // Initialize Gemini model
-  const model = getGeminiProModel();
-  if (!model) {
-    throw new Error('Failed to initialize Gemini model. Please check your API key.');
-  }
-
   try {
+    // Initialize Azure OpenAI client
+    const openai = getAzureOpenAIClient();
+    
     // Get project details
     const project = await storage.getProject(projectId);
     if (!project) {
@@ -43,24 +40,24 @@ export async function processConfigurationMessage(
     // Create a prompt with the current context
     const prompt = createSystemPrompt(project, currentItems);
 
-    // Process with Gemini
-    const result = await model.generateContent({
-      contents: [
-        { role: 'user', parts: [{ text: prompt }] },
-        { role: 'model', parts: [{ text: 'I understand. I will help configure security equipment for the project.' }] },
-        { role: 'user', parts: [{ text: message }] }
+    // Process with Azure OpenAI
+    const response = await openai.chat.completions.create({
+      model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a security equipment specialist AI assistant." },
+        { role: "user", content: prompt },
+        { role: "assistant", content: 'I understand. I will help configure security equipment for the project.' },
+        { role: 'user', content: message }
       ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 1024,
-      },
+      temperature: 0.2,
+      max_tokens: 1024
     });
 
-    const response = result.response.text();
-    console.log('Gemini response:', response);
+    const responseText = response.choices[0].message.content || "";
+    console.log('Azure OpenAI response:', responseText);
 
     // Parse the response to extract any equipment modifications
-    const updatedItems = processGeminiResponse(response, currentItems);
+    const updatedItems = processAzureOpenAIResponse(responseText, currentItems);
 
     return {
       response,
