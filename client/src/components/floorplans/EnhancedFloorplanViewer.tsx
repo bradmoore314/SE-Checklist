@@ -521,65 +521,66 @@ export const EnhancedFloorplanViewer = ({
     };
   }, [contextMenuOpen]);
   
-  // Handle touch start on marker
+  // Improved iPad/touch handling for marker manipulation
   const handleMarkerTouchStart = (e: React.TouchEvent, marker: MarkerData) => {
     e.stopPropagation();
+    e.preventDefault(); // Prevent default touch behaviors
     
-    // Store the marker for potential dragging
+    // Immediately set selected marker
+    setSelectedMarker(marker);
+    
+    // Store the marker for dragging
     setTouchHoldMarker(marker);
+    setActiveMarker(marker);
     
-    // Store touch position
+    // Save initial touch position
     if (e.touches.length === 1) {
       touchPositionRef.current = {
         x: e.touches[0].clientX,
         y: e.touches[0].clientY
       };
       
-      // Clear any existing timeout
-      if (touchHoldTimeoutRef.current) {
-        clearTimeout(touchHoldTimeoutRef.current);
-      }
+      // Start marker drag immediately - this is what users expect on iPad
+      startMarkerDrag(e, marker);
       
-      // Set a timeout for 800ms (standard touch-and-hold duration)
-      touchHoldTimeoutRef.current = setTimeout(() => {
-        // If the touch is still active after timeout, start dragging
-        if (touchHoldMarker && touchPositionRef.current) {
-          // Give visual feedback
-          if (containerRef.current) {
-            containerRef.current.style.cursor = 'grabbing';
-          }
-          
-          // Create a safe way to pass the touch position to the drag start function
-          const syntheticEvent = {
-            touches: [{ clientX: touchPositionRef.current.x, clientY: touchPositionRef.current.y }],
-            stopPropagation: () => {},
-            preventDefault: () => {}
-          } as unknown as React.TouchEvent;
-          
-          // Start the drag operation
-          startMarkerDrag(syntheticEvent, marker);
-          
-          // Visual feedback for user that drag mode is active
-          toast({
-            title: "Marker Drag Mode",
-            description: "Move your finger to reposition the marker",
-          });
-        }
-      }, 800);
+      // Give visual feedback to user
+      toast({
+        title: "Marker Selected",
+        description: "Drag to reposition",
+        duration: 1500
+      });
     }
   };
   
-  // Handle touch end to clear timeouts
+  // Handle touch move for direct manipulation
+  const handleMarkerTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Continue drag operation if we have active touch
+    if (isDragging && e.touches.length === 1 && touchHoldMarker) {
+      moveActiveMarker(e);
+    }
+  };
+  
+  // Handle touch end to finish dragging
   const handleMarkerTouchEnd = (e: React.TouchEvent) => {
-    // Clear the hold timeout
+    e.stopPropagation();
+    
+    // Clear all drag state
     if (touchHoldTimeoutRef.current) {
       clearTimeout(touchHoldTimeoutRef.current);
       touchHoldTimeoutRef.current = null;
     }
     
-    // Clear the touch position
+    // If we were dragging, finalize the marker position
+    if (isDragging && draggingMarkerRef.current) {
+      finalizeMarkerPosition();
+    }
+    
+    // Clear touch position reference
     touchPositionRef.current = null;
-    setTouchHoldMarker(null);
+    setIsDragging(false);
   };
   
   // Start dragging a marker - IMPROVED SCALING IMPLEMENTATION
