@@ -43,7 +43,7 @@ export default function DocumentationWiki({ isOpen, onClose }: DocumentationWiki
                 <li><strong>Equipment Tracking</strong> - Document access points, cameras, elevators, and intercoms with detailed specifications.</li>
                 <li><strong>Interactive Floorplans</strong> - Upload and annotate PDF floorplans with equipment markers.</li>
                 <li><strong>Export Options</strong> - Export data in multiple formats including PDF, Excel, CSV, and JSON.</li>
-                <li><strong>AI-Powered Analysis</strong> - Generate reports, summaries, and insights using Gemini AI integration.</li>
+                <li><strong>AI-Powered Analysis</strong> - Generate reports, summaries, and insights using Azure OpenAI in Kastle's secure environment.</li>
                 <li><strong>Multi-Format Exports</strong> - Create customized exports based on specific templates.</li>
               </ul>
 
@@ -241,7 +241,7 @@ export default function DocumentationWiki({ isOpen, onClose }: DocumentationWiki
             <TabsContent value="ai" className="p-4 space-y-4">
               <h2 className="text-xl font-bold text-gray-800">AI-Powered Features</h2>
               <p className="text-gray-700">
-                The Site Walk application integrates Google's Gemini AI to provide advanced analysis, reporting, and assistance capabilities that enhance productivity and insight.
+                The Site Walk application integrates Microsoft's Azure OpenAI in Kastle's secure environment to provide advanced analysis, reporting, and assistance capabilities that enhance productivity and insight while maintaining the highest security standards.
               </p>
 
               <h3 className="text-lg font-semibold text-gray-800 mt-6">AI Capabilities</h3>
@@ -265,7 +265,7 @@ export default function DocumentationWiki({ isOpen, onClose }: DocumentationWiki
 
               <h3 className="text-lg font-semibold text-gray-800 mt-6">AI Image Features</h3>
               <p className="text-gray-700">
-                The Gemini AI integration provides advanced image processing capabilities:
+                The Azure OpenAI integration provides advanced image processing capabilities in a secure environment:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700">
                 <li><strong>Floorplan Recognition</strong> - Analyze uploaded floorplans to identify key areas and potential equipment locations.</li>
@@ -281,7 +281,7 @@ export default function DocumentationWiki({ isOpen, onClose }: DocumentationWiki
               <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mt-6">
                 <h4 className="font-semibold text-amber-800">Note About AI Features</h4>
                 <p className="text-amber-700">
-                  AI features require a valid Gemini API key to function. If you're experiencing issues with AI functionality, please ensure your API key is correctly configured in the system settings.
+                  AI features require valid Azure OpenAI credentials to function. If you're experiencing issues with AI functionality, please ensure your Azure OpenAI API key and deployment name are correctly configured in the system settings.
                 </p>
               </div>
             </TabsContent>

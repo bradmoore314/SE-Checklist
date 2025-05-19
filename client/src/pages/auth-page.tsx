@@ -404,7 +404,7 @@ export default function AuthPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium text-primary">AI-Powered Analysis & Configuration</h3>
-                <p className="text-sm text-white">Leverage Gemini AI for intelligent security equipment configuration</p>
+                <p className="text-sm text-white">Leverage Azure OpenAI in Kastle's secure environment for intelligent security equipment configuration</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">

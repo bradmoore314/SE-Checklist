@@ -266,14 +266,14 @@ const DocumentationPage = () => {
     {
       id: 5,
       title: 'Artificial Intelligence Features',
-      description: 'Gemini AI integration for intelligent assistance and automation.',
+      description: 'Azure OpenAI integration for intelligent assistance and automation in a secure environment.',
       category: 'advanced',
       content: `
         <h2 class="text-2xl font-bold mb-4">Artificial Intelligence Features</h2>
-        <p class="mb-4">Checklist Wizard integrates with Google's Gemini AI to provide advanced automation and intelligent assistance throughout the application.</p>
+        <p class="mb-4">Checklist Wizard integrates with Microsoft's Azure OpenAI in Kastle's secure environment to provide advanced automation and intelligent assistance throughout the application, ensuring complete data security and compliance.</p>
         
-        <h3 class="text-xl font-bold mt-6 mb-2">Gemini AI Integration</h3>
-        <p class="mb-4">The application leverages Gemini AI 2.0 for various intelligent features:</p>
+        <h3 class="text-xl font-bold mt-6 mb-2">Azure OpenAI Integration</h3>
+        <p class="mb-4">The application leverages Azure's enterprise-grade OpenAI service for various intelligent features with enhanced security:</p>
         <ul class="list-disc ml-6 mb-4">
           <li><strong>Natural Language Processing:</strong> Understand and generate human-like text for reports and documentation</li>
           <li><strong>Image Analysis:</strong> Recognize and interpret visual information from uploaded photographs</li>
