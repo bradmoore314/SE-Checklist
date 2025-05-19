@@ -1870,18 +1870,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tooltips
       };
 
-      // Call AI service to generate quote review agenda
+      // Call Azure OpenAI service to generate quote review agenda
       try {
+        // Using our new Azure OpenAI implementation for quote review agenda
         const agenda = await generateQuoteReviewAgenda(agendaData);
         
-        console.log("Quote Review Agenda generated successfully");
+        console.log("Quote Review Agenda generated successfully using Azure OpenAI");
 
         res.json({
           success: true,
-          agenda
+          agenda,
+          secureAI: true,
+          aiProvider: "Azure OpenAI in Kastle's secure environment"
         });
       } catch (aiError) {
-        console.error("Error calling Gemini API for quote review agenda:", aiError);
+        console.error("Error calling Azure OpenAI for quote review agenda:", aiError);
         res.status(500).json({
           success: false,
           message: "Failed to generate quote review agenda",
