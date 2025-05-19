@@ -773,7 +773,7 @@ export async function analyzeProject(project: Project,
   const answeredQuestions = questions.filter(q => q.canBeAnswered);
   const unansweredQuestions = questions.filter(q => !q.canBeAnswered);
   
-  // Generate AI summary using Gemini API
+  // Generate AI summary using Azure OpenAI in Kastle's secure environment
   const aiSummary = await generateAiSummary(project, answeredQuestions, unansweredQuestions);
   
   return {
@@ -783,7 +783,7 @@ export async function analyzeProject(project: Project,
   };
 }
 
-// Function to generate summary from Gemini
+// Function to generate summary using Azure OpenAI secure service
 async function generateAiSummary(
   project: Project,
   answeredQuestions: ProjectQuestion[],

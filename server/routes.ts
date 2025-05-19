@@ -3063,10 +3063,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         analysis: analysis
       });
     } catch (error) {
-      console.error("Gemini API diagnostic error:", error);
+      console.error("Azure OpenAI API diagnostic error:", error);
       res.status(500).json({
         success: false,
-        message: "Gemini API diagnostic failed",
+        message: "Azure OpenAI API diagnostic failed",
         error: (error as Error).message
       });
     }
@@ -4098,7 +4098,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // All AI functionality now uses Azure OpenAI exclusively in Kastle's secure environment
-  // Gemini API has been completely removed from the application
+  // All AI processing is now done exclusively through Microsoft's secure Azure OpenAI service
   
   // Check Azure OpenAI API configuration (authenticated)
   app.get("/api/azure/status", isAuthenticated, (req: Request, res: Response) => {
