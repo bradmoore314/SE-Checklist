@@ -1,15 +1,16 @@
-import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+import { getAzureOpenAIClient, createChatMessage } from "../utils/azure-openai";
 import { db } from "../db";
 import { accessPoints, cameras, elevators, intercoms, floorplanMarkers } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
-// Initialize Gemini AI
-const apiKey = process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey as string);
-
 /**
  * Service for automatically detecting and suggesting equipment placement 
- * on floorplans using Gemini AI
+ * on floorplans using Azure OpenAI's secure environment
+ * 
+ * This service uses Kastle's secure Azure OpenAI deployment, ensuring:
+ * - All image processing occurs within Kastle's protected infrastructure
+ * - Enhanced security and compliance with enterprise requirements
+ * - Secure handling of sensitive floorplan data
  */
 export class EquipmentAutoDetectionService {
   
@@ -27,16 +28,8 @@ export class EquipmentAutoDetectionService {
     page: number
   ): Promise<EquipmentSuggestionResult> {
     try {
-      // Get the model
-      const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-pro",
-        safetySettings: [
-          {
-            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-          },
-        ],
-      });
+      // Get the Azure OpenAI client
+      const openai = getAzureOpenAIClient();
 
       // Create the prompt with detailed instructions
       const prompt = `
@@ -71,32 +64,33 @@ export class EquipmentAutoDetectionService {
       }
       `;
 
-      // Process the image with the prompt using Gemini API
-      const result = await model.generateContent({
-        contents: [
+      // Process the image with the prompt using Azure OpenAI through Kastle's secure environment
+      // Note: For Azure OpenAI, we need to encode the image as base64 in a specific format
+      const response = await openai.chat.completions.create({
+        model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4o-mini",
+        messages: [
           {
             role: "user",
-            parts: [
-              { text: prompt },
+            content: [
               {
-                inlineData: {
-                  mimeType: "image/jpeg",
-                  data: imageBase64
+                type: "text",
+                text: prompt
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageBase64}`
                 }
               }
             ]
           }
         ],
-        generationConfig: {
-          temperature: 0.2,
-          topP: 0.8,
-          topK: 16,
-          maxOutputTokens: 4096,
-        }
+        temperature: 0.2,
+        max_tokens: 4096,
+        response_format: { type: "json_object" }
       });
-
-      const response = result.response;
-      const text = response.text();
+      
+      const text = response.choices[0].message.content || "";
       
       // Parse JSON response
       try {
