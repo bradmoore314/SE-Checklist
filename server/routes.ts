@@ -5,6 +5,7 @@ import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
 // Keep Gemini proxy for backward compatibility
 import { proxyTestGemini } from './gemini-proxy';
+
 // Use Azure OpenAI proxy for all new AI functionality
 import { proxyTestAzureOpenAI } from './azure-openai-proxy';
 // Use only Azure OpenAI implementation (through the ai-service adapter) for all generation functions
@@ -3945,7 +3946,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gemini AI API Proxy
   // Test endpoint for Gemini API
   // Keep Gemini endpoint for backward compatibility
-  app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
+
   
   // Add Azure OpenAI endpoint
   app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
