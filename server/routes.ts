@@ -3,19 +3,21 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { lookupData } from "./data/lookupData";
 import { analyzeProject, generateProjectAnalysis } from './services/project-questions-analysis';
-// Keep Gemini proxy for backward compatibility
-import { proxyTestGemini } from './gemini-proxy';
+// Using Azure OpenAI for all AI functionality in Kastle's secure environment
+// All AI processing occurs within Azure's secure cloud, ensuring data privacy compliance
 
-// Use Azure OpenAI proxy for all new AI functionality
-import { proxyTestAzureOpenAI } from './azure-openai-proxy';
-// Use only Azure OpenAI implementation (through the ai-service adapter) for all generation functions
-import { generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis, 
-         generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
-         generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda,
-         testAzureOpenAI } from './utils/azure-openai';
-// import old AI service functions (deprecated)
-// import { generateSiteWalkAnalysis, generateQuoteReviewAgenda, generateTurnoverCallAgenda } from './services/ai-service';
-// Import the new Azure OpenAI-based quote review agenda service
+// Import Azure OpenAI proxy for testing functionality
+import { proxyTestAzureOpenAI, generateSiteWalkAnalysis } from './azure-openai-proxy';
+
+// Import Azure OpenAI secure generation functions
+import { 
+  generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis,
+  generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
+  generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda,
+  testAzureOpenAI 
+} from './utils/azure-openai';
+
+// Import the Azure OpenAI-based quote review agenda service
 import { generateQuoteReviewAgenda } from './services/quote-review-agenda-service';
 import { compressImage, createThumbnail } from './utils/image-utils';
 import { isAzureConfigured, uploadImageToAzure, deleteImageFromAzure } from './azure-storage';
@@ -1787,18 +1789,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tooltips: tooltips
       };
       
-      // Generate AI analysis using Gemini
-      console.log("Making Gemini API call for project:", projectId);
+      // Generate AI analysis using Azure OpenAI
+      console.log("Making Azure OpenAI API call for project:", projectId);
       try {
-        const analysis = await generateSiteWalkAnalysis(analysisData);
-        console.log("Gemini API call successful with sections:", Object.keys(analysis));
+        // Using Azure's secure environment for enhanced protection of sensitive data
+        const analysis = await generateAzureSiteWalkAnalysis(analysisData);
+        console.log("Azure OpenAI API call successful with sections:", Object.keys(analysis));
         
         res.json({
           success: true,
-          analysis: analysis
+          analysis: analysis,
+          secureAI: true,
+          aiProvider: "Azure OpenAI in Kastle's secure environment"
         });
       } catch (aiError) {
-        console.error("Gemini API detailed error:", aiError);
+        console.error("Azure OpenAI API detailed error:", aiError);
         throw aiError; // Will be caught by outer try/catch
       }
     } catch (error) {
@@ -3949,13 +3954,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Gemini AI API Proxy
-  // Test endpoint for Gemini API
-  // Keep Gemini endpoint for backward compatibility
-  app.post("/api/gemini/test", isAuthenticated, proxyTestGemini);
-  
-  // Add Azure OpenAI endpoint
+  // Azure OpenAI API Proxy
+  // All AI functionality migrated to Azure OpenAI for enhanced security
   app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
+  
+  // Keep routing for any existing implementations, but redirect to Azure OpenAI
+  app.post("/api/gemini/test", isAuthenticated, (req, res) => {
+    console.log("Warning: Legacy AI endpoint accessed, redirecting to Azure OpenAI");
+    return proxyTestAzureOpenAI(req, res);
+  });
 
   // Public test endpoint for debugging (no authentication required)
   app.post("/api/test/azure", (req: Request, res: Response) => {
@@ -3982,15 +3989,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const analysis = await generateSiteWalkAnalysis(
+      // Create analysis data in the expected format for Azure OpenAI
+      const analysisData = {
         projectName,
         projectDescription,
-        buildingCount || 1,
-        accessPointCount || 0,
-        cameraCount || 0,
-        clientRequirements || "",
-        specialConsiderations || ""
-      );
+        buildingCount: buildingCount || 1,
+        accessPointCount: accessPointCount || 0,
+        cameraCount: cameraCount || 0,
+        clientRequirements: clientRequirements || "",
+        specialConsiderations: specialConsiderations || ""
+      };
+      
+      // Use Azure OpenAI for secure, enterprise-grade site walk analysis
+      const analysis = await generateAzureSiteWalkAnalysis(analysisData);
 
       res.json({
         ...analysis,
@@ -4021,12 +4032,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const agenda = await generateQuoteReviewAgenda(
+      // Create agenda data in the format expected by Azure OpenAI
+      const agendaData = {
         projectName,
         projectDescription,
-        quoteDetails || "",
-        clientBackground || ""
-      );
+        quoteDetails: quoteDetails || "",
+        clientBackground: clientBackground || ""
+      };
+      
+      // Use Azure OpenAI for secure, enterprise-grade quote review agenda
+      const agenda = await generateAzureQuoteReviewAgenda(agendaData);
 
       res.json({
         ...agenda,
@@ -4057,12 +4072,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const agenda = await generateTurnoverCallAgenda(
+      // Create turnover call data in the format expected by Azure OpenAI
+      const turnoverData = {
         projectName,
         projectDescription,
-        installationDetails || "",
-        clientNeeds || ""
-      );
+        installationDetails: installationDetails || "",
+        clientNeeds: clientNeeds || ""
+      };
+      
+      // Use Azure OpenAI for secure, enterprise-grade turnover call agenda
+      const agenda = await generateAzureTurnoverCallAgenda(turnoverData);
 
       res.json({
         ...agenda,
