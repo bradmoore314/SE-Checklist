@@ -453,7 +453,7 @@ const DocumentationPage = () => {
           <li><strong>CRM Connection:</strong> Configure synchronization with CRM systems</li>
           <li><strong>Microsoft 365 Setup:</strong> Link your Microsoft account for enhanced features</li>
           <li><strong>Google Maps Configuration:</strong> Set up mapping and geocoding services</li>
-          <li><strong>Gemini AI Settings:</strong> Configure AI behavior and usage limits</li>
+          <li><strong>Azure OpenAI Settings:</strong> Configure AI behavior and usage limits</li>
         </ul>
         
         <h3 class="text-xl font-bold mt-6 mb-2">Data Management</h3>
