@@ -53,66 +53,13 @@ const normalizeAngle = (angle: number): number => {
   return normalizedAngle;
 };
 
-// Define interfaces
-interface FloorplanData {
-  id: number;
-  project_id: number;
-  name: string;
-  pdf_data: string;
-  page_count: number;
-}
-
-interface LayerData {
-  id: number;
-  floorplan_id: number;
-  name: string;
-  color: string;
-  visible: boolean;
-  order_index: number;
-}
-
-interface MarkerData {
-  id: number;
-  floorplan_id: number;
-  unique_id: string;
-  page: number;
-  marker_type: string;
-  equipment_id?: number;
-  layer_id?: number;
-  position_x: number;
-  position_y: number;
-  end_x?: number;
-  end_y?: number;
-  width?: number;
-  height?: number;
-  rotation?: number;
-  color?: string;
-  fill_color?: string;
-  opacity?: number;
-  line_width?: number;
-  label?: string;
-  text_content?: string;
-  font_size?: number;
-  font_family?: string;
-  points?: Array<{x: number, y: number}>;
-  author_id?: number;
-  author_name?: string;
-  version: number;
-  parent_id?: number;
-}
-
-interface CalibrationData {
-  id: number;
-  floorplan_id: number;
-  page: number;
-  real_world_distance: number;
-  pdf_distance: number;
-  unit: string;
-  start_x: number;
-  start_y: number;
-  end_x: number;
-  end_y: number;
-}
+// Import shared marker types
+import { 
+  FloorplanData, 
+  MarkerData, 
+  LayerData, 
+  CalibrationData 
+} from './types/MarkerTypes';
 
 interface EnhancedFloorplanViewerProps {
   floorplan: FloorplanData;
