@@ -1573,66 +1573,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reports
-  app.get("/api/projects/:projectId/reports/door-schedule", isAuthenticated, async (req: Request, res: Response) => {
-    const projectId = parseInt(req.params.projectId);
-    if (isNaN(projectId)) {
-      return res.status(400).json({ message: "Invalid project ID" });
-    }
-
-    const project = await storage.getProject(projectId);
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-
-    const accessPoints = await storage.getAccessPoints(projectId);
-    
-    // Transform access points into door schedule format
-    const doorSchedule = accessPoints.map(ap => ({
-      id: ap.id,
-      location: ap.location,
-      door_type: ap.lock_type,
-      reader_type: ap.reader_type,
-      lock_type: ap.lock_type,
-      security_level: ap.monitoring_type,
-      ppi: ap.lock_provider || "None",
-      notes: ap.notes || ""
-    }));
-
-    res.json({
-      project: project,
-      doors: doorSchedule
-    });
-  });
-
-  app.get("/api/projects/:projectId/reports/camera-schedule", isAuthenticated, async (req: Request, res: Response) => {
-    const projectId = parseInt(req.params.projectId);
-    if (isNaN(projectId)) {
-      return res.status(400).json({ message: "Invalid project ID" });
-    }
-
-    const project = await storage.getProject(projectId);
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-
-    const cameras = await storage.getCameras(projectId);
-    
-    // Transform cameras into camera schedule format
-    const cameraSchedule = cameras.map(camera => ({
-      id: camera.id,
-      location: camera.location,
-      camera_type: camera.camera_type,
-      mounting_type: camera.mounting_type || "N/A",
-      resolution: camera.resolution || "N/A",
-      field_of_view: camera.field_of_view || "N/A",
-      notes: camera.notes || ""
-    }));
-
-    res.json({
-      project: project,
-      cameras: cameraSchedule
-    });
-  });
 
   app.get("/api/projects/:projectId/reports/project-summary", isAuthenticated, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);

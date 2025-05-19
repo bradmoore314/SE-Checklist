@@ -216,34 +216,30 @@ const DocumentationPage = () => {
         <h3 class="text-xl font-bold mt-6 mb-2">Door Schedule Export</h3>
         <p class="mb-4">Generate comprehensive door schedules with all access point details:</p>
         <ol class="list-decimal ml-6 mb-4">
-          <li>Navigate to the "Door Schedules" section under Reports</li>
-          <li>Select the project(s) to include in the schedule</li>
-          <li>Choose the export template format:
-            <ul class="list-disc ml-6 mb-2 mt-2">
-              <li>Standard Template: Basic door schedule with core information</li>
-              <li>Detailed Template: Comprehensive information including hardware specifications</li>
-              <li>Custom Template: Use your own pre-defined Excel template</li>
-            </ul>
-          </li>
-          <li>Configure additional options:
-            <ul class="list-disc ml-6 mb-2 mt-2">
-              <li>Include images of each access point</li>
-              <li>Add floor designations and building information</li>
-              <li>Include hardware specifications and part numbers</li>
-              <li>Add notes and special instructions</li>
-            </ul>
-          </li>
-          <li>Click "Generate Door Schedule" to create and download the document</li>
+          <li>Navigate to the "Card Access" equipment page</li>
+          <li>Use the "Export to Excel" button in the top right corner of the equipment list</li>
+          <li>The export includes all door schedule information in the Kastle format:</li>
+          <ul class="list-disc ml-6 mb-2 mt-2">
+            <li>Door number and location</li>
+            <li>Reader and lock type information</li>
+            <li>Installation details and monitoring options</li>
+            <li>All notes and technical specifications</li>
+          </ul>
         </ol>
         
         <h3 class="text-xl font-bold mt-6 mb-2">Camera Schedule Export</h3>
         <p class="mb-4">Create detailed camera schedules with configuration information:</p>
-        <ul class="list-disc ml-6 mb-4">
-          <li><strong>Basic Camera List:</strong> Simple inventory of all cameras with locations and types</li>
-          <li><strong>Technical Specification Sheet:</strong> Detailed configuration information including resolution, mounting, and power requirements</li>
-          <li><strong>Network Configuration Document:</strong> IP addressing, bandwidth requirements, and storage calculations</li>
-          <li><strong>Installation Guide:</strong> Detailed placement information with images and specific mounting instructions</li>
-        </ul>
+        <ol class="list-decimal ml-6 mb-4">
+          <li>Navigate to the "Cameras" equipment page</li>
+          <li>Use the "Export to Excel" button in the top right corner of the equipment list</li>
+          <li>The export includes all camera details in the standard format:</li>
+          <ul class="list-disc ml-6 mb-2 mt-2">
+            <li>Camera device number and name</li>
+            <li>Camera type, model and location</li>
+            <li>Technical specifications including power source and mounting</li>
+            <li>Network settings and additional configuration notes</li>
+          </ul>
+        </ol>
         
         <h3 class="text-xl font-bold mt-6 mb-2">Project Summary Reports</h3>
         <p class="mb-4">Generate comprehensive project documentation:</p>
