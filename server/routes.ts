@@ -27,7 +27,7 @@ import {
 import { registerEnhancedFloorplanRoutes } from './enhanced-floorplan-routes';
 import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
 import { recognizeSpeech, textToSpeech } from './speech-api';
-import chatbotGeminiService from './services/chatbot-gemini';
+// Using Azure OpenAI for AI services
 import { setupEquipmentCreationRoutes } from './routes/equipment-creation-routes';
 import { setupEquipmentConfigurationRoutes } from './routes/equipment-configuration-routes';
 import { autoDetectionRoutes } from './routes/auto-detection-routes';

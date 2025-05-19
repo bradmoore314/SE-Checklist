@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import chatbotGeminiService, { ChatMessage, ChatContext } from '../services/chatbot-gemini-direct';
+import chatbotAzureService, { ChatMessage, ChatContext } from '../services/chatbot-azure';
 import equipmentCreationService from '../services/equipment-creation-service';
 
 /**
@@ -81,12 +81,12 @@ export function setupAIRoutes(app: Express) {
       }
       
       // Process normally if no equipment creation intent or if handling failed
-      const response = await chatbotGeminiService.processMessage(messages, context);
+      const response = await chatbotAzureService.processMessage(messages, context);
       
       // Extract equipment recommendations
       let recommendations: any[] = [];
       if (lastMessage.role === 'user') {
-        const extractedRecommendations = await chatbotGeminiService.extractEquipmentRecommendations(response);
+        const extractedRecommendations = await chatbotAzureService.extractEquipmentRecommendations(response);
         recommendations = extractedRecommendations || [];
       }
       
@@ -115,7 +115,7 @@ export function setupAIRoutes(app: Express) {
       }
       
       // Analyze the query
-      const context = await chatbotGeminiService.analyzeQuery(query);
+      const context = await chatbotAzureService.analyzeQuery(query);
       
       // Return the context
       res.json({ context });
@@ -139,7 +139,7 @@ export function setupAIRoutes(app: Express) {
       }
       
       // Extract equipment recommendations
-      const extractedRecommendations = await chatbotGeminiService.extractEquipmentRecommendations(text);
+      const extractedRecommendations = await chatbotAzureService.extractEquipmentRecommendations(text);
       
       // Return the recommendations
       res.json({ recommendations: extractedRecommendations || [] });
