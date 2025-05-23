@@ -419,7 +419,13 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         <LocationFeatures project={project} onProjectUpdate={onProjectUpdate} />
       </div>
       
-
+      {/* Project Collaborators Section - Moved to the bottom */}
+      <div className="mt-4 sm:mt-6 md:mt-8">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Project Collaborators</h3>
+        <CollaborationProvider projectId={project.id}>
+          <ProjectCollaborators projectId={project.id} />
+        </CollaborationProvider>
+      </div>
     </div>
   );
 }
