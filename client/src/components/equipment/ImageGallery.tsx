@@ -15,13 +15,13 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
-interface ImageGalleryProps {
+interface UnifiedImageHandlerProps {
   equipmentType: 'access_point' | 'camera' | 'elevator' | 'intercom';
   equipmentId: number;
   projectId: number;
 }
 
-export default function ImageGallery({ equipmentType, equipmentId, projectId }: ImageGalleryProps) {
+export default function UnifiedImageHandler({ equipmentType, equipmentId, projectId }: UnifiedImageHandlerProps) {
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
