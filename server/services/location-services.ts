@@ -46,7 +46,8 @@ interface WeatherData {
  * Geocode an address to get coordinates using Google Maps API
  */
 export async function geocodeAddress(address: string): Promise<GeocodingResult | null> {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
+  const apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
     throw new Error('Google Maps API key is not configured');
   }
   
@@ -58,7 +59,7 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
   
   try {
     const encodedAddress = encodeURIComponent(address);
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
     
     console.log(`Geocoding address: ${address}`);
     
@@ -186,7 +187,8 @@ export function getStaticMapUrl(
   height: number = 400,
   use3DTiles: boolean = true
 ): string {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
+  const apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
     throw new Error('Google Maps API key is not configured');
   }
   
@@ -194,10 +196,10 @@ export function getStaticMapUrl(
   // Instead, we'll use an enhanced version of the satellite imagery with higher zoom and resolution
   if (use3DTiles) {
     // Use enhanced satellite imagery with better quality
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&scale=2&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&scale=2&key=${apiKey}`;
   } else {
     // Use regular satellite imagery
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=${apiKey}`;
   }
 }
 
@@ -208,17 +210,18 @@ export function getStaticMapUrl(
  * @param use3DTiles Whether to use Photorealistic 3D Tiles (if false, uses regular satellite imagery)
  */
 export function getMapEmbedUrl(lat: number, lng: number, use3DTiles: boolean = true): string {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
+  const apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
     throw new Error('Google Maps API key is not configured');
   }
   
   if (use3DTiles) {
     // For embedded maps, we'll use the 3d map mode with photorealistic view
     // Note: The additional URL parameters should only be used in the iframe src, not in the API call
-    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
+    return `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${lat},${lng}&zoom=18&maptype=satellite`;
   } else {
     // Use regular satellite imagery
-    return `https://www.google.com/maps/embed/v1/view?key=${process.env.GOOGLE_MAPS_API_KEY}&center=${lat},${lng}&zoom=18&maptype=satellite`;
+    return `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${lat},${lng}&zoom=18&maptype=satellite`;
   }
 }
 
