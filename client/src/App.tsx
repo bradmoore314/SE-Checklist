@@ -12,8 +12,7 @@ import Elevators from "@/pages/elevators";
 import Intercoms from "@/pages/intercoms";
 import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
-import AuthPage from "@/pages/auth-page";
-
+import AuthPage from "@/pages/auth";
 
 import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
 import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
@@ -29,56 +28,69 @@ import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration
 import MainLayout from "@/layouts/MainLayout";
 import { OpportunityProvider } from "@/contexts/OpportunityContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
-import { AuthProvider } from "./hooks/use-auth";
-import { ProtectedRoute } from "./lib/protected-route";
+import { useAuth } from "@/hooks/useAuth";
 import { ChatbotProvider } from "./hooks/use-chatbot";
 import { ChatbotButton } from "./components/ai/ChatbotButton";
 import { ChatbotWindow } from "./components/ai/ChatbotWindow";
 import { FullPageChatbot } from "./components/ai/FullPageChatbot";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthPage />;
+  }
+
   return (
     <Switch>
-      {/* Public routes */}
-      <Route path="/auth" component={AuthPage} />
-      
-      {/* Protected routes - Redirect root to Opportunities page */}
-      <ProtectedRoute path="/" component={Projects} />
-      <ProtectedRoute path="/projects" component={Projects} />
-      <ProtectedRoute path="/projects/:projectId/dashboard" component={Dashboard} />
-      <ProtectedRoute path="/dashboard" component={Dashboard} />
+      {/* Protected routes - Redirect root to Projects page */}
+      <Route path="/" component={Projects} />
+      <Route path="/projects" component={Projects} />
+      <Route path="/projects/:projectId/dashboard" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
       
       {/* Equipment routes */}
-      <ProtectedRoute path="/card-access" component={CardAccess} />
-      <ProtectedRoute path="/cameras" component={Cameras} />
-      <ProtectedRoute path="/elevators" component={Elevators} />
-      <ProtectedRoute path="/intercoms" component={Intercoms} />
-      <ProtectedRoute path="/kastle-video-guarding" component={KastleVideoGuardingPage} />
-      <ProtectedRoute path="/camera-stream-gateway" component={CameraStreamGateway} />
+      <Route path="/card-access" component={CardAccess} />
+      <Route path="/cameras" component={Cameras} />
+      <Route path="/elevators" component={Elevators} />
+      <Route path="/intercoms" component={Intercoms} />
+      <Route path="/kastle-video-guarding" component={KastleVideoGuardingPage} />
+      <Route path="/camera-stream-gateway" component={CameraStreamGateway} />
       
       {/* Report routes */}
-      <ProtectedRoute path="/project-summary" component={Summary} />
+      <Route path="/project-summary" component={Summary} />
       
       {/* Floorplans */}
-      <ProtectedRoute path="/projects/:projectId/floorplans" component={EnhancedFloorplansPage} />
-
-      <ProtectedRoute path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
-      <ProtectedRoute path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
-      <ProtectedRoute path="/projects/:projectId/pdf-editor" component={ProfessionalPdfEditorPage} />
-      <ProtectedRoute path="/projects/:projectId/pdf-editor/:floorplanId" component={ProfessionalPdfEditorPage} />
+      <Route path="/projects/:projectId/floorplans" component={EnhancedFloorplansPage} />
+      <Route path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
+      <Route path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
+      <Route path="/projects/:projectId/pdf-editor" component={ProfessionalPdfEditorPage} />
+      <Route path="/projects/:projectId/pdf-editor/:floorplanId" component={ProfessionalPdfEditorPage} />
       
       {/* Quote Review */}
-      <ProtectedRoute path="/projects/:projectId/quote-review" component={QuoteReviewPage} />
+      <Route path="/projects/:projectId/quote-review" component={QuoteReviewPage} />
       
       {/* Settings */}
-      <ProtectedRoute path="/settings" component={Settings} />
-      <ProtectedRoute path="/misc" component={MiscPage} />
+      <Route path="/settings" component={Settings} />
+      <Route path="/misc" component={MiscPage} />
       
       {/* Documentation and Feedback */}
-      <ProtectedRoute path="/documentation" component={DocumentationPage} />
-      <ProtectedRoute path="/feedback" component={FeedbackPage} />
-      <ProtectedRoute path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
-      <ProtectedRoute path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      <Route path="/documentation" component={DocumentationPage} />
+      <Route path="/feedback" component={FeedbackPage} />
+      <Route path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      <Route path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      
       {/* 404 fallback */}
       <Route component={NotFound} />
     </Switch>
@@ -88,21 +100,19 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ProjectProvider>
-          <OpportunityProvider>
-            <ChatbotProvider>
-              <MainLayout>
-                <Router />
-                <ChatbotButton />
-                <ChatbotWindow />
-                <FullPageChatbot />
-              </MainLayout>
-            </ChatbotProvider>
-          </OpportunityProvider>
-        </ProjectProvider>
-        <Toaster />
-      </AuthProvider>
+      <ProjectProvider>
+        <OpportunityProvider>
+          <ChatbotProvider>
+            <MainLayout>
+              <Router />
+              <ChatbotButton />
+              <ChatbotWindow />
+              <FullPageChatbot />
+            </MainLayout>
+          </ChatbotProvider>
+        </OpportunityProvider>
+      </ProjectProvider>
+      <Toaster />
     </QueryClientProvider>
   );
 }
