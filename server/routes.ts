@@ -101,41 +101,10 @@ import { dataverseIntegration } from "./services/dataverse-integration";
 import { setupAIRoutes } from "./routes/ai-routes";
 import miscRoutes from "./routes/misc-routes";
 
-// Authentication middleware
+// No authentication required - all routes are public
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  // If the user is authenticated, allow access
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  
-  // Check for development mode bypass in headers or query params
-  const bypassHeaderAuth = req.headers['x-bypass-auth'] === 'true';
-  const bypassQueryAuth = req.query.bypass_auth === 'true';
-  
-  // For development purposes only, allow bypassing authentication with a special header or query param
-  if (bypassHeaderAuth || bypassQueryAuth) {
-    console.log('⚠️ Authentication bypassed via explicit request');
-    
-    // Create a mock admin user for the request
-    req.user = {
-      id: 999,
-      username: 'dev-admin',
-      email: 'dev@example.com',
-      fullName: 'Development Admin',
-      role: 'admin',
-      created_at: new Date(),
-      updated_at: new Date()
-    } as Express.User;
-    
-    return next();
-  }
-  
-  // Otherwise require authentication
-  console.log('Auth required for', req.path);
-  res.status(401).json({ 
-    success: false,
-    message: "Authentication required" 
-  });
+  // All routes are now public - no authentication needed
+  next();
 };
 
 // Register completely public routes before the Express app is created
