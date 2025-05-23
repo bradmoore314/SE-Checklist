@@ -435,3 +435,5 @@ export function UnifiedImageHandler({
     </>
   );
 }
+
+export default UnifiedImageHandler;
