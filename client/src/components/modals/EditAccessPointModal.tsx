@@ -16,7 +16,7 @@ import { Upload, Camera, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AccessPoint } from "@shared/schema";
-import ImageUploadSection from "@/components/ImageUploadSection";
+import UnifiedImageHandler from "@/components/equipment/ImageGallery";
 
 // Create a custom FormItem with the form-item class for highlighting
 const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
