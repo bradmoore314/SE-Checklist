@@ -415,12 +415,6 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
         
       </div>
       
-      {/* Floorplan Upload Section */}
-      <div className="mt-4 sm:mt-6 md:mt-8">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Add Floorplan</h3>
-        <SimpleFloorplanUpload projectId={project.id} />
-      </div>
-
       {/* Location Features Section */}
       <div className="mt-4 sm:mt-6 md:mt-8">
         <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Location Information</h3>
