@@ -549,6 +549,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         new_panel_location: existingAccessPoint.new_panel_location,
         new_panel_type: existingAccessPoint.new_panel_type,
         new_reader_type: existingAccessPoint.new_reader_type,
+        noisy_prop: existingAccessPoint.noisy_prop,
+        crashbars: existingAccessPoint.crashbars,
+        real_lock_type: existingAccessPoint.real_lock_type,
         notes: existingAccessPoint.notes
       };
       
