@@ -230,10 +230,10 @@ const CombinedCameraConfigForm: React.FC<CombinedCameraConfigFormProps> = ({
                 <div className="text-sm text-muted-foreground mb-4">
                   Add photos of the camera location to document its installation
                 </div>
-                <ImageUploadSection 
+                <UnifiedImageHandler 
                   projectId={projectId} 
                   equipmentId={cameraData.id} 
-                  equipmentType="camera"
+                  equipmentType="cameras"
                 />
               </div>
             )}

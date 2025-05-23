@@ -12,7 +12,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import ImageUploadSection from "@/components/ImageUploadSection";
+import UnifiedImageHandler from "@/components/UnifiedImageHandler";
 
 // Define the schema for the elevator form
 const elevatorSchema = z.object({
@@ -246,10 +246,10 @@ export default function EditElevatorModal({
             {/* Image Upload Section */}
             <div className="space-y-2 pt-4">
               <h3 className="text-sm font-medium">Elevator Images</h3>
-              <ImageUploadSection 
+              <UnifiedImageHandler 
                 projectId={elevator.project_id}
                 equipmentId={elevator.id}
-                equipmentType="elevator"
+                equipmentType="elevators"
               />
             </div>
             
