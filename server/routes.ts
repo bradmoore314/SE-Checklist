@@ -532,11 +532,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Access point not found" });
       }
       
-      // Create a copy with a modified location name
+      // Create a copy with a modified location name  
       const duplicateData: InsertAccessPoint = {
         project_id: existingAccessPoint.project_id,
         location: `${existingAccessPoint.location} (Copy)`,
-        quick_config: existingAccessPoint.quick_config || 'Standard', // Include quick_config with a fallback
+        quick_config: existingAccessPoint.quick_config || 'Standard',
         reader_type: existingAccessPoint.reader_type,
         lock_type: existingAccessPoint.lock_type,
         monitoring_type: existingAccessPoint.monitoring_type,
@@ -2024,14 +2024,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid equipment ID" });
     }
     
-    // Validate equipment type
-    if (!['access_point', 'camera', 'elevator', 'intercom'].includes(equipmentType)) {
+    // Validate equipment type (allow both singular and plural forms)
+    const validTypes = ['access_point', 'access-points', 'camera', 'cameras', 'elevator', 'elevators', 'intercom', 'intercoms'];
+    if (!validTypes.includes(equipmentType)) {
       console.log(`Invalid equipment type: ${equipmentType}`);
       return res.status(400).json({ message: "Invalid equipment type" });
     }
     
-    // Get all images for this equipment
-    const images = await storage.getImages(equipmentType, equipmentId);
+    // Normalize to singular form for database lookup
+    const normalizedType = equipmentType.replace('-points', '_point').replace('s$', '').replace('-', '_');
+    
+    // Get all images for this equipment using normalized type
+    const images = await storage.getImages(normalizedType, equipmentId);
     console.log(`Found ${images.length} images for ${equipmentType} ${equipmentId}`);
     
     // If debugging, log some details about the first few images
