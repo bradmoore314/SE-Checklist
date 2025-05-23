@@ -398,6 +398,27 @@ export default function AddAccessPointModal({
                       </FormItem>
                     )}
                   />
+
+                  {/* Images Section - Prominently displayed */}
+                  <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-sm font-medium text-blue-800">📸 Add Images</h3>
+                    </div>
+                    <p className="text-xs text-blue-600 mb-3">
+                      Take photos of this access point location to help with documentation and site reference. You can upload images immediately after creating the access point.
+                    </p>
+                    <div className="bg-white rounded p-3 border border-blue-200">
+                      <p className="text-xs text-gray-600 flex items-center gap-2">
+                        <span className="text-green-500">✓</span>
+                        <span>Click "Create Access Point" below to enable photo uploads</span>
+                      </p>
+                    </div>
+                  </div>
                   
                   {/* Button to toggle advanced fields */}
                   <div className="flex justify-end">
