@@ -55,19 +55,27 @@ export default function UnifiedImageHandler({
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (files: FileList) => {
-      const formData = new FormData();
-      Array.from(files).forEach(file => {
-        formData.append('images', file);
-      });
-      
-      const response = await fetch(`/api/images/${equipmentType}/${equipmentId}`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Upload failed');
+      const file = files[0]; // Handle single file upload
+      if (!file) {
+        throw new Error('No file selected');
       }
+
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Upload using the existing API format
+      const response = await apiRequest('POST', '/api/images', {
+        project_id: projectId,
+        equipment_type: equipmentType,
+        equipment_id: equipmentId,
+        image_data: base64,
+        filename: file.name
+      });
       
       return response.json();
     },
