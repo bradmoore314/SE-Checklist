@@ -55,29 +55,60 @@ export default function UnifiedImageHandler({
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (files: FileList) => {
+      console.log('🚀 Starting image upload process');
+      console.log('Files received:', files.length);
+      
       const file = files[0]; // Handle single file upload
       if (!file) {
+        console.error('❌ No file selected');
         throw new Error('No file selected');
       }
 
+      console.log('📁 File details:', {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+
       // Convert file to base64
+      console.log('🔄 Converting file to base64...');
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
+        reader.onload = () => {
+          console.log('✅ File converted to base64 successfully');
+          resolve(reader.result as string);
+        };
+        reader.onerror = (error) => {
+          console.error('❌ File conversion failed:', error);
+          reject(error);
+        };
         reader.readAsDataURL(file);
       });
 
-      // Upload using the existing API format
-      const response = await apiRequest('POST', '/api/images', {
+      const uploadData = {
         project_id: projectId,
         equipment_type: equipmentType,
         equipment_id: equipmentId,
         image_data: base64,
         filename: file.name
+      };
+
+      console.log('📤 Uploading with data:', {
+        project_id: projectId,
+        equipment_type: equipmentType,
+        equipment_id: equipmentId,
+        filename: file.name,
+        image_data_length: base64.length
       });
+
+      // Upload using the existing API format
+      const response = await apiRequest('POST', '/api/images', uploadData);
       
-      return response.json();
+      console.log('📨 Upload response status:', response.status);
+      const result = await response.json();
+      console.log('✅ Upload successful, result:', result);
+      
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/images/${equipmentType}/${equipmentId}`] });
