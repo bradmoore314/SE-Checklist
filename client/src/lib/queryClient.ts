@@ -39,9 +39,21 @@ export async function apiRequest(
 ): Promise<Response> {
   console.log(`Fetch ${method} ${url}${data ? ' with data' : ''}`);
   
+  // Get Supabase auth token if available
+  let authToken = null;
+  try {
+    const { supabase } = await import('@/lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+    authToken = session?.access_token;
+  } catch (error) {
+    console.log('No Supabase session found');
+  }
+  
   // Base headers
   const headers: Record<string, string> = {
     ...(data ? { "Content-Type": "application/json" } : {}),
+    // Add Supabase auth token if available
+    ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
     // Add auth bypass header for development
     ...(bypassAuth ? { "X-Bypass-Auth": "true" } : {}),
     // Include any custom headers
@@ -78,9 +90,23 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
     
+    // Get Supabase auth token if available
+    let authToken = null;
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      authToken = session?.access_token;
+    } catch (error) {
+      console.log('No Supabase session found');
+    }
+    
     try {
       const res = await fetch(url, {
-        credentials: "include"
+        credentials: "include",
+        headers: {
+          ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
+          ...(bypassAuth ? { "X-Bypass-Auth": "true" } : {})
+        }
       });
       
       // Special handling for 401 Unauthorized
