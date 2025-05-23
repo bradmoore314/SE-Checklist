@@ -4,7 +4,7 @@ import MemoryStore from "memorystore";
 import { registerRoutes, registerPublicRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+// Supabase auth will be handled client-side
 
 const app = express();
 // Increase JSON payload size limit to 50MB
