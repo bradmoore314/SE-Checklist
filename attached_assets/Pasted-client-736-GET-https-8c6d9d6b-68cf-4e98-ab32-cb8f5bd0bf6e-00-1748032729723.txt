@@ -1,0 +1,62 @@
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-P6S47FCS.js?v=123fc362:338
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=123fc362:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=123fc362:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=123fc362:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=123fc362:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=123fc362:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=123fc362:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=123fc362:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=123fc362:19416
+commitRoot @ chunk-NFC5BX5N.js?v=123fc362:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=123fc362:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=123fc362:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=123fc362:18627Understand this warning
+Console.js:61 Form validation state: {defaultValues: {…}, …}
+Console.js:61 Updating access point with ID: 1
+Console.js:61 Fetch PUT /api/access-points/1 with data
+Console.js:61 Fetch finished loading: PUT /api/access-points/1
+Console.js:61 Access Point updated: 1 {id: 1, project_id: 1, location: 'asdfasdf', reader_type: 'KR-100', lock_type: 'Standard', …}
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-P6S47FCS.js?v=123fc362:338
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=123fc362:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=123fc362:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=123fc362:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=123fc362:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=123fc362:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=123fc362:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=123fc362:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=123fc362:19416
+commitRoot @ chunk-NFC5BX5N.js?v=123fc362:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=123fc362:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=123fc362:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=123fc362:18627Understand this warning
+Console.js:61 Form validation state: {defaultValues: {…}, …}
+Console.js:61 Updating access point with ID: 1
+Console.js:61 Fetch PUT /api/access-points/1 with data
+Console.js:61 Fetch finished loading: PUT /api/access-points/1
+Console.js:61 Access Point updated: 1 {id: 1, project_id: 1, location: 'asdfasdf', reader_type: 'KR-100', lock_type: 'Standard', …}
