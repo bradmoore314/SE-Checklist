@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 import ProjectSwitcher from "@/components/ProjectSwitcher";
 import kastleLogo from "@/assets/kastle-logo.png";
 

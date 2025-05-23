@@ -3,7 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
 import { useProject } from "@/contexts/ProjectContext";
 import { useOpportunity } from "@/contexts/OpportunityContext";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 
 interface MainLayoutProps {
