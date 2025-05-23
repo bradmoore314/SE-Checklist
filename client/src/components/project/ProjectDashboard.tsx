@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { ProjectCollaborators } from "@/components/ProjectCollaborators";
 import { CollaborationProvider } from "@/contexts/CollaborationContext";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import LocationFeatures from "@/components/location/LocationFeatures";
 
 interface SiteWalkDashboardProps {
@@ -209,11 +210,12 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
               <Label htmlFor="site_address" className="text-sm font-medium text-neutral-700">
                 Site Address
               </Label>
-              <Input 
+              <AddressAutocomplete
                 id="site_address" 
                 name="site_address" 
-                value={editForm.site_address} 
-                onChange={handleInputChange} 
+                value={editForm.site_address || ""} 
+                onChange={(value) => setEditForm(prev => ({ ...prev, site_address: value }))}
+                placeholder="Enter site address..."
                 className="w-full"
               />
             </div>
