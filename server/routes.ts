@@ -6,12 +6,10 @@ import { analyzeProject, generateProjectAnalysis } from './services/project-ques
 // Using Azure OpenAI for all AI functionality in Kastle's secure environment
 // All AI processing occurs within Azure's secure cloud, ensuring data privacy compliance
 
-// Import Azure OpenAI proxy for testing functionality
-import { proxyTestAzureOpenAI, generateSiteWalkAnalysis } from './azure-openai-proxy';
+// Azure OpenAI proxy removed during cleanup
 
 // Import Azure OpenAI secure generation functions
 import { 
-  generateSiteWalkAnalysis as generateAzureSiteWalkAnalysis,
   generateQuoteReviewAgenda as generateAzureQuoteReviewAgenda, 
   generateTurnoverCallAgenda as generateAzureTurnoverCallAgenda,
   testAzureOpenAI 
@@ -195,7 +193,7 @@ export function registerPublicRoutes(app: Express): void {
   
   app.post("/api/public/azure/test", (req: Request, res: Response) => {
     console.log("Public Azure OpenAI test endpoint called");
-    proxyTestAzureOpenAI(req, res);
+    testAzureOpenAI(req, res);
   });
   
   // Public endpoint for testing Azure OpenAI analysis
@@ -3956,18 +3954,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Azure OpenAI API Proxy
   // All AI functionality migrated to Azure OpenAI for enhanced security
-  app.post("/api/azure/test", isAuthenticated, proxyTestAzureOpenAI);
+  app.post("/api/azure/test", isAuthenticated, testAzureOpenAI);
   
   // Keep routing for any existing implementations, but redirect to Azure OpenAI
   app.post("/api/gemini/test", isAuthenticated, (req, res) => {
     console.log("Warning: Legacy AI endpoint accessed, redirecting to Azure OpenAI");
-    return proxyTestAzureOpenAI(req, res);
+    return testAzureOpenAI(req, res);
   });
 
   // Public test endpoint for debugging (no authentication required)
   app.post("/api/test/azure", (req: Request, res: Response) => {
     console.log("Public Azure OpenAI test endpoint called");
-    proxyTestAzureOpenAI(req, res);
+    testAzureOpenAI(req, res);
   });
   
   // AI Analysis endpoints using smart AI service
