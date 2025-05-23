@@ -275,16 +275,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Project endpoints
-  app.get("/api/projects", isAuthenticated, async (req: Request, res: Response) => {
-    // Only return projects the user has access to
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    
+  // Project endpoints - now public
+  app.get("/api/projects", async (req: Request, res: Response) => {
     try {
-      // Get projects based on user permission
-      const projects = await storage.getProjectsForUser(req.user.id);
+      // Get all projects (no authentication required)
+      const projects = await storage.getProjects();
       
       // Add creator information to each project
       const projectsWithCreatorInfo = await Promise.all(projects.map(async (project) => {
