@@ -447,24 +447,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(204).end();
   });
 
-  // Access Point endpoints
-  app.get("/api/projects/:projectId/access-points", isAuthenticated, async (req: Request, res: Response) => {
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    
+  // Access Point endpoints - now public
+  app.get("/api/projects/:projectId/access-points", async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
-    }
-
-    // Get list of projects the user has access to
-    const userProjects = await storage.getProjectsForUser(req.user.id);
-    const userProjectIds = userProjects.map(p => p.id);
-    
-    // Check if user has access to this project
-    if (!userProjectIds.includes(projectId)) {
-      return res.status(403).json({ message: "You don't have permission to access this project" });
     }
 
     const project = await storage.getProject(projectId);
