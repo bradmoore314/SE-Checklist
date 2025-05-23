@@ -1,158 +1,98 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Loader2 } from 'lucide-react';
 
 interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  disabled?: boolean;
+  id?: string;
+  name?: string;
 }
 
-export default function AddressAutocomplete({
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+function AddressAutocomplete({
   value,
   onChange,
-  placeholder = 'Enter address',
-  className = '',
-  disabled = false
+  placeholder = "Enter address...",
+  className,
+  id,
+  name
 }: AddressAutocompleteProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<any>(null);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
 
-  // Fetch address suggestions
-  const searchAddresses = async (query: string) => {
-    if (!query || query.length < 3) {
-      setSuggestions([]);
+  useEffect(() => {
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps && window.google.maps.places) {
+      setIsGoogleLoaded(true);
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.status === 'OK' && data.predictions && data.predictions.length > 0) {
-          // Extract real address suggestions from Google
-          const newSuggestions = data.predictions.map((p: any) => p.description);
-          setSuggestions(newSuggestions);
-        } else {
-          setSuggestions([]);
-        }
-      } else {
-        console.warn('Place autocomplete request failed:', response.status);
-        setSuggestions([]);
-      }
-    } catch (error) {
-      console.error('Error fetching address suggestions:', error);
-      setSuggestions([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle input change with debounce
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (inputValue) {
-        searchAddresses(inputValue);
-      }
-    }, 500); // 500ms debounce
-    
-    return () => {
-      clearTimeout(handler);
+    // Load Google Maps API
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'your-api-key'}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setIsGoogleLoaded(true);
     };
-  }, [inputValue]);
+    document.head.appendChild(script);
 
-  // Handle selection
-  const handleSelect = (address: string) => {
-    onChange(address);
-    setInputValue(address);
-    setSuggestions([]);
-    setIsOpen(false);
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      // Clean up script if component unmounts
+      const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
     };
   }, []);
 
+  useEffect(() => {
+    if (!isGoogleLoaded || !inputRef.current) return;
+
+    // Initialize Google Places Autocomplete
+    autocompleteRef.current = new window.google.maps.places.Autocomplete(
+      inputRef.current,
+      {
+        types: ['address'],
+        componentRestrictions: { country: 'us' }, // Restrict to US addresses
+        fields: ['formatted_address', 'geometry', 'address_components']
+      }
+    );
+
+    // Listen for place selection
+    const listener = autocompleteRef.current.addListener('place_changed', () => {
+      const place = autocompleteRef.current.getPlace();
+      if (place.formatted_address) {
+        onChange(place.formatted_address);
+      }
+    });
+
+    return () => {
+      if (listener) {
+        window.google.maps.event.removeListener(listener);
+      }
+    };
+  }, [isGoogleLoaded, onChange]);
+
   return (
-    <div className="relative" ref={inputRef}>
-      <Input
-        type="text"
-        value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          if (e.target.value.length > 0) {
-            setIsOpen(true);
-          }
-        }}
-        onFocus={() => {
-          if (inputValue.length > 0) {
-            setIsOpen(true);
-          }
-        }}
-        placeholder={placeholder}
-        className={className}
-        disabled={disabled}
-        autoComplete="off"
-      />
-      
-      {isOpen && (
-        <div className="absolute z-50 w-full">
-          <Command className="rounded-lg border shadow-md mt-1 bg-white">
-            <CommandList>
-              {isLoading ? (
-                <div className="flex items-center justify-center p-4">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="ml-2 text-sm">Loading suggestions...</span>
-                </div>
-              ) : (
-                <>
-                  {suggestions.length === 0 ? (
-                    <CommandEmpty className="p-2 text-sm text-muted-foreground">
-                      No suggestions found
-                    </CommandEmpty>
-                  ) : (
-                    <CommandGroup>
-                      {suggestions.map((suggestion, index) => (
-                        <CommandItem
-                          key={index}
-                          onSelect={() => handleSelect(suggestion)}
-                          className="text-sm cursor-pointer"
-                        >
-                          {suggestion}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  )}
-                </>
-              )}
-            </CommandList>
-          </Command>
-        </div>
-      )}
-    </div>
+    <Input
+      ref={inputRef}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={className}
+      id={id}
+      name={name}
+    />
   );
 }
+
+export default AddressAutocomplete;
