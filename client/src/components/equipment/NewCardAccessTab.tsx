@@ -3,7 +3,7 @@ import { AccessPoint, Project } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
-import { UnifiedImageHandler } from "../UnifiedImageHandler";
+import UnifiedImageHandler from "./ImageGallery";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import SimpleCardAccessTable from "./SimpleCardAccessTable";
