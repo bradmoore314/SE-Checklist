@@ -623,8 +623,7 @@ export default function AddAccessPointModal({
                     <UnifiedImageHandler 
                       projectId={projectId}
                       equipmentId={newAccessPointId}
-                      equipmentType="access-points"
-                      variant="upload"
+                      equipmentType="access_point"
                     />
                   )}
                 </div>
