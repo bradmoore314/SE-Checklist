@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import UnifiedAddressInput from '@/components/UnifiedAddressInput';
 import {
   Card,
   CardContent,
@@ -93,14 +92,9 @@ function getWeatherIconUrl(iconCode: string): string {
 }
 
 export default function LocationFeatures({ project, onProjectUpdate }: LocationFeaturesProps) {
-  const [address, setAddress] = useState(project.site_address || '');
-  const [showAddressEditDialog, setShowAddressEditDialog] = useState(false);
-  const [pendingAddress, setPendingAddress] = useState(project.site_address || '');
   const [showMapFullscreen, setShowMapFullscreen] = useState(false);
   const [showAddToFloorplanDialog, setShowAddToFloorplanDialog] = useState(false);
   const [floorplanName, setFloorplanName] = useState('');
-  const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [customFloorplanData, setCustomFloorplanData] = useState<string | null>(null);
   const [customFloorplanType, setCustomFloorplanType] = useState<string | null>(null);
   const [customFloorplanPreview, setCustomFloorplanPreview] = useState<string | null>(null);
@@ -127,8 +121,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${project.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       
-      // Close dialog
-      setShowAddressEditDialog(false);
+      // Address editing removed - now read-only
     },
     onError: (error: Error) => {
       toast({
@@ -323,27 +316,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     return () => {
       clearTimeout(handler);
     };
-  }, [pendingAddress]);
-
-  // Update address when project changes
-  useEffect(() => {
-    setAddress(project.site_address || '');
-    setPendingAddress(project.site_address || '');
-  }, [project]);
-
-  // Handle address selection
-  const handleAddressSelect = (selectedAddress: string) => {
-    setPendingAddress(selectedAddress);
-  };
-
-  // Handle address update
-  const handleAddressUpdate = () => {
-    if (pendingAddress !== project.site_address) {
-      updateProjectMutation.mutate({ site_address: pendingAddress });
-    } else {
-      setShowAddressEditDialog(false);
-    }
-  };
+  }, []);
 
   // Handle adding satellite view or custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
@@ -529,22 +502,13 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           <CardTitle className="text-xl">Location Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2 text-gray-500" />
-              <span className="font-medium">Site Address:</span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-gray-700 mr-2">
+          <div className="flex items-start space-x-3">
+            <MapPin className="h-5 w-5 mt-0.5 text-gray-500 flex-shrink-0" />
+            <div>
+              <div className="font-medium text-gray-900">Site Address</div>
+              <div className="text-gray-700 mt-1">
                 {project.site_address || 'No address specified'}
-              </span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowAddressEditDialog(true)}
-              >
-                <Search className="h-4 w-4" />
-              </Button>
+              </div>
             </div>
           </div>
           
@@ -599,97 +563,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         </CardContent>
       </Card>
       
-      {/* Address Edit Dialog - Mobile Responsive */}
-      <Dialog open={showAddressEditDialog} onOpenChange={setShowAddressEditDialog}>
-        <DialogContent className="sm:max-w-md max-h-[95vh] overflow-y-auto p-3 sm:p-6">
-          <DialogHeader className="pb-2 sm:pb-4">
-            <DialogTitle className="text-base sm:text-lg">Update Site Address</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm">
-              Enter a new address to update the location information and weather data.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
-            <div className="space-y-1 sm:space-y-2">
-              <label htmlFor="address" className="text-xs sm:text-sm font-medium text-gray-700">
-                Site Address
-              </label>
-              <UnifiedAddressInput
-                value={pendingAddress}
-                onChange={setPendingAddress}
-                placeholder="Start typing an address..."
-                className="w-full text-xs sm:text-sm h-8 sm:h-10"
-                id="address"
-              />
-              
-              {/* API Status Information - Mobile Responsive */}
-              {addressApiStatus.status === 'unauthorized' && (
-                <div className="mt-1 sm:mt-2 text-xs sm:text-sm flex items-start p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
-                  <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">API Authentication Required</p>
-                    <p className="text-[10px] sm:text-xs">{addressApiStatus.message || 'Google Places API needs proper authentication for address suggestions.'}</p>
-                  </div>
-                </div>
-              )}
-              
-              {addressApiStatus.status === 'error' && (
-                <div className="mt-1 sm:mt-2 text-xs sm:text-sm flex items-start p-2 bg-red-50 text-red-700 rounded border border-red-200">
-                  <AlertOctagon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Error retrieving address suggestions</p>
-                    <p className="text-[10px] sm:text-xs">{addressApiStatus.message || 'Please try again later'}</p>
-                  </div>
-                </div>
-              )}
-              
-              {addressSuggestions.length > 0 && (
-                <Command className="border rounded-md shadow-md mt-1">
-                  <CommandList>
-                    <CommandGroup heading="Suggestions" className="text-xs sm:text-sm">
-                      {addressSuggestions.map((suggestion, index) => (
-                        <CommandItem 
-                          key={index} 
-                          onSelect={() => handleAddressSelect(suggestion)}
-                          className="flex items-center cursor-pointer hover:bg-gray-100 p-1 sm:p-2 text-xs sm:text-sm"
-                        >
-                          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-gray-500" />
-                          <span className="line-clamp-2">{suggestion}</span>
-                          {pendingAddress === suggestion && (
-                            <Check className="h-3 w-3 sm:h-4 sm:w-4 ml-auto text-green-500 flex-shrink-0" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              )}
-            </div>
-          </div>
-          
-          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0 mt-2 sm:mt-4">
-            <Button 
-              variant="outline" 
-              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
-              onClick={() => setShowAddressEditDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button 
-              className="w-full sm:w-auto text-xs sm:text-sm py-1 sm:py-2 h-8 sm:h-9"
-              onClick={handleAddressUpdate}
-              disabled={updateProjectMutation.isPending}
-            >
-              {updateProjectMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
-                  Updating...
-                </>
-              ) : 'Update Address'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
       
       {/* Fullscreen Map Dialog - Mobile Responsive */}
       <Dialog open={showMapFullscreen} onOpenChange={setShowMapFullscreen}>
