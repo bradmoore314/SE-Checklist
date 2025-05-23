@@ -519,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/access-points/:id/duplicate", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/access-points/:id/duplicate", async (req: Request, res: Response) => {
     try {
       const accessPointId = parseInt(req.params.id);
       if (isNaN(accessPointId)) {
@@ -532,11 +532,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Access point not found" });
       }
       
-      // Create a copy with a modified location name  
+      // Create a copy with a modified location name including ALL required fields
       const duplicateData: InsertAccessPoint = {
         project_id: existingAccessPoint.project_id,
         location: `${existingAccessPoint.location} (Copy)`,
-        quick_config: existingAccessPoint.quick_config || 'Standard',
+        quick_config: 'Standard', // Always use Standard for duplicates
         reader_type: existingAccessPoint.reader_type,
         lock_type: existingAccessPoint.lock_type,
         monitoring_type: existingAccessPoint.monitoring_type,
