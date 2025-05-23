@@ -30,7 +30,11 @@ const defaultConfig: AuthBypassConfig = {
     '/api/auth/microsoft/status',
     '/assets/',
     '/api/session-status', // For auth status checks
-    '/auth' // Allow access to auth page
+    '/auth', // Allow access to auth page
+    '/api/places', // Allow Places API access
+    '/api/geocode', // Allow geocoding access
+    '/api/weather', // Allow weather API access
+    '/api/map-url' // Allow map URL generation
   ]
 };
 
