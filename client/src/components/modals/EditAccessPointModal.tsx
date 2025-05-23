@@ -16,7 +16,7 @@ import { Upload, Camera, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AccessPoint } from "@shared/schema";
-import UnifiedImageHandler from "@/components/equipment/ImageGallery";
+import UnifiedImageHandler from "@/components/UnifiedImageHandler";
 
 // Create a custom FormItem with the form-item class for highlighting
 const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
@@ -643,10 +643,10 @@ export default function EditAccessPointModal({
             {/* Image Upload Section */}
             <div className="space-y-2 pt-4">
               <h3 className="text-sm font-medium">Access Point Images</h3>
-              <ImageUploadSection 
+              <UnifiedImageHandler 
                 projectId={accessPoint.project_id}
                 equipmentId={accessPoint.id}
-                equipmentType="access_point"
+                equipmentType="access-points"
               />
             </div>
 
