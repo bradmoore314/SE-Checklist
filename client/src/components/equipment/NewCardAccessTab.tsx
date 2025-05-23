@@ -102,7 +102,21 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
         />
       )}
 
-
+      {/* Image Gallery Modal */}
+      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Images for {selectedAccessPoint?.location || 'Access Point'}</DialogTitle>
+          </DialogHeader>
+          {selectedAccessPoint && showImageModal && (
+            <UnifiedImageHandler 
+              projectId={project.id}
+              equipmentType="access_point" 
+              equipmentId={selectedAccessPoint.id}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
