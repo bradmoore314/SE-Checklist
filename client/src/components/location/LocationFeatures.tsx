@@ -210,7 +210,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
   // We no longer need to query for static map URL
   // as we're using the interactive map component directly
 
-  // Query for weather data
+  // Query for weather data - gracefully handle when API keys aren't available
   const { 
     data: weatherData,
     isLoading: isLoadingWeather,
@@ -223,17 +223,17 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         const response = await fetch(`/api/weather?lat=${coordinates?.lat}&lng=${coordinates?.lng}`);
         
         if (!response.ok) {
-          console.warn('Failed to get weather data');
-          throw new Error('Failed to get weather data');
+          // Return null instead of throwing to avoid error messages
+          return null;
         }
         
         return response.json() as Promise<WeatherData>;
       } catch (error) {
-        console.error('Error fetching weather data:', error);
-        throw error;
+        // Return null instead of throwing to avoid error messages  
+        return null;
       }
     },
-    retry: 1
+    retry: false // Don't retry failed weather requests
   });
 
   // State for tracking address search API status
@@ -269,42 +269,42 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
           setAddressSuggestions(suggestions);
           setAddressApiStatus({ status: 'idle' });
         } 
-        else if (data.status === 'REQUEST_DENIED' || data.status === 'INVALID_REQUEST' || 
-                 data.status === 'FALLBACK' || data.status === 'ERROR') {
-          // API access issues - show error message
-          console.error('Places API error:', data.error_message || data.status);
+        else if (data.status === 'NO_API_KEY') {
+          // No API key configured - show helpful message but don't treat as error
           setAddressSuggestions([]);
           setAddressApiStatus({
-            status: 'unauthorized',
-            message: data.error_message || 'Google Maps API access denied. Please check API key permissions.'
+            status: 'no_key',
+            message: 'Address suggestions require a Google Maps API key. You can still enter addresses manually.'
           });
         }
-        else if (data.status === 'ZERO_RESULTS') {
-          // No matching addresses found - this is a normal case
-          console.log('No matching addresses found for query:', query);
+        else if (data.status === 'REQUEST_DENIED' || data.status === 'INVALID_REQUEST' || 
+                 data.status === 'FALLBACK' || data.status === 'ERROR') {
+          // API access issues - show helpful message but allow manual entry
           setAddressSuggestions([]);
-          setAddressApiStatus({ status: 'idle' });
+          setAddressApiStatus({
+            status: 'no_key',
+            message: 'Address suggestions unavailable. You can still enter addresses manually.'
+          });
         }
         else {
-          // No suggestions found - other case
-          console.log('No address suggestions found');
+          // No suggestions found or zero results - this is normal
           setAddressSuggestions([]);
           setAddressApiStatus({ status: 'idle' });
         }
       } else {
-        console.warn('Place autocomplete API request failed:', response.status);
+        // API request failed - show helpful message but allow manual entry
         setAddressSuggestions([]);
         setAddressApiStatus({
-          status: 'error',
-          message: `Request failed with status: ${response.status}`
+          status: 'no_key',
+          message: 'Address suggestions unavailable. You can still enter addresses manually.'
         });
       }
     } catch (error) {
-      console.error('Error fetching address suggestions:', error);
+      // Network error - show helpful message but allow manual entry
       setAddressSuggestions([]);
       setAddressApiStatus({
-        status: 'error',
-        message: (error as Error).message || 'Unknown error occurred'
+        status: 'no_key',
+        message: 'Address suggestions unavailable. You can still enter addresses manually.'
       });
     } finally {
       setIsSearching(false);
