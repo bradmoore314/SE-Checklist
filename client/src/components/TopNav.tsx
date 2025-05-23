@@ -22,22 +22,29 @@ interface TopNavProps {
 }
 
 export default function TopNav({ project, onToggleSidebar, user, sidebarCollapsed = false }: TopNavProps) {
-  const { logoutMutation } = useAuth();
+  const { signOut, user: currentUser } = useAuth();
 
   const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   // Function to get user initials for avatar
-  const getUserInitials = (user: User): string => {
-    if (user.fullName) {
-      const nameParts = user.fullName.split(' ');
+  const getUserInitials = (user: any): string => {
+    if (user?.user_metadata?.full_name) {
+      const nameParts = user.user_metadata.full_name.split(' ');
       if (nameParts.length > 1) {
         return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
       }
-      return user.fullName[0]?.toUpperCase() || user.username[0]?.toUpperCase() || '?';
+      return user.user_metadata.full_name[0]?.toUpperCase() || '?';
     }
-    return user.username[0]?.toUpperCase() || '?';
+    if (user?.email) {
+      return user.email[0]?.toUpperCase() || '?';
+    }
+    return '?';
   };
 
   return (
