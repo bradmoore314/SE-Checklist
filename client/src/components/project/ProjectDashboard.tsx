@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { ProjectCollaborators } from "@/components/ProjectCollaborators";
 import { CollaborationProvider } from "@/contexts/CollaborationContext";
-import AddressAutocomplete from "@/components/AddressAutocomplete";
+// Address editing removed - now read-only display only
 import LocationFeatures from "@/components/location/LocationFeatures";
 import SimpleFloorplanUpload from "@/components/floorplans/SimpleFloorplanUpload";
 
@@ -211,14 +211,12 @@ export default function ProjectDashboard({ project, onProjectUpdate }: SiteWalkD
               <Label htmlFor="site_address" className="text-sm font-medium text-neutral-700">
                 Site Address
               </Label>
-              <AddressAutocomplete
-                id="site_address" 
-                name="site_address" 
-                value={editForm.site_address || ""} 
-                onChange={(value) => setEditForm(prev => ({ ...prev, site_address: value }))}
-                placeholder="Enter site address..."
-                className="w-full"
-              />
+              <div className="w-full p-3 bg-gray-50 rounded-md border text-gray-700">
+                {project.site_address || 'No address specified'}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Address can only be changed during project creation
+              </p>
             </div>
             
             <DialogFooter className="pt-4">
