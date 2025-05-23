@@ -1,0 +1,438 @@
+LocationFeatures.tsx:323 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects/1/satellite-image 404 (Not Found)
+window.fetch @ Network.js:219
+handleAddToFloorplan @ LocationFeatures.tsx:323
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Error creating floorplan: Error: Failed to fetch satellite image
+    at handleAddToFloorplan (LocationFeatures.tsx:326:17)
+Mt.forEach.n.<computed> @ Console.js:61
+handleAddToFloorplan @ LocationFeatures.tsx:388
+await in handleAddToFloorplan
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Console.js:61 Fetch GET /api/projects/1/satellite-image
+Console.js:61 Query error for /api/user: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+queryClient.ts:64 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects/1/satellite-image 404 (Not Found)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+fetchSatelliteImage @ projects.tsx:119
+(anonymous) @ projects.tsx:163
+(anonymous) @ projects.tsx:156
+setTimeout
+(anonymous) @ projects.tsx:148
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+Console.js:61 Fetch finished loading: GET /api/projects/1/satellite-image
+Console.js:61 Query error for /api/user: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-P6S47FCS.js?v=0017aab8:338
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-P6S47FCS.js?v=0017aab8:338
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+Console.js:61 Fetch POST /api/projects with data
+Console.js:61 Fetch POST /api/projects with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+onSubmit @ projects.tsx:201
+(anonymous) @ chunk-XZQGPSBH.js?v=0017aab8:1675
+await in (anonymous)
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch failed loading: POST /api/projects
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755

@@ -1,0 +1,124 @@
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+LocationFeatures.tsx:323 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects/1/satellite-image 404 (Not Found)
+window.fetch @ Network.js:219
+handleAddToFloorplan @ LocationFeatures.tsx:323
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Error creating floorplan: Error: Failed to fetch satellite image
+    at handleAddToFloorplan (LocationFeatures.tsx:326:17)
+Mt.forEach.n.<computed> @ Console.js:61
+handleAddToFloorplan @ LocationFeatures.tsx:388
+await in handleAddToFloorplan
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+LocationFeatures.tsx:323 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/projects/1/satellite-image 404 (Not Found)
+window.fetch @ Network.js:219
+handleAddToFloorplan @ LocationFeatures.tsx:323
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+Console.js:61 Error creating floorplan: Error: Failed to fetch satellite image
+    at handleAddToFloorplan (LocationFeatures.tsx:326:17)
+Mt.forEach.n.<computed> @ Console.js:61
+handleAddToFloorplan @ LocationFeatures.tsx:388
+await in handleAddToFloorplan
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
