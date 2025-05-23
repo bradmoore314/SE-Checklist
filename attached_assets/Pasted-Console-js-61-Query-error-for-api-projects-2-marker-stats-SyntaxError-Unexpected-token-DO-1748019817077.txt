@@ -1,0 +1,179 @@
+Console.js:61 Query error for /api/projects/2/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627Understand this error
+InteractiveMap.tsx:37 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/map-api-key 401 (Unauthorized)
+window.fetch @ Network.js:219
+fetchApiKey @ InteractiveMap.tsx:37
+(anonymous) @ InteractiveMap.tsx:74
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=0017aab8:555
+flush @ @tanstack_react-query.js?v=0017aab8:569
+batch @ @tanstack_react-query.js?v=0017aab8:587
+dispatch_fn @ @tanstack_react-query.js?v=0017aab8:996
+setData @ @tanstack_react-query.js?v=0017aab8:696
+onSuccess @ @tanstack_react-query.js?v=0017aab8:897
+resolve @ @tanstack_react-query.js?v=0017aab8:456
+Promise.then
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627Understand this error
+ 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/map-api-key 401 (Unauthorized)
+window.fetch @ 8c6d9d6b-68cf-4e98-a…da/3.2.3/eruda.js:2
+fetchApiKey @ 8c6d9d6b-68cf-4e98-a…teractiveMap.tsx:40
+(anonymous) @ 8c6d9d6b-68cf-4e98-a…teractiveMap.tsx:66
+commitHookEffectListMount @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:16915
+commitPassiveMountOnFiber @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18119
+commitPassiveMountEffects @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18109
+flushPassiveEffectsImpl @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19490
+flushPassiveEffects @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19447
+commitRootImpl @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19416
+commitRoot @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19277
+performSyncWorkOnRoot @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18895
+flushSyncCallbacks @ 8c6d9d6b-68cf-4e98-a….js?v=0017aab8:9119
+(anonymous) @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18627
+setTimeout
+scheduleFn @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:555
+flush @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:569
+batch @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:587
+dispatch_fn @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:996
+setData @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:696
+onSuccess @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:897
+resolve @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:456
+Promise.then
+run @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:498
+start @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:536
+fetch @ 8c6d9d6b-68cf-4e98-a…y.js?v=0017aab8:926
+executeFetch_fn @ 8c6d9d6b-68cf-4e98-a….js?v=0017aab8:2211
+onSubscribe @ 8c6d9d6b-68cf-4e98-a….js?v=0017aab8:1898
+subscribe @ 8c6d9d6b-68cf-4e98-a…ry.js?v=0017aab8:24
+(anonymous) @ 8c6d9d6b-68cf-4e98-a….js?v=0017aab8:3022
+subscribeToStore @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:11984
+commitHookEffectListMount @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:16915
+commitPassiveMountOnFiber @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18119
+commitPassiveMountEffects @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18109
+flushPassiveEffectsImpl @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19490
+flushPassiveEffects @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19447
+commitRootImpl @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19416
+commitRoot @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:19277
+performSyncWorkOnRoot @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18895
+flushSyncCallbacks @ 8c6d9d6b-68cf-4e98-a….js?v=0017aab8:9119
+(anonymous) @ 8c6d9d6b-68cf-4e98-a…js?v=0017aab8:18627Understand this error
+LocationFeatures.tsx:223 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/weather?lat=38.8977&lng=-77.0365 401 (Unauthorized)
+window.fetch @ Network.js:219
+queryFn @ LocationFeatures.tsx:223
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+setOptions @ @tanstack_react-query.js?v=0017aab8:1955
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3032
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=0017aab8:555
+flush @ @tanstack_react-query.js?v=0017aab8:569
+batch @ @tanstack_react-query.js?v=0017aab8:587
+dispatch_fn @ @tanstack_react-query.js?v=0017aab8:996
+setData @ @tanstack_react-query.js?v=0017aab8:696
+onSuccess @ @tanstack_react-query.js?v=0017aab8:897
+resolve @ @tanstack_react-query.js?v=0017aab8:456
+Promise.then
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627Understand this error
+ 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/weather?lat=38.8977&lng=-77.0365 401 (Unauthorized)
