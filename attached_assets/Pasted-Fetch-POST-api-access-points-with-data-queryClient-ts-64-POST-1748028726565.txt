@@ -1,0 +1,81 @@
+Fetch POST /api/access-points with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+handleDuplicate @ CardAccessTab.tsx:352
+onDuplicate @ CardAccessTab.tsx:655
+callCallback2 @ chunk-NFC5BX5N.js?v=123fc362:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=123fc362:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=123fc362:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=123fc362:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=123fc362:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=123fc362:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=123fc362:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=123fc362:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=123fc362:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=123fc362:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=123fc362:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=123fc362:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=123fc362:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=123fc362:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=123fc362:5449Understand this error
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points
+Console.js:61 Fetch POST /api/access-points with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+handleDuplicate @ CardAccessTab.tsx:352
+onDuplicate @ CardAccessTab.tsx:655
+callCallback2 @ chunk-NFC5BX5N.js?v=123fc362:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=123fc362:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=123fc362:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=123fc362:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=123fc362:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=123fc362:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=123fc362:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=123fc362:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=123fc362:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=123fc362:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=123fc362:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=123fc362:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=123fc362:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=123fc362:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=123fc362:5449Understand this error
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points
+Console.js:61 Fetch POST /api/access-points with data
+queryClient.ts:64 
+            
+            
+           POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:64
+await in apiRequest
+handleDuplicate @ CardAccessTab.tsx:352
+onDuplicate @ CardAccessTab.tsx:655
+callCallback2 @ chunk-NFC5BX5N.js?v=123fc362:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=123fc362:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=123fc362:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=123fc362:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=123fc362:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=123fc362:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=123fc362:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=123fc362:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=123fc362:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=123fc362:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=123fc362:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=123fc362:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=123fc362:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=123fc362:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=123fc362:5449Understand this error
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points

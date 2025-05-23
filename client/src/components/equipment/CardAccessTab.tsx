@@ -346,6 +346,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
       const duplicateData = {
         ...ap,
         location: `${ap.location} (Copy)`,
+        quick_config: ap.quick_config || 'Standard', // Ensure quick_config is included
         id: undefined // Remove the ID so a new one is generated
       };
       
