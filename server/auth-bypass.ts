@@ -34,7 +34,10 @@ const defaultConfig: AuthBypassConfig = {
     '/api/places', // Allow Places API access
     '/api/geocode', // Allow geocoding access
     '/api/weather', // Allow weather API access
-    '/api/map-url' // Allow map URL generation
+    '/api/map-url', // Allow map URL generation
+    '/api/map-api-key', // Allow Maps API key access
+    '/api/projects', // Allow project access
+    '/api/marker-stats' // Allow marker stats access
   ]
 };
 
