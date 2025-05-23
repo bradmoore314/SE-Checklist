@@ -1,0 +1,628 @@
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+ 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ eruda.js:2
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'ambient-light-sensor'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'battery'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'layout-animations'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'legacy-image-formats'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'navigation-override'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'oversized-images'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'publickey-credentials'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'speaker-selection'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'unoptimized-images'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'unsized-media'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Unrecognized feature: 'pointer-lock'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+replEnvironmentDesktop-9f0e7e8dd82110e2.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+n @ main-96e4292e87450f00.js:1
+u @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ main-96e4292e87450f00.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+navigateTo @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+refresh @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ replEnvironmentDesktop-9f0e7e8dd82110e2.js:1
+(anonymous) @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+onClick @ _app-cb8481363dda7d4d.js:6
+(anonymous) @ _app-cb8481363dda7d4d.js:1
+eB @ framework-21cb153c716db8f5.js:1
+eH @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+re @ framework-21cb153c716db8f5.js:1
+rt @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uT @ framework-21cb153c716db8f5.js:1
+eM @ framework-21cb153c716db8f5.js:1
+ru @ framework-21cb153c716db8f5.js:1
+tB @ framework-21cb153c716db8f5.js:1
+tD @ framework-21cb153c716db8f5.js:1
+r @ _app-cb8481363dda7d4d.js:38
+workspace_iframe.html:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 Running in development mode
+Console.js:61 Auth bypass enabled, allowing authenticated routes
+Console.js:61 Fetch GET /api/images/access_point/1
+Console.js:61 Fetch finished loading: GET /api/images/access_point/1
+Console.js:61 Fetch GET /api/images/access_point/2
+Console.js:61 Fetch finished loading: GET /api/images/access_point/2
+client:536 WebSocket connection to 'wss://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/?token=iQ4yk3j6MBsO' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+Console.js:61 [vite] server connection lost. Polling for restart...
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+client:736 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
