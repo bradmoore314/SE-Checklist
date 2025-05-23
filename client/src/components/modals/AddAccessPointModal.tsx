@@ -32,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import ImageUploadSection from "@/components/ImageUploadSection";
+import UnifiedImageHandler from "@/components/equipment/ImageGallery";
 
 // Create a custom FormItem with the form-item class for highlighting
 const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
@@ -620,10 +620,11 @@ export default function AddAccessPointModal({
                     Your access point has been created. You can now add images.
                   </p>
                   {newAccessPointId && (
-                    <ImageUploadSection 
+                    <UnifiedImageHandler 
                       projectId={projectId}
                       equipmentId={newAccessPointId}
-                      equipmentType="access_point"
+                      equipmentType="access-points"
+                      variant="upload"
                     />
                   )}
                 </div>
