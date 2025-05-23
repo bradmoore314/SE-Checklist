@@ -31,7 +31,7 @@ const defaultConfig: AuthBypassConfig = {
     '/assets/',
     '/api/session-status', // For auth status checks
     '/auth', // Allow access to auth page
-    '/api/places', // Allow Places API access
+    '/api/places', // Allow Places API access - includes /api/places/autocomplete
     '/api/geocode', // Allow geocoding access
     '/api/weather', // Allow weather API access
     '/api/map-url', // Allow map URL generation
@@ -49,6 +49,8 @@ export function createAuthBypassMiddleware(config: AuthBypassConfig = defaultCon
     // Always allow access to public routes
     const isPublicRoute = finalConfig.publicRoutes?.some(route => 
       req.path === route || 
+      req.path.startsWith(route + '/') ||
+      req.path.startsWith(route + '?') ||
       (route.endsWith('/') && req.path.startsWith(route))
     );
     

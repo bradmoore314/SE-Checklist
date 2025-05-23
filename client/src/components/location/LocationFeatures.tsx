@@ -613,20 +613,13 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
               <label htmlFor="address" className="text-xs sm:text-sm font-medium text-gray-700">
                 Site Address
               </label>
-              <div className="relative">
-                <Input
-                  id="address"
-                  placeholder="Start typing an address..."
-                  value={pendingAddress}
-                  onChange={(e) => setPendingAddress(e.target.value)}
-                  className="w-full text-xs sm:text-sm h-8 sm:h-10"
-                />
-                {isSearching && (
-                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin text-gray-400" />
-                  </div>
-                )}
-              </div>
+              <UnifiedAddressInput
+                value={pendingAddress}
+                onChange={setPendingAddress}
+                placeholder="Start typing an address..."
+                className="w-full text-xs sm:text-sm h-8 sm:h-10"
+                id="address"
+              />
               
               {/* API Status Information - Mobile Responsive */}
               {addressApiStatus.status === 'unauthorized' && (
