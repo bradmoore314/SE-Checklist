@@ -1,0 +1,351 @@
+SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+InteractiveMap.tsx:37 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/map-api-key 401 (Unauthorized)
+window.fetch @ Network.js:219
+fetchApiKey @ InteractiveMap.tsx:37
+(anonymous) @ InteractiveMap.tsx:74
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=0017aab8:555
+flush @ @tanstack_react-query.js?v=0017aab8:569
+batch @ @tanstack_react-query.js?v=0017aab8:587
+dispatch_fn @ @tanstack_react-query.js?v=0017aab8:996
+setData @ @tanstack_react-query.js?v=0017aab8:696
+onSuccess @ @tanstack_react-query.js?v=0017aab8:897
+resolve @ @tanstack_react-query.js?v=0017aab8:456
+Promise.then
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+LocationFeatures.tsx:223 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/weather?lat=38.8977&lng=-77.0365 401 (Unauthorized)
+window.fetch @ Network.js:219
+queryFn @ LocationFeatures.tsx:223
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+setOptions @ @tanstack_react-query.js?v=0017aab8:1955
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3032
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=0017aab8:555
+flush @ @tanstack_react-query.js?v=0017aab8:569
+batch @ @tanstack_react-query.js?v=0017aab8:587
+dispatch_fn @ @tanstack_react-query.js?v=0017aab8:996
+setData @ @tanstack_react-query.js?v=0017aab8:696
+onSuccess @ @tanstack_react-query.js?v=0017aab8:897
+resolve @ @tanstack_react-query.js?v=0017aab8:456
+Promise.then
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+LocationFeatures.tsx:260 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/places/autocomplete?input=225 401 (Unauthorized)
+window.fetch @ Network.js:219
+searchAddresses @ LocationFeatures.tsx:260
+(anonymous) @ LocationFeatures.tsx:318
+setTimeout
+(anonymous) @ LocationFeatures.tsx:316
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+Console.js:61 Query error for /api/projects/2/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+Console.js:61 API equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Actual equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+LocationFeatures.tsx:260 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/places/autocomplete?input=123 401 (Unauthorized)
+window.fetch @ Network.js:219
+searchAddresses @ LocationFeatures.tsx:260
+(anonymous) @ LocationFeatures.tsx:318
+setTimeout
+(anonymous) @ LocationFeatures.tsx:316
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+flushSync @ chunk-NFC5BX5N.js?v=0017aab8:18959
+finishEventHandler @ chunk-NFC5BX5N.js?v=0017aab8:3569
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3582
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449Understand this error
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-P6S47FCS.js?v=0017aab8:338
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:18627Understand this warning
+Console.js:61 Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+Mt.forEach.n.<computed> @ Console.js:61
+rga @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:1762
+google.maps.Load @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:14
+(anonymous) @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:1996
+(anonymous) @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:1996Understand this warning
+Console.js:61 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+Mt.forEach.n.<computed> @ Console.js:61
+nB @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:82
+(anonymous) @ AddressAutocomplete.tsx:61
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:19328
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this warning
+Console.js:61 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+Mt.forEach.n.<computed> @ Console.js:61
+nB @ js?key=AIzaSyCL1h5WIQf9_cVZHcfk6U7_CuyMY08ytEI&libraries=places:82
+(anonymous) @ AddressAutocomplete.tsx:61
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19416
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18895
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+flushSync @ chunk-NFC5BX5N.js?v=0017aab8:18959
+flushSync$1 @ chunk-NFC5BX5N.js?v=0017aab8:21538
+dispatchDiscreteCustomEvent @ chunk-HBQWEHPQ.js?v=0017aab8:52
+handleAndDispatchCustomEvent @ chunk-AG2LB55Z.js?v=0017aab8:247
+handleAndDispatchPointerDownOutsideEvent2 @ chunk-AG2LB55Z.js?v=0017aab8:183
+handlePointerDown @ chunk-AG2LB55Z.js?v=0017aab8:197Understand this warning
+Console.js:61 Query error for /api/projects/2/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+fetch @ @tanstack_react-query.js?v=0017aab8:2011
+refetch @ @tanstack_react-query.js?v=0017aab8:2001
+checkConsistency @ EquipmentConsistencyCheck.tsx:95
+setInterval
+(anonymous) @ EquipmentConsistencyCheck.tsx:215
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+Console.js:61 Query error for /api/projects/2/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+fetch @ @tanstack_react-query.js?v=0017aab8:2011
+refetch @ @tanstack_react-query.js?v=0017aab8:2001
+checkConsistency @ EquipmentConsistencyCheck.tsx:95
+setInterval
+(anonymous) @ EquipmentConsistencyCheck.tsx:215
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384Understand this error
+Console.js:61 API equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Actual equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
