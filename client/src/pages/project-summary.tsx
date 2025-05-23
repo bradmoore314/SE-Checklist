@@ -15,9 +15,7 @@ import { Link } from "wouter";
 import { AlertTriangle, FileDown, Printer, Brain } from "lucide-react";
 import { OpportunityAnalysis } from "@/components/ai/OpportunityAnalysis";
 import AgendaContainer from "@/components/ai/AgendaContainer";
-import ProjectExportMenu from "@/components/ProjectExportMenu";
-import ExportMenu from "@/components/ExportMenu";
-import ComprehensiveExport from "@/components/ComprehensiveExport";
+import UnifiedExport from "@/components/UnifiedExport";
 
 interface EquipmentImage {
   id: number;
@@ -206,11 +204,11 @@ export default function Summary() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Summary</h1>
         <div className="flex gap-2">
-          <ComprehensiveExport 
+          <UnifiedExport 
             projectId={currentOpportunity.id} 
             projectName={summary.project.name} 
           />
-          <ProjectExportMenu projectId={currentOpportunity.id} />
+          <UnifiedExport projectId={currentOpportunity.id} />
           <Button 
             variant="outline" 
             onClick={() => setLocation("/")}
@@ -320,7 +318,7 @@ export default function Summary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Card Access Points</CardTitle>
             <div className="flex gap-2">
-              <ExportMenu 
+              <UnifiedExport 
                 data={summary.equipment.accessPoints}
                 filename={`${summary.project.name}_Access_Points`}
                 title={`${summary.project.name} - Access Points`}
@@ -396,7 +394,7 @@ export default function Summary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Cameras</CardTitle>
             <div className="flex gap-2">
-              <ExportMenu 
+              <UnifiedExport 
                 data={summary.equipment.cameras}
                 filename={`${summary.project.name}_Cameras`}
                 title={`${summary.project.name} - Cameras`}
@@ -470,7 +468,7 @@ export default function Summary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Elevators & Turnstiles</CardTitle>
             <div className="flex gap-2">
-              <ExportMenu 
+              <UnifiedExport 
                 data={summary.equipment.elevators}
                 filename={`${summary.project.name}_Elevators`}
                 title={`${summary.project.name} - Elevators & Turnstiles`}
@@ -544,7 +542,7 @@ export default function Summary() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Intercoms</CardTitle>
             <div className="flex gap-2">
-              <ExportMenu 
+              <UnifiedExport 
                 data={summary.equipment.intercoms}
                 filename={`${summary.project.name}_Intercoms`}
                 title={`${summary.project.name} - Intercoms`}
@@ -612,7 +610,7 @@ export default function Summary() {
 
       {/* Export Options */}
       <div className="flex gap-2">
-        <ProjectExportMenu 
+        <UnifiedExport 
           projectId={currentOpportunity.id} 
           variant="default"
           size="default"
