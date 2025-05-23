@@ -1,0 +1,101 @@
+
+﻿
+Console.js:61 Fetch POST /api/access-points with data
+queryClient.ts:64 
+ POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points
+Console.js:61 Fetch POST /api/access-points with data
+queryClient.ts:64 
+ POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points
+Console.js:61 Fetch POST /api/access-points with data
+queryClient.ts:64 
+ POST https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/access-points 400 (Bad Request)
+Console.js:61 Fetch finished loading: POST /api/access-points
+Console.js:61 Fetch failed loading: POST /api/access-points
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+client:736 
+ GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+ Uncaught (in promise) TypeError: Failed to fetch
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
