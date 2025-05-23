@@ -177,12 +177,11 @@ export default function TopNav({ project, onToggleSidebar, user, sidebarCollapse
               <DropdownMenuSeparator style={{ backgroundColor: 'var(--medium-grey)' }} />
               <DropdownMenuItem 
                 onClick={handleLogout}
-                disabled={logoutMutation.isPending}
                 style={{ color: 'var(--red-accent)' }}
                 className="cursor-pointer focus:bg-gray-100"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>{logoutMutation.isPending ? "Logging out..." : "Log out"}</span>
+                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

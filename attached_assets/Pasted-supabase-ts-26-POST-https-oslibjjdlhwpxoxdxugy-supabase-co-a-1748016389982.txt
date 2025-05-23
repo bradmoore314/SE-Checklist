@@ -1,0 +1,52 @@
+supabase.ts:26 
+            
+            
+           POST https://oslibjjdlhwpxoxdxugy.supabase.co/auth/v1/signup 429 (Too Many Requests)
+window.fetch @ Network.js:219
+(anonymous) @ @supabase_supabase-js.js?v=0017aab8:4310
+_handleRequest2 @ @supabase_supabase-js.js?v=0017aab8:4559
+_request @ @supabase_supabase-js.js?v=0017aab8:4549
+signUp @ @supabase_supabase-js.js?v=0017aab8:5242
+signUp @ supabase.ts:26
+handleSubmit @ LoginForm.tsx:31
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
+supabase.ts:42 
+            
+            
+           POST https://oslibjjdlhwpxoxdxugy.supabase.co/auth/v1/token?grant_type=password 400 (Bad Request)
+window.fetch @ Network.js:219
+(anonymous) @ @supabase_supabase-js.js?v=0017aab8:4310
+_handleRequest2 @ @supabase_supabase-js.js?v=0017aab8:4559
+_request @ @supabase_supabase-js.js?v=0017aab8:4549
+signInWithPassword @ @supabase_supabase-js.js?v=0017aab8:5302
+signIn @ supabase.ts:42
+handleSubmit @ LoginForm.tsx:37
+callCallback2 @ chunk-NFC5BX5N.js?v=0017aab8:3674
+invokeGuardedCallbackDev @ chunk-NFC5BX5N.js?v=0017aab8:3699
+invokeGuardedCallback @ chunk-NFC5BX5N.js?v=0017aab8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-NFC5BX5N.js?v=0017aab8:3736
+executeDispatch @ chunk-NFC5BX5N.js?v=0017aab8:7014
+processDispatchQueueItemsInOrder @ chunk-NFC5BX5N.js?v=0017aab8:7034
+processDispatchQueue @ chunk-NFC5BX5N.js?v=0017aab8:7043
+dispatchEventsForPlugins @ chunk-NFC5BX5N.js?v=0017aab8:7051
+(anonymous) @ chunk-NFC5BX5N.js?v=0017aab8:7174
+batchedUpdates$1 @ chunk-NFC5BX5N.js?v=0017aab8:18913
+batchedUpdates @ chunk-NFC5BX5N.js?v=0017aab8:3579
+dispatchEventForPluginEventSystem @ chunk-NFC5BX5N.js?v=0017aab8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NFC5BX5N.js?v=0017aab8:5478
+dispatchEvent @ chunk-NFC5BX5N.js?v=0017aab8:5472
+dispatchDiscreteEvent @ chunk-NFC5BX5N.js?v=0017aab8:5449
