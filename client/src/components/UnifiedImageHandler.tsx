@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 interface UnifiedImageHandlerProps {
-  equipmentType: 'access-points' | 'cameras' | 'elevators' | 'intercoms';
+  equipmentType: 'access_point' | 'cameras' | 'elevators' | 'intercoms';
   equipmentId: number;
   projectId: number;
   equipmentName?: string;
