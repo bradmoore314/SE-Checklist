@@ -31,33 +31,8 @@ app.use(session({
   }
 }));
 
-// Initialize Passport.js
-setupAuth(app);
-
-import { createAuthBypassMiddleware } from './auth-bypass';
-
-// Create the authentication middleware with configuration
-const skipForPublicPaths = createAuthBypassMiddleware({
-  // Only allow bypassing auth if explicitly requested by env var
-  allowBypassInProduction: false,
-  
-  // Define public routes that don't need auth
-  publicRoutes: [
-    '/api/login',
-    '/api/register',
-    '/api/lookup',
-    '/api/auth/microsoft/status',
-    '/api/public/azure/status',
-    '/api/public/azure/test',
-    '/assets/',
-    '/api/health',
-    '/api/session-status',
-    '/api/user'  // Allow unauthenticated user checks
-  ]
-});
-
-// Apply authentication middleware to protect API routes
-app.use('/api', skipForPublicPaths);
+// No server-side authentication - using Supabase client-side auth
+// All API routes are now publicly accessible
 
 app.use((req, res, next) => {
   const start = Date.now();
