@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
-import ImageGallery from "./ImageGallery";
+import UnifiedImageHandler from "../UnifiedImageHandler";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, ChevronDown, ChevronUp, Trash, Image as ImageIcon, DoorOpen, Edit, Copy, FileDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1103,7 +1103,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
               </DialogDescription>
             </DialogHeader>
             
-            <ImageGallery
+            <UnifiedImageHandler
               projectId={project.id}
               equipmentId={selectedAccessPoint.id}
               equipmentType="access_point"

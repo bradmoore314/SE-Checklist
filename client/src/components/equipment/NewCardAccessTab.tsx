@@ -3,7 +3,7 @@ import { AccessPoint, Project } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import AddAccessPointModal from "../modals/AddAccessPointModal";
 import EditAccessPointModal from "../modals/EditAccessPointModal";
-import { ImageGallery } from "../ImageGallery";
+import { UnifiedImageHandler } from "../UnifiedImageHandler";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import SimpleCardAccessTable from "./SimpleCardAccessTable";
@@ -109,7 +109,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
             <DialogTitle>Images for {selectedAccessPoint?.location || 'Access Point'}</DialogTitle>
           </DialogHeader>
           {selectedAccessPoint && showImageModal && (
-            <ImageGallery 
+            <UnifiedImageHandler 
               equipmentType="access-points" 
               equipmentId={selectedAccessPoint.id} 
               equipmentName={selectedAccessPoint.location}
