@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import equipmentCreationAzureService from '../services/equipment-creation-azure';
+import equipmentCreationService from '../services/equipment-creation-service';
 
 /**
  * Register equipment creation API routes
@@ -17,7 +17,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Message string is required' });
       }
       
-      const intent = await equipmentCreationAzureService.detectCreationIntent(message);
+      const intent = await equipmentCreationService.detectCreationIntent(message);
       res.json(intent);
     } catch (error) {
       console.error('Error detecting equipment creation intent:', error);
@@ -39,7 +39,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         });
       }
       
-      const session = await equipmentCreationAzureService.startSession(
+      const session = await equipmentCreationService.startSession(
         project_id, 
         equipment_type, 
         quantity
@@ -69,7 +69,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Response string is required' });
       }
       
-      const result = await equipmentCreationAzureService.processResponse(sessionId, response);
+      const result = await equipmentCreationService.processResponse(sessionId, response);
       res.json(result);
     } catch (error) {
       console.error('Error processing equipment creation response:', error);
@@ -89,7 +89,7 @@ export function setupEquipmentCreationRoutes(app: Express) {
         return res.status(400).json({ error: 'Session ID is required' });
       }
       
-      const session = await equipmentCreationAzureService.getSession(sessionId);
+      const session = await equipmentCreationService.getSession(sessionId);
       
       if (!session) {
         return res.status(404).json({ error: 'Session not found' });
