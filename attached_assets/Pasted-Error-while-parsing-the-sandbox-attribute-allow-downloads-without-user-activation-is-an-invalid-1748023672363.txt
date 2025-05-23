@@ -1,0 +1,662 @@
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Unrecognized feature: 'ambient-light-sensor'.
+Unrecognized feature: 'ambient-light-sensor'.
+Unrecognized feature: 'ambient-light-sensor'.
+Unrecognized feature: 'ambient-light-sensor'.
+Unrecognized feature: 'ambient-light-sensor'.
+Unrecognized feature: 'battery'.
+Unrecognized feature: 'battery'.
+Unrecognized feature: 'battery'.
+Unrecognized feature: 'battery'.
+Unrecognized feature: 'battery'.
+Unrecognized feature: 'execution-while-not-rendered'.
+Unrecognized feature: 'execution-while-not-rendered'.
+Unrecognized feature: 'execution-while-not-rendered'.
+Unrecognized feature: 'execution-while-not-rendered'.
+Unrecognized feature: 'execution-while-not-rendered'.
+Unrecognized feature: 'execution-while-out-of-viewport'.
+Unrecognized feature: 'execution-while-out-of-viewport'.
+Unrecognized feature: 'execution-while-out-of-viewport'.
+Unrecognized feature: 'execution-while-out-of-viewport'.
+Unrecognized feature: 'execution-while-out-of-viewport'.
+Unrecognized feature: 'layout-animations'.
+Unrecognized feature: 'layout-animations'.
+Unrecognized feature: 'layout-animations'.
+Unrecognized feature: 'layout-animations'.
+Unrecognized feature: 'layout-animations'.
+Unrecognized feature: 'legacy-image-formats'.
+Unrecognized feature: 'legacy-image-formats'.
+Unrecognized feature: 'legacy-image-formats'.
+Unrecognized feature: 'legacy-image-formats'.
+Unrecognized feature: 'legacy-image-formats'.
+Unrecognized feature: 'navigation-override'.
+Unrecognized feature: 'navigation-override'.
+Unrecognized feature: 'navigation-override'.
+Unrecognized feature: 'navigation-override'.
+Unrecognized feature: 'navigation-override'.
+Unrecognized feature: 'oversized-images'.
+Unrecognized feature: 'oversized-images'.
+Unrecognized feature: 'oversized-images'.
+Unrecognized feature: 'oversized-images'.
+Unrecognized feature: 'oversized-images'.
+Unrecognized feature: 'publickey-credentials'.
+Unrecognized feature: 'publickey-credentials'.
+Unrecognized feature: 'publickey-credentials'.
+Unrecognized feature: 'publickey-credentials'.
+Unrecognized feature: 'publickey-credentials'.
+Unrecognized feature: 'speaker-selection'.
+Unrecognized feature: 'speaker-selection'.
+Unrecognized feature: 'speaker-selection'.
+Unrecognized feature: 'speaker-selection'.
+Unrecognized feature: 'speaker-selection'.
+Unrecognized feature: 'unoptimized-images'.
+Unrecognized feature: 'unoptimized-images'.
+Unrecognized feature: 'unoptimized-images'.
+Unrecognized feature: 'unoptimized-images'.
+Unrecognized feature: 'unoptimized-images'.
+Unrecognized feature: 'unsized-media'.
+Unrecognized feature: 'unsized-media'.
+Unrecognized feature: 'unsized-media'.
+Unrecognized feature: 'unsized-media'.
+Unrecognized feature: 'unsized-media'.
+framework-21cb153c716db8f5.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-21cb153c716db8f5.js:1
+(anonymous) @ framework-21cb153c716db8f5.js:1
+uD @ framework-21cb153c716db8f5.js:1
+uI @ framework-21cb153c716db8f5.js:1
+uM @ framework-21cb153c716db8f5.js:1
+uS @ framework-21cb153c716db8f5.js:1
+C @ framework-21cb153c716db8f5.js:1
+z @ framework-21cb153c716db8f5.js:1
+Allow attribute will take precedence over 'allowfullscreen'.
+Allow attribute will take precedence over 'allowfullscreen'.
+Allow attribute will take precedence over 'allowfullscreen'.
+Allow attribute will take precedence over 'allowfullscreen'.
+Allow attribute will take precedence over 'allowfullscreen'.
+Allow attribute will take precedence over 'allowpaymentrequest'.
+Allow attribute will take precedence over 'allowpaymentrequest'.
+Allow attribute will take precedence over 'allowpaymentrequest'.
+Allow attribute will take precedence over 'allowpaymentrequest'.
+Allow attribute will take precedence over 'allowpaymentrequest'.
+eruda.js:2 Running in development mode
+eruda.js:2 Auth bypass enabled, allowing authenticated routes
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 [vite] server connection lost. Polling for restart...
+App.tsx:30 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/settings.tsx net::ERR_ABORTED 502 (Bad Gateway)
+App.tsx:27 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/elevators.tsx net::ERR_ABORTED 502 (Bad Gateway)
+App.tsx:28 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/intercoms.tsx net::ERR_ABORTED 502 (Bad Gateway)
+App.tsx:26 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/cameras.tsx net::ERR_ABORTED 502 (Bad Gateway)
+8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/App.tsx?v=HKLCHKOMiVzgR2oZuQU-q:31 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/auth.tsx net::ERR_ABORTED 502 (Bad Gateway)
+8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/App.tsx?v=HKLCHKOMiVzgR2oZuQU-q:29 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/src/pages/project-summary.tsx net::ERR_ABORTED 502 (Bad Gateway)
+eruda.js:2 Running in development mode
+eruda.js:2 Auth bypass enabled, allowing authenticated routes
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:80:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+Console.js:61 Running in development mode
+Console.js:61 Auth bypass enabled, allowing authenticated routes
+queryClient.ts:104 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:122:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+queryClient.ts:104 
+            
+            
+           GET https://8c6d9d6b-68cf-4e98-ab32-cb8f5bd0bf6e-00-3fs9b0ycuz0j7.kirk.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:122:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=0017aab8:840
+run @ @tanstack_react-query.js?v=0017aab8:494
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:515
+Promise.catch
+run @ @tanstack_react-query.js?v=0017aab8:498
+start @ @tanstack_react-query.js?v=0017aab8:536
+fetch @ @tanstack_react-query.js?v=0017aab8:926
+executeFetch_fn @ @tanstack_react-query.js?v=0017aab8:2211
+onSubscribe @ @tanstack_react-query.js?v=0017aab8:1898
+subscribe @ @tanstack_react-query.js?v=0017aab8:24
+(anonymous) @ @tanstack_react-query.js?v=0017aab8:3022
+subscribeToStore @ chunk-NFC5BX5N.js?v=0017aab8:11984
+commitHookEffectListMount @ chunk-NFC5BX5N.js?v=0017aab8:16915
+commitPassiveMountOnFiber @ chunk-NFC5BX5N.js?v=0017aab8:18156
+commitPassiveMountEffects_complete @ chunk-NFC5BX5N.js?v=0017aab8:18129
+commitPassiveMountEffects_begin @ chunk-NFC5BX5N.js?v=0017aab8:18119
+commitPassiveMountEffects @ chunk-NFC5BX5N.js?v=0017aab8:18109
+flushPassiveEffectsImpl @ chunk-NFC5BX5N.js?v=0017aab8:19490
+flushPassiveEffects @ chunk-NFC5BX5N.js?v=0017aab8:19447
+performSyncWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18868
+flushSyncCallbacks @ chunk-NFC5BX5N.js?v=0017aab8:9119
+commitRootImpl @ chunk-NFC5BX5N.js?v=0017aab8:19432
+commitRoot @ chunk-NFC5BX5N.js?v=0017aab8:19277
+finishConcurrentRender @ chunk-NFC5BX5N.js?v=0017aab8:18805
+performConcurrentWorkOnRoot @ chunk-NFC5BX5N.js?v=0017aab8:18718
+workLoop @ chunk-NFC5BX5N.js?v=0017aab8:197
+flushWork @ chunk-NFC5BX5N.js?v=0017aab8:176
+performWorkUntilDeadline @ chunk-NFC5BX5N.js?v=0017aab8:384
