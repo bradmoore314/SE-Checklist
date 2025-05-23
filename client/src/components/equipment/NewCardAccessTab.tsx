@@ -110,7 +110,7 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
           </DialogHeader>
           {selectedAccessPoint && showImageModal && (
             <UnifiedImageHandler 
-              projectId={projectId}
+              projectId={project.id}
               equipmentType="access_point" 
               equipmentId={selectedAccessPoint.id}
             />
