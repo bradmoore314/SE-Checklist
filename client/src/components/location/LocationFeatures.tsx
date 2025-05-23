@@ -305,18 +305,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
     }
   };
   
-  // Debounced address search
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (pendingAddress) {
-        searchAddresses(pendingAddress);
-      }
-    }, 500);
-    
-    return () => {
-      clearTimeout(handler);
-    };
-  }, []);
+  // Address search removed - now read-only display
 
   // Handle adding satellite view or custom uploaded file as floorplan
   const handleAddToFloorplan = async () => {
