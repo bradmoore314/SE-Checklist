@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
-import ImageUploadSection from '@/components/ImageUploadSection';
+import UnifiedImageHandler from '@/components/UnifiedImageHandler';
 
 interface CombinedCameraConfigFormProps {
   // Common props for both floorplan and standalone modes
