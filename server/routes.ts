@@ -27,8 +27,7 @@ import {
   parseCoordinatesFromAddress,
   getPlaceAutocomplete
 } from './services/location-services';
-import { registerEnhancedFloorplanRoutes } from './enhanced-floorplan-routes';
-import { registerEnhancedMarkerAPI } from './enhanced-markers-api';
+
 import { recognizeSpeech, textToSpeech } from './speech-api';
 // Using Azure OpenAI for AI services
 import { setupEquipmentCreationRoutes } from './routes/equipment-creation-routes';
@@ -40,16 +39,14 @@ import {
   insertCameraSchema,
   insertElevatorSchema,
   insertIntercomSchema,
-  insertFloorplanSchema,
-  insertFloorplanMarkerSchema,
+
   insertFeedbackSchema,
   insertProjectCollaboratorSchema,
   InsertAccessPoint,
   InsertCamera,
   InsertElevator,
   InsertIntercom,
-  InsertFloorplan,
-  InsertFloorplanMarker,
+
   InsertFeedback,
   InsertProjectCollaborator,
   PERMISSION
@@ -1672,7 +1669,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         test_card: "Access Control/Identity Management: Test cards needed for system verification.",
         visitor: "Access Control/Identity Management: Visitor management features are included.",
         guard_controls: "Access Control/Identity Management: Security guard station(s) with equipment for door release.",
-        floorplan: "Site Conditions/Project Planning: Electronic floorplans are available for the site.",
+
         reports_available: "Site Conditions/Project Planning: Previous reports or system documentation is available.",
         kastle_connect: "Site Conditions/Project Planning: Integration with Kastle services over internet connection.",
         on_site_security: "Site Conditions/Project Planning: Property has security personnel on site.",
