@@ -14,8 +14,7 @@ import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
 
-import EnhancedFloorplansPage from "@/pages/enhanced-floorplans-page";
-import ProfessionalPdfEditorPage from "@/pages/professional-pdf-editor-page";
+// Floorplan functionality has been removed
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
 import CameraStreamGateway from "@/pages/camera-stream-gateway";
 import QuoteReviewPage from "@/pages/quote-review-page";
@@ -71,12 +70,7 @@ function Router() {
       {/* Report routes */}
       <Route path="/project-summary" component={Summary} />
       
-      {/* Floorplans */}
-      <Route path="/projects/:projectId/floorplans" component={EnhancedFloorplansPage} />
-      <Route path="/projects/:projectId/enhanced-floorplans" component={EnhancedFloorplansPage} />
-      <Route path="/projects/:projectId/enhanced-floorplans/:floorplanId" component={EnhancedFloorplansPage} />
-      <Route path="/projects/:projectId/pdf-editor" component={ProfessionalPdfEditorPage} />
-      <Route path="/projects/:projectId/pdf-editor/:floorplanId" component={ProfessionalPdfEditorPage} />
+      {/* Floorplan routes removed */}
       
       {/* Quote Review */}
       <Route path="/projects/:projectId/quote-review" component={QuoteReviewPage} />
