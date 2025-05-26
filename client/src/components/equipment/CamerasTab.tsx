@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddCameraModal from "../modals/AddCameraModal";
 import EditCameraModal from "../modals/EditCameraModal";
-import CombinedCameraConfigForm from "../floorplans/CombinedCameraConfigForm";
+// CombinedCameraConfigForm removed with floorplans feature
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -667,23 +667,21 @@ export default function CamerasTab({ project }: CamerasTabProps) {
 
       </CardContent>
       
-      {/* Add Camera Modal - Using Combined Form */}
+      {/* Add Camera Modal */}
       {showAddModal && (
-        <CombinedCameraConfigForm
+        <AddCameraModal
           open={showAddModal}
           onOpenChange={(open) => {
             if (!open) setShowAddModal(false);
           }}
           projectId={project.id}
-          isNew={true}
           onSave={(updatedData) => handleSave(updatedData)}
-          title="Add New Camera"
         />
       )}
       
-      {/* Edit Camera Modal - Using Combined Form */}
+      {/* Edit Camera Modal */}
       {showEditModal && selectedCamera && (
-        <CombinedCameraConfigForm
+        <EditCameraModal
           open={showEditModal}
           onOpenChange={(open) => {
             if (!open) {
