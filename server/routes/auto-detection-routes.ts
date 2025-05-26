@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { EquipmentAutoDetectionService } from '../services/equipment-auto-detection-service';
 import { db } from '../db';
-import { floorplans } from '@shared/schema';
+// Floorplan functionality removed
 import { eq } from 'drizzle-orm';
 import PDFDocument from 'pdf-lib';
 import fetch from 'node-fetch';

@@ -1,6 +1,6 @@
 import { getAzureOpenAIClient, createChatMessage } from "../utils/azure-openai";
 import { db } from "../db";
-import { accessPoints, cameras, elevators, intercoms, floorplanMarkers } from "@shared/schema";
+import { accessPoints, cameras, elevators, intercoms } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -224,28 +224,8 @@ export class EquipmentAutoDetectionService {
             break;
         }
 
-        // If equipment was created and auto-place is enabled, create a marker
-        if (equipmentId && autoPlace) {
-          const [marker] = await db.insert(floorplanMarkers).values({
-            floorplan_id: floorplanId,
-            page: page,
-            marker_type: suggestion.type,
-            equipment_id: equipmentId,
-            position_x: suggestion.position_x,
-            position_y: suggestion.position_y,
-            label: label,
-          }).returning();
-
-          createdEquipment.push({
-            id: equipmentId,
-            type: suggestion.type,
-            label: label,
-            marker_id: marker.id,
-            position_x: suggestion.position_x,
-            position_y: suggestion.position_y,
-            notes: suggestion.notes || null
-          });
-        } else if (equipmentId) {
+        // Note: Floorplan marker placement removed - floorplan feature has been removed
+        if (equipmentId) {
           // Equipment created but not placed on floorplan
           createdEquipment.push({
             id: equipmentId,
