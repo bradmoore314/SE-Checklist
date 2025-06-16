@@ -84,10 +84,12 @@ export default function AuthPage() {
     try {
       await signUp(signUpData.email, signUpData.password, signUpData.fullName);
       toast({
-        title: 'Success',
-        description: 'Account created successfully! Please check your email to verify your account.',
+        title: 'Account Created',
+        description: 'Welcome to SE Checklist! You are now signed in.',
       });
+      setLocation('/');
     } catch (error: any) {
+      console.error('Sign up error:', error);
       toast({
         title: 'Sign Up Failed',
         description: error.message || 'Failed to create account',
@@ -99,26 +101,28 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative z-50">
-      <div className="w-full max-w-md">
-        {/* Logo */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4 relative z-50">
+      <div className="w-full max-w-lg">
+        {/* Logo and Branding */}
         <div className="text-center mb-8">
-          <img 
-            src={kastleLogo} 
-            alt="Logo" 
-            className="h-16 mx-auto mb-4" 
-          />
-          <h1 className="text-2xl font-bold text-gray-900">
-            Security Project Manager
+          <div className="bg-white rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <img 
+              src={kastleLogo} 
+              alt="Kastle Logo" 
+              className="h-12 w-12" 
+            />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            SE Checklist
           </h1>
-          <p className="text-gray-600 mt-2">
-            Manage your security projects and equipment
+          <p className="text-gray-600">
+            Systems Engineering Site Walk Documentation
           </p>
         </div>
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-center">Welcome</CardTitle>
+        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-center text-xl font-semibold">Welcome Back</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="signin" className="w-full">
@@ -176,8 +180,9 @@ export default function AuthPage() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full" 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors" 
                     disabled={isLoading}
+                    size="lg"
                   >
                     {isLoading ? (
                       <>
@@ -269,8 +274,9 @@ export default function AuthPage() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full" 
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg transition-colors" 
                     disabled={isLoading}
+                    size="lg"
                   >
                     {isLoading ? (
                       <>
@@ -287,8 +293,8 @@ export default function AuthPage() {
           </CardContent>
         </Card>
         
-        <div className="text-center mt-6 text-sm text-gray-600">
-          <p>Secure project management for security professionals</p>
+        <div className="text-center mt-6 text-sm text-gray-500">
+          <p>Professional site walk documentation and equipment tracking</p>
         </div>
       </div>
     </div>
