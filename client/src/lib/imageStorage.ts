@@ -39,7 +39,7 @@ export const saveImageMetadata = async (
     project_id: projectId,
     equipment_type: equipmentType,
     equipment_id: equipmentId,
-    image_url: imageUrl,
+    image_data: imageUrl, // Backend expects image_data field
     image_name: fileName,
     file_size: fileSize,
     mime_type: mimeType,
