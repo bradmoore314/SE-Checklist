@@ -34,6 +34,10 @@ export default function EditCameraModal({
   projectId
 }: EditCameraModalProps) {
   const { toast } = useToast();
+  
+  // Debug camera data
+  console.log("EditCameraModal camera data:", camera);
+  console.log("camera.is_indoor type:", typeof camera.is_indoor, "value:", camera.is_indoor);
 
   const updateCameraMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -97,7 +101,8 @@ export default function EditCameraModal({
             mode="edit"
             initialData={{
               ...camera,
-              is_indoor: camera.is_indoor ? "indoor" : "outdoor"
+              // Keep is_indoor as boolean since form expects boolean now
+              is_indoor: camera.is_indoor ?? true
             }}
           />
         </div>

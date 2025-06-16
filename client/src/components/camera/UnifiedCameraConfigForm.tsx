@@ -99,6 +99,10 @@ export default function UnifiedCameraConfigForm({
     return lookupData[category] || [];
   };
 
+  // Debug initial data
+  console.log("UnifiedCameraConfigForm initialData:", initialData);
+  console.log("initialData?.is_indoor type:", typeof initialData?.is_indoor, "value:", initialData?.is_indoor);
+
   const form = useForm<CameraConfigData>({
     resolver: zodResolver(cameraConfigSchema),
     defaultValues: {
@@ -106,6 +110,7 @@ export default function UnifiedCameraConfigForm({
       camera_type: initialData?.camera_type || "",
       mounting_type: initialData?.mounting_type || "",
       resolution: initialData?.resolution || "",
+      field_of_view: initialData?.field_of_view || "90",
       notes: initialData?.notes || "",
       is_indoor: initialData?.is_indoor ?? true,
       import_to_gateway: initialData?.import_to_gateway ?? true,
