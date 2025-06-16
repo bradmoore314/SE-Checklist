@@ -16,7 +16,7 @@ interface AddCameraModalProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   onClose?: () => void;
-  onSave?: (id: number, data: any) => void;
+  onSave?: (data: any) => void;
   onCancel?: () => void;
 }
 
@@ -29,37 +29,7 @@ export default function AddCameraModal({
   onSave,
   onCancel
 }: AddCameraModalProps) {
-  const addCameraMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest('POST', `/api/projects/${projectId}/cameras`, data);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/cameras`] });
-      toast({
-        title: "Success",
-        description: "Camera added successfully",
-      });
-      if (onSave) {
-        onSave(data.id, data);
-      }
-      if (onOpenChange) {
-        onOpenChange(false);
-      }
-      if (onClose) {
-        onClose();
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: `Failed to add camera: ${error.message}`,
-        variant: "destructive",
-      });
-    }
-  });
-
-  const handleSave = async (data: CameraConfigData) => {
+  const handleSave = (data: CameraConfigData) => {
     // Create the payload with proper format conversions for database compatibility
     const payload = {
       ...data,
@@ -71,11 +41,17 @@ export default function AddCameraModal({
     // Debug the payload
     console.log("Camera data being sent:", payload);
     
-    try {
-      const result = await addCameraMutation.mutateAsync(payload);
-      console.log("Camera creation successful:", result);
-    } catch (error) {
-      console.error("Camera creation error:", error);
+    // Call the parent's onSave function instead of making direct API call
+    if (onSave) {
+      onSave(payload);
+    }
+    
+    // Close modal
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+    if (onClose) {
+      onClose();
     }
   };
   

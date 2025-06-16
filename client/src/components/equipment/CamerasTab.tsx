@@ -675,7 +675,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             if (!open) setShowAddModal(false);
           }}
           projectId={project.id}
-          onSave={(updatedData) => handleSave(updatedData)}
+          onSave={handleSave}
         />
       )}
       
