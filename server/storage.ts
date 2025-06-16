@@ -8,6 +8,7 @@ import {
   Feedback, InsertFeedback,
   ProjectCollaborator, InsertProjectCollaborator,
   PERMISSION, Permission,
+  EquipmentImage, InsertEquipmentImage,
   users,
   projects,
   accessPoints,
@@ -16,7 +17,8 @@ import {
   intercoms,
   feedback,
   projectCollaborators,
-  gatewayCalculatorConfigs
+  gatewayCalculatorConfigs,
+  equipmentImages
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -96,6 +98,11 @@ export interface IStorage {
   getGatewayCalculatorConfig(projectId: number): Promise<any>;
   saveGatewayCalculatorConfig(config: any): Promise<any>;
   updateGatewayCalculatorConfig(projectId: number, config: any): Promise<any>;
+  
+  // Equipment Images
+  getEquipmentImages(equipmentType: string, equipmentId: number): Promise<EquipmentImage[]>;
+  createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage>;
+  deleteEquipmentImage(id: number): Promise<boolean>;
 }
 
 export class DbStorage implements IStorage {
@@ -471,6 +478,42 @@ export class DbStorage implements IStorage {
     } catch (error) {
       console.error("Error updating gateway calculator config:", error);
       throw error;
+    }
+  }
+
+  // Equipment Images methods
+  async getEquipmentImages(equipmentType: string, equipmentId: number): Promise<EquipmentImage[]> {
+    try {
+      const images = await db.select().from(equipmentImages)
+        .where(and(
+          eq(equipmentImages.equipment_type, equipmentType),
+          eq(equipmentImages.equipment_id, equipmentId)
+        ))
+        .orderBy(equipmentImages.created_at);
+      return images;
+    } catch (error) {
+      console.error("Error fetching equipment images:", error);
+      return [];
+    }
+  }
+
+  async createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage> {
+    try {
+      const [newImage] = await db.insert(equipmentImages).values(image).returning();
+      return newImage;
+    } catch (error) {
+      console.error("Error creating equipment image:", error);
+      throw error;
+    }
+  }
+
+  async deleteEquipmentImage(id: number): Promise<boolean> {
+    try {
+      const result = await db.delete(equipmentImages).where(eq(equipmentImages.id, id));
+      return result.rowCount !== null && result.rowCount > 0;
+    } catch (error) {
+      console.error("Error deleting equipment image:", error);
+      return false;
     }
   }
 }

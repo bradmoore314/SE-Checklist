@@ -596,18 +596,38 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                       <h4 className="text-sm font-medium text-gray-600 mb-1">Environment</h4>
                       <p className="text-sm">{camera.is_indoor ? "Indoor" : "Outdoor"}</p>
                     </div>
-                    {camera.lens_count && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-600 mb-1">Lens Count</h4>
-                        <p className="text-sm">{camera.lens_count}</p>
-                      </div>
-                    )}
-                    {camera.frame_rate && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-600 mb-1">Frame Rate</h4>
-                        <p className="text-sm">{camera.frame_rate}</p>
-                      </div>
-                    )}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Lens Count</h4>
+                      <p className="text-sm">{camera.lens_count || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Frame Rate</h4>
+                      <p className="text-sm">{camera.frame_rate || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Streaming Resolution</h4>
+                      <p className="text-sm">{camera.streaming_resolution || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Recording Resolution</h4>
+                      <p className="text-sm">{camera.recording_resolution || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Storage Days</h4>
+                      <p className="text-sm">{camera.storage_days || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Gateway Import</h4>
+                      <p className="text-sm">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          camera.import_to_gateway 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {camera.import_to_gateway ? "Yes" : "No"}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                   {camera.notes && (
                     <div>
