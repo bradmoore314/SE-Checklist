@@ -483,6 +483,64 @@ export class DbStorage implements IStorage {
   }
 
   // Equipment Images methods
+  async getAllEquipmentImages(): Promise<any[]> {
+    try {
+      const images = await db.select().from(equipmentImages).orderBy(equipmentImages.created_at);
+      
+      // Enrich with actual equipment data
+      const enrichedImages = await Promise.all(images.map(async (image) => {
+        let equipmentName = `${image.equipment_type} ${image.equipment_id}`;
+        let equipmentLocation = "Unknown Location";
+        
+        try {
+          switch (image.equipment_type) {
+            case 'camera':
+              const [camera] = await db.select().from(cameras).where(eq(cameras.id, image.equipment_id));
+              if (camera) {
+                equipmentName = `Camera - ${camera.location}`;
+                equipmentLocation = camera.location;
+              }
+              break;
+            case 'access_point':
+              const [accessPoint] = await db.select().from(accessPoints).where(eq(accessPoints.id, image.equipment_id));
+              if (accessPoint) {
+                equipmentName = `Access Point - ${accessPoint.location}`;
+                equipmentLocation = accessPoint.location;
+              }
+              break;
+            case 'elevator':
+              const [elevator] = await db.select().from(elevators).where(eq(elevators.id, image.equipment_id));
+              if (elevator) {
+                equipmentName = `Elevator - ${elevator.location}`;
+                equipmentLocation = elevator.location;
+              }
+              break;
+            case 'intercom':
+              const [intercom] = await db.select().from(intercoms).where(eq(intercoms.id, image.equipment_id));
+              if (intercom) {
+                equipmentName = `Intercom - ${intercom.location}`;
+                equipmentLocation = intercom.location;
+              }
+              break;
+          }
+        } catch (equipmentError) {
+          console.error(`Error fetching ${image.equipment_type} data:`, equipmentError);
+        }
+        
+        return {
+          ...image,
+          equipment_name: equipmentName,
+          equipment_location: equipmentLocation
+        };
+      }));
+      
+      return enrichedImages;
+    } catch (error) {
+      console.error("Error fetching all equipment images:", error);
+      return [];
+    }
+  }
+
   async getEquipmentImages(equipmentType: string, equipmentId: number): Promise<EquipmentImage[]> {
     try {
       const images = await db.select().from(equipmentImages)
