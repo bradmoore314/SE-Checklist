@@ -15,7 +15,8 @@ import {
   elevators,
   intercoms,
   feedback,
-  projectCollaborators
+  projectCollaborators,
+  gatewayCalculatorConfigs
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -90,6 +91,11 @@ export interface IStorage {
   updateFeedback(id: number, feedback: Partial<InsertFeedback>): Promise<Feedback | undefined>;
   updateFeedbackStatus(id: number, status: string): Promise<Feedback | undefined>;
   deleteFeedback(id: number): Promise<boolean>;
+  
+  // Gateway Calculator Configuration
+  getGatewayCalculatorConfig(projectId: number): Promise<any>;
+  saveGatewayCalculatorConfig(config: any): Promise<any>;
+  updateGatewayCalculatorConfig(projectId: number, config: any): Promise<any>;
 }
 
 export class DbStorage implements IStorage {
@@ -398,6 +404,74 @@ export class DbStorage implements IStorage {
   async deleteFeedback(id: number): Promise<boolean> {
     const result = await db.delete(feedback).where(eq(feedback.id, id));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Gateway Calculator Configuration methods
+  async getGatewayCalculatorConfig(projectId: number): Promise<any> {
+    try {
+      const result = await db.query.gatewayCalculatorConfigs?.findFirst({
+        where: (configs: any, { eq }: any) => eq(configs.project_id, projectId)
+      });
+      
+      if (!result) {
+        return null;
+      }
+
+      return {
+        id: result.id,
+        project_id: result.project_id,
+        cameras_config: JSON.parse(result.cameras_config),
+        gateway_config: JSON.parse(result.gateway_config),
+        calculations: JSON.parse(result.calculations),
+        streams: JSON.parse(result.streams),
+        created_at: result.created_at,
+        updated_at: result.updated_at
+      };
+    } catch (error) {
+      console.error("Error fetching gateway calculator config:", error);
+      return null;
+    }
+  }
+
+  async saveGatewayCalculatorConfig(config: any): Promise<any> {
+    try {
+      const configData = {
+        project_id: config.project_id,
+        cameras_config: JSON.stringify(config.cameras_config || []),
+        gateway_config: JSON.stringify(config.gateway_config || {}),
+        calculations: JSON.stringify(config.calculations || {}),
+        streams: JSON.stringify(config.streams || [])
+      };
+
+      const [result] = await db.insert(gatewayCalculatorConfigs).values(configData).returning();
+      return result;
+    } catch (error) {
+      console.error("Error saving gateway calculator config:", error);
+      throw error;
+    }
+  }
+
+  async updateGatewayCalculatorConfig(projectId: number, config: any): Promise<any> {
+    try {
+      const configData = {
+        cameras_config: JSON.stringify(config.cameras_config || []),
+        gateway_config: JSON.stringify(config.gateway_config || {}),
+        calculations: JSON.stringify(config.calculations || {}),
+        streams: JSON.stringify(config.streams || []),
+        updated_at: new Date()
+      };
+
+      const [result] = await db
+        .update(gatewayCalculatorConfigs)
+        .set(configData)
+        .where(eq(gatewayCalculatorConfigs.project_id, projectId))
+        .returning();
+      
+      return result;
+    } catch (error) {
+      console.error("Error updating gateway calculator config:", error);
+      throw error;
+    }
   }
 }
 
