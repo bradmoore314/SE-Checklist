@@ -689,6 +689,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gateway Calculator Configuration routes
+  app.get("/api/projects/:projectId/gateway-calculator", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const config = await storage.getGatewayCalculatorConfig(projectId);
+      res.json(config);
+    } catch (error) {
+      console.error("Error fetching gateway calculator config:", error);
+      res.status(500).json({ message: "Failed to fetch gateway calculator config" });
+    }
+  });
+
+  app.post("/api/projects/:projectId/gateway-calculator", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const configData = { ...req.body, project_id: projectId };
+      const config = await storage.saveGatewayCalculatorConfig(configData);
+      res.status(201).json(config);
+    } catch (error) {
+      console.error("Error saving gateway calculator config:", error);
+      res.status(500).json({ message: "Failed to save gateway calculator config" });
+    }
+  });
+
+  app.put("/api/projects/:projectId/gateway-calculator", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const configData = { ...req.body, project_id: projectId };
+      const config = await storage.updateGatewayCalculatorConfig(projectId, configData);
+      res.json(config);
+    } catch (error) {
+      console.error("Error updating gateway calculator config:", error);
+      res.status(500).json({ message: "Failed to update gateway calculator config" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // CRM integration routes
