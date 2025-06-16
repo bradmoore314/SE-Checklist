@@ -230,6 +230,8 @@ export const intercoms = pgTable("intercoms", {
   project_id: integer("project_id").notNull(),
   location: text("location").notNull(),
   intercom_type: text("intercom_type").notNull(),
+  connection_type: text("connection_type").notNull(),
+  mounting_type: text("mounting_type").notNull(),
   notes: text("notes"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
