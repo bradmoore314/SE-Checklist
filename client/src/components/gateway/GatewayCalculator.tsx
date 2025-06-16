@@ -27,7 +27,7 @@ export default function GatewayCalculator() {
   const [streams, setStreams] = useState<Stream[]>([]);
   const [gatewayAssignments, setGatewayAssignments] = useState<{[gatewayId: string]: Stream[]}>({});
 
-  // Reset the application to its initial state
+  // Reset the application to its initial state and clear any cached data
   const resetApplication = () => {
     setCameras([]);
     setCameraEditIndex(-1);
@@ -44,6 +44,14 @@ export default function GatewayCalculator() {
     setStreams([]);
     setGatewayAssignments({});
     setIsCompletionModalOpen(false);
+    
+    // Clear any browser storage that might contain mock data
+    try {
+      localStorage.removeItem('gateway-calculator-cameras');
+      sessionStorage.removeItem('gateway-calculator-cameras');
+    } catch (error) {
+      console.log('No cached camera data to clear');
+    }
   };
 
   // Go to step 2 and calculate requirements
