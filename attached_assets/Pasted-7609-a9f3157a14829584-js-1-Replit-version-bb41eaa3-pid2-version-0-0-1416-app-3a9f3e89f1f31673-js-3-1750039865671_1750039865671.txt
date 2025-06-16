@@ -1,0 +1,121 @@
+7609-a9f3157a14829584.js:1 Replit version bb41eaa3, pid2 version 0.0.1416
+_app-3a9f3e89f1f31673.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+_app-3a9f3e89f1f31673.js:38 [LaunchDarkly] LaunchDarkly client initialized
+/~:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+stallwart.build.js:1 stallwart: failed ping 1
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'battery'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-baa0ec8102ca615c.js:1
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+_app-3a9f3e89f1f31673.js:38 If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-3a9f3e89f1f31673.js:38
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+stallwart.build.js:1 stallwart: failed ping 4
+stallwart.build.js:1 stallwart: failed ping 5
+stallwart.build.js:1 stallwart: session stalled
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 [vite] connecting...
+Console.js:61 Running in development mode
+Console.js:61 Auth bypass enabled, allowing authenticated routes
+Network.js:227 WebSocket connection to 'wss://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/?token=GaD2wKeAqwiT' failed: 
+t @ Network.js:227
+Console.js:61 [vite] server connection lost. Polling for restart...
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/:1 
+            
+            
+           Failed to load resource: net::ERR_CONNECTION_TIMED_OUT
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
