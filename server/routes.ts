@@ -302,6 +302,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(204).end();
   });
 
+  // Places autocomplete endpoint
+  app.get("/api/places/autocomplete", async (req: Request, res: Response) => {
+    try {
+      const input = req.query.input as string;
+      
+      if (!input) {
+        return res.json({ status: 'INVALID_REQUEST', predictions: [] });
+      }
+
+      const result = await getPlaceAutocomplete(input);
+      res.json(result);
+    } catch (error) {
+      console.error('Places autocomplete error:', error);
+      res.json({ 
+        status: 'API_ERROR', 
+        error_message: (error as Error).message,
+        predictions: [] 
+      });
+    }
+  });
+
   // Equipment endpoints (access points, cameras, elevators, intercoms)
   app.get("/api/projects/:projectId/access-points", async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
