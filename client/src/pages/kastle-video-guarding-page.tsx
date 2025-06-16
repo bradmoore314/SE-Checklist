@@ -1246,7 +1246,6 @@ const KastleVideoGuardingPage: React.FC = () => {
       <p className="text-center text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
         Configure video monitoring settings, patrol schedules, and service commitments for your Kastle Video Guarding project
       </p>
-
       {/* Desktop Tabs */}
       <div className="hidden sm:block">
         <Tabs defaultValue="stream-details" className="w-full" value={selectedTab} onValueChange={setSelectedTab}>
@@ -1275,7 +1274,6 @@ const KastleVideoGuardingPage: React.FC = () => {
           </TabsList>
         </Tabs>
       </div>
-      
       {/* Mobile Tab Selector */}
       <div className="sm:hidden mb-6">
         <Popover open={isTabsMenuOpen} onOpenChange={setIsTabsMenuOpen}>
@@ -1320,7 +1318,6 @@ const KastleVideoGuardingPage: React.FC = () => {
           </PopoverContent>
         </Popover>
       </div>
-
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
 
         {/* Stream Details Tab Content */}
@@ -1435,7 +1432,7 @@ const KastleVideoGuardingPage: React.FC = () => {
               {streams.length > 0 ? (
                 viewMode === 'cards' ? (
                   /* Card-based Layout for Speaker Details - More Mobile Friendly */
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                  (<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-8">
                     {streams.map((stream) => (
                       <Card key={stream.id} className="overflow-hidden border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
                         <CardHeader className="bg-gradient-to-r from-teal-50 to-teal-100 border-b pb-3 px-3 sm:px-6">
@@ -1537,7 +1534,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                               <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                   <tr>
-                                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field</th>
+                                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase text-[#ffffff]">Field</th>
                                     <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
                                   </tr>
                                 </thead>
@@ -1940,10 +1937,10 @@ const KastleVideoGuardingPage: React.FC = () => {
                         </CardContent>
                       </Card>
                     ))}
-                  </div>
+                  </div>)
                 ) : (
                   /* Table/List View for Camera Stream Details */
-                  <div className="overflow-x-auto shadow-md sm:rounded-lg mb-8 pb-2">
+                  (<div className="overflow-x-auto shadow-md sm:rounded-lg mb-8 pb-2">
                     <div className="block md:hidden bg-blue-50 p-3 text-sm text-blue-600 rounded-t-lg border border-blue-100 mb-2">
                       <InfoIcon className="inline-block w-4 h-4 mr-1" /> Scroll horizontally to see all stream data
                     </div>
@@ -2031,7 +2028,7 @@ const KastleVideoGuardingPage: React.FC = () => {
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </div>)
                 )
               ) : (
                 <div className="text-center bg-gray-50 p-8 rounded-md border border-gray-200 shadow-sm">
@@ -6066,7 +6063,6 @@ const KastleVideoGuardingPage: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-      
       {/* Image Modal for viewing stream images */}
       {selectedStream && (
         <StreamImagesModal 
