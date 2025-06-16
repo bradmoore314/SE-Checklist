@@ -107,7 +107,7 @@ export default function UnifiedCameraConfigForm({
       mounting_type: initialData?.mounting_type || "",
       resolution: initialData?.resolution || "",
       notes: initialData?.notes || "",
-      is_indoor: typeof initialData?.is_indoor === 'string' ? initialData.is_indoor as "indoor" | "outdoor" : "indoor",
+      is_indoor: initialData?.is_indoor ?? true,
       import_to_gateway: initialData?.import_to_gateway ?? true,
       
       // Marker visualization defaults
@@ -221,12 +221,10 @@ export default function UnifiedCameraConfigForm({
       // Transform the data to match database expectations
       const transformedData = {
         ...data,
-        // Convert "indoor"/"outdoor" string to boolean
-        is_indoor: data.is_indoor === "indoor" ? true : false,
-        // Ensure field_of_view is a string
-        field_of_view: data.fov ? data.fov.toString() : "90",
-        // Remove the raw fov field since we're using field_of_view
-        fov: undefined,
+        // is_indoor is already boolean from the form
+        is_indoor: data.is_indoor,
+        // Ensure field_of_view is a string from fov number
+        field_of_view: data.fov.toString(),
         ...(image && { image_data: image })
       };
       
@@ -375,8 +373,8 @@ export default function UnifiedCameraConfigForm({
                       <FormLabel>Location Type</FormLabel>
                       <FormControl>
                         <RadioGroup 
-                          value={field.value}
-                          onValueChange={(value) => field.onChange(value)}
+                          value={field.value ? "indoor" : "outdoor"}
+                          onValueChange={(value) => field.onChange(value === "indoor")}
                           className="flex flex-col space-y-2"
                         >
                           <div className="flex items-center space-x-2">
