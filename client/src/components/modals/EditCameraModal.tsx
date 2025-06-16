@@ -61,7 +61,17 @@ export default function EditCameraModal({
   });
 
   const handleSave = (data: CameraConfigData) => {
-    updateCameraMutation.mutate(data);
+    // Transform data to match database schema
+    const transformedData = {
+      ...data,
+      // Convert "indoor"/"outdoor" string to boolean
+      is_indoor: data.is_indoor === "indoor" ? true : false,
+      // Ensure field_of_view is a string
+      field_of_view: data.fov ? data.fov.toString() : "90"
+    };
+    
+    console.log("Sending camera update data:", transformedData);
+    updateCameraMutation.mutate(transformedData);
   };
 
   const handleCancel = () => {

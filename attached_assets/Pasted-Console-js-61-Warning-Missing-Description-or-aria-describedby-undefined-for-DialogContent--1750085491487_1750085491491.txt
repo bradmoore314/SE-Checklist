@@ -1,0 +1,210 @@
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+Console.js:61 Fetch PUT /api/cameras/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/cameras/1 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ EditCameraModal.tsx:40
+fn @ @tanstack_react-query.js?v=b107d852:1189
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+execute @ @tanstack_react-query.js?v=b107d852:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=b107d852:2630
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3295
+handleSave @ EditCameraModal.tsx:64
+handleSubmit @ UnifiedCameraConfigForm.tsx:221
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch finished loading: PUT /api/cameras/1
+Console.js:61 Fetch failed loading: PUT /api/cameras/1
+Console.js:61 Fetch PUT /api/cameras/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/cameras/1 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ EditCameraModal.tsx:40
+fn @ @tanstack_react-query.js?v=b107d852:1189
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+execute @ @tanstack_react-query.js?v=b107d852:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=b107d852:2630
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3295
+handleSave @ EditCameraModal.tsx:64
+handleSubmit @ UnifiedCameraConfigForm.tsx:221
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch finished loading: PUT /api/cameras/1
+Console.js:61 Fetch failed loading: PUT /api/cameras/1
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+Console.js:61 Fetch PUT /api/cameras/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/cameras/1 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ EditCameraModal.tsx:40
+fn @ @tanstack_react-query.js?v=b107d852:1189
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+execute @ @tanstack_react-query.js?v=b107d852:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=b107d852:2630
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3295
+handleSave @ EditCameraModal.tsx:64
+handleSubmit @ UnifiedCameraConfigForm.tsx:221
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch finished loading: PUT /api/cameras/1
+Console.js:61 Fetch failed loading: PUT /api/cameras/1
+Console.js:61 Fetch PUT /api/cameras/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/cameras/1 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ EditCameraModal.tsx:40
+fn @ @tanstack_react-query.js?v=b107d852:1189
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+execute @ @tanstack_react-query.js?v=b107d852:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=b107d852:2630
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3295
+handleSave @ EditCameraModal.tsx:64
+handleSubmit @ UnifiedCameraConfigForm.tsx:221
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch finished loading: PUT /api/cameras/1
+Console.js:61 Fetch failed loading: PUT /api/cameras/1
+client:736 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
