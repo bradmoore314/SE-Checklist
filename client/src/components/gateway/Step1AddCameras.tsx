@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Select,
   SelectContent,
@@ -89,13 +90,13 @@ export default function Step1AddCameras({
   const [duplicateQuantity, setDuplicateQuantity] = useState(1);
   const [duplicatePrefix, setDuplicatePrefix] = useState("");
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
-  const [projectId, setProjectId] = useState<number>(2); // Default to first project
+  const [projectId, setProjectId] = useState<number>(1); // Default to project 1
 
   // Fetch project cameras
   const { data: projectCameras, isLoading: isLoadingCameras } = useQuery({
     queryKey: ['/api/projects', projectId, 'cameras'],
     enabled: !!projectId
-  });
+  }) as { data: Camera[] | undefined, isLoading: boolean };
   
   // Add handler for importing cameras from project
   const handleImportCameras = () => {
