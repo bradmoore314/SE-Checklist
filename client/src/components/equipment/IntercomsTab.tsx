@@ -104,7 +104,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4 p-4 bg-red-700 rounded-lg">
+      <div className="flex justify-between items-center mb-4 p-4 rounded-lg bg-[#e41d31]">
         <h3 className="text-lg font-medium text-white">Intercoms</h3>
         <div className="flex items-center">
           <div className="relative mr-2">
@@ -129,7 +129,6 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
           </Button>
         </div>
       </div>
-      
       {/* Intercoms Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
@@ -178,7 +177,6 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
           </tbody>
         </table>
       </div>
-      
       {/* Pagination */}
       {filteredIntercoms.length > 0 && (
         <div className="flex items-center justify-between mt-4">
@@ -227,7 +225,6 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
           </div>
         </div>
       )}
-
       {/* Add Intercom Modal */}
       {showAddModal && (
         <AddIntercomModal 
@@ -237,7 +234,6 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
           onClose={() => setShowAddModal(false)} 
         />
       )}
-      
       {/* Edit Intercom Modal */}
       {editingIntercom && (
         <EditIntercomModal
