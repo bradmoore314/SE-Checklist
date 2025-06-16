@@ -500,7 +500,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cameras CRUD operations
+  // Project-specific camera routes (what frontend expects)
+  app.post("/api/projects/:projectId/cameras", async (req: Request, res: Response) => {
+    try {
+      console.log("Creating camera for project:", req.params.projectId, req.body);
+      const projectId = parseInt(req.params.projectId);
+      const cameraData = { ...req.body, project_id: projectId };
+      const camera = await storage.createCamera(cameraData);
+      res.status(201).json(camera);
+    } catch (error) {
+      console.error("Error creating camera:", error);
+      res.status(500).json({ message: "Failed to create camera" });
+    }
+  });
+
+  // Generic camera routes (for backward compatibility)
   app.post("/api/cameras", async (req: Request, res: Response) => {
     try {
       const camera = await storage.createCamera(req.body);
@@ -533,7 +547,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Elevators CRUD operations
+  // Project-specific elevator routes
+  app.post("/api/projects/:projectId/elevators", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const elevatorData = { ...req.body, project_id: projectId };
+      const elevator = await storage.createElevator(elevatorData);
+      res.status(201).json(elevator);
+    } catch (error) {
+      console.error("Error creating elevator:", error);
+      res.status(500).json({ message: "Failed to create elevator" });
+    }
+  });
+
+  // Generic elevator routes
   app.post("/api/elevators", async (req: Request, res: Response) => {
     try {
       const elevator = await storage.createElevator(req.body);
@@ -566,7 +593,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Intercoms CRUD operations
+  // Project-specific intercom routes
+  app.post("/api/projects/:projectId/intercoms", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const intercomData = { ...req.body, project_id: projectId };
+      const intercom = await storage.createIntercom(intercomData);
+      res.status(201).json(intercom);
+    } catch (error) {
+      console.error("Error creating intercom:", error);
+      res.status(500).json({ message: "Failed to create intercom" });
+    }
+  });
+
+  // Generic intercom routes
   app.post("/api/intercoms", async (req: Request, res: Response) => {
     try {
       const intercom = await storage.createIntercom(req.body);
