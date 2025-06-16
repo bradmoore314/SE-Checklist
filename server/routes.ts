@@ -105,6 +105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       user: req.isAuthenticated() ? req.user : null
     });
   });
+
+  // User endpoint is handled in auth.ts
   
   // Special dev endpoint to force login for development
   app.post("/api/dev-login", async (req: Request, res: Response) => {
@@ -436,6 +438,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting marker stats:", error);
       res.status(500).json({ message: "Failed to get marker statistics" });
+    }
+  });
+
+  // Get satellite image thumbnail for a project
+  app.get("/api/projects/:projectId/satellite-image", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Valid project ID is required" });
+    }
+    
+    try {
+      // Get project details
+      const project = await storage.getProject(projectId);
+      
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // If project doesn't have an address, return a 404
+      if (!project.site_address) {
+        return res.status(404).json({ message: "Project doesn't have an address" });
+      }
+      
+      // Geocode the address to get coordinates
+      const geocoded = await geocodeAddress(project.site_address);
+      
+      if (!geocoded) {
+        return res.status(404).json({ message: "Couldn't geocode project address" });
+      }
+      
+      // Generate a satellite image URL with photorealistic 3D Tiles
+      const mapUrl = getStaticMapUrl(geocoded.lat, geocoded.lng, 18, 800, 600, true);
+      
+      // Return the satellite image URL
+      res.json({ 
+        url: mapUrl,
+        coordinates: {
+          lat: geocoded.lat,
+          lng: geocoded.lng
+        }
+      });
+    } catch (error) {
+      console.error("Error getting satellite image for project", projectId, error);
+      res.status(500).json({ 
+        message: "Failed to generate satellite image",
+        error: (error as Error).message
+      });
     }
   });
 
