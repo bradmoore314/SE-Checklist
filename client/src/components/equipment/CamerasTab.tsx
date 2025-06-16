@@ -12,6 +12,8 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Plus, Search, Video, Edit, Copy, Trash, FileDown, LayoutGrid, List, Camera as CameraIcon, Upload, ImageIcon } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
+import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import ImageGalleryModal from "@/components/modals/ImageGalleryModal";
 
 interface CamerasTabProps {
   project: Project;
@@ -855,44 +857,41 @@ export default function CamerasTab({ project }: CamerasTabProps) {
 
       {/* Image Upload Modal */}
       {showUploadModal && selectedCamera && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Upload Photo for {selectedCamera.location}</h3>
-            <p className="text-gray-600 mb-4">Photo upload functionality will be available soon.</p>
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowUploadModal(false);
-                  setSelectedCamera(null);
-                }}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ImageUploadModal
+          isOpen={showUploadModal}
+          onClose={() => {
+            setShowUploadModal(false);
+            setSelectedCamera(null);
+          }}
+          equipmentType="camera"
+          equipmentId={selectedCamera.id}
+          projectId={project.id}
+          equipmentName={selectedCamera.location || "Camera"}
+          onUploadSuccess={() => {
+            // Refresh camera data if needed
+            queryClient.invalidateQueries({ 
+              queryKey: [`/api/projects/${project.id}/cameras`]
+            });
+          }}
+        />
       )}
 
       {/* Image Gallery Modal */}
       {showImageModal && selectedCamera && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Images for {selectedCamera.location}</h3>
-            <p className="text-gray-600 mb-4">No images uploaded yet for this camera.</p>
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowImageModal(false);
-                  setSelectedCamera(null);
-                }}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ImageGalleryModal
+          isOpen={showImageModal}
+          onClose={() => {
+            setShowImageModal(false);
+            setSelectedCamera(null);
+          }}
+          equipmentType="camera"
+          equipmentId={selectedCamera.id}
+          equipmentName={selectedCamera.location || "Camera"}
+          onUploadClick={() => {
+            setShowImageModal(false);
+            setShowUploadModal(true);
+          }}
+        />
       )}
     </Card>
   );
