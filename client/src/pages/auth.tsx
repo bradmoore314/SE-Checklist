@@ -98,7 +98,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative z-50">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -139,6 +139,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       required
                       disabled={isLoading}
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   
@@ -153,6 +154,7 @@ export default function AuthPage() {
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         required
                         disabled={isLoading}
+                        style={{ fontSize: '16px' }}
                       />
                       <Button
                         type="button"
@@ -201,6 +203,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
                       disabled={isLoading}
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   
@@ -214,6 +217,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                       required
                       disabled={isLoading}
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   
@@ -229,6 +233,7 @@ export default function AuthPage() {
                         required
                         minLength={6}
                         disabled={isLoading}
+                        style={{ fontSize: '16px' }}
                       />
                       <Button
                         type="button"
@@ -257,6 +262,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                       required
                       disabled={isLoading}
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   
