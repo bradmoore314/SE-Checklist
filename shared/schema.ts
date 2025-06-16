@@ -164,6 +164,12 @@ export const cameras = pgTable("cameras", {
   notes: text("notes"),
   is_indoor: boolean("is_indoor").default(true), // true for indoor, false for outdoor
   import_to_gateway: boolean("import_to_gateway").default(true),
+  // Gateway calculator fields
+  lens_count: text("lens_count"),
+  streaming_resolution: text("streaming_resolution"),
+  frame_rate: text("frame_rate"),
+  recording_resolution: text("recording_resolution"),
+  storage_days: text("storage_days"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
