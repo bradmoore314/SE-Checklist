@@ -158,7 +158,7 @@ export const cameras = pgTable("cameras", {
   project_id: integer("project_id").notNull(),
   location: text("location").notNull(),
   camera_type: text("camera_type").notNull(),
-  mounting_type: text("mounting_type"),
+  mounting_type: text("mounting_type").notNull().default(""),
   resolution: text("resolution"),
   field_of_view: text("field_of_view"),
   notes: text("notes"),
@@ -296,6 +296,22 @@ export const feedback = pgTable("feedback", {
 export type Feedback = typeof feedback.$inferSelect;
 export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, status: true, created_at: true, updated_at: true });
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
+
+// Gateway Calculator Configuration table
+export const gatewayCalculatorConfigs = pgTable("gateway_calculator_configs", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  cameras_config: text("cameras_config").notNull(), // JSON string of StreamCamera[]
+  gateway_config: text("gateway_config").notNull(), // JSON string of GatewayConfiguration
+  calculations: text("calculations").notNull(), // JSON string of Calculations
+  streams: text("streams").notNull(), // JSON string of Stream[]
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type GatewayCalculatorConfig = typeof gatewayCalculatorConfigs.$inferSelect;
+export const insertGatewayCalculatorConfigSchema = createInsertSchema(gatewayCalculatorConfigs).omit({ id: true, created_at: true, updated_at: true });
+export type InsertGatewayCalculatorConfig = z.infer<typeof insertGatewayCalculatorConfigSchema>;
 
 // Camera Stream Gateway types
 export type GatewayType = '8ch' | '16ch';
