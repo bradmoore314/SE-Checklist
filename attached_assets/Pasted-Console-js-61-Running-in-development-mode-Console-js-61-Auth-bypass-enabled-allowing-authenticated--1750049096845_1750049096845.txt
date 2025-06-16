@@ -1,0 +1,57 @@
+Console.js:61 Running in development mode
+Console.js:61 Auth bypass enabled, allowing authenticated routes
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:1 Unrecognized feature: 'battery'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'ambient-light-sensor'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'battery'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'execution-while-not-rendered'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'layout-animations'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'legacy-image-formats'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'navigation-override'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'oversized-images'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'publickey-credentials'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'speaker-selection'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'unoptimized-images'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'unsized-media'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'pointer-lock'.
+SE-Site-Walk-Checklist-1:1 Allow attribute will take precedence over 'allowfullscreen'.
+SE-Site-Walk-Checklist-1:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/:1 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2
+client:536 WebSocket connection to 'wss://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/?token=XE6YzM9bzB9G' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+Console.js:61 [vite] server connection lost. Polling for restart...
+client:736 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
