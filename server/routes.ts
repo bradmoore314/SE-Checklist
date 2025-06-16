@@ -466,17 +466,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Access Points CRUD operations
+  app.post("/api/access-points", async (req: Request, res: Response) => {
+    try {
+      console.log("Creating access point:", req.body);
+      const accessPoint = await storage.createAccessPoint(req.body);
+      res.status(201).json(accessPoint);
+    } catch (error) {
+      console.error("Error creating access point:", error);
+      res.status(500).json({ message: "Failed to create access point" });
+    }
+  });
+
+  app.put("/api/access-points/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const accessPoint = await storage.updateAccessPoint(id, req.body);
+      res.json(accessPoint);
+    } catch (error) {
+      console.error("Error updating access point:", error);
+      res.status(500).json({ message: "Failed to update access point" });
+    }
+  });
+
+  app.delete("/api/access-points/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAccessPoint(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting access point:", error);
+      res.status(500).json({ message: "Failed to delete access point" });
+    }
+  });
+
+  // Cameras CRUD operations
+  app.post("/api/cameras", async (req: Request, res: Response) => {
+    try {
+      const camera = await storage.createCamera(req.body);
+      res.status(201).json(camera);
+    } catch (error) {
+      console.error("Error creating camera:", error);
+      res.status(500).json({ message: "Failed to create camera" });
+    }
+  });
+
+  app.put("/api/cameras/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const camera = await storage.updateCamera(id, req.body);
+      res.json(camera);
+    } catch (error) {
+      console.error("Error updating camera:", error);
+      res.status(500).json({ message: "Failed to update camera" });
+    }
+  });
+
+  app.delete("/api/cameras/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCamera(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting camera:", error);
+      res.status(500).json({ message: "Failed to delete camera" });
+    }
+  });
+
+  // Elevators CRUD operations
+  app.post("/api/elevators", async (req: Request, res: Response) => {
+    try {
+      const elevator = await storage.createElevator(req.body);
+      res.status(201).json(elevator);
+    } catch (error) {
+      console.error("Error creating elevator:", error);
+      res.status(500).json({ message: "Failed to create elevator" });
+    }
+  });
+
+  app.put("/api/elevators/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const elevator = await storage.updateElevator(id, req.body);
+      res.json(elevator);
+    } catch (error) {
+      console.error("Error updating elevator:", error);
+      res.status(500).json({ message: "Failed to update elevator" });
+    }
+  });
+
+  app.delete("/api/elevators/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteElevator(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting elevator:", error);
+      res.status(500).json({ message: "Failed to delete elevator" });
+    }
+  });
+
+  // Intercoms CRUD operations
+  app.post("/api/intercoms", async (req: Request, res: Response) => {
+    try {
+      const intercom = await storage.createIntercom(req.body);
+      res.status(201).json(intercom);
+    } catch (error) {
+      console.error("Error creating intercom:", error);
+      res.status(500).json({ message: "Failed to create intercom" });
+    }
+  });
+
+  app.put("/api/intercoms/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const intercom = await storage.updateIntercom(id, req.body);
+      res.json(intercom);
+    } catch (error) {
+      console.error("Error updating intercom:", error);
+      res.status(500).json({ message: "Failed to update intercom" });
+    }
+  });
+
+  app.delete("/api/intercoms/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteIntercom(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting intercom:", error);
+      res.status(500).json({ message: "Failed to delete intercom" });
+    }
+  });
+
   const httpServer = createServer(app);
-  
-  // Simplified auth bypass for development
-  const bypassAuth = (req: any, res: any, next: any) => {
-    console.log("Auth bypass enabled, allowing authenticated routes");
-    next();
-  };
-  
-  setupEquipmentCreationRoutes(app, bypassAuth);
-  setupEquipmentConfigurationRoutes(app, bypassAuth);
-  setupAIRoutes(app, bypassAuth);
   
   // CRM integration routes
   app.use('/api', crmRoutes);
