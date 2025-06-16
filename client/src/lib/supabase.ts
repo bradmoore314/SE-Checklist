@@ -3,68 +3,55 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+// Create a single instance of the Supabase client to avoid multiple client warnings
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Helper function to check if bucket exists (bucket should be created manually in Supabase dashboard)
+export const checkBucketExists = async (bucketName: string) => {
+  if (!supabase) {
+    throw new Error("Supabase client not initialized. Please check your environment variables.");
+  }
 
-// Auth types
-export interface AuthUser {
-  id: string;
-  email: string;
-  user_metadata?: {
-    full_name?: string;
-    avatar_url?: string;
-  };
-}
+  const { data: buckets } = await supabase.storage.listBuckets();
+  const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+  
+  if (!bucketExists) {
+    throw new Error(`Bucket '${bucketName}' does not exist. Please create it in your Supabase dashboard first.`);
+  }
+};
 
-// Auth functions
-export const authService = {
-  // Sign up with email and password
-  async signUp(email: string, password: string, fullName?: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
-    });
-    
-    if (error) throw error;
-    return data;
-  },
+// Helper function to upload file to equipment images bucket
+export const uploadEquipmentImage = async (
+  file: File, 
+  equipmentType: string, 
+  equipmentId: number, 
+  projectId: number
+): Promise<string> => {
+  if (!supabase) {
+    throw new Error("Supabase client not initialized. Please check your environment variables.");
+  }
 
-  // Sign in with email and password
-  async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (error) throw error;
-    return data;
-  },
+  // Check if bucket exists
+  await checkBucketExists('equipment-images');
 
-  // Sign out
-  async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  },
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${equipmentType}_${equipmentId}_${Date.now()}.${fileExt}`;
+  const filePath = `equipment_images/${projectId}/${equipmentType}/${fileName}`;
 
-  // Get current user
-  async getCurrentUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    return user;
-  },
+  const { data, error } = await supabase.storage
+    .from('equipment-images')
+    .upload(filePath, file);
 
-  // Listen to auth changes
-  onAuthStateChange(callback: (user: AuthUser | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
-      callback(session?.user as AuthUser | null);
-    });
-  },
+  if (error) {
+    throw new Error(`Upload failed: ${error.message}`);
+  }
+
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from('equipment-images')
+    .getPublicUrl(filePath);
+
+  return urlData.publicUrl;
 };
