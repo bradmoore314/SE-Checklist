@@ -725,6 +725,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Equipment Images routes
+  app.get("/api/equipment/:equipmentType/:equipmentId/images", async (req: Request, res: Response) => {
+    try {
+      const { equipmentType, equipmentId } = req.params;
+      const images = await storage.getEquipmentImages(equipmentType, parseInt(equipmentId));
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching equipment images:", error);
+      res.status(500).json({ message: "Failed to fetch equipment images" });
+    }
+  });
+
+  app.post("/api/equipment/:equipmentType/:equipmentId/images", async (req: Request, res: Response) => {
+    try {
+      const { equipmentType, equipmentId } = req.params;
+      const imageData = {
+        ...req.body,
+        equipment_type: equipmentType,
+        equipment_id: parseInt(equipmentId)
+      };
+      const image = await storage.createEquipmentImage(imageData);
+      res.status(201).json(image);
+    } catch (error) {
+      console.error("Error creating equipment image:", error);
+      res.status(500).json({ message: "Failed to create equipment image" });
+    }
+  });
+
+  app.delete("/api/equipment/images/:imageId", async (req: Request, res: Response) => {
+    try {
+      const imageId = parseInt(req.params.imageId);
+      const success = await storage.deleteEquipmentImage(imageId);
+      if (success) {
+        res.json({ message: "Image deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Image not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting equipment image:", error);
+      res.status(500).json({ message: "Failed to delete equipment image" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // CRM integration routes

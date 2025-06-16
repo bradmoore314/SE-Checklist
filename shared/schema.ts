@@ -319,6 +319,26 @@ export type GatewayCalculatorConfig = typeof gatewayCalculatorConfigs.$inferSele
 export const insertGatewayCalculatorConfigSchema = createInsertSchema(gatewayCalculatorConfigs).omit({ id: true, created_at: true, updated_at: true });
 export type InsertGatewayCalculatorConfig = z.infer<typeof insertGatewayCalculatorConfigSchema>;
 
+// Equipment Images table for storing image metadata and Supabase URLs
+export const equipmentImages = pgTable("equipment_images", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  equipment_type: text("equipment_type").notNull(), // 'camera', 'access_point', 'elevator', 'intercom'
+  equipment_id: integer("equipment_id").notNull(),
+  image_url: text("image_url").notNull(), // Supabase storage URL
+  image_name: text("image_name").notNull(),
+  file_size: integer("file_size"), // in bytes
+  mime_type: text("mime_type"),
+  metadata: jsonb("metadata"), // Additional image metadata as JSONB
+  uploaded_by: integer("uploaded_by"), // user who uploaded
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export type EquipmentImage = typeof equipmentImages.$inferSelect;
+export const insertEquipmentImageSchema = createInsertSchema(equipmentImages).omit({ id: true, created_at: true, updated_at: true });
+export type InsertEquipmentImage = z.infer<typeof insertEquipmentImageSchema>;
+
 // Camera Stream Gateway types
 export type GatewayType = '8ch' | '16ch';
 
