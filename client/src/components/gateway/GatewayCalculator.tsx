@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Step1AddCameras from './Step1AddCameras';
@@ -26,6 +26,22 @@ export default function GatewayCalculator() {
   });
   const [streams, setStreams] = useState<Stream[]>([]);
   const [gatewayAssignments, setGatewayAssignments] = useState<{[gatewayId: string]: Stream[]}>({});
+
+  // Clear any cached mock data on component mount
+  useEffect(() => {
+    // Force clear any cached camera data that might be showing mock cameras
+    setCameras([]);
+    
+    // Clear browser storage
+    try {
+      localStorage.removeItem('gateway-calculator-cameras');
+      sessionStorage.removeItem('gateway-calculator-cameras');
+      localStorage.removeItem('gateway-calculator-data');
+      sessionStorage.removeItem('gateway-calculator-data');
+    } catch (error) {
+      // Storage not available, continue
+    }
+  }, []);
 
   // Reset the application to its initial state and clear any cached data
   const resetApplication = () => {
