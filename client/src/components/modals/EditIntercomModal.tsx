@@ -10,7 +10,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, ImageIcon } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ImagePreview from "@/components/ImagePreview";
+import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import ImageGalleryModal from "@/components/modals/ImageGalleryModal";
 
 // Define the schema for the intercom form
 const intercomSchema = z.object({
@@ -54,6 +58,8 @@ export default function EditIntercomModal({
 }: EditIntercomModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   // Set up form with default values from the existing intercom
   const form = useForm<IntercomFormValues>({
