@@ -10,9 +10,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, ImageIcon } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import UnifiedImageHandler from "@/components/UnifiedImageHandler";
+import ImagePreview from "@/components/ImagePreview";
+import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import ImageGalleryModal from "@/components/modals/ImageGalleryModal";
 
 // Define the schema for the elevator form
 const elevatorSchema = z.object({
@@ -58,6 +60,8 @@ export default function EditElevatorModal({
 }: EditElevatorModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   // Set up form with default values from the existing elevator
   const form = useForm<ElevatorFormValues>({
@@ -243,14 +247,40 @@ export default function EditElevatorModal({
               )}
             />
             
-            {/* Image Upload Section */}
-            <div className="space-y-2 pt-4">
-              <h3 className="text-sm font-medium">Elevator Images</h3>
-              <UnifiedImageHandler 
-                projectId={elevator.project_id}
-                equipmentId={elevator.id}
-                equipmentType="elevators"
-              />
+            {/* Image Preview Section */}
+            <div className="border rounded-lg p-4 bg-gray-50 space-y-3">
+              <h3 className="text-lg font-medium">Elevator Images</h3>
+              <div className="flex items-center justify-between">
+                <ImagePreview
+                  equipmentType="elevator"
+                  equipmentId={elevator.id}
+                  maxImages={4}
+                  onClick={() => setShowImageModal(true)}
+                  className="flex-1"
+                />
+                <div className="flex space-x-2 ml-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowImageModal(true)}
+                    className="flex items-center"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    View All
+                  </Button>
+                </div>
+              </div>
             </div>
             
             {/* Submit/Cancel buttons */}
@@ -279,6 +309,29 @@ export default function EditElevatorModal({
           </form>
         </Form>
         </ScrollArea>
+
+        {/* Image Upload Modal */}
+        {showUploadModal && (
+          <ImageUploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            equipmentType="elevator"
+            equipmentId={elevator.id}
+            projectId={elevator.project_id}
+            equipmentName={`Elevator - ${elevator.location}`}
+          />
+        )}
+
+        {/* Image Gallery Modal */}
+        {showImageModal && (
+          <ImageGalleryModal
+            isOpen={showImageModal}
+            onClose={() => setShowImageModal(false)}
+            equipmentType="elevator"
+            equipmentId={elevator.id}
+            equipmentName={`Elevator - ${elevator.location}`}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
