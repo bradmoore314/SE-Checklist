@@ -1,6 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
+import StorageStatus from "@/components/StorageStatus";
 import { useProject } from "@/contexts/ProjectContext";
 import { useOpportunity } from "@/contexts/OpportunityContext";
 import { useAuth } from "@/hooks/useAuth";

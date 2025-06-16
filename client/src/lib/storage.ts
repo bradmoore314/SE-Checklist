@@ -189,7 +189,7 @@ class LocalStorageService {
   }
 
   private async addToSyncQueue(storeName: string, recordId: number, action: 'upsert' | 'delete'): Promise<void> {
-    const syncItem = {
+    const syncItem: LocalRecord = {
       store_name: storeName,
       record_id: recordId,
       action,
@@ -391,7 +391,8 @@ class SyncService {
     }
     
     // Mark as synced
-    await this.localStorage.save(store_name, { ...record, synced: true });
+    const updatedRecord: LocalRecord = { ...record, synced: true };
+    await this.localStorage.save(store_name, updatedRecord);
   }
 
   startPeriodicSync(): void {
