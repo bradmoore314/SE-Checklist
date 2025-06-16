@@ -6,11 +6,8 @@ const isProduction = import.meta.env.PROD;
 // Log the auth state
 console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
 
-// Enable auth bypass for development testing
-const bypassAuth = !isProduction;
-if (bypassAuth) {
-  console.log('Auth bypass enabled, allowing authenticated routes');
-}
+// Disable auth bypass - use proper Supabase authentication
+const bypassAuth = false;
 
 // Custom error handler to make error messages more user-friendly
 async function handleApiError(res: Response): Promise<void> {
