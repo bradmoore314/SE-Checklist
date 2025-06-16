@@ -1,0 +1,277 @@
+eruda.js:2 Running in development mode
+eruda.js:2 Auth bypass enabled, allowing authenticated routes
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:1 Unrecognized feature: 'battery'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'ambient-light-sensor'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'battery'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'execution-while-not-rendered'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'layout-animations'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'legacy-image-formats'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'navigation-override'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'oversized-images'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'publickey-credentials'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'speaker-selection'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'unoptimized-images'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'unsized-media'.
+SE-Site-Walk-Checklist-1:1 Unrecognized feature: 'pointer-lock'.
+SE-Site-Walk-Checklist-1:1 Allow attribute will take precedence over 'allowfullscreen'.
+SE-Site-Walk-Checklist-1:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/:1 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2
+eruda.js:2 WebSocket connection to 'wss://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/?token=XE6YzM9bzB9G' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+eruda.js:2 [vite] server connection lost. Polling for restart...
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (eruda.js:2:218642)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (eruda.js:2:218642)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 [vite] connecting...
+Console.js:61 Running in development mode
+Console.js:61 Auth bypass enabled, allowing authenticated routes
+Network.js:142 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2
+queryClient.ts:104 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:122:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+client:536 WebSocket connection to 'wss://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/?token=9cOjj4GMJjqM' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+Console.js:61 [vite] server connection lost. Polling for restart...
+client:736 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+queryClient.ts:104 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:104
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:122:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:131
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384

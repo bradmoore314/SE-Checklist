@@ -13,6 +13,7 @@ import Intercoms from "@/pages/intercoms";
 import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
+import AccountPage from "@/pages/account";
 
 // Floorplan functionality has been removed
 import KastleVideoGuardingPage from "@/pages/kastle-video-guarding-page";
@@ -93,6 +94,7 @@ function Router() {
       <Route path="/feedback" component={FeedbackPage} />
       <Route path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <Route path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
+      <Route path="/account" component={AccountPage} />
       
       {/* 404 fallback */}
       <Route component={NotFound} />
