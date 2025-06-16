@@ -682,21 +682,16 @@ export default function CamerasTab({ project }: CamerasTabProps) {
       {/* Edit Camera Modal */}
       {showEditModal && selectedCamera && (
         <EditCameraModal
-          open={showEditModal}
-          onOpenChange={(open) => {
-            if (!open) {
-              setShowEditModal(false);
-              setSelectedCamera(null);
-            }
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedCamera(null);
           }}
-          cameraData={selectedCamera}
-          floorplanId={null}
-          markerId={null}
+          camera={selectedCamera}
           projectId={project.id}
           onSave={(updatedData) => {
             handleEditSave(selectedCamera.id, updatedData);
           }}
-          title={`Edit Camera - ${selectedCamera.location}`}
         />
       )}
     </Card>
