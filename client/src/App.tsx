@@ -48,7 +48,14 @@ function Router() {
   }
 
   if (!isAuthenticated) {
-    return <AuthPage />;
+    return (
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <Route>
+          <AuthPage />
+        </Route>
+      </Switch>
+    );
   }
 
   return (
