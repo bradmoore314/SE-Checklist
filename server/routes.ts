@@ -750,11 +750,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/equipment/:equipmentType/:equipmentId/images", async (req: Request, res: Response) => {
     try {
       const { equipmentType, equipmentId } = req.params;
+      const { image_data, image_name, metadata, project_id } = req.body;
+      
+      console.log("Image upload request:", { equipmentType, equipmentId, has_image_data: !!image_data, image_name, project_id });
+      
+      if (!image_data) {
+        return res.status(400).json({ message: "image_data is required" });
+      }
+      
+      // Map image_data to image_url for database storage
       const imageData = {
-        ...req.body,
+        project_id: project_id,
         equipment_type: equipmentType,
-        equipment_id: parseInt(equipmentId)
+        equipment_id: parseInt(equipmentId),
+        image_url: image_data, // Store base64 data as image_url
+        image_name: image_name || `${equipmentType}_${equipmentId}_${Date.now()}.jpg`,
+        metadata: metadata || {}
       };
+      
+      console.log("Mapped image data:", { ...imageData, image_url: image_data ? 'present' : 'missing' });
+      
       const image = await storage.createEquipmentImage(imageData);
       res.status(201).json(image);
     } catch (error) {
