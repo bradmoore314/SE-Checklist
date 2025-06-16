@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
 import ImageUploadModal from "@/components/modals/ImageUploadModal";
 import ImageGalleryModal from "@/components/modals/ImageGalleryModal";
+import ImagePreview from "@/components/ImagePreview";
 
 interface CamerasTabProps {
   project: Project;
@@ -645,19 +646,47 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                     </div>
                   )}
                   
-                  <div className="flex justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedCamera(camera);
-                        setShowImageModal(true);
-                      }}
-                      className="flex items-center"
-                    >
-                      <ImageIcon className="h-4 w-4 mr-1" />
-                      View Images
-                    </Button>
+                  {/* Image Preview Section */}
+                  <div className="border-t pt-3">
+                    <h4 className="text-sm font-medium text-gray-600 mb-2">Images</h4>
+                    <div className="flex items-center justify-between">
+                      <ImagePreview
+                        equipmentType="camera"
+                        equipmentId={camera.id}
+                        maxImages={3}
+                        onClick={() => {
+                          setSelectedCamera(camera);
+                          setShowImageModal(true);
+                        }}
+                        className="flex-1"
+                      />
+                      <div className="flex space-x-2 ml-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCamera(camera);
+                            setShowUploadModal(true);
+                          }}
+                          className="flex items-center"
+                        >
+                          <Upload className="h-4 w-4 mr-1" />
+                          Upload
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCamera(camera);
+                            setShowImageModal(true);
+                          }}
+                          className="flex items-center"
+                        >
+                          <ImageIcon className="h-4 w-4 mr-1" />
+                          Gallery
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </ExpandableEquipmentCard>

@@ -3,6 +3,12 @@ import { useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import UnifiedCameraConfigForm, { CameraConfigData } from '@/components/camera/UnifiedCameraConfigForm';
+import ImagePreview from '@/components/ImagePreview';
+import { Button } from '@/components/ui/button';
+import { Upload, ImageIcon } from 'lucide-react';
+import { useState } from 'react';
+import ImageUploadModal from '@/components/modals/ImageUploadModal';
+import ImageGalleryModal from '@/components/modals/ImageGalleryModal';
 
 interface Camera {
   id: number;
@@ -34,6 +40,8 @@ export default function EditCameraModal({
   projectId
 }: EditCameraModalProps) {
   const { toast } = useToast();
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   
   // Debug camera data
   console.log("EditCameraModal camera data:", camera);
@@ -91,13 +99,48 @@ export default function EditCameraModal({
           </DialogTitle>
         </DialogHeader>
         
-        <div id="edit-camera-dialog">
+        <div id="edit-camera-dialog" className="space-y-6">
+          {/* Image Gallery Section */}
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <h3 className="text-lg font-medium mb-3">Camera Images</h3>
+            <div className="flex items-center justify-between mb-4">
+              <ImagePreview
+                equipmentType="camera"
+                equipmentId={camera.id}
+                maxImages={4}
+                onClick={() => setShowImageModal(true)}
+                className="flex-1"
+              />
+              <div className="flex space-x-2 ml-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowUploadModal(true)}
+                  className="flex items-center"
+                >
+                  <Upload className="h-4 w-4 mr-1" />
+                  Upload
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowImageModal(true)}
+                  className="flex items-center"
+                >
+                  <ImageIcon className="h-4 w-4 mr-1" />
+                  View All
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Camera Configuration Form */}
           <UnifiedCameraConfigForm
             projectId={projectId}
             onSave={handleSave}
             onCancel={handleCancel}
             saveButtonText="Save Camera"
-            showImageUpload={true}
+            showImageUpload={false}
             mode="edit"
             initialData={{
               ...camera,
@@ -106,6 +149,29 @@ export default function EditCameraModal({
             }}
           />
         </div>
+
+        {/* Image Upload Modal */}
+        {showUploadModal && (
+          <ImageUploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            equipmentType="camera"
+            equipmentId={camera.id}
+            projectId={projectId}
+            equipmentName={`Camera - ${camera.location}`}
+          />
+        )}
+
+        {/* Image Gallery Modal */}
+        {showImageModal && (
+          <ImageGalleryModal
+            isOpen={showImageModal}
+            onClose={() => setShowImageModal(false)}
+            equipmentType="camera"
+            equipmentId={camera.id}
+            equipmentName={`Camera - ${camera.location}`}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
