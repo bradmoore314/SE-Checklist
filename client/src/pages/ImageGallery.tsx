@@ -13,8 +13,11 @@ import {
   Info,
   Filter,
   Grid3X3,
-  List
+  List,
+  Upload,
+  Plus
 } from "lucide-react";
+import MiscImageUploadModal from "@/components/modals/MiscImageUploadModal";
 import { format } from "date-fns";
 import type { EquipmentImage } from "@shared/schema";
 
@@ -28,6 +31,7 @@ export default function ImageGallery() {
   const [selectedEquipmentType, setSelectedEquipmentType] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"date" | "equipment" | "type">("date");
+  const [showMiscUploadModal, setShowMiscUploadModal] = useState(false);
 
   // Fetch all images across all equipment types
   const { data: allImages, isLoading } = useQuery({
@@ -64,6 +68,7 @@ export default function ImageGallery() {
     });
 
   const equipmentTypes = Array.from(new Set(images.map(img => img.equipment_type)));
+  const currentProjectId = 1; // Get this from context or params in a real app
 
   const downloadImage = (image: ImageWithEquipment) => {
     const link = document.createElement('a');
@@ -122,7 +127,7 @@ export default function ImageGallery() {
               <option value="all">All Equipment Types</option>
               {equipmentTypes.map(type => (
                 <option key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}s
+                  {type === 'misc' ? 'Miscellaneous' : `${type.charAt(0).toUpperCase() + type.slice(1)}s`}
                 </option>
               ))}
             </select>
