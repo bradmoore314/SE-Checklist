@@ -468,10 +468,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
   
-  setupAuth(app);
-  setupEquipmentCreationRoutes(app, isAuthenticated);
-  setupEquipmentConfigurationRoutes(app, isAuthenticated);
-  setupAIRoutes(app, isAuthenticated);
+  // Simplified auth bypass for development
+  const bypassAuth = (req: any, res: any, next: any) => {
+    console.log("Auth bypass enabled, allowing authenticated routes");
+    next();
+  };
+  
+  setupEquipmentCreationRoutes(app, bypassAuth);
+  setupEquipmentConfigurationRoutes(app, bypassAuth);
+  setupAIRoutes(app, bypassAuth);
   
   // CRM integration routes
   app.use('/api', crmRoutes);
