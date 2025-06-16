@@ -200,38 +200,6 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         
         <div className={`${collapsed ? "px-2" : "px-4"} py-2 mt-4 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>
-          {collapsed ? "" : "FLOORPLANS"}
-        </div>
-        
-        <div>
-          {currentOpportunity ? (
-            // If we have a current opportunity, use its ID
-            <Link href={`/projects/${currentOpportunity.id}/enhanced-floorplans`}>
-              <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 ${
-                location.includes("/floorplans") 
-                  ? "border-r-4 nav-item active" 
-                  : "nav-item hover:bg-gray-100"
-              } cursor-pointer`}
-                 style={location.includes("/floorplans") ? { 
-                   backgroundColor: 'var(--red-accent)', 
-                   borderColor: 'var(--red-accent)' 
-                 } : {}}>
-                <span className={`material-icons ${collapsed ? "" : "mr-3"} ${location.includes("/floorplans") ? "text-white" : "text-gray-600"}`}>map</span>
-                {!collapsed && <span className={location.includes("/floorplans") ? "text-white" : "text-gray-800 font-medium"}>Floorplans</span>}
-              </div>
-            </Link>
-          ) : (
-            // If no current opportunity, link to projects page first
-            <Link href="/projects">
-              <div className={`flex items-center ${collapsed ? "justify-center" : ""} px-4 py-3 nav-item hover:bg-gray-100 cursor-pointer`}>
-                <span className={`material-icons ${collapsed ? "" : "mr-3"} text-gray-600`}>map</span>
-                {!collapsed && <span className="text-gray-800 font-medium">Floorplans</span>}
-              </div>
-            </Link>
-          )}
-        </div>
-
-        <div className={`${collapsed ? "px-2" : "px-4"} py-2 mt-4 text-xs uppercase text-gray-400 font-semibold ${collapsed ? "text-center" : ""}`}>
           {collapsed ? "" : "REPORTS"}
         </div>
         
