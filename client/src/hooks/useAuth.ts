@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
-import { authService, type AuthUser } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export function useAuth() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!supabase) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     // Get initial user
-    authService.getCurrentUser().then((user) => {
-      setUser(user as AuthUser);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
       setIsLoading(false);
     }).catch(() => {
       setUser(null);
@@ -16,8 +22,8 @@ export function useAuth() {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = authService.onAuthStateChange((user) => {
-      setUser(user);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
       setIsLoading(false);
     });
 
@@ -28,8 +34,17 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated: !!user,
-    signIn: authService.signIn,
-    signUp: authService.signUp,
-    signOut: authService.signOut,
+    signIn: async (email: string, password: string) => {
+      if (!supabase) throw new Error('Supabase not configured');
+      return supabase.auth.signInWithPassword({ email, password });
+    },
+    signUp: async (email: string, password: string) => {
+      if (!supabase) throw new Error('Supabase not configured');
+      return supabase.auth.signUp({ email, password });
+    },
+    signOut: async () => {
+      if (!supabase) throw new Error('Supabase not configured');
+      return supabase.auth.signOut();
+    },
   };
 }
