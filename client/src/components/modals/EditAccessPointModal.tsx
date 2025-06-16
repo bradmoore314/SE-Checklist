@@ -12,11 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, Camera, X, Loader2 } from "lucide-react";
+import { Upload, Camera, X, Loader2, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AccessPoint } from "@shared/schema";
 import UnifiedImageHandler from "@/components/UnifiedImageHandler";
+import ImagePreview from "@/components/ImagePreview";
+import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import ImageGalleryModal from "@/components/modals/ImageGalleryModal";
 
 // Create a custom FormItem with the form-item class for highlighting
 const FormItem = ({ className, ...props }: React.ComponentProps<typeof BaseFormItem>) => (
@@ -69,6 +72,8 @@ export default function EditAccessPointModal({
 }: EditAccessPointModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const { toast } = useToast();
   
   // Use effect to focus on the selected field when the modal opens
@@ -640,14 +645,40 @@ export default function EditAccessPointModal({
               )}
             />
 
-            {/* Image Upload Section */}
-            <div className="space-y-2 pt-4">
-              <h3 className="text-sm font-medium">Access Point Images</h3>
-              <UnifiedImageHandler 
-                projectId={accessPoint.project_id}
-                equipmentId={accessPoint.id}
-                equipmentType="access-points"
-              />
+            {/* Image Preview Section */}
+            <div className="border rounded-lg p-4 bg-gray-50 space-y-3">
+              <h3 className="text-lg font-medium">Access Point Images</h3>
+              <div className="flex items-center justify-between">
+                <ImagePreview
+                  equipmentType="access_point"
+                  equipmentId={accessPoint.id}
+                  maxImages={4}
+                  onClick={() => setShowImageModal(true)}
+                  className="flex-1"
+                />
+                <div className="flex space-x-2 ml-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowImageModal(true)}
+                    className="flex items-center"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    View All
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
@@ -677,6 +708,29 @@ export default function EditAccessPointModal({
           </form>
         </Form>
         </ScrollArea>
+
+        {/* Image Upload Modal */}
+        {showUploadModal && (
+          <ImageUploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            equipmentType="access_point"
+            equipmentId={accessPoint.id}
+            projectId={accessPoint.project_id}
+            equipmentName={`Access Point - ${accessPoint.location}`}
+          />
+        )}
+
+        {/* Image Gallery Modal */}
+        {showImageModal && (
+          <ImageGalleryModal
+            isOpen={showImageModal}
+            onClose={() => setShowImageModal(false)}
+            equipmentType="access_point"
+            equipmentId={accessPoint.id}
+            equipmentName={`Access Point - ${accessPoint.location}`}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

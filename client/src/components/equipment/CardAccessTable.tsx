@@ -6,11 +6,12 @@ import { createColumnHelper } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Edit, Plus, FileCog, Copy, Trash, Filter, ArrowUpDown } from "lucide-react";
+import { Edit, Plus, FileCog, Copy, Trash, Filter, ArrowUpDown, Upload, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import EquipmentExportButton from "@/components/EquipmentExportButton";
+import ImagePreview from "@/components/ImagePreview";
 
 interface CardAccessTableProps {
   project: { id: number; name?: string };
