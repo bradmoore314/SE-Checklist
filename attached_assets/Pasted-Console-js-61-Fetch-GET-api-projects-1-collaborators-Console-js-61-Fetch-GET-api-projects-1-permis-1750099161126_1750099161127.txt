@@ -1,0 +1,145 @@
+Console.js:61 Fetch GET /api/projects/1/collaborators
+Console.js:61 Fetch GET /api/projects/1/permission
+Console.js:61 Fetch finished loading: GET /api/projects/1/collaborators
+Console.js:61 Fetch finished loading: GET /api/projects/1/permission
+Console.js:61 Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["/api/projects",1,"permission"]
+Mt.forEach.n.<computed> @ Console.js:61
+onSuccess @ @tanstack_react-query.js?v=b107d852:889
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+Console.js:61 API equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Actual equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+imageStorage.ts:21 
+            
+            
+           POST https://uubkeenfpwwgzwatrclp.supabase.co/storage/v1/object/equipment-images/equipment_images/1/camera/camera_1_1750099115783.png 400 (Bad Request)
+window.fetch @ Network.js:219
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3900
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3921
+fulfilled @ @supabase_supabase-js.js?v=b107d852:3873
+Promise.then
+step @ @supabase_supabase-js.js?v=b107d852:3886
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3888
+__awaiter6 @ @supabase_supabase-js.js?v=b107d852:3870
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3911
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:2987
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:2987
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3188
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3125
+__awaiter4 @ @supabase_supabase-js.js?v=b107d852:3107
+uploadOrUpdate @ @supabase_supabase-js.js?v=b107d852:3156
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3215
+(anonymous) @ @supabase_supabase-js.js?v=b107d852:3125
+__awaiter4 @ @supabase_supabase-js.js?v=b107d852:3107
+upload @ @supabase_supabase-js.js?v=b107d852:3214
+uploadEquipmentImage @ imageStorage.ts:21
+handleUpload @ ImageUploadModal.tsx:75
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch POST /api/equipment/camera/1/images with data
+Console.js:61 Fetch finished loading: POST /api/equipment/camera/1/images
+Console.js:61 EditCameraModal camera data: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 camera.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Transformed camera data: {location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', resolution: '4MP', field_of_view: '90', …}
+Console.js:61 Sending camera update data: {location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', resolution: '4MP', field_of_view: '90', …}
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Fetch PUT /api/cameras/1 with data
+Console.js:61 EditCameraModal camera data: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 camera.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Fetch finished loading: PUT /api/cameras/1
+Console.js:61 Camera updated: 1 {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 EditCameraModal camera data: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 camera.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
