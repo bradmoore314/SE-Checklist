@@ -177,6 +177,12 @@ export default function TopNav({ project, onToggleSidebar, user, sidebarCollapse
               </div>
               <DropdownMenuSeparator style={{ backgroundColor: 'var(--medium-grey)' }} />
               <DropdownMenuItem asChild className="focus:bg-gray-100">
+                <Link href="/account" className="flex w-full cursor-pointer text-gray-800">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  <span>Account</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-gray-100">
                 <Link href="/settings" className="flex w-full cursor-pointer text-gray-800">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
