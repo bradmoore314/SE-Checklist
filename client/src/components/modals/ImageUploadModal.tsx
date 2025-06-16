@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { uploadEquipmentImage } from "@/lib/supabase";
+import { uploadEquipmentImage, saveImageMetadata } from "@/lib/imageStorage";
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -71,28 +71,21 @@ export default function ImageUploadModal({
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
 
         try {
-          // Upload to Supabase using centralized function
+          // Upload image using fallback-enabled storage
           const imageUrl = await uploadEquipmentImage(file, equipmentType, equipmentId, projectId);
           
           setUploadProgress(prev => ({ ...prev, [file.name]: 50 }));
 
-          // Save metadata to database
-          const imageData = {
-            project_id: projectId,
-            equipment_type: equipmentType,
-            equipment_id: equipmentId,
-            image_url: imageUrl,
-            image_name: file.name,
-            file_size: file.size,
-            mime_type: file.type,
-            metadata: {
-              original_name: file.name,
-              upload_timestamp: new Date().toISOString(),
-              file_size_formatted: `${(file.size / 1024).toFixed(1)} KB`
-            }
-          };
-
-          await apiRequest("POST", `/api/equipment/${equipmentType}/${equipmentId}/images`, imageData);
+          // Save metadata to database using centralized function
+          await saveImageMetadata(
+            projectId,
+            equipmentType,
+            equipmentId,
+            imageUrl,
+            file.name,
+            file.size,
+            file.type
+          );
           
           setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
           uploadedImages.push(file.name);

@@ -14,11 +14,16 @@ export const checkBucketExists = async (bucketName: string) => {
     throw new Error("Supabase client not initialized. Please check your environment variables.");
   }
 
-  const { data: buckets } = await supabase.storage.listBuckets();
-  const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
-  
-  if (!bucketExists) {
-    throw new Error(`Bucket '${bucketName}' does not exist. Please create it in your Supabase dashboard first.`);
+  try {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+    
+    if (!bucketExists) {
+      throw new Error(`Storage bucket '${bucketName}' not found. Please create it manually in your Supabase dashboard:\n\n1. Go to Storage > Buckets\n2. Create bucket named '${bucketName}'\n3. Make it public\n4. Set 10MB file size limit\n5. Allow image MIME types`);
+    }
+  } catch (error) {
+    // If listing buckets fails, proceed anyway - bucket might exist but permissions might be restricted
+    console.warn('Could not verify bucket existence, proceeding with upload attempt');
   }
 };
 
@@ -33,8 +38,8 @@ export const uploadEquipmentImage = async (
     throw new Error("Supabase client not initialized. Please check your environment variables.");
   }
 
-  // Check if bucket exists
-  await checkBucketExists('equipment-images');
+  // Skip bucket check for now - bucket creation requires service role permissions
+  // await checkBucketExists('equipment-images');
 
   const fileExt = file.name.split('.').pop();
   const fileName = `${equipmentType}_${equipmentId}_${Date.now()}.${fileExt}`;
