@@ -9,29 +9,9 @@ export const uploadEquipmentImage = async (
   projectId: number
 ): Promise<string> => {
   
-  // Try Supabase upload first
-  if (supabase) {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${equipmentType}_${equipmentId}_${Date.now()}.${fileExt}`;
-      const filePath = `equipment_images/${projectId}/${equipmentType}/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('equipment-images')
-        .upload(filePath, file);
-
-      if (!error) {
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('equipment-images')
-          .getPublicUrl(filePath);
-
-        return urlData.publicUrl;
-      }
-    } catch (supabaseError) {
-      console.warn('Supabase upload failed, using fallback storage:', supabaseError);
-    }
-  }
+  // Skip Supabase for now since bucket doesn't exist - use base64 fallback directly
+  // This provides immediate functionality without requiring bucket setup
+  console.log('Using base64 storage for image upload (Supabase bucket not configured)');
 
   // Fallback: Convert to base64 and store in database
   return new Promise((resolve, reject) => {
