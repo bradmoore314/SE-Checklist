@@ -323,6 +323,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Floorplans endpoint (simplified - no longer stores floorplan data)
+  app.get("/api/projects/:projectId/floorplans", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Return empty array since floorplans feature was removed
+    res.json([]);
+  });
+
   // Equipment endpoints (access points, cameras, elevators, intercoms)
   app.get("/api/projects/:projectId/access-points", async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
@@ -339,7 +350,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(accessPoints);
   });
 
-  // ... (I'll add the rest of the equipment endpoints without any floorplan references)
+  app.get("/api/projects/:projectId/cameras", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    const cameras = await storage.getCameras(projectId);
+    res.json(cameras);
+  });
+
+  app.get("/api/projects/:projectId/elevators", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    const elevators = await storage.getElevators(projectId);
+    res.json(elevators);
+  });
+
+  app.get("/api/projects/:projectId/intercoms", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    const intercoms = await storage.getIntercoms(projectId);
+    res.json(intercoms);
+  });
+
+  app.get("/api/projects/:projectId/reports/project-summary", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      const accessPoints = await storage.getAccessPoints(projectId);
+      const cameras = await storage.getCameras(projectId);
+      const elevators = await storage.getElevators(projectId);
+      const intercoms = await storage.getIntercoms(projectId);
+
+      res.json({
+        project: project,
+        summary: {
+          accessPointCount: accessPoints.length,
+          cameraCount: cameras.length,
+          elevatorCount: elevators.length,
+          intercomCount: intercoms.length,
+          totalEquipmentCount: accessPoints.length + cameras.length + elevators.length + intercoms.length
+        },
+        equipment: {
+          accessPoints: accessPoints,
+          cameras: cameras,
+          elevators: elevators,
+          intercoms: intercoms
+        }
+      });
+    } catch (error) {
+      console.error("Error generating project summary:", error);
+      res.status(500).json({ message: "Failed to generate project summary" });
+    }
+  });
+
+  app.get("/api/projects/:projectId/marker-stats", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+
+      // Return basic stats structure
+      res.json({
+        totalMarkers: 0,
+        equipmentMarkers: 0,
+        unassignedEquipment: 0,
+        coverage: 100
+      });
+    } catch (error) {
+      console.error("Error getting marker stats:", error);
+      res.status(500).json({ message: "Failed to get marker statistics" });
+    }
+  });
+
+  // Project collaborators endpoint
+  app.get("/api/projects/:projectId/collaborators", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Return empty array - collaborators feature simplified
+    res.json([]);
+  });
+
+  // Project permissions endpoint
+  app.get("/api/projects/:projectId/permission", async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    // Return basic permission structure
+    res.json({
+      canEdit: true,
+      canDelete: true,
+      canShare: true,
+      role: "owner"
+    });
+  });
 
   const httpServer = createServer(app);
   

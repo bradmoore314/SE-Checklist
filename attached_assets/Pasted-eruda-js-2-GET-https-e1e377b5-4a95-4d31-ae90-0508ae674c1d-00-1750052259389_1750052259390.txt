@@ -1,0 +1,1760 @@
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (eruda.js:2:218642)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (eruda.js:2:218642)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+eruda.js:2 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (eruda.js:2:218642)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:755:17)
+    at async WebSocket.<anonymous> (client:561:7)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'battery'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+framework-baa0ec8102ca615c.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-baa0ec8102ca615c.js:1
+(anonymous) @ framework-baa0ec8102ca615c.js:1
+uD @ framework-baa0ec8102ca615c.js:1
+uI @ framework-baa0ec8102ca615c.js:1
+uM @ framework-baa0ec8102ca615c.js:1
+uS @ framework-baa0ec8102ca615c.js:1
+C @ framework-baa0ec8102ca615c.js:1
+z @ framework-baa0ec8102ca615c.js:1
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+eruda.js:2 [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+add @ delegate.js:81
+(anonymous) @ $event.js:17
+t @ each.js:8
+(anonymous) @ $event.js:16
+on @ $.js:42
+value @ index.js:144
+t @ index.js:17
+value @ DevTools.js:316
+t @ DevTools.js:58
+_initDevTools @ eruda.js:244
+init @ eruda.js:51
+(anonymous) @ injected.js:2
+(anonymous) @ injected.js:156
+eruda.js:2 [vite] connecting...
+eruda.js:2 Running in development mode
+eruda.js:2 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+eruda.js:2 Auth required for /api/user
+eruda.js:2 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:77:13
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+eruda.js:2 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects 502 (Bad Gateway)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2 Query error for /api/projects: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2
+(anonymous) @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/src/lib/queryClient.ts:82
+await in (anonymous)
+fetchFn @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:840
+run @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:494
+start @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:536
+fetch @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:1898
+subscribe @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:24
+(anonymous) @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:18718
+workLoop @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:197
+flushWork @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=b107d852:384
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar27f%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 [vite] connecting...
+Console.js:61 Running in development mode
+client:536 WebSocket connection to 'wss://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/?token=ZCgqG0zLqeX6' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+Console.js:61 [vite] server connection lost. Polling for restart...
+Network.js:142 [Intervention] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2
+queryClient.ts:101 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:119:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+client:736 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+Network.js:219 
+            
+            
+           Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at ping (client:736:13)
+    at waitForSuccessfulPing (client:749:13)
+    at WebSocket.<anonymous> (client:561:13)
+window.fetch @ Network.js:219
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561
+queryClient.ts:101 
+            
+            
+           GET https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+Console.js:61 Auth required for /api/user
+Console.js:61 Query error for /api/user: Error: Authentication required. Please log in.
+    at queryClient.ts:119:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18868
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19432
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+finishConcurrentRender @ chunk-276SZO74.js?v=b107d852:18805
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18718
+workLoop @ chunk-276SZO74.js?v=b107d852:197
+flushWork @ chunk-276SZO74.js?v=b107d852:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=b107d852:384
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-3JZTKTF4.js?v=b107d852:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+Console.js:61 Fetch POST /api/projects with data
+Console.js:61 Fetch finished loading: POST /api/projects
+Console.js:61 Fetch GET /api/projects/1/floorplans
+Console.js:61 Fetch finished loading: GET /api/projects/1/floorplans
+Console.js:61 Fetch GET /api/projects/1/collaborators
+Console.js:61 Fetch GET /api/projects/1/permission
+Console.js:61 Fetch finished loading: GET /api/projects/1/collaborators
+Console.js:61 Error fetching collaborators: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ use-collaborators.tsx:36
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch finished loading: GET /api/projects/1/permission
+Console.js:61 Error fetching permission: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ use-collaborators.tsx:143
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/intercoms: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/cameras: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/elevators: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Fetch GET /api/projects/1/floorplans
+Console.js:61 Fetch finished loading: GET /api/projects/1/floorplans
+Console.js:61 Fetch GET /api/projects/1/collaborators
+Console.js:61 Fetch finished loading: GET /api/projects/1/collaborators
+Console.js:61 Error fetching collaborators: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ use-collaborators.tsx:36
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/intercoms: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/cameras: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/elevators: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/marker-stats: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 API equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Actual equipment counts: {accessPoints: 0, cameras: 0, elevators: 0, intercoms: 0}
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
+Console.js:61 Query error for /api/projects/1/reports/project-summary: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:128
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=b107d852:840
+run @ @tanstack_react-query.js?v=b107d852:494
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+(anonymous) @ @tanstack_react-query.js?v=b107d852:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=b107d852:2243
+updateTimers_fn @ @tanstack_react-query.js?v=b107d852:2250
+onQueryUpdate @ @tanstack_react-query.js?v=b107d852:2206
+(anonymous) @ @tanstack_react-query.js?v=b107d852:998
+(anonymous) @ @tanstack_react-query.js?v=b107d852:997
+batch @ @tanstack_react-query.js?v=b107d852:583
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+onError @ @tanstack_react-query.js?v=b107d852:861
+reject @ @tanstack_react-query.js?v=b107d852:465
+(anonymous) @ @tanstack_react-query.js?v=b107d852:508
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+(anonymous) @ @tanstack_react-query.js?v=b107d852:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=b107d852:515
+Promise.catch
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+onSubscribe @ @tanstack_react-query.js?v=b107d852:1898
+subscribe @ @tanstack_react-query.js?v=b107d852:24
+(anonymous) @ @tanstack_react-query.js?v=b107d852:3022
+subscribeToStore @ chunk-276SZO74.js?v=b107d852:11984
+commitHookEffectListMount @ chunk-276SZO74.js?v=b107d852:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=b107d852:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=b107d852:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=b107d852:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=b107d852:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=b107d852:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=b107d852:19447
+commitRootImpl @ chunk-276SZO74.js?v=b107d852:19416
+commitRoot @ chunk-276SZO74.js?v=b107d852:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=b107d852:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=b107d852:9119
+(anonymous) @ chunk-276SZO74.js?v=b107d852:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b107d852:555
+flush @ @tanstack_react-query.js?v=b107d852:569
+batch @ @tanstack_react-query.js?v=b107d852:587
+dispatch_fn @ @tanstack_react-query.js?v=b107d852:996
+setData @ @tanstack_react-query.js?v=b107d852:696
+onSuccess @ @tanstack_react-query.js?v=b107d852:897
+resolve @ @tanstack_react-query.js?v=b107d852:456
+Promise.then
+run @ @tanstack_react-query.js?v=b107d852:498
+start @ @tanstack_react-query.js?v=b107d852:536
+fetch @ @tanstack_react-query.js?v=b107d852:926
+executeFetch_fn @ @tanstack_react-query.js?v=b107d852:2211
+fetch @ @tanstack_react-query.js?v=b107d852:2011
+refetch @ @tanstack_react-query.js?v=b107d852:2001
+onSubmit @ projects.tsx:212
+await in onSubmit
+(anonymous) @ chunk-BW5TH624.js?v=b107d852:1675
+await in (anonymous)
+callCallback2 @ chunk-276SZO74.js?v=b107d852:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=b107d852:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=b107d852:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=b107d852:3736
+executeDispatch @ chunk-276SZO74.js?v=b107d852:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=b107d852:7034
+processDispatchQueue @ chunk-276SZO74.js?v=b107d852:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=b107d852:7051
+(anonymous) @ chunk-276SZO74.js?v=b107d852:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=b107d852:18913
+batchedUpdates @ chunk-276SZO74.js?v=b107d852:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=b107d852:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=b107d852:5478
+dispatchEvent @ chunk-276SZO74.js?v=b107d852:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=b107d852:5449
