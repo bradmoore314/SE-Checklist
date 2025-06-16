@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { StreamCamera, Camera } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { useProject } from "@/contexts/ProjectContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Table, 
@@ -90,13 +91,21 @@ export default function Step1AddCameras({
   const [duplicateQuantity, setDuplicateQuantity] = useState(1);
   const [duplicatePrefix, setDuplicatePrefix] = useState("");
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
-  const [projectId, setProjectId] = useState<number>(1); // Default to project 1
+  const { currentProject } = useProject();
+  const projectId = currentProject?.id;
 
   // Fetch project cameras
   const { data: projectCameras, isLoading: isLoadingCameras } = useQuery({
     queryKey: ['/api/projects', projectId, 'cameras'],
     enabled: !!projectId
   }) as { data: Camera[] | undefined, isLoading: boolean };
+  
+  // Automatically import cameras when project cameras load and cameras list is empty
+  useEffect(() => {
+    if (projectCameras && projectCameras.length > 0 && cameras.length === 0) {
+      handleImportCameras();
+    }
+  }, [projectCameras, cameras.length]);
   
   // Add handler for importing cameras from project
   const handleImportCameras = () => {
