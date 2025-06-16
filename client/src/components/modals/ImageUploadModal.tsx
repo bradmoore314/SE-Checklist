@@ -5,10 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import { uploadEquipmentImage } from "@/lib/supabase";
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -34,8 +31,6 @@ export default function ImageUploadModal({
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const { toast } = useToast();
 
-  const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
-
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
@@ -55,45 +50,13 @@ export default function ImageUploadModal({
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const uploadToSupabase = async (file: File): Promise<string> => {
-    if (!supabase) {
-      throw new Error("Supabase client not initialized. Please check your environment variables.");
-    }
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${equipmentType}_${equipmentId}_${Date.now()}.${fileExt}`;
-    const filePath = `equipment_images/${projectId}/${equipmentType}/${fileName}`;
-
-    const { data, error } = await supabase.storage
-      .from('equipment-images')
-      .upload(filePath, file);
-
-    if (error) {
-      throw new Error(`Upload failed: ${error.message}`);
-    }
-
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('equipment-images')
-      .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
-  };
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast({
         title: "No Files Selected",
         description: "Please select at least one image to upload.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!supabase) {
-      toast({
-        title: "Configuration Error",
-        description: "Supabase is not configured. Please check your environment variables.",
         variant: "destructive",
       });
       return;
@@ -108,8 +71,8 @@ export default function ImageUploadModal({
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
 
         try {
-          // Upload to Supabase
-          const imageUrl = await uploadToSupabase(file);
+          // Upload to Supabase using centralized function
+          const imageUrl = await uploadEquipmentImage(file, equipmentType, equipmentId, projectId);
           
           setUploadProgress(prev => ({ ...prev, [file.name]: 50 }));
 
