@@ -164,7 +164,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
   };
   
   // Handle click on edit button
-  const handleEditClick = (intercom: Intercom) => {
+  const handleEditClick = (intercom: any) => {
     setEditingIntercom(intercom);
   };
   
@@ -375,7 +375,7 @@ export default function IntercomsTab({ project }: IntercomsTabProps) {
       {editingIntercom && (
         <EditIntercomModal
           isOpen={!!editingIntercom}
-          intercom={editingIntercom}
+          intercom={editingIntercom as any}
           onSave={handleEditSave}
           onClose={() => setEditingIntercom(null)}
         />

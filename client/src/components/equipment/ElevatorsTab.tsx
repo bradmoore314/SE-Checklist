@@ -412,7 +412,7 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
       {showEditModal && selectedElevator && (
         <EditElevatorModal 
           isOpen={showEditModal} 
-          elevator={selectedElevator} 
+          elevator={selectedElevator as any} 
           onSave={handleEditSave} 
           onClose={() => {
             setShowEditModal(false);
