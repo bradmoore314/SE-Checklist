@@ -23,6 +23,7 @@ import MiscPage from "@/pages/misc-page";
 
 import DocumentationPage from "@/pages/documentation-page";
 import FeedbackPage from "@/pages/feedback-page";
+import ImageGallery from "@/pages/ImageGallery";
 
 import EquipmentConfigurationWorkspacePage from "@/pages/equipment-configuration-workspace-page";
 import MainLayout from "@/layouts/MainLayout";
@@ -92,6 +93,7 @@ function Router() {
       {/* Documentation and Feedback */}
       <Route path="/documentation" component={DocumentationPage} />
       <Route path="/feedback" component={FeedbackPage} />
+      <Route path="/images" component={ImageGallery} />
       <Route path="/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <Route path="/projects/:projectId/equipment-configuration" component={EquipmentConfigurationWorkspacePage} />
       <Route path="/account" component={AccountPage} />

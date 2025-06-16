@@ -100,6 +100,7 @@ export interface IStorage {
   updateGatewayCalculatorConfig(projectId: number, config: any): Promise<any>;
   
   // Equipment Images
+  getAllEquipmentImages(): Promise<any[]>;
   getEquipmentImages(equipmentType: string, equipmentId: number): Promise<EquipmentImage[]>;
   createEquipmentImage(image: InsertEquipmentImage): Promise<EquipmentImage>;
   deleteEquipmentImage(id: number): Promise<boolean>;
