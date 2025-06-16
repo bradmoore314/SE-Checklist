@@ -1,0 +1,53 @@
+/* Authentication page specific styles */
+.auth-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  overflow: auto;
+}
+
+/* Hide all other app elements during auth */
+.auth-container ~ * {
+  display: none !important;
+}
+
+/* Prevent mobile zoom on input focus */
+.auth-container input {
+  font-size: 16px !important;
+  transform-origin: left top;
+  transition: none;
+}
+
+/* Ensure auth container covers everything */
+.auth-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: -1;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1rem;
+  }
+  
+  .auth-container .card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+}
+
+/* Prevent any sidebar bleeding through */
+.auth-container * {
+  position: relative;
+  z-index: 1000;
+}

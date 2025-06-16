@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import kastleLogo from '@/assets/kastle-logo.png';
+import '../styles/auth.css';
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
