@@ -38,11 +38,12 @@ export const cameraConfigSchema = z.object({
   camera_type: z.string().min(1, "Camera type is required"),
   mounting_type: z.string().optional(),
   resolution: z.string().optional(),
+  field_of_view: z.string().optional(),
   notes: z.string().optional(),
-  is_indoor: z.enum(["indoor", "outdoor"]).default("indoor"),
+  is_indoor: z.boolean().default(true),
   import_to_gateway: z.boolean().default(true),
   
-  // Marker visualization fields
+  // Marker visualization fields  
   fov: z.coerce.number().min(10).max(360).default(90),
   range: z.coerce.number().min(20).max(200).default(60),
   rotation: z.coerce.number().min(0).max(359).default(0),
@@ -217,11 +218,22 @@ export default function UnifiedCameraConfigForm({
     setIsSubmitting(true);
     
     try {
-      // Pass data to parent component with image if present
-      onSave({
+      // Transform the data to match database expectations
+      const transformedData = {
         ...data,
+        // Convert "indoor"/"outdoor" string to boolean
+        is_indoor: data.is_indoor === "indoor" ? true : false,
+        // Ensure field_of_view is a string
+        field_of_view: data.fov ? data.fov.toString() : "90",
+        // Remove the raw fov field since we're using field_of_view
+        fov: undefined,
         ...(image && { image_data: image })
-      });
+      };
+      
+      console.log("Transformed camera data:", transformedData);
+      
+      // Pass transformed data to parent component
+      onSave(transformedData);
       
       setIsSubmitting(false);
     } catch (error) {
