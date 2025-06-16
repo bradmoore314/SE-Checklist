@@ -170,13 +170,14 @@ export default function EditIntercomModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{isNewIntercom ? "Add Intercom" : "Edit Intercom"}</DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Location */}
             <FormField
               control={form.control}
@@ -299,6 +300,42 @@ export default function EditIntercomModal({
                 </FormItem>
               )}
             />
+
+            {/* Image Preview Section */}
+            <div className="border rounded-lg p-4 bg-gray-50 space-y-3">
+              <h3 className="text-lg font-medium">Intercom Images</h3>
+              <div className="flex items-center justify-between">
+                <ImagePreview
+                  equipmentType="intercom"
+                  equipmentId={intercom.id}
+                  maxImages={4}
+                  onClick={() => setShowImageModal(true)}
+                  className="flex-1"
+                />
+                <div className="flex space-x-2 ml-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowImageModal(true)}
+                    className="flex items-center"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    View All
+                  </Button>
+                </div>
+              </div>
+            </div>
             
             {/* Submit/Cancel buttons */}
             <div className="flex justify-end gap-2">
@@ -325,6 +362,30 @@ export default function EditIntercomModal({
             </div>
           </form>
         </Form>
+        </ScrollArea>
+
+        {/* Image Upload Modal */}
+        {showUploadModal && (
+          <ImageUploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            equipmentType="intercom"
+            equipmentId={intercom.id}
+            projectId={intercom.project_id}
+            equipmentName={`Intercom - ${intercom.location}`}
+          />
+        )}
+
+        {/* Image Gallery Modal */}
+        {showImageModal && (
+          <ImageGalleryModal
+            isOpen={showImageModal}
+            onClose={() => setShowImageModal(false)}
+            equipmentType="intercom"
+            equipmentId={intercom.id}
+            equipmentName={`Intercom - ${intercom.location}`}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
