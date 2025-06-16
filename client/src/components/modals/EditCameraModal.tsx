@@ -64,10 +64,10 @@ export default function EditCameraModal({
     // Transform data to match database schema
     const transformedData = {
       ...data,
-      // Convert "indoor"/"outdoor" string to boolean
-      is_indoor: data.is_indoor === "indoor" ? true : false,
-      // Ensure field_of_view is a string
-      field_of_view: data.fov ? data.fov.toString() : "90"
+      // is_indoor is already boolean from the form
+      is_indoor: data.is_indoor,
+      // Ensure field_of_view is a string from fov number
+      field_of_view: data.fov.toString()
     };
     
     console.log("Sending camera update data:", transformedData);
