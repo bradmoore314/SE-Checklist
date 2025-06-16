@@ -456,6 +456,26 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             />
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           </div>
+          <div className="flex items-center border border-gray-200 rounded-md p-1">
+            <Button
+              variant={viewMode === 'card' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('card')}
+              className="h-8 px-3"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" />
+              Cards
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="h-8 px-3"
+            >
+              <List className="h-4 w-4 mr-1" />
+              List
+            </Button>
+          </div>
           <Button 
             variant="outline"
             className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -521,43 +541,158 @@ export default function CamerasTab({ project }: CamerasTabProps) {
               )}
             </div>
           </div>
+        ) : viewMode === 'card' ? (
+          // Card View
+          <div className="p-6 space-y-4">
+            {paginatedCameras.map((camera: Camera, index: number) => (
+              <ExpandableEquipmentCard
+                key={camera.id}
+                title={camera.location || "Untitled Camera"}
+                subtitle={camera.camera_type}
+                number={index + 1}
+                onEdit={() => {
+                  setSelectedCamera(camera);
+                  setShowEditModal(true);
+                }}
+                onDelete={() => handleDelete(camera.id)}
+                onDuplicate={async () => {
+                  try {
+                    await apiRequest("POST", `/api/cameras/${camera.id}/duplicate`);
+                    queryClient.invalidateQueries({ 
+                      queryKey: [`/api/projects/${project.id}/cameras`]
+                    });
+                    toast({
+                      title: "Camera Duplicated",
+                      description: "The camera has been duplicated successfully.",
+                    });
+                  } catch (error) {
+                    toast({
+                      title: "Duplication Failed",
+                      description: (error as Error).message,
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                onUploadPhoto={() => {
+                  setSelectedCamera(camera);
+                  setShowUploadModal(true);
+                }}
+              >
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Mounting Type</h4>
+                      <p className="text-sm">{camera.mounting_type || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Resolution</h4>
+                      <p className="text-sm">{camera.resolution || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Field of View</h4>
+                      <p className="text-sm">{camera.field_of_view || "—"}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Environment</h4>
+                      <p className="text-sm">{camera.is_indoor ? "Indoor" : "Outdoor"}</p>
+                    </div>
+                    {camera.lens_count && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-600 mb-1">Lens Count</h4>
+                        <p className="text-sm">{camera.lens_count}</p>
+                      </div>
+                    )}
+                    {camera.frame_rate && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-600 mb-1">Frame Rate</h4>
+                        <p className="text-sm">{camera.frame_rate}</p>
+                      </div>
+                    )}
+                  </div>
+                  {camera.notes && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-600 mb-1">Notes</h4>
+                      <p className="text-sm bg-muted/30 p-2 rounded border hover:bg-muted cursor-pointer"
+                         onClick={() => {
+                           setSelectedCamera(camera);
+                           setShowEditModal(true);
+                         }}
+                      >
+                        {camera.notes}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedCamera(camera);
+                        setShowImageModal(true);
+                      }}
+                      className="flex items-center"
+                    >
+                      <ImageIcon className="h-4 w-4 mr-1" />
+                      View Images
+                    </Button>
+                  </div>
+                </div>
+              </ExpandableEquipmentCard>
+            ))}
+          </div>
         ) : (
+          // Enhanced List View
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="bg-primary">
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
-                    LOCATION
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
-                    CAMERA TYPE
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
-                    MOUNTING TYPE
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
-                    RESOLUTION
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">
-                    FIELD OF VIEW
-                  </th>
-                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white text-right">
-                    ACTIONS
-                  </th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LOCATION</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">CAMERA TYPE</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">MOUNTING</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">RESOLUTION</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">FOV</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">LENS COUNT</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">FRAME RATE</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white">ENVIRONMENT</th>
+                  <th scope="col" className="px-4 py-3 whitespace-nowrap text-xs uppercase text-white text-right">ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedCameras.map((camera: Camera) => (
                   <tr key={camera.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <span className="text-blue-600">{camera.location || "—"}</span>
+                      <span className="text-blue-600 font-medium">{camera.location || "—"}</span>
                     </td>
                     <td className="px-4 py-3 text-gray-700">{camera.camera_type}</td>
                     <td className="px-4 py-3 text-gray-700">{camera.mounting_type || "—"}</td>
                     <td className="px-4 py-3 text-gray-700">{camera.resolution || "—"}</td>
                     <td className="px-4 py-3 text-gray-700">{camera.field_of_view || "—"}</td>
+                    <td className="px-4 py-3 text-gray-700">{camera.lens_count || "—"}</td>
+                    <td className="px-4 py-3 text-gray-700">{camera.frame_rate || "—"}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        camera.is_indoor 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {camera.is_indoor ? "Indoor" : "Outdoor"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setSelectedCamera(camera);
+                            setShowUploadModal(true);
+                          }}
+                          className="h-8 w-8 rounded-full text-gray-500 hover:text-blue-700 hover:bg-blue-50"
+                          title="Upload Photo"
+                        >
+                          <Upload className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -566,6 +701,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                             setShowEditModal(true);
                           }}
                           className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          title="Edit Camera"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -575,12 +711,9 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                           onClick={async () => {
                             try {
                               await apiRequest("POST", `/api/cameras/${camera.id}/duplicate`);
-                              
-                              // Invalidate and refetch
                               queryClient.invalidateQueries({ 
                                 queryKey: [`/api/projects/${project.id}/cameras`]
                               });
-                              
                               toast({
                                 title: "Camera Duplicated",
                                 description: "The camera has been duplicated successfully.",
@@ -594,6 +727,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                             }
                           }}
                           className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          title="Duplicate Camera"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
@@ -602,6 +736,7 @@ export default function CamerasTab({ project }: CamerasTabProps) {
                           size="icon"
                           onClick={() => handleDelete(camera.id)}
                           className="h-8 w-8 rounded-full text-gray-500 hover:text-red-700 hover:bg-red-50"
+                          title="Delete Camera"
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
@@ -696,6 +831,48 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             handleEditSave(selectedCamera.id, updatedData);
           }}
         />
+      )}
+
+      {/* Image Upload Modal */}
+      {showUploadModal && selectedCamera && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Upload Photo for {selectedCamera.location}</h3>
+            <p className="text-gray-600 mb-4">Photo upload functionality will be available soon.</p>
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setSelectedCamera(null);
+                }}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Gallery Modal */}
+      {showImageModal && selectedCamera && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Images for {selectedCamera.location}</h3>
+            <p className="text-gray-600 mb-4">No images uploaded yet for this camera.</p>
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowImageModal(false);
+                  setSelectedCamera(null);
+                }}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </Card>
   );
