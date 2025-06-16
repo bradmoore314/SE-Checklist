@@ -74,6 +74,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           onToggleSidebar={toggleSidebar} 
           user={user}
           sidebarCollapsed={sidebarCollapsed}
+          storageStatus={<StorageStatus />}
         />
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 bg-gray-50">
           {children}

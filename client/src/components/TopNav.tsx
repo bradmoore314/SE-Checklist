@@ -17,11 +17,12 @@ import kastleLogo from "@/assets/kastle-logo.png";
 interface TopNavProps {
   project: Project | null;
   onToggleSidebar: () => void;
-  user: User | null;
+  user: any;
   sidebarCollapsed?: boolean;
+  storageStatus?: React.ReactNode;
 }
 
-export default function TopNav({ project, onToggleSidebar, user, sidebarCollapsed = false }: TopNavProps) {
+export default function TopNav({ project, onToggleSidebar, user, sidebarCollapsed = false, storageStatus }: TopNavProps) {
   const { signOut, user: currentUser } = useAuth();
 
   const handleLogout = async () => {
@@ -74,6 +75,13 @@ export default function TopNav({ project, onToggleSidebar, user, sidebarCollapse
       </div>
       
       <div className="flex items-center space-x-1 sm:space-x-2">
+        {/* Storage Status */}
+        {storageStatus && (
+          <div className="hidden sm:block">
+            {storageStatus}
+          </div>
+        )}
+        
         {/* More menu for smaller screens */}
         <div className="block md:hidden">
           <DropdownMenu>
