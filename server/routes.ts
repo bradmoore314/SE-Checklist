@@ -726,6 +726,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Equipment Images routes
+  app.get("/api/images/all", async (req: Request, res: Response) => {
+    try {
+      const images = await storage.getAllEquipmentImages();
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching all images:", error);
+      res.status(500).json({ message: "Failed to fetch all images" });
+    }
+  });
+
   app.get("/api/equipment/:equipmentType/:equipmentId/images", async (req: Request, res: Response) => {
     try {
       const { equipmentType, equipmentId } = req.params;
