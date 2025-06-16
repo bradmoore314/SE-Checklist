@@ -143,8 +143,18 @@ export default function ImageGallery() {
             </select>
           </div>
 
-          {/* View Mode Toggle */}
+          {/* Upload and View Mode Toggle */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => setShowMiscUploadModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Upload Images
+            </Button>
+            <div className="h-4 w-px bg-gray-300 mx-1" />
             <Button
               variant={viewMode === "grid" ? "default" : "outline"}
               size="sm"
@@ -289,6 +299,13 @@ export default function ImageGallery() {
           ))}
         </div>
       )}
+
+      {/* Miscellaneous Image Upload Modal */}
+      <MiscImageUploadModal
+        isOpen={showMiscUploadModal}
+        onClose={() => setShowMiscUploadModal(false)}
+        projectId={currentProjectId}
+      />
     </div>
   );
 }
