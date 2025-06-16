@@ -215,7 +215,7 @@ export default function ElevatorsTab({ project }: ElevatorsTabProps) {
           </div>
           
           <div className="flex gap-2">
-            <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
+            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
             
             <Button
               variant="outline"
