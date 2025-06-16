@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddCameraModal from "../modals/AddCameraModal";
 import EditCameraModal from "../modals/EditCameraModal";
-// CombinedCameraConfigForm removed with floorplans feature
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Plus, Search, Video, Edit, Copy, Trash, FileDown } from "lucide-react";
+import { Plus, Search, Video, Edit, Copy, Trash, FileDown, LayoutGrid, List, Camera as CameraIcon, Upload, ImageIcon } from "lucide-react";
 import * as XLSX from 'xlsx';
+import { ExpandableEquipmentCard } from "@/components/ExpandableEquipmentCard";
 
 interface CamerasTabProps {
   project: Project;
@@ -21,8 +21,11 @@ export default function CamerasTab({ project }: CamerasTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const itemsPerPage = 50;
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -463,14 +466,14 @@ export default function CamerasTab({ project }: CamerasTabProps) {
             Export to Excel
           </Button>
           <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
+            className="hover:bg-blue-700 text-white shadow-sm transition-all bg-[#e41e31]"
             onClick={() => setLocation("/camera-stream-gateway")}
           >
             <Video className="mr-2 h-4 w-4" />
             Gateway Calculator
           </Button>
           <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
+            className="hover:bg-blue-700 text-white shadow-sm transition-all bg-[#e41e31]"
             onClick={() => setShowAddModal(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
