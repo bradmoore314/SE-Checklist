@@ -559,7 +559,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/access-points", async (req: Request, res: Response) => {
     try {
       console.log("Creating access point:", req.body);
-      const accessPoint = await storage.createAccessPoint(req.body);
+      
+      // Clean the request body to remove timestamp fields that should be auto-generated
+      const cleanData = { ...req.body };
+      delete cleanData.created_at;
+      delete cleanData.updated_at;
+      delete cleanData.id; // Remove id if present
+      
+      const accessPoint = await storage.createAccessPoint(cleanData);
       res.status(201).json(accessPoint);
     } catch (error) {
       console.error("Error creating access point:", error);
@@ -586,6 +593,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting access point:", error);
       res.status(500).json({ message: "Failed to delete access point" });
+    }
+  });
+
+  app.post("/api/access-points/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const accessPointId = parseInt(req.params.id);
+      if (isNaN(accessPointId)) {
+        return res.status(400).json({ message: "Invalid access point ID" });
+      }
+      
+      // Get the existing access point
+      const existingAccessPoint = await storage.getAccessPoint(accessPointId);
+      if (!existingAccessPoint) {
+        return res.status(404).json({ message: "Access point not found" });
+      }
+      
+      // Create a copy with a modified location name, excluding auto-generated fields
+      const duplicateData = {
+        project_id: existingAccessPoint.project_id,
+        location: `${existingAccessPoint.location} (Copy)`,
+        quick_config: existingAccessPoint.quick_config,
+        reader_type: existingAccessPoint.reader_type,
+        lock_type: existingAccessPoint.lock_type,
+        monitoring_type: existingAccessPoint.monitoring_type,
+        lock_provider: existingAccessPoint.lock_provider,
+        takeover: existingAccessPoint.takeover,
+        interior_perimeter: existingAccessPoint.interior_perimeter,
+        exst_panel_location: existingAccessPoint.exst_panel_location,
+        exst_panel_type: existingAccessPoint.exst_panel_type,
+        exst_reader_type: existingAccessPoint.exst_reader_type,
+        new_panel_location: existingAccessPoint.new_panel_location,
+        new_panel_type: existingAccessPoint.new_panel_type,
+        new_reader_type: existingAccessPoint.new_reader_type,
+        noisy_prop: existingAccessPoint.noisy_prop,
+        crashbars: existingAccessPoint.crashbars,
+        real_lock_type: existingAccessPoint.real_lock_type,
+        notes: existingAccessPoint.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedAccessPoint = await storage.createAccessPoint(duplicateData);
+      
+      res.status(201).json(duplicatedAccessPoint);
+    } catch (error) {
+      console.error("Error duplicating access point:", error);
+      res.status(500).json({ 
+        message: "Failed to duplicate access point",
+        error: (error as Error).message
+      });
     }
   });
 
@@ -636,6 +692,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/cameras/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const cameraId = parseInt(req.params.id);
+      if (isNaN(cameraId)) {
+        return res.status(400).json({ message: "Invalid camera ID" });
+      }
+      
+      // Get the existing camera
+      const existingCamera = await storage.getCamera(cameraId);
+      if (!existingCamera) {
+        return res.status(404).json({ message: "Camera not found" });
+      }
+      
+      // Create a copy with a modified location name, excluding auto-generated fields
+      const duplicateData = {
+        project_id: existingCamera.project_id,
+        location: `${existingCamera.location} (Copy)`,
+        camera_type: existingCamera.camera_type,
+        mounting_type: existingCamera.mounting_type,
+        resolution: existingCamera.resolution,
+        field_of_view: existingCamera.field_of_view,
+        notes: existingCamera.notes,
+        is_indoor: existingCamera.is_indoor,
+        import_to_gateway: existingCamera.import_to_gateway,
+        lens_count: existingCamera.lens_count,
+        streaming_resolution: existingCamera.streaming_resolution,
+        frame_rate: existingCamera.frame_rate,
+        recording_resolution: existingCamera.recording_resolution,
+        storage_days: existingCamera.storage_days
+      };
+      
+      // Create the duplicate
+      const duplicatedCamera = await storage.createCamera(duplicateData);
+      
+      res.status(201).json(duplicatedCamera);
+    } catch (error) {
+      console.error("Error duplicating camera:", error);
+      res.status(500).json({ 
+        message: "Failed to duplicate camera",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Project-specific elevator routes
   app.post("/api/projects/:projectId/elevators", async (req: Request, res: Response) => {
     try {
@@ -679,6 +779,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting elevator:", error);
       res.status(500).json({ message: "Failed to delete elevator" });
+    }
+  });
+
+  app.post("/api/elevators/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const elevatorId = parseInt(req.params.id);
+      if (isNaN(elevatorId)) {
+        return res.status(400).json({ message: "Invalid elevator ID" });
+      }
+      
+      // Get the existing elevator
+      const existingElevator = await storage.getElevator(elevatorId);
+      if (!existingElevator) {
+        return res.status(404).json({ message: "Elevator not found" });
+      }
+      
+      // Create a copy with a modified location name, excluding auto-generated fields
+      const duplicateData = {
+        project_id: existingElevator.project_id,
+        location: `${existingElevator.location} (Copy)`,
+        elevator_type: existingElevator.elevator_type,
+        floors_served: existingElevator.floors_served,
+        access_control: existingElevator.access_control,
+        notes: existingElevator.notes,
+        backup_power: existingElevator.backup_power,
+        maintenance_schedule: existingElevator.maintenance_schedule,
+        capacity: existingElevator.capacity,
+        speed: existingElevator.speed
+      };
+      
+      // Create the duplicate
+      const duplicatedElevator = await storage.createElevator(duplicateData);
+      
+      res.status(201).json(duplicatedElevator);
+    } catch (error) {
+      console.error("Error duplicating elevator:", error);
+      res.status(500).json({ 
+        message: "Failed to duplicate elevator",
+        error: (error as Error).message
+      });
     }
   });
 
