@@ -30,7 +30,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Project } from '@shared/schema';
-import { Loader2, MapPin, Search, Cloud, CloudRain, Sun, Thermometer, Wind, PlusCircle, Check, AlertTriangle, AlertOctagon } from 'lucide-react';
+import { Loader2, MapPin, Search, PlusCircle, Check, AlertTriangle, AlertOctagon } from 'lucide-react';
 import InteractiveMap from './InteractiveMap';
 
 interface LocationFeaturesProps {
@@ -44,52 +44,7 @@ interface Coordinates {
   formattedAddress: string;
 }
 
-interface WeatherData {
-  current: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    weather: {
-      id: number;
-      main: string;
-      description: string;
-      icon: string;
-    }[];
-    wind_speed: number;
-    clouds: number;
-    uvi: number;
-  };
-  daily: {
-    dt: number;
-    temp: {
-      day: number;
-      min: number;
-      max: number;
-    };
-    humidity: number;
-    weather: {
-      id: number;
-      main: string;
-      description: string;
-      icon: string;
-    }[];
-    wind_speed: number;
-  }[];
-}
 
-// Utility to format date from timestamp
-function formatDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
-// Function to get weather icon URL
-function getWeatherIconUrl(iconCode: string): string {
-  return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-}
 
 export default function LocationFeatures({ project, onProjectUpdate }: LocationFeaturesProps) {
   const [showMapFullscreen, setShowMapFullscreen] = useState(false);
@@ -199,31 +154,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
   // We no longer need to query for static map URL
   // as we're using the interactive map component directly
 
-  // Query for weather data - gracefully handle when API keys aren't available
-  const { 
-    data: weatherData,
-    isLoading: isLoadingWeather,
-    isError: isErrorWeather
-  } = useQuery({
-    queryKey: ['/api/weather', coordinates?.lat, coordinates?.lng],
-    enabled: !!coordinates,
-    queryFn: async () => {
-      try {
-        const response = await fetch(`/api/weather?lat=${coordinates?.lat}&lng=${coordinates?.lng}`);
-        
-        if (!response.ok) {
-          // Return null instead of throwing to avoid error messages
-          return null;
-        }
-        
-        return response.json() as Promise<WeatherData>;
-      } catch (error) {
-        // Return null instead of throwing to avoid error messages  
-        return null;
-      }
-    },
-    retry: false // Don't retry failed weather requests
-  });
+
 
   // State for tracking address search API status
   const [addressApiStatus, setAddressApiStatus] = useState<{
@@ -391,96 +322,7 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
 
   return (
     <div className="space-y-6">
-      {/* Weather Widget Card - Moved to top */}
-      {coordinates && (
-        <Card className="border rounded-lg shadow-sm overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl">Weather Conditions</CardTitle>
-            <CardDescription>
-              Current conditions at site location
-            </CardDescription>
-          </CardHeader>
-          
-          {isLoadingWeather ? (
-            <CardContent className="flex justify-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-            </CardContent>
-          ) : isErrorWeather ? (
-            <CardContent>
-              <div className="text-sm text-red-500">
-                Unable to fetch weather data. Please try again later.
-              </div>
-            </CardContent>
-          ) : weatherData && (
-            <>
-              {/* Current Weather */}
-              <CardContent className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <img 
-                      src={getWeatherIconUrl(weatherData.current.weather[0].icon)} 
-                      alt={weatherData.current.weather[0].description} 
-                      className="h-16 w-16"
-                    />
-                    <div>
-                      <div className="text-3xl font-bold">
-                        {Math.round(weatherData.current.temp)}°F
-                      </div>
-                      <div className="text-gray-500 capitalize">
-                        {weatherData.current.weather[0].description}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div className="flex items-center">
-                      <Thermometer className="h-4 w-4 mr-1 text-gray-500" />
-                      <span className="text-sm">Feels like: {Math.round(weatherData.current.feels_like)}°F</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Wind className="h-4 w-4 mr-1 text-gray-500" />
-                      <span className="text-sm">Wind: {Math.round(weatherData.current.wind_speed)} mph</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Cloud className="h-4 w-4 mr-1 text-gray-500" />
-                      <span className="text-sm">Humidity: {weatherData.current.humidity}%</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Sun className="h-4 w-4 mr-1 text-gray-500" />
-                      <span className="text-sm">UV Index: {Math.round(weatherData.current.uvi)}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              
-              {/* 7-Day Forecast */}
-              <div className="px-6 pb-4 pt-2">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">7-Day Forecast</h4>
-                <div className="flex overflow-x-auto pb-2 space-x-4">
-                  {weatherData.daily.slice(0, 7).map((day, index) => (
-                    <div key={index} className="flex flex-col items-center min-w-[60px]">
-                      <div className="text-xs font-medium">
-                        {index === 0 ? 'Today' : formatDate(day.dt)}
-                      </div>
-                      <img 
-                        src={getWeatherIconUrl(day.weather[0].icon)} 
-                        alt={day.weather[0].description} 
-                        className="h-10 w-10"
-                      />
-                      <div className="text-xs flex space-x-1">
-                        <span className="font-medium">{Math.round(day.temp.max)}°</span>
-                        <span className="text-gray-500">{Math.round(day.temp.min)}°</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </Card>
-      )}
-      
-      {/* Location Information Card - Moved below weather */}
+      {/* Location Information Card */}
       <Card className="border rounded-lg shadow-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl">Location Information</CardTitle>
