@@ -87,6 +87,17 @@ import miscRoutes from "./routes/misc-routes";
 // No authentication required - all routes are public
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   // All routes are now public - no authentication needed
+  // Set up a mock user for routes that expect req.user
+  req.user = {
+    id: 1,
+    username: 'admin',
+    email: 'admin@example.com',
+    fullName: 'Admin User',
+    role: 'admin',
+    created_at: new Date(),
+    updated_at: new Date()
+  } as Express.User;
+  
   next();
 };
 

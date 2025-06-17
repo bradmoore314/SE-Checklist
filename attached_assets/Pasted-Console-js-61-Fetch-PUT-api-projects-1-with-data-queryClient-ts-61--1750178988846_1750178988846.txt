@@ -1,0 +1,287 @@
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:157
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:157
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=2ebc720d:498
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:157
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:215
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=2ebc720d:498
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:157
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch PUT /api/projects/1 with data
+queryClient.ts:61 
+            
+            
+           PUT https://e1e377b5-4a95-4d31-ae90-0508ae674c1d-00-19cp1go7g2b2m.worf.replit.dev/api/projects/1 401 (Unauthorized)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:61
+await in apiRequest
+mutationFn @ ScopeTab.tsx:67
+fn @ @tanstack_react-query.js?v=2ebc720d:1189
+run @ @tanstack_react-query.js?v=2ebc720d:494
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=2ebc720d:498
+start @ @tanstack_react-query.js?v=2ebc720d:536
+execute @ @tanstack_react-query.js?v=2ebc720d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2ebc720d:2630
+(anonymous) @ @tanstack_react-query.js?v=2ebc720d:3295
+handleConfigChange @ ScopeTab.tsx:128
+onPressedChange @ ScopeTab.tsx:215
+(anonymous) @ chunk-V4NHVSLZ.js?v=2ebc720d:17
+(anonymous) @ chunk-NVZLHTSC.js?v=2ebc720d:28
+(anonymous) @ chunk-FH6T6EM6.js?v=2ebc720d:42
+handleEvent @ chunk-OD433RWB.js?v=2ebc720d:6
+callCallback2 @ chunk-276SZO74.js?v=2ebc720d:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=2ebc720d:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=2ebc720d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-276SZO74.js?v=2ebc720d:3736
+executeDispatch @ chunk-276SZO74.js?v=2ebc720d:7014
+processDispatchQueueItemsInOrder @ chunk-276SZO74.js?v=2ebc720d:7034
+processDispatchQueue @ chunk-276SZO74.js?v=2ebc720d:7043
+dispatchEventsForPlugins @ chunk-276SZO74.js?v=2ebc720d:7051
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:7174
+batchedUpdates$1 @ chunk-276SZO74.js?v=2ebc720d:18913
+batchedUpdates @ chunk-276SZO74.js?v=2ebc720d:3579
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=2ebc720d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=2ebc720d:5478
+dispatchEvent @ chunk-276SZO74.js?v=2ebc720d:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=2ebc720d:5449
+Console.js:61 Fetch finished loading: PUT /api/projects/1
+Console.js:61 Fetch failed loading: PUT /api/projects/1
+Console.js:61 Fetch GET /api/equipment/camera/1/images
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-AUPKQSX5.js?v=2ebc720d:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=2ebc720d:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=2ebc720d:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=2ebc720d:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=2ebc720d:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=2ebc720d:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=2ebc720d:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=2ebc720d:19447
+commitRootImpl @ chunk-276SZO74.js?v=2ebc720d:19416
+commitRoot @ chunk-276SZO74.js?v=2ebc720d:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=2ebc720d:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=2ebc720d:9119
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:18627
+Console.js:61 Fetch finished loading: GET /api/equipment/camera/1/images
+Console.js:61 EditCameraModal camera data: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 camera.is_indoor type: boolean value: false
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-AUPKQSX5.js?v=2ebc720d:338
+commitHookEffectListMount @ chunk-276SZO74.js?v=2ebc720d:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=2ebc720d:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=2ebc720d:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=2ebc720d:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=2ebc720d:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=2ebc720d:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=2ebc720d:19447
+commitRootImpl @ chunk-276SZO74.js?v=2ebc720d:19416
+commitRoot @ chunk-276SZO74.js?v=2ebc720d:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=2ebc720d:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=2ebc720d:9119
+(anonymous) @ chunk-276SZO74.js?v=2ebc720d:18627
+Console.js:61 UnifiedCameraConfigForm initialData: {id: 1, project_id: 1, location: 'asdfasdf', camera_type: 'Bullet Indoor', mounting_type: 'Pole', …}
+Console.js:61 initialData?.is_indoor type: boolean value: false
