@@ -16,11 +16,8 @@ import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import { ProjectCollaborators } from "@/components/ProjectCollaborators";
-import { CollaborationProvider } from "@/contexts/CollaborationContext";
 // Address editing removed - now read-only display only
 import LocationFeatures from "@/components/location/LocationFeatures";
-import SimpleFloorplanUpload from "@/components/floorplans/SimpleFloorplanUpload";
 
 interface SiteWalkDashboardProps {
   project: Project;
