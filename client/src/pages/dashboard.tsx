@@ -5,7 +5,6 @@ import { Project } from "@shared/schema";
 import ProjectDashboard from "@/components/project/ProjectDashboard";
 import ProjectConfiguration from "@/components/project/ProjectConfiguration";
 import ScopeTab from "@/components/project/ScopeTab";
-import EquipmentTabs from "@/components/equipment/EquipmentTabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -213,7 +212,6 @@ export default function Dashboard() {
                 setCurrentProject(updated);
               }} 
             />
-            <EquipmentTabs project={currentOpportunity} />
           </TabsContent>
 
           <TabsContent value="scope" className="m-0">
