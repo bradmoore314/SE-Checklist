@@ -97,9 +97,6 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
  * This is a fallback in case the Google Geocoding API fails
  */
 export function parseCoordinatesFromAddress(address: string): {lat: number, lng: number} | null {
-  // Default coordinates for a central US location if parsing fails
-  const defaultCoords = { lat: 38.8977, lng: -77.0365 }; // Washington DC
-  
   try {
     // Try to extract coordinates from address if in format that includes them
     // e.g., "123 Main St, City, State 12345 (38.8977, -77.0365)"
@@ -117,12 +114,11 @@ export function parseCoordinatesFromAddress(address: string): {lat: number, lng:
       }
     }
     
-    // If we have a project in the database with a real address, 
-    // return default coordinates so we can still show the feature
-    return defaultCoords;
+    // Return null if no coordinates can be extracted
+    return null;
   } catch (error) {
     console.error('Error parsing coordinates from address', error);
-    return defaultCoords;
+    return null;
   }
 }
 
