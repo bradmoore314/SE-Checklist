@@ -179,26 +179,21 @@ export default function LocationFeatures({ project, onProjectUpdate }: LocationF
         const response = await fetch(`/api/geocode?address=${encodeURIComponent(project.site_address || '')}`);
         
         if (!response.ok) {
-          console.warn('Geocoding request failed, using fallback coordinates');
-          // Use a default set of coordinates as fallback
-          return {
-            lat: 38.8977,
-            lng: -77.0365,
-            formattedAddress: project.site_address || 'Address not specified'
-          } as Coordinates;
+          // If the API returns a 404, it means the address couldn't be geocoded
+          if (response.status === 404) {
+            throw new Error('Address not found');
+          }
+          throw new Error(`Geocoding failed: ${response.status}`);
         }
         
         return response.json() as Promise<Coordinates>;
       } catch (error) {
         console.error('Error fetching geocode data:', error);
-        // Provide fallback coordinates on error
-        return {
-          lat: 38.8977,
-          lng: -77.0365,
-          formattedAddress: project.site_address || 'Address not specified'
-        } as Coordinates;
+        throw error; // Let React Query handle the error state
       }
-    }
+    },
+    retry: 1,
+    retryDelay: 1000
   });
 
   // We no longer need to query for static map URL

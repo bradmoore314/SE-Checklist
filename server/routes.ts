@@ -489,6 +489,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Geocoding endpoint
+  app.get("/api/geocode", async (req: Request, res: Response) => {
+    const address = req.query.address as string;
+    if (!address) {
+      return res.status(400).json({ message: "Address is required" });
+    }
+
+    try {
+      // First try the Google Maps Geocoding API
+      const result = await geocodeAddress(address);
+      
+      if (result) {
+        return res.json(result);
+      }
+      
+      // If geocoding fails, try our fallback method
+      console.log("Geocoding API failed, using fallback coordinate parser");
+      const fallbackCoords = parseCoordinatesFromAddress(address);
+      
+      if (fallbackCoords) {
+        return res.json({
+          lat: fallbackCoords.lat,
+          lng: fallbackCoords.lng,
+          formattedAddress: address
+        });
+      }
+      
+      return res.status(404).json({ message: "Unable to geocode address" });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to geocode address",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Project collaborators endpoint
   app.get("/api/projects/:projectId/collaborators", async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
