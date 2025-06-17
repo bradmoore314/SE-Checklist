@@ -13,6 +13,7 @@ import Intercoms from "@/pages/intercoms";
 import Summary from "@/pages/project-summary";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
+import Login from "@/pages/Login";
 import AccountPage from "@/pages/account";
 
 // Floorplan functionality has been removed
@@ -50,16 +51,7 @@ function Router() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <div className="auth-container">
-        <Switch>
-          <Route path="/auth" component={AuthPage} />
-          <Route>
-            <AuthPage />
-          </Route>
-        </Switch>
-      </div>
-    );
+    return <Login />;
   }
 
   return (

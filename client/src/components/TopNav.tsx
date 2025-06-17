@@ -27,9 +27,14 @@ export default function TopNav({ project, onToggleSidebar, user, sidebarCollapse
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
+      window.location.reload();
     }
   };
 
