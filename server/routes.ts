@@ -800,13 +800,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         project_id: existingElevator.project_id,
         location: `${existingElevator.location} (Copy)`,
         elevator_type: existingElevator.elevator_type,
-        floors_served: existingElevator.floors_served,
-        access_control: existingElevator.access_control,
+        floor_count: existingElevator.floor_count,
         notes: existingElevator.notes,
-        backup_power: existingElevator.backup_power,
-        maintenance_schedule: existingElevator.maintenance_schedule,
-        capacity: existingElevator.capacity,
-        speed: existingElevator.speed
+        title: existingElevator.title,
+        bank_name: existingElevator.bank_name,
+        building_number: existingElevator.building_number,
+        address: existingElevator.address,
+        city: existingElevator.city,
+        management_company: existingElevator.management_company,
+        elevator_company: existingElevator.elevator_company,
+        reader_type: existingElevator.reader_type
       };
       
       // Create the duplicate
@@ -865,6 +868,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting intercom:", error);
       res.status(500).json({ message: "Failed to delete intercom" });
+    }
+  });
+
+  app.post("/api/intercoms/:id/duplicate", async (req: Request, res: Response) => {
+    try {
+      const intercomId = parseInt(req.params.id);
+      if (isNaN(intercomId)) {
+        return res.status(400).json({ message: "Invalid intercom ID" });
+      }
+      
+      // Get the existing intercom
+      const existingIntercom = await storage.getIntercom(intercomId);
+      if (!existingIntercom) {
+        return res.status(404).json({ message: "Intercom not found" });
+      }
+      
+      // Create a copy with a modified location name, excluding auto-generated fields
+      const duplicateData = {
+        project_id: existingIntercom.project_id,
+        location: `${existingIntercom.location} (Copy)`,
+        intercom_type: existingIntercom.intercom_type,
+        mounting_type: existingIntercom.mounting_type,
+        connection_type: existingIntercom.connection_type,
+        notes: existingIntercom.notes
+      };
+      
+      // Create the duplicate
+      const duplicatedIntercom = await storage.createIntercom(duplicateData);
+      
+      res.status(201).json(duplicatedIntercom);
+    } catch (error) {
+      console.error("Error duplicating intercom:", error);
+      res.status(500).json({ 
+        message: "Failed to duplicate intercom",
+        error: (error as Error).message
+      });
     }
   });
 
