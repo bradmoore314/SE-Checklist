@@ -25,6 +25,10 @@ app.use((req, res, next) => {
 });
 
 async function startServer() {
+  // Import and setup authentication
+  const { setupAuth } = await import("./auth");
+  setupAuth(app);
+
   // Error handling
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

@@ -84,20 +84,11 @@ import { dataverseIntegration } from "./services/dataverse-integration";
 import { setupAIRoutes } from "./routes/ai-routes";
 import miscRoutes from "./routes/misc-routes";
 
-// No authentication required - all routes are public
+// Authentication middleware
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  // All routes are now public - no authentication needed
-  // Set up a mock user for routes that expect req.user
-  req.user = {
-    id: 1,
-    username: 'admin',
-    email: 'admin@example.com',
-    fullName: 'Admin User',
-    role: 'admin',
-    created_at: new Date(),
-    updated_at: new Date()
-  } as Express.User;
-  
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
   next();
 };
 
@@ -117,32 +108,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User endpoint is handled in auth.ts
-  
-  // Special dev endpoint to force login for development
-  app.post("/api/dev-login", async (req: Request, res: Response) => {
-    if (req.isAuthenticated()) {
-      return res.status(200).json(req.user);
-    }
-    
-    // Create a mock admin user for the request
-    req.user = {
-      id: 999,
-      username: 'dev-admin',
-      email: 'dev@example.com',
-      fullName: 'Development Admin',
-      role: 'admin',
-      created_at: new Date(),
-      updated_at: new Date()
-    } as Express.User;
-    
-    // Set up the login session
-    req.login(req.user, (err) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      return res.status(200).json(req.user);
-    });
-  });
 
   // Lookup data endpoints
   app.get("/api/lookup", isAuthenticated, (req: Request, res: Response) => {
@@ -268,12 +233,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid project ID" });
     }
 
-    // Get list of projects the user has access to
-    const userProjects = await storage.getProjectsForUser(req.user.id);
-    const userProjectIds = userProjects.map(p => p.id);
+    // Get the project to check ownership
+    const project = await storage.getProject(projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
     
-    // Check if user has access to this project
-    if (!userProjectIds.includes(projectId)) {
+    // Check if user owns this project or is admin
+    if (project.created_by !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: "You don't have permission to update this project" });
     }
 
