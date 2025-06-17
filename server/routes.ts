@@ -515,6 +515,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Google Maps API key endpoint
+  app.get("/api/map-api-key", async (req: Request, res: Response) => {
+    const apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+    
+    if (!apiKey) {
+      return res.status(404).json({ 
+        message: "Google Maps API key not configured" 
+      });
+    }
+    
+    res.json({ apiKey });
+  });
+
   // Project collaborators endpoint
   app.get("/api/projects/:projectId/collaborators", async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
