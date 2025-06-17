@@ -16,7 +16,6 @@ import {
   getWeatherData, 
   getStaticMapUrl, 
   getMapEmbedUrl, 
-  parseCoordinatesFromAddress,
   getPlaceAutocomplete
 } from './services/location-services';
 import { recognizeSpeech, textToSpeech } from './speech-api';
