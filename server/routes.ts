@@ -497,27 +497,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      // First try the Google Maps Geocoding API
+      // Try the Google Maps Geocoding API
       const result = await geocodeAddress(address);
       
       if (result) {
         return res.json(result);
       }
       
-      // If geocoding fails, try our fallback method
-      console.log("Geocoding API failed, using fallback coordinate parser");
-      const fallbackCoords = parseCoordinatesFromAddress(address);
-      
-      if (fallbackCoords) {
-        return res.json({
-          lat: fallbackCoords.lat,
-          lng: fallbackCoords.lng,
-          formattedAddress: address
-        });
-      }
-      
-      return res.status(404).json({ message: "Unable to geocode address" });
+      // If geocoding fails, return 404 with clear error message
+      console.log("Geocoding API failed for address:", address);
+      return res.status(404).json({ message: "Unable to locate address on map. Please check the address format." });
     } catch (error) {
+      console.error("Geocoding error:", error);
       res.status(500).json({ 
         message: "Failed to geocode address",
         error: (error as Error).message
