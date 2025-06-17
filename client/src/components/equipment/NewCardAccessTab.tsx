@@ -71,52 +71,9 @@ export default function CardAccessTab({ project }: CardAccessTabProps) {
 
   return (
     <div className="p-4">
-      {/* New Data Table with Sorting, Filtering, and Editable Cells */}
-      <SimpleCardAccessTable 
-        project={project}
-        onEdit={handleShowEditModal}
-        onAdd={() => setShowAddModal(true)}
-        onShowImages={handleShowImageModal}
-      />
-      
-      {/* Add Access Point Modal */}
-      {showAddModal && (
-        <AddAccessPointModal 
-          isOpen={showAddModal} 
-          projectId={project.id} 
-          onSave={handleAddSave} 
-          onClose={() => setShowAddModal(false)} 
-        />
-      )}
-      
-      {/* Edit Access Point Modal */}
-      {showEditModal && selectedAccessPoint && (
-        <EditAccessPointModal 
-          isOpen={showEditModal} 
-          accessPoint={selectedAccessPoint} 
-          onSave={handleEditSave} 
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedAccessPoint(null);
-          }} 
-        />
-      )}
-
-      {/* Image Gallery Modal */}
-      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Images for {selectedAccessPoint?.location || 'Access Point'}</DialogTitle>
-          </DialogHeader>
-          {selectedAccessPoint && showImageModal && (
-            <UnifiedImageHandler 
-              projectId={project.id}
-              equipmentType="access_point" 
-              equipmentId={selectedAccessPoint.id}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <div className="text-center text-gray-500 py-8">
+        Card Access Points section removed as requested
+      </div>
     </div>
   );
 }
